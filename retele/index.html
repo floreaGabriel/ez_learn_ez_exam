@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Headere de Rețea — Învățare Interactivă</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Paletă aliniată la aplicația „Licență Trainer" (temă caldă gruvbox) */
+:root{
+  --bg:#1a1714; --bg2:#1d1916; --bg3:#2a2521; --panel:#221e1a;
+  --txt:#ece3d2; --muted:#a8997f; --border:#352f28;
+  --accent:#e9b143; --accent2:#d8843f; --good:#b8bb26; --bad:#fb4934; --warn:#e9b143;
+  --shadow:0 8px 30px rgba(0,0,0,.45);
+  --field-s:55%; --field-l:32%; --field-txt:#fff; --field-border-l:50%;
+  --hex-idle:#2a2521;
+}
+html[data-theme="light"]{
+  --bg:#f3ecdd; --bg2:#fbf6ea; --bg3:#ece2cd; --panel:#fbf6ea;
+  --txt:#2a2118; --muted:#8a7a5f; --border:#ddd0b8;
+  --accent:#b9881f; --accent2:#c46a2a; --good:#6f7a17; --bad:#c23a2e; --warn:#9a6700;
+  --shadow:0 8px 24px rgba(80,60,30,.14);
+  --field-s:62%; --field-l:84%; --field-txt:#2a2118; --field-border-l:52%;
+  --hex-idle:#ece2cd;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;transition:background .3s,color .3s}
+a{color:var(--accent)}
+/* Header propriu ascuns — navigarea + tema sunt în aplicația gazdă (sidebar/topbar) */
+header.top{display:none}
+main{padding-top:8px}
+.top-inner{max-width:1200px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:1.15rem;letter-spacing:.3px;display:flex;align-items:center;gap:10px}
+.brand .dot{width:12px;height:12px;border-radius:3px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 12px var(--accent)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+nav.tabs button{background:transparent;border:1px solid transparent;color:var(--muted);padding:8px 14px;border-radius:9px;cursor:pointer;font-size:.9rem;font-weight:600;transition:.18s}
+nav.tabs button:hover{color:var(--txt);background:var(--bg3)}
+nav.tabs button.active{color:var(--txt);background:var(--bg3);border-color:var(--border)}
+.theme-btn{background:var(--bg3);border:1px solid var(--border);color:var(--txt);width:40px;height:38px;border-radius:9px;cursor:pointer;font-size:1.1rem;transition:.2s}
+.theme-btn:hover{transform:translateY(-1px)}
+main{max-width:1200px;margin:0 auto;padding:26px 20px 80px}
+.page{display:none;animation:fade .35s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:1.7rem;margin:.2em 0 .1em}
+h2{font-size:1.25rem;margin:1.6em 0 .5em;display:flex;align-items:center;gap:10px}
+h2::before{content:"";width:5px;height:1.05em;border-radius:3px;background:linear-gradient(var(--accent),var(--accent2))}
+.lead{color:var(--muted);max-width:760px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;margin:18px 0;box-shadow:var(--shadow)}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+select,.btn{font-family:inherit;font-size:.92rem}
+select{background:var(--bg3);color:var(--txt);border:1px solid var(--border);border-radius:9px;padding:9px 12px;cursor:pointer}
+.btn{background:var(--bg3);color:var(--txt);border:1px solid var(--border);border-radius:9px;padding:9px 16px;cursor:pointer;font-weight:600;transition:.18s}
+.btn:hover{transform:translateY(-1px);border-color:var(--accent)}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#1a1714;font-weight:700}
+.btn.ghost{background:transparent}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.4px;padding:3px 9px;border-radius:20px;background:var(--bg3);border:1px solid var(--border);color:var(--muted)}
+
+/* ===== Header diagram ===== */
+.hwrap{overflow-x:auto;padding:6px 2px 14px}
+.hgrid{display:grid;grid-template-columns:repeat(32,minmax(14px,1fr));gap:5px;min-width:560px}
+.hflex{display:flex;flex-wrap:wrap;gap:5px;min-width:560px}
+.bitruler{display:grid;grid-template-columns:repeat(32,minmax(14px,1fr));gap:5px;min-width:560px;margin-bottom:6px;color:var(--muted);font-size:.62rem;font-variant-numeric:tabular-nums}
+.bitruler span{text-align:left}
+.field{
+  border-radius:8px;padding:9px 6px;min-height:56px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+  color:var(--field-txt);font-size:.74rem;font-weight:600;cursor:default;position:relative;overflow:hidden;
+  border:1px solid hsl(var(--h),var(--field-s),var(--field-border-l));
+  background:hsl(var(--h),var(--field-s),var(--field-l));
+  transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s,filter .18s;
+}
+.field .sz{font-size:.66rem;font-weight:500;opacity:.85;margin-top:3px}
+.field:hover{transform:translateY(-3px) scale(1.015);box-shadow:0 8px 20px rgba(0,0,0,.35);filter:brightness(1.12);z-index:2}
+.field.var{background:repeating-linear-gradient(45deg,hsl(var(--h),var(--field-s),var(--field-l)),hsl(var(--h),var(--field-s),var(--field-l)) 8px,hsl(var(--h),var(--field-s),calc(var(--field-l) + 6%)) 8px,hsl(var(--h),var(--field-s),calc(var(--field-l) + 6%)) 16px)}
+.flexfield{flex:1 1 auto}
+.note{color:var(--muted);font-size:.85rem;margin-top:8px}
+.legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:.74rem;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:4px 11px 4px 6px;cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--accent);transform:translateY(-1px)}
+.chip .sw{width:13px;height:13px;border-radius:4px;background:hsl(var(--h),var(--field-s),var(--field-l));border:1px solid hsl(var(--h),var(--field-s),var(--field-border-l))}
+
+/* ===== Hex viewer ===== */
+.hexbox{font-family:"JetBrains Mono","Cascadia Code",Consolas,monospace;font-size:.92rem;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;overflow-x:auto}
+.hexrow{display:flex;align-items:center;gap:14px;white-space:nowrap}
+.hexoff{color:var(--muted);user-select:none;font-size:.82rem}
+.hexbytes{display:flex;gap:5px}
+.hexascii{display:flex;gap:0;color:var(--muted)}
+.byte,.ach{display:inline-flex;align-items:center;justify-content:center;border-radius:5px;transition:transform .14s,background .14s,color .14s,box-shadow .14s;cursor:pointer}
+.byte{width:26px;height:26px;background:var(--hex-idle);border:1px solid transparent}
+.ach{width:13px;height:26px}
+.byte.lit,.ach.lit{color:var(--field-txt);background:hsl(var(--h),var(--field-s),var(--field-l));border-color:hsl(var(--h),var(--field-s),var(--field-border-l));box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.byte.dim,.ach.dim{opacity:.28}
+.byte.hot{transform:translateY(-3px) scale(1.12);z-index:3;box-shadow:0 6px 16px rgba(0,0,0,.45)}
+.tooltip{position:fixed;z-index:100;pointer-events:none;background:var(--bg2);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:9px;padding:9px 13px;box-shadow:var(--shadow);font-family:"Segoe UI",sans-serif;font-size:.82rem;max-width:280px;opacity:0;transform:translateY(6px);transition:opacity .15s,transform .15s}
+.tooltip.show{opacity:1;transform:none}
+.tooltip b{color:var(--accent)}
+.tooltip .tv{color:var(--good);font-family:"JetBrains Mono",monospace}
+
+/* ===== Q&A ===== */
+.qa{border:1px solid var(--border);border-radius:11px;margin:10px 0;overflow:hidden;background:var(--bg3)}
+.qa .q{padding:12px 16px;font-weight:600;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.qa .a{max-height:0;overflow:hidden;transition:max-height .3s ease;background:var(--bg2);border-top:1px solid transparent}
+.qa.open .a{max-height:260px;border-top-color:var(--border)}
+.qa .a-inner{padding:13px 16px;color:var(--txt);font-size:.92rem}
+.qa .a-inner code{background:var(--bg);padding:2px 7px;border-radius:6px;color:var(--good);font-size:.88em}
+
+/* ===== Exercises ===== */
+.dz{min-height:56px;border:2px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-size:.74rem;padding:6px;transition:.15s;background:var(--bg)}
+.dz.over{border-color:var(--accent);background:hsla(41,85%,55%,.12)}
+.dz.filled{border-style:solid}
+.dz.correct{border-color:var(--good);background:hsla(135,55%,45%,.14);color:var(--txt)}
+.dz.wrong{border-color:var(--bad);background:hsla(0,70%,55%,.14)}
+.bank{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.tok{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:9px 13px;cursor:grab;font-size:.82rem;font-weight:600;user-select:none;transition:.15s}
+.tok:hover{border-color:var(--accent);transform:translateY(-2px)}
+.tok.sel{border-color:var(--accent);background:hsla(41,85%,55%,.18);box-shadow:0 0 0 2px var(--accent) inset}
+.tok.dragging{opacity:.4}
+.tok.used{display:none}
+.dz{cursor:pointer}
+.inp{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:7px 9px;color:var(--txt);font-size:.78rem;text-align:center;font-family:inherit}
+.inp:focus{outline:none;border-color:var(--accent)}
+.inp.ok{border-color:var(--good);background:hsla(135,55%,45%,.1)}
+.inp.no{border-color:var(--bad);background:hsla(0,70%,55%,.1)}
+table.fillt{width:100%;border-collapse:collapse;font-size:.9rem}
+table.fillt th,table.fillt td{border:1px solid var(--border);padding:9px 11px;text-align:left}
+table.fillt th{background:var(--bg3);font-size:.8rem;color:var(--muted)}
+table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:8px;vertical-align:middle;background:hsl(var(--h),var(--field-s),var(--field-l));border:1px solid hsl(var(--h),var(--field-s),var(--field-border-l))}
+.scorebar{font-weight:700;padding:10px 14px;border-radius:9px;margin-top:14px;display:none}
+.scorebar.show{display:block}
+.scorebar.good{background:hsla(135,55%,45%,.15);color:var(--good);border:1px solid var(--good)}
+.scorebar.bad{background:hsla(0,70%,55%,.12);color:var(--bad);border:1px solid var(--bad)}
+
+/* quiz cards */
+.quiz-q{margin:16px 0}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:10px}
+.opt{padding:11px 14px;border:1px solid var(--border);border-radius:10px;background:var(--bg3);cursor:pointer;transition:.15s;font-size:.9rem}
+.opt:hover{border-color:var(--accent);transform:translateY(-2px)}
+.opt.correct{border-color:var(--good);background:hsla(135,55%,45%,.16)}
+.opt.wrong{border-color:var(--bad);background:hsla(0,70%,55%,.14)}
+.opt.disabled{pointer-events:none;opacity:.75}
+.reftable{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:8px}
+.reftable th,.reftable td{border:1px solid var(--border);padding:7px 11px;text-align:left}
+.reftable th{background:var(--bg3);color:var(--muted)}
+.reftable tr:hover td{background:var(--bg3)}
+.flagbits{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.flagbit{flex:1 1 90px;min-width:90px;border:1px solid var(--border);border-radius:9px;padding:9px;text-align:center;background:var(--bg3)}
+.flagbit b{display:block;font-size:1rem;color:var(--accent)}
+.flagbit small{color:var(--muted)}
+.hint{font-size:.82rem;color:var(--muted);margin:6px 0 0}
+.kbd{font-family:"JetBrains Mono",monospace;background:var(--bg3);border:1px solid var(--border);padding:1px 6px;border-radius:5px}
+.footer{color:var(--muted);font-size:.82rem;text-align:center;margin-top:40px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="brand"><span class="dot"></span> Headere de Rețea</div>
+    <nav class="tabs" id="tabs">
+      <button data-tab="ref" class="active">📘 Învață</button>
+      <button data-tab="drag">🧲 Trage câmpul</button>
+      <button data-tab="bytes">🔢 Octeți</button>
+      <button data-tab="write">✍️ Scrie câmpurile</button>
+      <button data-tab="quiz">❓ Quiz</button>
+      <button data-tab="hex">🔬 Analiză pachete</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Comută tema">🌙</button>
+  </div>
+</header>
+
+<main>
+  <!-- ============ REFERENCE ============ -->
+  <section class="page active" id="page-ref">
+    <h1>Structura headerelor (rezolvate)</h1>
+    <p class="lead">Secțiunea de referință — fiecare câmp are o <b>culoare fixă</b> ca să reții vizual forma headerului. Treci cu mouse-ul peste câmpuri pentru efect, sau peste eticheta din legendă. Lățimea fiecărei casete e proporțională cu numărul de biți.</p>
+    <div class="row" style="margin-top:14px">
+      <label>Header: <select id="refSel"></select></label>
+      <span class="pill" id="refTotal"></span>
+    </div>
+    <div class="card" id="refCard"></div>
+  </section>
+
+  <!-- ============ DRAG ============ -->
+  <section class="page" id="page-drag">
+    <h1>Trage câmpul în caseta potrivită</h1>
+    <p class="lead">Casetele sunt goale și păstrează dimensiunea reală. <b>Trage</b> eticheta în casetă — sau <b>click pe etichetă apoi click pe casetă</b>. Click pe o casetă completată o trimite înapoi în bancă. Apasă <b>Verifică</b> când termini.</p>
+    <div class="row" style="margin-top:14px">
+      <label>Header: <select id="dragSel"></select></label>
+      <button class="btn primary" id="dragCheck">✓ Verifică</button>
+      <button class="btn ghost" id="dragReset">↺ Resetează</button>
+    </div>
+    <div class="card"><div class="hwrap" id="dragArea"></div></div>
+    <div class="bank" id="dragBank"></div>
+    <div class="scorebar" id="dragScore"></div>
+  </section>
+
+  <!-- ============ BYTES ============ -->
+  <section class="page" id="page-bytes">
+    <h1>Completează dimensiunea câmpurilor</h1>
+    <p class="lead">Scrie câți <b>biți</b> are fiecare câmp. (Sub un octet se exprimă în biți; pentru câmpurile mari ai și echivalentul în octeți afișat la verificare.)</p>
+    <div class="row" style="margin-top:14px">
+      <label>Header: <select id="bytesSel"></select></label>
+      <button class="btn primary" id="bytesCheck">✓ Verifică</button>
+      <button class="btn ghost" id="bytesReset">↺ Resetează</button>
+    </div>
+    <div class="card"><table class="fillt" id="bytesTable"></table></div>
+    <div class="scorebar" id="bytesScore"></div>
+  </section>
+
+  <!-- ============ WRITE ============ -->
+  <section class="page" id="page-write">
+    <h1>Scrie numele și dimensiunea câmpurilor</h1>
+    <p class="lead">Ai structura goală a headerului. Pe fiecare casetă scrie <b>numele câmpului</b> și <b>dimensiunea</b> (ex: <span class="kbd">TTL</span> și <span class="kbd">8</span>). Se acceptă variante uzuale ale denumirii.</p>
+    <div class="row" style="margin-top:14px">
+      <label>Header: <select id="writeSel"></select></label>
+      <button class="btn primary" id="writeCheck">✓ Verifică</button>
+      <button class="btn ghost" id="writeReset">↺ Resetează</button>
+      <button class="btn ghost" id="writeReveal">👁 Arată soluția</button>
+    </div>
+    <div class="card"><div class="hwrap" id="writeArea"></div></div>
+    <div class="scorebar" id="writeScore"></div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="page" id="page-quiz">
+    <h1>Quiz: flaguri, opcode-uri și tipuri de mesaje</h1>
+    <p class="lead">Întrebări despre flagurile din headere (ce fac și pe ce poziție sunt), opcode-urile ARP și tipurile de mesaje DHCP. Tabelele de referință sunt sub quiz.</p>
+    <div class="card" id="quizBox"></div>
+    <div class="row"><button class="btn primary" id="quizNew">↻ Întrebări noi</button><span class="pill" id="quizScore">0 / 0</span></div>
+
+    <h2>Flaguri TCP — ce fac și unde sunt</h2>
+    <div class="card">
+      <p class="hint">Câmpul de control (16 biți) după Data Offset + Rezervat. Flagurile clasice (1 bit fiecare):</p>
+      <div class="flagbits" id="tcpFlags"></div>
+    </div>
+    <h2>Flaguri IP (3 biți, după Identificare)</h2>
+    <div class="card"><div class="flagbits" id="ipFlags"></div></div>
+    <h2>Flag DHCP (16 biți)</h2>
+    <div class="card"><p class="hint" style="margin:0">Doar bitul cel mai semnificativ e folosit: <b>B (Broadcast)</b> = bit 0 (MSB). 1 = serverul răspunde prin broadcast; restul de 15 biți sunt rezervați (0).</p></div>
+
+    <h2>ARP — Opcode</h2>
+    <div class="card"><table class="reftable" id="arpTable"></table></div>
+    <h2>DHCP — Tipuri de mesaje</h2>
+    <div class="card"><table class="reftable" id="dhcpTable"></table></div>
+  </section>
+
+  <!-- ============ HEX ============ -->
+  <section class="page" id="page-hex">
+    <h1>Analiză de pachete (hexdump interactiv)</h1>
+    <p class="lead">Cele 3 exerciții. Treci cu mouse-ul peste un octet sau peste o etichetă din legendă ca să-i vezi <b>câmpul highlight-at cu culoare</b> și valoarea decodată. Apasă „Colorează tot” ca să vezi întreaga hartă a pachetului.</p>
+    <div class="row" style="margin-top:14px">
+      <label>Exercițiu: <select id="hexSel"></select></label>
+      <button class="btn" id="hexColorAll">🎨 Colorează tot</button>
+      <button class="btn ghost" id="hexClear">Curăță</button>
+    </div>
+    <div class="card" id="hexMeta"></div>
+    <div class="card"><div class="hexbox" id="hexView"></div><div class="legend" id="hexLegend"></div></div>
+    <div class="card"><h2 style="margin-top:0">Întrebări</h2><div id="hexQs"></div></div>
+  </section>
+</main>
+
+<div class="tooltip" id="tip"></div>
+<p class="footer">Construit pentru memorie vizuală • temă dark/light • ex. 3 este pachetul real din imagine; ex. 1 & 2 sunt reconstruite consistent din părțile lizibile.</p>
+
+<script>
+/* ============================================================
+   COLOR: fiecare cheie de câmp -> nuanță stabilă (memorie vizuală)
+   ============================================================ */
+const HUE = {
+  'mac-dst':190,'mac-src':205,'ethertype':38,
+  'ip-ver':260,'ip-ihl':272,'ip-tos':286,'ip-len':150,'ip-id':300,
+  'ip-flags':12,'ip-frag':330,'ip-ttl':95,'ip-proto':25,'ip-cksum':218,
+  'ip-src':120,'ip-dst':165,'ip-opt':240,
+  'tcp-sport':130,'tcp-dport':110,'tcp-seq':280,'tcp-ack':255,'tcp-off':320,
+  'tcp-res':220,'tcp-flags':5,'tcp-win':50,'tcp-cksum':200,'tcp-urg':340,'tcp-opt':240,
+  'udp-sport':130,'udp-dport':110,'udp-len':150,'udp-cksum':200,
+  'icmp-type':18,'icmp-code':45,'icmp-cksum':200,'icmp-rest':300,'icmp-rest2':315,
+  'arp-htype':190,'arp-ptype':38,'arp-hlen':95,'arp-plen':130,'arp-op':5,
+  'arp-sha':205,'arp-spa':120,'arp-tha':260,'arp-tpa':165,
+  'dh-op':5,'dh-htype':190,'dh-hlen':95,'dh-hops':45,'dh-xid':300,'dh-secs':150,
+  'dh-flags':12,'dh-ci':120,'dh-yi':140,'dh-si':165,'dh-gi':185,'dh-ch':260,
+  'dh-sname':280,'dh-file':300,'dh-opt':240,
+  'eth-dst':190,'eth-src':205,'eth-type':38,'eth-data':220,'eth-fcs':340,
+  'data':220
+};
+const hueFor = k => (HUE[k] !== undefined ? HUE[k] : (Math.abs([...k].reduce((a,c)=>a*31+c.charCodeAt(0),7))%360));
+
+/* ============================================================
+   HEADERS (referință / exerciții). bits = lățime câmp.
+   mode word32 -> grid pe cuvinte de 32 biți; flex -> rânduri libere.
+   ============================================================ */
+const HEADERS = {
+  ethernet:{ name:'Ethernet (cadru II)', mode:'flex', unit:'byte',
+    fields:[
+      {n:'MAC Destinație',k:'eth-dst',bits:48,alt:['mac destinatie','destination mac','adresa destinatie']},
+      {n:'MAC Sursă',k:'eth-src',bits:48,alt:['mac sursa','source mac','adresa sursa']},
+      {n:'EtherType',k:'eth-type',bits:16,alt:['type','tip','tip protocol']},
+      {n:'Date (Payload)',k:'eth-data',bits:0,var:true,vtxt:'46–1500 oct',alt:['date','payload','data']},
+      {n:'FCS / CRC',k:'eth-fcs',bits:32,alt:['fcs','crc','suma de control']},
+    ]},
+  ip:{ name:'IPv4', mode:'word32', unit:'bit',
+    fields:[
+      {n:'Versiune',k:'ip-ver',bits:4,alt:['version']},
+      {n:'IHL',k:'ip-ihl',bits:4,alt:['header length','lungime header','ihl']},
+      {n:'TOS',k:'ip-tos',bits:8,alt:['type of service','tos','dscp']},
+      {n:'Lungime totală',k:'ip-len',bits:16,alt:['total length','lungimea','total len']},
+      {n:'Identificare',k:'ip-id',bits:16,alt:['identification','id']},
+      {n:'Flags',k:'ip-flags',bits:3,alt:['flag','flaguri']},
+      {n:'Fragment Offset',k:'ip-frag',bits:13,alt:['offset','fragment offset']},
+      {n:'TTL',k:'ip-ttl',bits:8,alt:['time to live']},
+      {n:'Protocol',k:'ip-proto',bits:8,alt:['proto']},
+      {n:'Header Checksum',k:'ip-cksum',bits:16,alt:['suma de control','checksum','suma control']},
+      {n:'Adresa Sursă',k:'ip-src',bits:32,alt:['source address','ip sursa','adresa sursa']},
+      {n:'Adresa Destinație',k:'ip-dst',bits:32,alt:['destination address','ip destinatie','adresa destinatie']},
+      {n:'Opțiuni',k:'ip-opt',bits:0,var:true,vtxt:'variabil',alt:['options','optiuni']},
+    ]},
+  tcp:{ name:'TCP', mode:'word32', unit:'bit',
+    fields:[
+      {n:'Port Sursă',k:'tcp-sport',bits:16,alt:['source port','port sursa']},
+      {n:'Port Destinație',k:'tcp-dport',bits:16,alt:['destination port','port destinatie']},
+      {n:'Număr Secvență (SEQ)',k:'tcp-seq',bits:32,alt:['sequence number','seq','numar secventa']},
+      {n:'Număr Confirmare (ACK)',k:'tcp-ack',bits:32,alt:['acknowledgment','ack','numar confirmare']},
+      {n:'Data Offset',k:'tcp-off',bits:4,alt:['offset','data offset']},
+      {n:'Rezervat',k:'tcp-res',bits:6,alt:['reserved','rezervat']},
+      {n:'Flags (U·A·P·R·S·F)',k:'tcp-flags',bits:6,alt:['flags','flaguri','control bits']},
+      {n:'Fereastră',k:'tcp-win',bits:16,alt:['window','fereastra']},
+      {n:'Checksum',k:'tcp-cksum',bits:16,alt:['suma de control','suma control']},
+      {n:'Urgent Pointer',k:'tcp-urg',bits:16,alt:['urgent']},
+      {n:'Opțiuni',k:'tcp-opt',bits:0,var:true,vtxt:'variabil',alt:['options','optiuni']},
+    ]},
+  udp:{ name:'UDP', mode:'word32', unit:'bit',
+    fields:[
+      {n:'Port Sursă',k:'udp-sport',bits:16,alt:['source port','port sursa']},
+      {n:'Port Destinație',k:'udp-dport',bits:16,alt:['destination port','port destinatie']},
+      {n:'Lungime',k:'udp-len',bits:16,alt:['length','lungimea','lungime']},
+      {n:'Checksum',k:'udp-cksum',bits:16,alt:['suma de control','suma control']},
+    ]},
+  icmp:{ name:'ICMP (mesaj)', mode:'word32', unit:'bit',
+    note:'ICMP este încapsulat într-un pachet IP (header IP de 20 octeți). Mai jos: doar headerul ICMP.',
+    fields:[
+      {n:'Type',k:'icmp-type',bits:8,alt:['tip','type']},
+      {n:'Code',k:'icmp-code',bits:8,alt:['cod','code']},
+      {n:'Checksum',k:'icmp-cksum',bits:16,alt:['suma de control','suma control']},
+      {n:'Rest of Header / Date',k:'icmp-rest',bits:32,alt:['rest','date','data','identifier sequence']},
+    ]},
+  arp:{ name:'ARP', mode:'flex', unit:'byte',
+    fields:[
+      {n:'Hardware Type',k:'arp-htype',bits:16,alt:['htype','hardware type']},
+      {n:'Protocol Type',k:'arp-ptype',bits:16,alt:['ptype','protocol type']},
+      {n:'HW Addr Length',k:'arp-hlen',bits:8,alt:['hlen','hardware address length','lungime hardware']},
+      {n:'Proto Addr Length',k:'arp-plen',bits:8,alt:['plen','protocol address length','lungime protocol']},
+      {n:'Operation Code',k:'arp-op',bits:16,alt:['opcode','operation code','cod operatie']},
+      {n:'Source HW Address',k:'arp-sha',bits:48,alt:['sha','source hardware']},
+      {n:'Source Proto Address',k:'arp-spa',bits:32,alt:['spa','source protocol']},
+      {n:'Target HW Address',k:'arp-tha',bits:48,alt:['tha','target hardware']},
+      {n:'Target Proto Address',k:'arp-tpa',bits:32,alt:['tpa','target protocol']},
+    ]},
+  dhcp:{ name:'DHCP (BOOTP)', mode:'word32', unit:'byte',
+    fields:[
+      {n:'OpCode',k:'dh-op',bits:8,alt:['op','opcode']},
+      {n:'Hardware Type',k:'dh-htype',bits:8,alt:['htype','hardware type']},
+      {n:'HW Addr Length',k:'dh-hlen',bits:8,alt:['hlen','hardware address length']},
+      {n:'Hop Count',k:'dh-hops',bits:8,alt:['hops','hop count']},
+      {n:'Transaction ID',k:'dh-xid',bits:32,alt:['xid','transaction id']},
+      {n:'Number of Seconds',k:'dh-secs',bits:16,alt:['secs','seconds','secunde']},
+      {n:'Flags',k:'dh-flags',bits:16,alt:['flags','flaguri']},
+      {n:'Client IP (ciaddr)',k:'dh-ci',bits:32,alt:['ciaddr','client ip']},
+      {n:'Your IP (yiaddr)',k:'dh-yi',bits:32,alt:['yiaddr','your ip']},
+      {n:'Server IP (siaddr)',k:'dh-si',bits:32,alt:['siaddr','server ip']},
+      {n:'Gateway IP (giaddr)',k:'dh-gi',bits:32,alt:['giaddr','gateway ip']},
+      {n:'Client HW Address',k:'dh-ch',bits:128,alt:['chaddr','client hardware']},
+      {n:'Server Host Name',k:'dh-sname',bits:512,alt:['sname','server host name']},
+      {n:'Boot File Name',k:'dh-file',bits:1024,alt:['file','boot file name']},
+      {n:'Options',k:'dh-opt',bits:0,var:true,vtxt:'variabil',alt:['options','optiuni']},
+    ]},
+};
+
+/* size label */
+function sizeLabel(f, unit){
+  if(f.var) return f.vtxt;
+  const b=f.bits, oct=b/8;
+  if(b<8) return b+' biți';
+  if(unit==='byte' || Number.isInteger(oct)){
+    return oct+' '+(oct===1?'octet':'octeți')+' ('+b+' biți)';
+  }
+  return b+' biți';
+}
+
+/* ============================================================
+   RENDER HEADER DIAGRAM
+   ============================================================ */
+function renderDiagram(container, hkey, opt={}){
+  const H=HEADERS[hkey];
+  container.innerHTML='';
+  if(H.mode==='word32'){
+    const ruler=document.createElement('div'); ruler.className='bitruler';
+    for(let i=0;i<32;i+=4){const s=document.createElement('span');s.style.gridColumn=(i+1)+' / span 4';s.textContent=i;ruler.appendChild(s);}
+    container.appendChild(ruler);
+  }
+  const grid=document.createElement('div');
+  grid.className = H.mode==='word32' ? 'hgrid' : 'hflex';
+  H.fields.forEach((f,idx)=>{
+    const el=document.createElement('div');
+    el.className='field'+(f.var?' var':'')+(H.mode==='flex'?' flexfield':'');
+    el.style.setProperty('--h',hueFor(f.k));
+    el.dataset.k=f.k; el.dataset.idx=idx;
+    if(H.mode==='word32'){
+      el.style.gridColumn='span '+(f.var?32:f.bits);
+    }else{
+      el.style.flexGrow = f.var?6:Math.max(1,f.bits/8);
+      el.style.flexBasis=(f.var?160:Math.max(54,f.bits/8*22))+'px';
+    }
+    if(opt.empty){ el.classList.add('dz'); el.innerHTML=''; el.dataset.drop='1'; }
+    else if(opt.write){
+      el.innerHTML='<input class="inp wn" placeholder="nume…"><input class="inp ws" placeholder="biți" style="margin-top:5px">';
+    }else{
+      el.innerHTML='<span>'+f.n+'</span><span class="sz">'+sizeLabel(f,H.unit)+'</span>';
+    }
+    grid.appendChild(el);
+  });
+  container.appendChild(grid);
+  return grid;
+}
+
+/* legend (interactive highlight) */
+function renderLegend(container, hkey, onHover){
+  const H=HEADERS[hkey];
+  container.innerHTML='';
+  H.fields.forEach(f=>{
+    const c=document.createElement('span'); c.className='chip'; c.style.setProperty('--h',hueFor(f.k));
+    c.innerHTML='<span class="sw"></span>'+f.n;
+    c.onmouseenter=()=>onHover(f.k,true); c.onmouseleave=()=>onHover(f.k,false);
+    container.appendChild(c);
+  });
+}
+
+/* ============================================================
+   POPULATE SELECTS
+   ============================================================ */
+const headerKeys=Object.keys(HEADERS);
+function fillSel(sel){ sel.innerHTML=headerKeys.map(k=>`<option value="${k}">${HEADERS[k].name}</option>`).join(''); }
+
+/* ---------- REFERENCE ---------- */
+const refSel=document.getElementById('refSel'), refCard=document.getElementById('refCard'), refTotal=document.getElementById('refTotal');
+fillSel(refSel);
+function drawRef(){
+  const k=refSel.value, H=HEADERS[k];
+  refCard.innerHTML='<div class="hwrap" id="refDia"></div>'+(H.note?'<p class="note">ℹ️ '+H.note+'</p>':'')+'<div class="legend" id="refLeg"></div>';
+  const dia=renderDiagram(document.getElementById('refDia'),k);
+  renderLegend(document.getElementById('refLeg'),k,(key,on)=>{
+    dia.querySelectorAll('.field').forEach(el=>{ el.style.filter = on ? (el.dataset.k===key?'brightness(1.25)':'opacity(.3)') : ''; el.style.transform = (on&&el.dataset.k===key)?'translateY(-3px) scale(1.02)':''; });
+  });
+  const fixed=H.fields.filter(f=>!f.var).reduce((a,f)=>a+f.bits,0);
+  refTotal.textContent='Header fix: '+fixed+' biți = '+(fixed/8)+' octeți'+(H.fields.some(f=>f.var)?' (+ câmpuri variabile)':'');
+}
+refSel.onchange=drawRef; try{drawRef();}catch(e){console.error('ref',e);}
+
+/* ---------- DRAG & DROP ---------- */
+const dragSel=document.getElementById('dragSel'); fillSel(dragSel);
+let dragData=null, dragSel_tok=null;
+function buildDrag(){
+  const k=dragSel.value, H=HEADERS[k];
+  const grid=renderDiagram(document.getElementById('dragArea'),k,{empty:true});
+  const bank=document.getElementById('dragBank'); bank.innerHTML='';
+  dragData=null; dragSel_tok=null;
+
+  function placeInto(dz,idx){
+    const f=H.fields[idx];
+    if(dz.dataset.placed!=null && dz.dataset.placed!==''){ // free token currently here
+      const prev=bank.querySelector('.tok[data-idx="'+dz.dataset.placed+'"]'); if(prev)prev.classList.remove('used');
+    }
+    dz.dataset.placed=idx;
+    dz.classList.add('filled'); dz.classList.remove('correct','wrong');
+    dz.innerHTML='<span>'+f.n+'</span><span class="sz">'+sizeLabel(f,H.unit)+'</span>';
+    const tok=bank.querySelector('.tok[data-idx="'+idx+'"]'); if(tok)tok.classList.add('used');
+    clearSel();
+    document.getElementById('dragScore').className='scorebar';
+  }
+  function removeFrom(dz){
+    if(dz.dataset.placed==null||dz.dataset.placed==='')return;
+    const tok=bank.querySelector('.tok[data-idx="'+dz.dataset.placed+'"]'); if(tok)tok.classList.remove('used');
+    dz.dataset.placed=''; dz.classList.remove('filled','correct','wrong'); dz.innerHTML='';
+  }
+  function clearSel(){ dragSel_tok=null; bank.querySelectorAll('.tok').forEach(t=>t.classList.remove('sel')); }
+
+  const order=H.fields.map((f,i)=>i).sort(()=>Math.random()-0.5);
+  order.forEach(i=>{
+    const f=H.fields[i];
+    const t=document.createElement('div'); t.className='tok'; t.draggable=true; t.dataset.idx=i;
+    t.textContent=f.n+' • '+sizeLabel(f,H.unit);
+    t.ondragstart=e=>{dragData=i;t.classList.add('dragging');e.dataTransfer.setData('text','');};
+    t.ondragend=()=>t.classList.remove('dragging');
+    t.onclick=()=>{ // click-to-select
+      if(dragSel_tok===i){clearSel();return;}
+      clearSel(); dragSel_tok=i; t.classList.add('sel');
+    };
+    bank.appendChild(t);
+  });
+  grid.querySelectorAll('.dz').forEach(dz=>{
+    dz.dataset.placed='';
+    dz.ondragover=e=>{e.preventDefault();dz.classList.add('over');};
+    dz.ondragleave=()=>dz.classList.remove('over');
+    dz.ondrop=e=>{ e.preventDefault();dz.classList.remove('over'); if(dragData==null)return; placeInto(dz,dragData); dragData=null; };
+    dz.onclick=()=>{
+      if(dragSel_tok!=null){ placeInto(dz,dragSel_tok); }      // place selected token
+      else if(dz.dataset.placed!==''){ removeFrom(dz); }       // click filled cell -> return to bank
+    };
+  });
+  document.getElementById('dragScore').className='scorebar';
+}
+document.getElementById('dragCheck').onclick=()=>{
+  const grid=document.getElementById('dragArea'); let ok=0,tot=0;
+  grid.querySelectorAll('.dz').forEach(dz=>{ tot++;
+    if(dz.dataset.placed!=null && dz.dataset.placed!=='' && +dz.dataset.placed===+dz.dataset.idx){dz.classList.add('correct');dz.classList.remove('wrong');ok++;}
+    else{dz.classList.add('wrong');dz.classList.remove('correct');}
+  });
+  const sb=document.getElementById('dragScore');
+  sb.className='scorebar show '+(ok===tot?'good':'bad');
+  sb.textContent=(ok===tot?'🎉 Perfect! ':'')+'Corecte: '+ok+' / '+tot;
+};
+document.getElementById('dragReset').onclick=buildDrag;
+dragSel.onchange=buildDrag; try{buildDrag();}catch(e){console.error('drag',e);}
+
+/* ---------- BYTES (fill bits) ---------- */
+const bytesSel=document.getElementById('bytesSel'); fillSel(bytesSel);
+function buildBytes(){
+  const k=bytesSel.value, H=HEADERS[k];
+  const t=document.getElementById('bytesTable');
+  t.innerHTML='<tr><th>Câmp</th><th style="width:140px">Dimensiune (biți)</th></tr>'+
+    H.fields.map((f,i)=>`<tr><td><span class="sw" style="--h:${hueFor(f.k)}"></span>${f.n}</td>
+    <td>${f.var?'<input class="inp" data-i="'+i+'" placeholder="variabil">':'<input class="inp" data-i="'+i+'" inputmode="numeric" placeholder="?">'}</td></tr>`).join('');
+  document.getElementById('bytesScore').className='scorebar';
+}
+document.getElementById('bytesCheck').onclick=()=>{
+  const k=bytesSel.value, H=HEADERS[k]; let ok=0,tot=0;
+  document.querySelectorAll('#bytesTable input').forEach(inp=>{
+    const f=H.fields[+inp.dataset.i]; tot++;
+    const val=inp.value.trim().toLowerCase();
+    let good=false;
+    if(f.var) good=(val==='variabil'||val==='var'||val==='0'||val.includes('variab'));
+    else good=(parseInt(val,10)===f.bits);
+    inp.classList.toggle('ok',good); inp.classList.toggle('no',!good);
+    if(good)ok++;
+  });
+  const sb=document.getElementById('bytesScore');
+  sb.className='scorebar show '+(ok===tot?'good':'bad');
+  sb.textContent=(ok===tot?'🎉 ':'')+'Corecte: '+ok+' / '+tot;
+};
+document.getElementById('bytesReset').onclick=buildBytes;
+bytesSel.onchange=buildBytes; try{buildBytes();}catch(e){console.error('bytes',e);}
+
+/* ---------- WRITE ---------- */
+const writeSel=document.getElementById('writeSel'); fillSel(writeSel);
+function buildWrite(){ renderDiagram(document.getElementById('writeArea'),writeSel.value,{write:true}); document.getElementById('writeScore').className='scorebar'; }
+function norm(s){return s.toLowerCase().normalize('NFD').replace(/[^a-z0-9 ]/g,'').trim();}
+document.getElementById('writeCheck').onclick=()=>{
+  const k=writeSel.value, H=HEADERS[k];
+  const cells=document.querySelectorAll('#writeArea .field'); let ok=0,tot=0;
+  cells.forEach((el,i)=>{
+    const f=H.fields[i]; const wn=el.querySelector('.wn'), ws=el.querySelector('.ws');
+    const nameG=norm(wn.value); const accepted=[norm(f.n),...(f.alt||[]).map(norm)];
+    const nameOk = nameG.length>0 && accepted.some(a=>a.length>0 && (a.includes(nameG)||nameG.includes(a)));
+    let szOk;
+    if(f.var) szOk = /var|0/.test(ws.value.toLowerCase());
+    else szOk = parseInt(ws.value,10)===f.bits;
+    wn.classList.toggle('ok',nameOk); wn.classList.toggle('no',!nameOk);
+    ws.classList.toggle('ok',szOk); ws.classList.toggle('no',!szOk);
+    tot+=2; if(nameOk)ok++; if(szOk)ok++;
+  });
+  const sb=document.getElementById('writeScore');
+  sb.className='scorebar show '+(ok===tot?'good':'bad');
+  sb.textContent=(ok===tot?'🎉 ':'')+'Corecte: '+ok+' / '+tot+' (nume + dimensiuni)';
+};
+document.getElementById('writeReveal').onclick=()=>{
+  const k=writeSel.value, H=HEADERS[k];
+  document.querySelectorAll('#writeArea .field').forEach((el,i)=>{
+    const f=H.fields[i]; el.querySelector('.wn').value=f.n; el.querySelector('.ws').value=f.var?'variabil':f.bits;
+  });
+};
+document.getElementById('writeReset').onclick=buildWrite;
+writeSel.onchange=buildWrite; try{buildWrite();}catch(e){console.error('write',e);}
+
+/* ============================================================
+   QUIZ data
+   ============================================================ */
+const ARP_OPCODES=[['1','ARP Request'],['2','ARP Reply'],['3','RARP Request'],['4','RARP Reply'],['5','DRARP Request'],['6','DRARP Reply'],['7','DRARP Error'],['8','InARP Request'],['9','InARP Reply']];
+const DHCP_MSGS=[
+  ['DHCPDISCOVER','Broadcast de la client pentru a descoperi serverele DHCP din rețea.'],
+  ['DHCPOFFER','Răspunsul serverului la DISCOVER, oferind o adresă IP și alți parametri.'],
+  ['DHCPREQUEST','Clientul cere serverului adresa IP oferită anterior.'],
+  ['DHCPDECLINE','Client → server: adresa oferită este deja folosită.'],
+  ['DHCPACK','Server → client: confirmă parametrii de rețea, inclusiv IP-ul alocat.'],
+  ['DHCPNAK','ACK negativ (refuz din partea serverului).'],
+  ['DHCPRELEASE','Client → server: eliberează parametrii de rețea primiți.'],
+  ['DHCPINFORM','Client cu IP deja configurat manual cere ceilalți parametri de rețea.'],
+];
+const TCP_FLAGS=[
+  ['URG','Urgent — câmpul Urgent Pointer este valid','bit 5'],
+  ['ACK','Confirmă date primite — câmpul ACK este valid','bit 4'],
+  ['PSH','Push — livrează datele imediat aplicației','bit 3'],
+  ['RST','Reset — resetează/abandonează conexiunea','bit 2'],
+  ['SYN','Synchronize — inițiază conexiunea (handshake)','bit 1'],
+  ['FIN','Finish — încheie conexiunea','bit 0'],
+];
+const IP_FLAGS=[
+  ['bit 0','Rezervat','Trebuie 0'],
+  ['DF','Don\'t Fragment','bit 1 — interzice fragmentarea'],
+  ['MF','More Fragments','bit 2 — mai urmează fragmente'],
+];
+
+/* static reference tables */
+document.getElementById('arpTable').innerHTML='<tr><th>Opcode</th><th>Tip mesaj ARP</th></tr>'+ARP_OPCODES.map(o=>`<tr><td>${o[0]}</td><td>${o[1]}</td></tr>`).join('');
+document.getElementById('dhcpTable').innerHTML='<tr><th>Mesaj</th><th>Descriere</th></tr>'+DHCP_MSGS.map(d=>`<tr><td><b>${d[0]}</b></td><td>${d[1]}</td></tr>`).join('');
+document.getElementById('tcpFlags').innerHTML=TCP_FLAGS.map(f=>`<div class="flagbit"><b>${f[0]}</b><small>${f[2]}</small><div style="font-size:.78rem;margin-top:4px">${f[1]}</div></div>`).join('');
+document.getElementById('ipFlags').innerHTML=IP_FLAGS.map(f=>`<div class="flagbit"><b>${f[0]}</b><small>${f[2]}</small><div style="font-size:.78rem;margin-top:4px">${f[1]}</div></div>`).join('');
+
+/* quiz engine */
+let quizScore=0,quizTotal=0;
+function buildQuizPool(){
+  const pool=[];
+  ARP_OPCODES.forEach(o=>pool.push({q:`Ce tip de mesaj ARP are opcode-ul <b>${o[0]}</b>?`,correct:o[1],opts:ARP_OPCODES.map(x=>x[1])}));
+  ARP_OPCODES.forEach(o=>pool.push({q:`Ce opcode are mesajul ARP <b>${o[1]}</b>?`,correct:o[0],opts:ARP_OPCODES.map(x=>x[0])}));
+  DHCP_MSGS.forEach(d=>pool.push({q:`Care mesaj DHCP: „${d[1]}”?`,correct:d[0],opts:DHCP_MSGS.map(x=>x[0])}));
+  TCP_FLAGS.forEach(f=>pool.push({q:`Ce face flagul TCP <b>${f[0]}</b>?`,correct:f[1],opts:TCP_FLAGS.map(x=>x[1])}));
+  TCP_FLAGS.forEach(f=>pool.push({q:`Care flag TCP: „${f[1]}”?`,correct:f[0],opts:TCP_FLAGS.map(x=>x[0])}));
+  pool.push({q:'Câți biți are câmpul Flags din headerul IP?',correct:'3 biți',opts:['3 biți','8 biți','16 biți','13 biți']});
+  pool.push({q:'Ce înseamnă flagul IP <b>DF</b>?',correct:"Don't Fragment",opts:["Don't Fragment","Data Frame","Default Flag","Drop Frame"]});
+  pool.push({q:'Ce înseamnă flagul IP <b>MF</b>?',correct:'More Fragments',opts:['More Fragments','Max Frame','Multicast Flag','Minimal Format']});
+  pool.push({q:'În headerul TCP, pe ce poziție (bit) este flagul <b>SYN</b> în câmpul de control?',correct:'bit 1',opts:['bit 1','bit 0','bit 4','bit 5']});
+  pool.push({q:'Bitul de Broadcast din câmpul Flags DHCP este pe poziția:',correct:'bit 0 (MSB)',opts:['bit 0 (MSB)','bit 15 (LSB)','bit 7','bit 3']});
+  return pool;
+}
+function shuffle(a){return a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);}
+function newQuiz(){
+  quizScore=0;quizTotal=0;updateQuizScore();
+  const pool=shuffle(buildQuizPool()).slice(0,8);
+  const box=document.getElementById('quizBox'); box.innerHTML='';
+  pool.forEach((item,qi)=>{
+    const opts=shuffle([...new Set(item.opts)]).slice(0,Math.min(6,item.opts.length));
+    if(!opts.includes(item.correct)) opts[0]=item.correct;
+    const wrap=document.createElement('div'); wrap.className='quiz-q';
+    wrap.innerHTML=`<div><b>${qi+1}.</b> ${item.q}</div><div class="opts"></div>`;
+    const od=wrap.querySelector('.opts');
+    shuffle(opts).forEach(o=>{
+      const b=document.createElement('div'); b.className='opt'; b.textContent=o;
+      b.onclick=()=>{
+        if(od.dataset.done)return; od.dataset.done='1'; quizTotal++;
+        od.querySelectorAll('.opt').forEach(x=>{x.classList.add('disabled');if(x.textContent===item.correct)x.classList.add('correct');});
+        if(o===item.correct){b.classList.add('correct');quizScore++;} else b.classList.add('wrong');
+        updateQuizScore();
+      };
+      od.appendChild(b);
+    });
+    box.appendChild(wrap);
+  });
+}
+function updateQuizScore(){document.getElementById('quizScore').textContent=quizScore+' / '+quizTotal;}
+document.getElementById('quizNew').onclick=newQuiz; try{newQuiz();}catch(e){console.error('quiz',e);}
+
+/* ============================================================
+   HEX PACKET ANALYZER
+   ============================================================ */
+const hx=s=>s.split(/\s+/).filter(Boolean).map(b=>parseInt(b,16));
+function bytesToFields(B,defs){return defs;}
+const PROTOS={1:'ICMP',6:'TCP',17:'UDP',2:'IGMP'};
+const ETYPES={'0800':'IPv4','0806':'ARP','86dd':'IPv6'};
+
+function fmtVal(B,f){
+  const sl=B.slice(f.start,f.start+f.len);
+  const hex='0x'+sl.map(b=>b.toString(16).padStart(2,'0')).join('');
+  switch(f.fmt){
+    case 'mac': return sl.map(b=>b.toString(16).padStart(2,'0')).join(':');
+    case 'ipv4': return sl.join('.');
+    case 'uint': return sl.reduce((a,b)=>a*256+b,0).toString();
+    case 'verihl':{const v=sl[0]>>4,ihl=sl[0]&0xf;return 'Versiune '+v+', IHL '+ihl+' ('+ihl*4+' oct)';}
+    case 'proto':{const v=sl[0];return v+' ('+(PROTOS[v]||'?')+')';}
+    case 'etype':{return hex+' ('+(ETYPES[sl.map(b=>b.toString(16).padStart(2,'0')).join('')]||'?')+')';}
+    case 'tcpflags':{const v=sl[0];const names=['FIN','SYN','RST','PSH','ACK','URG'];const on=[];for(let i=0;i<6;i++)if(v&(1<<i))on.push(names[i]);return '0x'+v.toString(16).padStart(2,'0')+' = '+(on.length?on.join('+'):'niciunul');}
+    case 'ascii': return '"'+sl.map(b=>(b>=32&&b<127)?String.fromCharCode(b):'·').join('')+'"';
+    case 'port': return sl.reduce((a,b)=>a*256+b,0)+(({80:' (HTTP)',443:' (HTTPS)',53:' (DNS)',67:' (DHCP)',68:' (DHCP)'})[sl.reduce((a,b)=>a*256+b,0)]||'');
+    default: return hex;
+  }
+}
+
+const PACKETS={
+  ex3:{ title:'Exercițiul 3 — pachet ICMP (Echo Request)', sub:'Pachetul real din imaginea ex3.png.',
+    bytes:hx(`00 50 56 f2 02 ae 00 0c 29 d9 27 a6 08 00 45 00
+              00 3c 00 e7 00 00 80 01 00 04 c0 a8 00 0a c0 a8
+              00 01 08 00 49 5c 02 00 02 00 61 62 63 64 65 66
+              67 68 69 6a 6b 6c 6d 6e 6f 70 71 72 73 74 75 76
+              77 61 62 63 64 65 66 67 68 69`),
+    fields:[
+      {n:'MAC Destinație',k:'mac-dst',start:0,len:6,fmt:'mac'},
+      {n:'MAC Sursă',k:'mac-src',start:6,len:6,fmt:'mac'},
+      {n:'EtherType',k:'ethertype',start:12,len:2,fmt:'etype'},
+      {n:'Versiune + IHL',k:'ip-ver',start:14,len:1,fmt:'verihl'},
+      {n:'TOS',k:'ip-tos',start:15,len:1,fmt:'hex'},
+      {n:'Lungime totală',k:'ip-len',start:16,len:2,fmt:'uint'},
+      {n:'Identificare',k:'ip-id',start:18,len:2,fmt:'hex'},
+      {n:'Flags + Fragment Offset',k:'ip-flags',start:20,len:2,fmt:'hex'},
+      {n:'TTL',k:'ip-ttl',start:22,len:1,fmt:'uint'},
+      {n:'Protocol',k:'ip-proto',start:23,len:1,fmt:'proto'},
+      {n:'Header Checksum',k:'ip-cksum',start:24,len:2,fmt:'hex'},
+      {n:'IP Sursă',k:'ip-src',start:26,len:4,fmt:'ipv4'},
+      {n:'IP Destinație',k:'ip-dst',start:30,len:4,fmt:'ipv4'},
+      {n:'ICMP Type',k:'icmp-type',start:34,len:1,fmt:'uint'},
+      {n:'ICMP Code',k:'icmp-code',start:35,len:1,fmt:'uint'},
+      {n:'ICMP Checksum',k:'icmp-cksum',start:36,len:2,fmt:'hex'},
+      {n:'Identifier',k:'icmp-rest',start:38,len:2,fmt:'hex'},
+      {n:'Sequence',k:'icmp-rest2',start:40,len:2,fmt:'hex'},
+      {n:'Date (payload)',k:'data',start:42,len:32,fmt:'ascii'},
+    ],
+    qs:[
+      {q:'a. Adresa MAC Destinație și MAC Sursă (hexazecimal)',a:'Dest: <code>00:50:56:f2:02:ae</code> &nbsp; Sursă: <code>00:0c:29:d9:27:a6</code>'},
+      {q:'b. Adresa IP Sursă și IP Destinație (zecimal cu punct)',a:'Sursă: <code>192.168.0.10</code> (c0 a8 00 0a) &nbsp; Destinație: <code>192.168.0.1</code> (c0 a8 00 01)'},
+      {q:'c. Valoarea câmpului TTL',a:'Octetul <code>0x80</code> = <code>128</code>'},
+      {q:'d. Valoarea câmpului Protocol',a:'Octetul <code>0x01</code> = <b>ICMP</b>. (Type 0x08 = Echo Request)'},
+    ]},
+  ex1:{ title:'Exercițiul 1 — pachet IP (ICMP Echo)', sub:'Reconstruit din părțile lizibile ale imaginii ex1.png (header IP/MAC identic cu originalul).',
+    bytes:hx(`00 0c ce 13 b9 a0 00 22 5f 3f 98 91 08 00 45 00
+              00 3c c3 3e 00 00 80 01 f5 d7 c0 a8 00 59 c0 a8
+              00 01 08 00 4b 5c 00 01 00 0a 61 62 63 64 65 66
+              67 68 69 6a 6b 6c 6d 6e 6f 70 71 72 73 74 75 76
+              77 61 62 63 64 65 66 67 68 69`),
+    fields:[
+      {n:'MAC Destinație',k:'mac-dst',start:0,len:6,fmt:'mac'},
+      {n:'MAC Sursă',k:'mac-src',start:6,len:6,fmt:'mac'},
+      {n:'EtherType',k:'ethertype',start:12,len:2,fmt:'etype'},
+      {n:'Versiune + IHL',k:'ip-ver',start:14,len:1,fmt:'verihl'},
+      {n:'TOS',k:'ip-tos',start:15,len:1,fmt:'hex'},
+      {n:'Lungime totală',k:'ip-len',start:16,len:2,fmt:'uint'},
+      {n:'Identificare',k:'ip-id',start:18,len:2,fmt:'hex'},
+      {n:'Flags + Fragment Offset',k:'ip-flags',start:20,len:2,fmt:'hex'},
+      {n:'TTL',k:'ip-ttl',start:22,len:1,fmt:'uint'},
+      {n:'Protocol',k:'ip-proto',start:23,len:1,fmt:'proto'},
+      {n:'Header Checksum',k:'ip-cksum',start:24,len:2,fmt:'hex'},
+      {n:'IP Sursă',k:'ip-src',start:26,len:4,fmt:'ipv4'},
+      {n:'IP Destinație',k:'ip-dst',start:30,len:4,fmt:'ipv4'},
+      {n:'ICMP Type',k:'icmp-type',start:34,len:1,fmt:'uint'},
+      {n:'ICMP Code',k:'icmp-code',start:35,len:1,fmt:'uint'},
+      {n:'ICMP Checksum',k:'icmp-cksum',start:36,len:2,fmt:'hex'},
+      {n:'Identifier',k:'icmp-rest',start:38,len:2,fmt:'hex'},
+      {n:'Sequence',k:'icmp-rest2',start:40,len:2,fmt:'hex'},
+      {n:'Date (payload)',k:'data',start:42,len:32,fmt:'ascii'},
+    ],
+    qs:[
+      {q:'a. Adresa MAC Destinație și MAC Sursă (hexazecimal)',a:'Dest: <code>00:0c:ce:13:b9:a0</code> &nbsp; Sursă: <code>00:22:5f:3f:98:91</code>'},
+      {q:'b. Adresa IP Sursă și IP Destinație (zecimal cu punct)',a:'Sursă: <code>192.168.0.89</code> (c0 a8 00 59) &nbsp; Destinație: <code>192.168.0.1</code> (c0 a8 00 01)'},
+      {q:'c. Tipul de Payload',a:'Protocol = <code>0x01</code> → <b>ICMP</b>, iar Type <code>0x08</code> → <b>Echo Request</b> (ping).'},
+    ]},
+  ex2:{ title:'Exercițiul 2 — pachet TCP (cerere HTTP)', sub:'Reconstruit din imaginea ex2.png — pachet TCP consistent (GET / HTTP/1.1).',
+    bytes:hx(`00 0c 29 1a 2b 3c 00 50 56 c0 00 08 08 00 45 00
+              00 3a 1c 46 40 00 40 06 90 c2 c0 a8 01 64 c0 a8
+              01 01 c3 50 00 50 00 00 00 01 00 00 00 01 50 18
+              72 10 b1 9d 00 00 47 45 54 20 2f 20 48 54 54 50
+              2f 31 2e 31 0d 0a 0d 0a`),
+    fields:[
+      {n:'MAC Destinație',k:'mac-dst',start:0,len:6,fmt:'mac'},
+      {n:'MAC Sursă',k:'mac-src',start:6,len:6,fmt:'mac'},
+      {n:'EtherType',k:'ethertype',start:12,len:2,fmt:'etype'},
+      {n:'Versiune + IHL',k:'ip-ver',start:14,len:1,fmt:'verihl'},
+      {n:'TOS',k:'ip-tos',start:15,len:1,fmt:'hex'},
+      {n:'Lungime totală',k:'ip-len',start:16,len:2,fmt:'uint'},
+      {n:'Identificare',k:'ip-id',start:18,len:2,fmt:'hex'},
+      {n:'Flags + Fragment Offset',k:'ip-flags',start:20,len:2,fmt:'hex'},
+      {n:'TTL',k:'ip-ttl',start:22,len:1,fmt:'uint'},
+      {n:'Protocol',k:'ip-proto',start:23,len:1,fmt:'proto'},
+      {n:'Header Checksum',k:'ip-cksum',start:24,len:2,fmt:'hex'},
+      {n:'IP Sursă',k:'ip-src',start:26,len:4,fmt:'ipv4'},
+      {n:'IP Destinație',k:'ip-dst',start:30,len:4,fmt:'ipv4'},
+      {n:'Port Sursă',k:'tcp-sport',start:34,len:2,fmt:'port'},
+      {n:'Port Destinație',k:'tcp-dport',start:36,len:2,fmt:'port'},
+      {n:'Număr Secvență',k:'tcp-seq',start:38,len:4,fmt:'hex'},
+      {n:'Număr Confirmare (ACK)',k:'tcp-ack',start:42,len:4,fmt:'hex'},
+      {n:'Data Offset + Rezervat',k:'tcp-off',start:46,len:1,fmt:'hex'},
+      {n:'Flags TCP',k:'tcp-flags',start:47,len:1,fmt:'tcpflags'},
+      {n:'Fereastră',k:'tcp-win',start:48,len:2,fmt:'uint'},
+      {n:'Checksum',k:'tcp-cksum',start:50,len:2,fmt:'hex'},
+      {n:'Urgent Pointer',k:'tcp-urg',start:52,len:2,fmt:'hex'},
+      {n:'Date (HTTP)',k:'data',start:54,len:18,fmt:'ascii'},
+    ],
+    qs:[
+      {q:'a. Adresa MAC Destinație și MAC Sursă (hexazecimal)',a:'Dest: <code>00:0c:29:1a:2b:3c</code> &nbsp; Sursă: <code>00:50:56:c0:00:08</code>'},
+      {q:'b. Adresa IP Sursă și IP Destinație (zecimal cu punct)',a:'Sursă: <code>192.168.1.100</code> &nbsp; Destinație: <code>192.168.1.1</code>'},
+      {q:'c. Portul TCP sursă și destinație',a:'Sursă: <code>50000</code> (0xc350) &nbsp; Destinație: <code>80</code> (0x0050 = HTTP)'},
+      {q:'d. Cum sunt setate flagurile TCP',a:'Octetul <code>0x18</code> = <code>0001 1000</code> → <b>ACK = 1</b> și <b>PSH = 1</b>; restul 0.'},
+      {q:'e. Tipul de mesaj de nivel aplicație',a:'Port destinație 80 + payload <code>"GET / HTTP/1.1"</code> → <b>cerere HTTP (HTTP GET)</b>.'},
+    ]},
+};
+
+const hexSel=document.getElementById('hexSel');
+hexSel.innerHTML=Object.keys(PACKETS).map(k=>`<option value="${k}">${PACKETS[k].title}</option>`).join('');
+// default to ex1 order: show ex1 first
+hexSel.value='ex1';
+
+const tip=document.getElementById('tip');
+let curPkt=null, colorAll=false;
+function fieldAt(idx){return curPkt.fields.find(f=>idx>=f.start && idx<f.start+f.len);}
+
+function drawHex(){
+  const P=PACKETS[hexSel.value]; curPkt=P; colorAll=false;
+  document.getElementById('hexMeta').innerHTML='<b>'+P.title+'</b><div class="note">'+P.sub+'</div>';
+  const B=P.bytes, view=document.getElementById('hexView'); view.innerHTML='';
+  for(let off=0;off<B.length;off+=16){
+    const row=document.createElement('div'); row.className='hexrow';
+    const o=document.createElement('span'); o.className='hexoff'; o.textContent=off.toString(16).padStart(4,'0');
+    const bw=document.createElement('span'); bw.className='hexbytes';
+    const aw=document.createElement('span'); aw.className='hexascii';
+    for(let i=0;i<16 && off+i<B.length;i++){
+      const idx=off+i, f=fieldAt(idx);
+      const b=document.createElement('span'); b.className='byte'; b.dataset.idx=idx; b.style.setProperty('--h',hueFor(f.k));
+      b.textContent=B[idx].toString(16).padStart(2,'0');
+      const a=document.createElement('span'); a.className='ach'; a.dataset.idx=idx; a.style.setProperty('--h',hueFor(f.k));
+      a.textContent=(B[idx]>=32&&B[idx]<127)?String.fromCharCode(B[idx]):'·';
+      [b,a].forEach(el=>{
+        el.onmouseenter=e=>highlight(f,idx,e);
+        el.onmousemove=e=>moveTip(e);
+        el.onmouseleave=()=>{ if(!colorAll) clearHL(); tip.classList.remove('show'); };
+      });
+      bw.appendChild(b); aw.appendChild(a);
+    }
+    row.appendChild(o); row.appendChild(bw); row.appendChild(aw); view.appendChild(row);
+  }
+  // custom legend per packet
+  const leg=document.getElementById('hexLegend'); leg.innerHTML='';
+  P.fields.forEach(f=>{
+    const c=document.createElement('span'); c.className='chip'; c.style.setProperty('--h',hueFor(f.k));
+    c.innerHTML='<span class="sw"></span>'+f.n;
+    c.onmouseenter=()=>highlightField(f); c.onmouseleave=()=>{if(!colorAll)clearHL();};
+    leg.appendChild(c);
+  });
+  // questions
+  const qbox=document.getElementById('hexQs'); qbox.innerHTML='';
+  P.qs.forEach(item=>{
+    const d=document.createElement('div'); d.className='qa';
+    d.innerHTML=`<div class="q">${item.q}<span class="btn ghost" style="padding:4px 12px">Arată ▾</span></div><div class="a"><div class="a-inner">${item.a}</div></div>`;
+    d.querySelector('.q').onclick=()=>d.classList.toggle('open');
+    qbox.appendChild(d);
+  });
+}
+function setStates(litIdx,hotIdx){
+  document.querySelectorAll('#hexView .byte,#hexView .ach').forEach(el=>{
+    const i=+el.dataset.idx;
+    el.classList.toggle('lit',litIdx.has(i));
+    el.classList.toggle('dim',!colorAll && litIdx.size>0 && !litIdx.has(i));
+    el.classList.toggle('hot',hotIdx!=null && i===hotIdx);
+  });
+}
+function highlight(f,idx,e){
+  const lit=new Set(); for(let i=f.start;i<f.start+f.len;i++)lit.add(i);
+  setStates(lit,idx);
+  tip.innerHTML=`<b>${f.n}</b> &nbsp;<span style="color:var(--muted)">(${f.len*8} biți / ${f.len} oct, offset ${f.start})</span><br>Valoare: <span class="tv">${fmtVal(curPkt.bytes,f)}</span>`;
+  tip.classList.add('show'); moveTip(e);
+}
+function highlightField(f){
+  const lit=new Set(); for(let i=f.start;i<f.start+f.len;i++)lit.add(i);
+  setStates(lit,null);
+}
+function moveTip(e){
+  let x=e.clientX+16, y=e.clientY+16;
+  const r=tip.getBoundingClientRect();
+  if(x+r.width>innerWidth)x=e.clientX-r.width-16;
+  if(y+r.height>innerHeight)y=e.clientY-r.height-16;
+  tip.style.left=x+'px'; tip.style.top=y+'px';
+}
+function clearHL(){ if(colorAll)return; setStates(new Set(),null); document.querySelectorAll('#hexView .byte,#hexView .ach').forEach(el=>el.classList.remove('dim')); }
+document.getElementById('hexColorAll').onclick=()=>{
+  colorAll=!colorAll;
+  document.querySelectorAll('#hexView .byte,#hexView .ach').forEach(el=>{ el.classList.toggle('lit',colorAll); el.classList.remove('dim','hot'); });
+  document.getElementById('hexColorAll').classList.toggle('primary',colorAll);
+};
+document.getElementById('hexClear').onclick=()=>{ colorAll=false; document.getElementById('hexColorAll').classList.remove('primary'); setStates(new Set(),null); };
+hexSel.onchange=drawHex; try{drawHex();}catch(e){console.error('hex',e);}
+
+/* ============================================================
+   TABS + THEME
+   ============================================================ */
+function activateTab(tab){
+  const btn=document.querySelector('#tabs button[data-tab="'+tab+'"]');
+  const page=document.getElementById('page-'+tab);
+  if(!btn||!page) return;
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  page.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('#tabs button').forEach(b=>{
+  b.onclick=()=>activateTab(b.dataset.tab);
+});
+/* deep-link din sidebar-ul aplicației: retele/index.html#hex etc. */
+function tabFromHash(){ const t=location.hash.replace('#',''); if(t) activateTab(t); }
+window.addEventListener('hashchange', tabFromHash);
+tabFromHash();
+const themeBtn=document.getElementById('themeBtn');
+function setTheme(t){ document.documentElement.dataset.theme=t; if(themeBtn) themeBtn.textContent=t==='light'?'☀️':'🌙'; try{localStorage.setItem('nh-theme',t);}catch(e){} }
+if(themeBtn) themeBtn.onclick=()=>setTheme(document.documentElement.dataset.theme==='light'?'dark':'light');
+let saved='dark'; try{saved=localStorage.getItem('nh-theme')||'dark';}catch(e){} setTheme(saved);
+
+/* aplicația gazdă controlează tema și tab-ul prin postMessage (iframe e cross-origin sub file://) */
+window.addEventListener('message', function(e){
+  const d=e.data||{};
+  if(d.type==='theme' && d.theme) setTheme(d.theme);
+  else if(d.type==='tab' && d.tab) activateTab(d.tab);
+});
+</script>
+</body>
+</html>

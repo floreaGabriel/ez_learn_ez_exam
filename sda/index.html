@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDA — Structuri de Date și Algoritmi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Paletă identică cu aplicația gazdă (temă caldă gruvbox) */
+:root{
+  --bg:#1a1714; --panel:#221e1a; --panel2:#2a2521; --topbar:#1d1916;
+  --ink:#ece3d2; --ink-soft:#d6cbb6; --muted:#a8997f; --line:#352f28; --line2:#403930;
+  --accent:#e9b143; --accent-2:#d8843f; --blue:#83a598; --green:#b8bb26; --red:#fb4934;
+  --purple:#d3869b; --aqua:#8ec07c; --code-bg:#14110d;
+  --mono:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+html[data-theme="light"]{
+  --bg:#f3ecdd; --panel:#fbf6ea; --panel2:#f1e8d6; --topbar:#f7f1e3;
+  --ink:#2a2118; --ink-soft:#4a3f30; --muted:#8a7a5f; --line:#ddd0b8; --line2:#cdbf9f;
+  --accent:#bf8b1d; --accent-2:#c46a2a; --blue:#076678; --green:#79740e; --red:#c23a2e;
+  --purple:#8f3f71; --aqua:#427b58; --code-bg:#efe6d2;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans); color:var(--ink); background:var(--bg); line-height:1.65; font-size:15px; -webkit-font-smoothing:antialiased}
+.wrap{max-width:980px; margin:0 auto; padding:28px 36px 100px}
+
+.page{display:none; animation:fade .3s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:0; transform:translateY(6px)}to{opacity:1; transform:none}}
+
+h1{font-size:27px; color:var(--accent); margin-bottom:6px; letter-spacing:.2px}
+.lead{color:var(--ink-soft); max-width:760px; margin-bottom:8px}
+h2{font-size:20px; margin:30px 0 12px; display:flex; align-items:center; gap:10px}
+h2::before{content:""; width:5px; height:.95em; border-radius:3px; background:linear-gradient(var(--accent),var(--accent-2))}
+h3{font-size:16px; margin:20px 0 8px; color:var(--ink)}
+p{margin:9px 0}
+b{color:var(--ink)}
+ul,ol{margin:8px 0 8px 22px}
+li{margin:4px 0}
+code{background:var(--panel2); color:var(--accent); padding:1.5px 6px; border-radius:5px; font-size:13px; font-family:var(--mono)}
+
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:16px 0; box-shadow:0 6px 22px rgba(0,0,0,.18)}
+
+pre{background:var(--code-bg); color:var(--ink); border:1px solid var(--line2); border-radius:11px; padding:15px 17px; overflow-x:auto; font-family:var(--mono); font-size:12.8px; line-height:1.65; margin:12px 0; tab-size:3}
+pre.tree{color:var(--aqua); line-height:1.35}
+.kw{color:var(--accent)} .ty{color:var(--blue)} .fn{color:var(--aqua)} .cm{color:var(--muted); font-style:italic} .st{color:var(--green)} .nm{color:var(--purple)}
+
+table{width:100%; border-collapse:collapse; margin:14px 0; font-size:13.5px}
+th,td{border:1px solid var(--line2); padding:8px 11px; text-align:left; vertical-align:top}
+th{background:var(--panel2); color:var(--accent); font-size:12px; text-transform:uppercase; letter-spacing:.4px}
+td code{font-size:12.5px}
+
+.tip{background:rgba(184,187,38,.10); border-left:4px solid var(--green); padding:13px 16px; border-radius:9px; margin:14px 0; color:var(--ink-soft); font-size:14px}
+.note{background:rgba(131,165,152,.10); border-left:4px solid var(--blue); padding:13px 16px; border-radius:9px; margin:14px 0; color:var(--ink-soft); font-size:14px}
+.warn{background:rgba(251,73,52,.10); border-left:4px solid var(--red); padding:13px 16px; border-radius:9px; margin:14px 0; color:var(--ink-soft); font-size:14px}
+.tip b,.note b,.warn b{color:var(--ink)}
+
+.pill{display:inline-block; font-size:11px; font-weight:700; letter-spacing:.4px; padding:3px 10px; border-radius:20px; background:var(--panel2); border:1px solid var(--line2); color:var(--muted)}
+.pill.y{color:#1a1714; background:var(--accent); border-color:var(--accent)}
+.pill.g{color:var(--green); border-color:var(--green)}
+.pill.r{color:var(--red); border-color:var(--red)}
+
+/* Exerciții — card cu dezvăluire rezolvare */
+.ex{border:1px solid var(--line2); border-radius:12px; margin:16px 0; overflow:hidden; background:var(--panel)}
+.ex-head{padding:14px 18px; display:flex; gap:12px; align-items:flex-start; justify-content:space-between}
+.ex-q{font-weight:600}
+.ex-q .src{display:block; font-size:11px; font-weight:700; color:var(--accent); letter-spacing:.4px; text-transform:uppercase; margin-bottom:5px}
+.ex-btn{flex-shrink:0; background:var(--accent); color:#1a1714; border:none; padding:8px 15px; border-radius:9px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--sans); transition:.12s}
+.ex-btn:hover{filter:brightness(1.07)}
+.ex-sol{display:none; padding:0 18px 18px; border-top:1px solid var(--line)}
+.ex.open .ex-sol{display:block}
+.ex-sol h4{margin:16px 0 6px; color:var(--accent); font-size:14px}
+.badge{font-size:11px; color:var(--muted)}
+
+/* Video YouTube responsiv (16:9) */
+.video{position:relative; width:100%; padding-top:56.25%; border-radius:14px; overflow:hidden; border:1px solid var(--line2); margin:14px 0; background:#000}
+.video iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+.video-link{font-size:13px}
+.video-link a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============ COMPLEXITATE ============ -->
+<section class="page active" id="page-complexitate">
+  <h1>Analiza complexității</h1>
+  <p class="lead">Cum măsurăm timpul și spațiul unui algoritm independent de mașină: notațiile asimptotice, regulile de analiză a buclelor și Teorema Master.</p>
+
+  <h2>Notații asimptotice</h2>
+  <table>
+    <tr><th>Notație</th><th>Sens</th><th>Intuiție</th></tr>
+    <tr><td><code>O(g)</code></td><td>margine <b>superioară</b>: f crește cel mult ca g</td><td>„nu mai rău decât"</td></tr>
+    <tr><td><code>Ω(g)</code></td><td>margine <b>inferioară</b>: f crește cel puțin ca g</td><td>„nu mai bine decât"</td></tr>
+    <tr><td><code>Θ(g)</code></td><td>margine <b>strânsă</b>: f crește exact ca g (O și Ω simultan)</td><td>„la fel de repede ca"</td></tr>
+    <tr><td><code>o(g)</code></td><td>strict mai mic: f neglijabil față de g</td><td>„mult mai bine decât"</td></tr>
+  </table>
+  <p>Formal: <code>f ∈ O(g)</code> dacă există <code>c &gt; 0</code> și <code>n₀</code> astfel încât <code>f(n) ≤ c·g(n)</code> pentru orice <code>n ≥ n₀</code>.</p>
+
+  <div class="tip"><b>Reguli de simplificare:</b> se ignoră constantele multiplicative (<code>3n² → n²</code>) și se păstrează doar termenul dominant (<code>n² + 5n + 9 → n²</code>). La compunere se ia maximul; la imbricare se înmulțesc.</div>
+
+  <h2>Clase de complexitate uzuale</h2>
+  <table>
+    <tr><th>Ordine</th><th>Nume</th><th>Exemplu tipic</th></tr>
+    <tr><td><code>O(1)</code></td><td>constant</td><td>acces la vector, push/pop pe stivă</td></tr>
+    <tr><td><code>O(log n)</code></td><td>logaritmic</td><td>căutare binară, căutare în BST echilibrat</td></tr>
+    <tr><td><code>O(n)</code></td><td>liniar</td><td>parcurgerea unei liste</td></tr>
+    <tr><td><code>O(n log n)</code></td><td>liniaritmic</td><td>Merge Sort, Quick Sort (mediu)</td></tr>
+    <tr><td><code>O(n²)</code></td><td>pătratic</td><td>Bubble/Insertion/Selection Sort</td></tr>
+    <tr><td><code>O(2ⁿ), O(n!)</code></td><td>exponențial / factorial</td><td>backtracking naiv, permutări</td></tr>
+  </table>
+
+  <h2>Analiza buclelor</h2>
+  <p>Buclă simplă <code>i</code> de la 0 la n → <b>O(n)</b>. Două bucle imbricate independente → <b>O(n²)</b>. O buclă în care contorul se <b>înmulțește/împarte</b> cu 2 → <b>O(log n)</b> (de câte ori dublezi 1 până ajungi la n).</p>
+  <pre><span class="cm">// O(n²): bucla interioară depinde de cea exterioară dar suma e tot ~n²/2</span>
+<span class="kw">for</span>(<span class="ty">int</span> i=0; i&lt;n; i++)
+    <span class="kw">for</span>(<span class="ty">int</span> j=0; j&lt;n; j++)
+        s++;
+
+<span class="cm">// O(n log n): exterioara n, interioara log n (j se dubleaza)</span>
+<span class="kw">for</span>(<span class="ty">int</span> i=0; i&lt;n; i++)
+    <span class="kw">for</span>(<span class="ty">int</span> j=1; j&lt;n; j*=2)
+        s++;</pre>
+  <div class="note"><b>Atenție</b> la bucle în care interiorul rulează de <code>j</code> ori, iar <code>j</code> se dublează: suma <code>1+2+4+…+n</code> este o serie geometrică ≈ <code>2n</code>, deci <b>O(n)</b>, nu O(n log n). Vezi exercițiile rezolvate.</p></div>
+
+  <h2>Teorema Master (Divide et Impera)</h2>
+  <p>Pentru recurențe de forma <code>T(n) = a·T(n/b) + f(n)</code> (a≥1, b&gt;1), comparăm <code>f(n)</code> cu <code>n^(log_b a)</code>:</p>
+  <table>
+    <tr><th>Caz</th><th>Condiție</th><th>Rezultat</th></tr>
+    <tr><td>1</td><td><code>f(n) = O(n^(log_b a − ε))</code></td><td><code>T(n) = Θ(n^(log_b a))</code></td></tr>
+    <tr><td>2</td><td><code>f(n) = Θ(n^(log_b a))</code></td><td><code>T(n) = Θ(n^(log_b a)·log n)</code></td></tr>
+    <tr><td>3</td><td><code>f(n) = Ω(n^(log_b a + ε))</code> (+ regularitate)</td><td><code>T(n) = Θ(f(n))</code></td></tr>
+  </table>
+  <p><b>Exemplu — Merge Sort:</b> <code>T(n) = 2T(n/2) + n</code>. Aici <code>a=2, b=2 → n^(log₂2) = n¹ = n</code>, iar <code>f(n)=n</code> → cazul 2 → <code>T(n) = Θ(n log n)</code>.</p>
+</section>
+
+<!-- ============ LISTE ============ -->
+<section class="page" id="page-liste">
+  <h1>Liste, stive și cozi</h1>
+  <p class="lead">Structuri liniare. Diferența cheie: vectorul oferă acces aleator O(1) dar inserții scumpe; lista înlănțuită oferă inserții O(1) dar fără acces direct.</p>
+
+  <h2>Tipuri de liste înlănțuite</h2>
+  <ul>
+    <li><b>Simplu înlănțuită:</b> fiecare nod are <code>next</code>. Parcurgere doar înainte.</li>
+    <li><b>Dublu înlănțuită:</b> noduri cu <code>next</code> și <code>prev</code>. Parcurgere în ambele sensuri, ștergere O(1) dacă ai pointerul la nod.</li>
+    <li><b>Circulară:</b> ultimul nod pointează spre primul (sau spre cap). Utilă pentru buffere circulare / round-robin.</li>
+  </ul>
+
+  <h3>Operații pe lista simplu înlănțuită (C)</h3>
+  <pre><span class="kw">typedef struct</span> <span class="ty">Node</span> {
+    <span class="ty">int</span> val;
+    <span class="kw">struct</span> <span class="ty">Node</span>* next;
+} <span class="ty">Node</span>;
+
+<span class="cm">// Inserare la început — O(1)</span>
+<span class="ty">Node</span>* <span class="fn">push_front</span>(<span class="ty">Node</span>* head, <span class="ty">int</span> v) {
+    <span class="ty">Node</span>* n = malloc(<span class="kw">sizeof</span>(<span class="ty">Node</span>));
+    n-&gt;val = v;
+    n-&gt;next = head;
+    <span class="kw">return</span> n;            <span class="cm">// noul cap</span>
+}
+
+<span class="cm">// Cautare — O(n)</span>
+<span class="ty">Node</span>* <span class="fn">find</span>(<span class="ty">Node</span>* head, <span class="ty">int</span> v) {
+    <span class="kw">for</span> (<span class="ty">Node</span>* p = head; p; p = p-&gt;next)
+        <span class="kw">if</span> (p-&gt;val == v) <span class="kw">return</span> p;
+    <span class="kw">return</span> NULL;
+}
+
+<span class="cm">// Stergere primul nod cu valoarea v — O(n)</span>
+<span class="ty">Node</span>* <span class="fn">erase</span>(<span class="ty">Node</span>* head, <span class="ty">int</span> v) {
+    <span class="ty">Node</span> dummy = { 0, head }, *p = &amp;dummy;
+    <span class="kw">while</span> (p-&gt;next &amp;&amp; p-&gt;next-&gt;val != v) p = p-&gt;next;
+    <span class="kw">if</span> (p-&gt;next) { <span class="ty">Node</span>* t = p-&gt;next; p-&gt;next = t-&gt;next; free(t); }
+    <span class="kw">return</span> dummy.next;
+}</pre>
+
+  <h2>Stivă (LIFO) și Coadă (FIFO)</h2>
+  <table>
+    <tr><th>Structură</th><th>Principiu</th><th>Operații O(1)</th></tr>
+    <tr><td><b>Stivă</b> (stack)</td><td>Last In, First Out</td><td><code>push</code>, <code>pop</code>, <code>top</code></td></tr>
+    <tr><td><b>Coadă</b> (queue)</td><td>First In, First Out</td><td><code>enqueue</code>, <code>dequeue</code>, <code>front</code></td></tr>
+  </table>
+  <p>Stiva se folosește la: recursivitate (call stack), evaluare expresii, parcurgere DFS, undo. Coada la: BFS, planificare (scheduling), buffere de procesare.</p>
+
+  <h2>Complexități</h2>
+  <table>
+    <tr><th>Operație</th><th>Vector</th><th>Listă înlănțuită</th></tr>
+    <tr><td>Acces la poziția i</td><td><code>O(1)</code></td><td><code>O(n)</code></td></tr>
+    <tr><td>Inserare la început</td><td><code>O(n)</code></td><td><code>O(1)</code></td></tr>
+    <tr><td>Inserare la sfârșit</td><td><code>O(1)</code>* amortizat</td><td><code>O(1)</code> cu pointer la coadă</td></tr>
+    <tr><td>Căutare</td><td><code>O(n)</code></td><td><code>O(n)</code></td></tr>
+  </table>
+</section>
+
+<!-- ============ BST ============ -->
+<section class="page" id="page-bst">
+  <h1>Arbori binari de căutare (BST)</h1>
+  <p class="lead">Un arbore binar în care, pentru fiecare nod, <b>toate valorile din subarborele stâng sunt mai mici</b>, iar <b>toate cele din subarborele drept sunt mai mari</b> decât nodul.</p>
+
+  <h2>Proprietatea fundamentală</h2>
+  <p>Consecință directă: <b>parcurgerea în inordine (InOrder) a unui BST produce valorile sortate crescător</b>. Aceasta e cheia multor exerciții de examen.</p>
+  <pre class="tree">        8
+       /  \
+      3    10
+     / \     \
+    1   6    14
+       / \   /
+      4   7 13</pre>
+
+  <h2>Parcurgeri</h2>
+  <table>
+    <tr><th>Parcurgere</th><th>Ordine</th><th>Pe arborele de mai sus</th></tr>
+    <tr><td><b>Preordine</b></td><td>Rădăcină → Stânga → Dreapta</td><td>8, 3, 1, 6, 4, 7, 10, 14, 13</td></tr>
+    <tr><td><b>Inordine</b></td><td>Stânga → Rădăcină → Dreapta</td><td>1, 3, 4, 6, 7, 8, 10, 13, 14 <span class="pill g">sortat</span></td></tr>
+    <tr><td><b>Postordine</b></td><td>Stânga → Dreapta → Rădăcină</td><td>1, 4, 7, 6, 3, 13, 14, 10, 8</td></tr>
+  </table>
+  <p>Toate cele trei parcurgeri sunt recursive și diferă <b>doar prin poziția în care se vizitează rădăcina</b> față de apelurile pe subarbori:</p>
+  <pre><span class="cm">// PREORDINE: Radacina -&gt; Stanga -&gt; Dreapta</span>
+<span class="kw">void</span> <span class="fn">preorder</span>(<span class="ty">Node</span>* r) {
+    <span class="kw">if</span> (!r) <span class="kw">return</span>;
+    <span class="fn">printf</span>(<span class="st">"%d "</span>, r-&gt;val);   <span class="cm">// 1. radacina</span>
+    <span class="fn">preorder</span>(r-&gt;left);        <span class="cm">// 2. stanga</span>
+    <span class="fn">preorder</span>(r-&gt;right);       <span class="cm">// 3. dreapta</span>
+}
+
+<span class="cm">// INORDINE: Stanga -&gt; Radacina -&gt; Dreapta   (produce valorile sortate!)</span>
+<span class="kw">void</span> <span class="fn">inorder</span>(<span class="ty">Node</span>* r) {
+    <span class="kw">if</span> (!r) <span class="kw">return</span>;
+    <span class="fn">inorder</span>(r-&gt;left);         <span class="cm">// 1. stanga</span>
+    <span class="fn">printf</span>(<span class="st">"%d "</span>, r-&gt;val);   <span class="cm">// 2. radacina</span>
+    <span class="fn">inorder</span>(r-&gt;right);        <span class="cm">// 3. dreapta</span>
+}
+
+<span class="cm">// POSTORDINE: Stanga -&gt; Dreapta -&gt; Radacina   (util la stergerea arborelui)</span>
+<span class="kw">void</span> <span class="fn">postorder</span>(<span class="ty">Node</span>* r) {
+    <span class="kw">if</span> (!r) <span class="kw">return</span>;
+    <span class="fn">postorder</span>(r-&gt;left);       <span class="cm">// 1. stanga</span>
+    <span class="fn">postorder</span>(r-&gt;right);      <span class="cm">// 2. dreapta</span>
+    <span class="fn">printf</span>(<span class="st">"%d "</span>, r-&gt;val);   <span class="cm">// 3. radacina</span>
+}</pre>
+  <div class="note"><b>De reținut:</b> numele parcurgerii spune <b>când</b> vizitezi rădăcina — <b>pre</b>ordine = înainte, <b>in</b>ordine = la mijloc, <b>post</b>ordine = după. Toate au complexitate <code>O(n)</code>.</div>
+
+  <h2>Inserare și căutare — O(h)</h2>
+  <pre><span class="ty">Node</span>* <span class="fn">insert</span>(<span class="ty">Node</span>* r, <span class="ty">int</span> v) {
+    <span class="kw">if</span> (!r) { <span class="ty">Node</span>* n = malloc(<span class="kw">sizeof</span>(<span class="ty">Node</span>)); n-&gt;val=v; n-&gt;left=n-&gt;right=NULL; <span class="kw">return</span> n; }
+    <span class="kw">if</span> (v &lt; r-&gt;val) r-&gt;left  = <span class="fn">insert</span>(r-&gt;left,  v);
+    <span class="kw">else if</span> (v &gt; r-&gt;val) r-&gt;right = <span class="fn">insert</span>(r-&gt;right, v);
+    <span class="kw">return</span> r;            <span class="cm">// valorile duplicate ignorate</span>
+}</pre>
+
+  <h2>Ștergere — cele 3 cazuri</h2>
+  <ol>
+    <li><b>Frunză</b> (fără copii): se șterge direct.</li>
+    <li><b>Un singur copil:</b> nodul e înlocuit cu copilul său.</li>
+    <li><b>Doi copii:</b> se înlocuiește valoarea cu <b>succesorul în inordine</b> (cel mai mic nod din subarborele drept), apoi se șterge acel succesor.</li>
+  </ol>
+  <pre><span class="ty">Node</span>* <span class="fn">minNode</span>(<span class="ty">Node</span>* r){ <span class="kw">while</span>(r-&gt;left) r=r-&gt;left; <span class="kw">return</span> r; }
+
+<span class="ty">Node</span>* <span class="fn">erase</span>(<span class="ty">Node</span>* r, <span class="ty">int</span> v) {
+    <span class="kw">if</span> (!r) <span class="kw">return</span> NULL;
+    <span class="kw">if</span> (v &lt; r-&gt;val) r-&gt;left  = <span class="fn">erase</span>(r-&gt;left, v);
+    <span class="kw">else if</span> (v &gt; r-&gt;val) r-&gt;right = <span class="fn">erase</span>(r-&gt;right, v);
+    <span class="kw">else</span> {                          <span class="cm">// gasit</span>
+        <span class="kw">if</span> (!r-&gt;left)  { <span class="ty">Node</span>* t=r-&gt;right; free(r); <span class="kw">return</span> t; }
+        <span class="kw">if</span> (!r-&gt;right) { <span class="ty">Node</span>* t=r-&gt;left;  free(r); <span class="kw">return</span> t; }
+        <span class="ty">Node</span>* s = <span class="fn">minNode</span>(r-&gt;right);     <span class="cm">// succesor inordine</span>
+        r-&gt;val = s-&gt;val;
+        r-&gt;right = <span class="fn">erase</span>(r-&gt;right, s-&gt;val);
+    }
+    <span class="kw">return</span> r;
+}</pre>
+  <div class="tip"><b>Complexitate:</b> toate operațiile sunt <code>O(h)</code>, unde h = înălțimea. Pentru un BST <b>echilibrat</b> h = O(log n); pentru unul <b>degenerat</b> (inserare în ordine sortată) h = O(n) — de aici nevoia arborilor AVL.</div>
+</section>
+
+<!-- ============ AVL ============ -->
+<section class="page" id="page-avl">
+  <h1>Arbori AVL (echilibrați)</h1>
+  <p class="lead">Un BST care se <b>auto-echilibrează</b>: pentru orice nod, factorul de echilibru (înălțime stânga − înălțime dreapta) este în <code>{−1, 0, +1}</code>. Astfel înălțimea rămâne O(log n) garantat.</p>
+
+  <h2>Factorul de echilibru și rotațiile</h2>
+  <p>După o inserare/ștergere care strică echilibrul (BF devine ±2), se aplică una dintre 4 rotații, în funcție de unde s-a produs dezechilibrul:</p>
+  <table>
+    <tr><th>Caz</th><th>Situație</th><th>Soluție</th></tr>
+    <tr><td><b>LL</b></td><td>inserare în stânga copilului stâng</td><td>o rotație simplă la <b>dreapta</b></td></tr>
+    <tr><td><b>RR</b></td><td>inserare în dreapta copilului drept</td><td>o rotație simplă la <b>stânga</b></td></tr>
+    <tr><td><b>LR</b></td><td>inserare în dreapta copilului stâng</td><td>rotație stânga (pe copil) + dreapta (pe nod)</td></tr>
+    <tr><td><b>RL</b></td><td>inserare în stânga copilului drept</td><td>rotație dreapta (pe copil) + stânga (pe nod)</td></tr>
+  </table>
+  <pre class="tree">Rotatie la STANGA (caz RR) pe nodul A:
+
+    A                 B
+     \               / \
+      B      =&gt;      A   C
+       \
+        C</pre>
+
+  <h2>Înălțimea minimă — câte noduri minim?</h2>
+  <p>Numărul minim de noduri al unui AVL de înălțime <code>h</code> respectă recurența <code>N(h) = N(h−1) + N(h−2) + 1</code>, cu <code>N(0)=1, N(1)=2</code> (rude apropiate ale lui Fibonacci):</p>
+  <table>
+    <tr><th>h</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td><b>5</b></td><td>6</td><td><b>7</b></td></tr>
+    <tr><th>N(h) min</th><td>1</td><td>2</td><td>4</td><td>7</td><td>12</td><td><b>20</b></td><td>33</td><td><b>54</b></td></tr>
+  </table>
+  <div class="note">De aici răspunsurile clasice de examen: AVL de înălțime 5 → minim <b>20</b> noduri; înălțime 7 → minim <b>54</b> noduri.</div>
+
+  <h2>De ce contează</h2>
+  <p>Pentru că înălțimea e mărginită de <code>~1.44·log₂(n)</code>, toate operațiile (căutare, inserare, ștergere) rămân <b>O(log n)</b> chiar și în cazul cel mai defavorabil — spre deosebire de BST-ul simplu care poate degenera la O(n).</p>
+  <div class="tip">La examen AVL apare de obicei <b>teoretic</b>: desenezi arborele după fiecare inserare și indici rotația aplicată. Vezi exercițiul rezolvat cu secvența 2,4,6,8,7,9.</div>
+
+  <h2>Video explicativ</h2>
+  <p>Inserări și rotații AVL explicate pas cu pas:</p>
+  <div class="video">
+    <iframe src="https://www.youtube.com/embed/zP2xbKerIds?start=3"
+      title="AVL Trees — inserări și rotații" loading="lazy"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen></iframe>
+  </div>
+  <p class="video-link">Dacă nu se încarcă, deschide pe YouTube: <a href="https://www.youtube.com/watch?v=zP2xbKerIds&amp;t=3s" target="_blank" rel="noopener">youtube.com/watch?v=zP2xbKerIds</a></p>
+</section>
+
+<!-- ============ GRAFURI ============ -->
+<section class="page" id="page-grafuri">
+  <h1>Grafuri</h1>
+  <p class="lead">O mulțime de noduri (vârfuri) conectate prin muchii (neorientate) sau arce (orientate). Modelează rețele, hărți, dependențe.</p>
+
+  <h2>Terminologie</h2>
+  <ul>
+    <li><b>Muchie</b> — legătură neorientată {u,v}; <b>arc</b> — legătură orientată (u→v).</li>
+    <li><b>Grad</b> al unui nod — numărul de muchii incidente. La graf orientat: <b>grad interior</b> (arce care intră) și <b>grad exterior</b> (arce care ies).</li>
+    <li><b>Graf conex</b> — există drum între oricare două noduri. <b>Componentă conexă</b> — submulțime maximă conexă.</li>
+    <li><b>Drum</b> — secvență de noduri legate prin muchii; <b>ciclu</b> — drum care se închide. <b>Graf ponderat</b> — muchiile au costuri.</li>
+  </ul>
+
+  <h2>Reprezentări</h2>
+  <table>
+    <tr><th>Reprezentare</th><th>Spațiu</th><th>Bună pentru</th></tr>
+    <tr><td><b>Matrice de adiacență</b> <code>a[i][j]=1</code></td><td><code>O(V²)</code></td><td>grafuri dense; test rapid „există muchie?"</td></tr>
+    <tr><td><b>Matrice de costuri</b> <code>c[i][j]=cost</code></td><td><code>O(V²)</code></td><td>grafuri ponderate (∞ unde nu e muchie)</td></tr>
+    <tr><td><b>Liste de adiacență</b></td><td><code>O(V+E)</code></td><td>grafuri rare; parcurgeri eficiente</td></tr>
+  </table>
+
+  <h2>Parcurgeri: BFS și DFS</h2>
+  <table>
+    <tr><th></th><th>BFS (în lățime)</th><th>DFS (în adâncime)</th></tr>
+    <tr><td>Structură</td><td><b>coadă</b> (FIFO)</td><td><b>stivă</b> / recursie</td></tr>
+    <tr><td>Ordine</td><td>pe niveluri, vecinii întâi</td><td>cât mai adânc, apoi backtrack</td></tr>
+    <tr><td>Folosit la</td><td>drum minim în nr. de muchii</td><td>cicluri, sortare topologică, componente</td></tr>
+    <tr><td>Complexitate</td><td colspan="2"><code>O(V + E)</code> cu liste de adiacență</td></tr>
+  </table>
+
+  <h2>Dijkstra — drumuri de cost minim</h2>
+  <p>Găsește cel mai scurt drum de la o sursă la toate nodurile, în grafuri cu <b>costuri ne-negative</b>. Idee: menținem distanțe estimate <code>d[]</code> și, repetat, alegem nodul ne-finalizat cu <code>d</code> minim și îi <b>relaxăm</b> muchiile.</p>
+  <pre><span class="cm">// Relaxarea unei muchii (u -&gt; v) cu cost w:</span>
+<span class="kw">if</span> (d[u] + w &lt; d[v]) {
+    d[v] = d[u] + w;       <span class="cm">// am gasit drum mai scurt spre v</span>
+    parent[v] = u;
+}</pre>
+  <p>Algoritmul: <code>d[sursa]=0</code>, restul <code>∞</code>. Cât timp există noduri ne-vizitate: extragi nodul <code>u</code> cu <code>d[u]</code> minim, îl marchezi finalizat, relaxezi toate muchiile lui. Complexitate: <code>O(V²)</code> cu vector simplu, <code>O((V+E)·log V)</code> cu heap (coadă de priorități).</p>
+  <div class="warn"><b>Limitare:</b> Dijkstra <b>nu</b> funcționează cu costuri negative (acolo se folosește Bellman-Ford).</div>
+</section>
+
+<!-- ============ HASH ============ -->
+<section class="page" id="page-hash">
+  <h1>Tabele de dispersie (hash)</h1>
+  <p class="lead">Structură care oferă inserare/căutare/ștergere în <b>O(1) mediu</b>, mapând cheia la un indice printr-o funcție de dispersie <code>h(cheie) → [0, m−1]</code>.</p>
+
+  <h2>Coliziuni și strategii de rezolvare</h2>
+  <p>Două chei diferite pot da același indice = <b>coliziune</b>. Două abordări:</p>
+  <table>
+    <tr><th></th><th>Dispersie deschisă (înlănțuire)</th><th>Dispersie închisă (adresare deschisă)</th></tr>
+    <tr><td>Cum</td><td>fiecare celulă = listă înlănțuită de elemente</td><td>toate elementele în tabel; la coliziune cauți altă celulă</td></tr>
+    <tr><td>Sondare</td><td>—</td><td>liniară <code>h+i</code>, pătratică <code>h+i²</code>, dublă <code>h₁+i·h₂</code></td></tr>
+    <tr><td>Factor încărcare α</td><td>poate fi &gt; 1</td><td>trebuie &lt; 1 (tabelul se umple)</td></tr>
+  </table>
+
+  <h2>Ștergerea la adresare deschisă</h2>
+  <div class="warn"><b>Capcană clasică:</b> la dispersia închisă nu poți pur și simplu goli celula — ai rupe lanțul de sondare pentru alte chei. Soluția: marchezi celula cu un <b>tombstone</b> (marcaj „șters") care e sărit la căutare dar reutilizabil la inserare.</div>
+
+  <h2>Funcții de dispersie pentru string-uri</h2>
+  <pre><span class="cm">// Hashing polinomial (ex. "djb2") — bun pentru siruri</span>
+<span class="ty">unsigned</span> <span class="fn">hash</span>(<span class="kw">const</span> <span class="ty">char</span>* s, <span class="ty">int</span> m) {
+    <span class="ty">unsigned</span> h = 5381;
+    <span class="kw">for</span> (; *s; s++)
+        h = h * 33 + (<span class="ty">unsigned char</span>)*s;   <span class="cm">// h = h*33 + c</span>
+    <span class="kw">return</span> h % m;
+}</pre>
+  <p>O funcție bună trebuie să fie <b>rapidă</b>, să <b>distribuie uniform</b> și să fie <b>deterministă</b>. <code>m</code> ales de obicei număr prim pentru a reduce coliziunile.</p>
+
+  <h2>Bloom filters (filtre Bloom)</h2>
+  <p>Structură probabilistică compactă care răspunde la „elementul ar putea fi în mulțime?". Folosește <code>k</code> funcții de dispersie și un vector de biți. <b>Fără fals-negative</b> (dacă spune „nu", sigur nu e), dar cu <b>posibile fals-pozitive</b>. Nu permite ștergere și nu stochează elementele efective — doar prezența probabilă.</p>
+</section>
+
+<!-- ============ SORTARI ============ -->
+<section class="page" id="page-sortari">
+  <h1>Algoritmi de sortare</h1>
+  <p class="lead">Trebuie cunoscute pentru fiecare: complexitatea în caz favorabil/mediu/defavorabil, spațiul, stabilitatea și ideea de implementare.</p>
+
+  <h2>Tabel comparativ</h2>
+  <table>
+    <tr><th>Algoritm</th><th>Favorabil</th><th>Mediu</th><th>Defavorabil</th><th>Spațiu</th><th>Stabil</th></tr>
+    <tr><td>Bubble Sort</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td><td>da</td></tr>
+    <tr><td>Insertion Sort</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td><td>da</td></tr>
+    <tr><td>Selection Sort</td><td>O(n²)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td><td>nu</td></tr>
+    <tr><td>Merge Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td><td>da</td></tr>
+    <tr><td>Quick Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n²)</td><td>O(log n)</td><td>nu</td></tr>
+    <tr><td>Radix Sort</td><td>O(d·n)</td><td>O(d·n)</td><td>O(d·n)</td><td>O(n+k)</td><td>da</td></tr>
+  </table>
+
+  <h2>Idei de implementare</h2>
+  <p><b>Insertion Sort</b> — inserezi fiecare element la locul lui în partea deja sortată:</p>
+  <pre><span class="kw">for</span> (<span class="ty">int</span> i=1; i&lt;n; i++) {
+    <span class="ty">int</span> key=a[i], j=i-1;
+    <span class="kw">while</span> (j&gt;=0 &amp;&amp; a[j]&gt;key) { a[j+1]=a[j]; j--; }
+    a[j+1]=key;
+}</pre>
+  <p><b>Quick Sort</b> — alegi un pivot, partiționezi (mai mici la stânga, mai mari la dreapta), recursiv:</p>
+  <pre><span class="kw">void</span> <span class="fn">quick</span>(<span class="ty">int</span>* a, <span class="ty">int</span> lo, <span class="ty">int</span> hi){
+    <span class="kw">if</span>(lo&gt;=hi) <span class="kw">return</span>;
+    <span class="ty">int</span> p=a[hi], i=lo;
+    <span class="kw">for</span>(<span class="ty">int</span> j=lo;j&lt;hi;j++) <span class="kw">if</span>(a[j]&lt;p){ <span class="ty">int</span> t=a[i];a[i]=a[j];a[j]=t; i++; }
+    <span class="ty">int</span> t=a[i];a[i]=a[hi];a[hi]=t;
+    <span class="fn">quick</span>(a,lo,i-1); <span class="fn">quick</span>(a,i+1,hi);
+}</pre>
+
+  <div class="tip"><b>Sortare fără comparații:</b> Counting Sort și Radix Sort nu compară elementele între ele — folosesc valoarea ca indice. Astfel sparg bariera <code>O(n log n)</code>, atingând <code>O(n)</code> când domeniul valorilor e mărginit. Vezi exercițiul rezolvat.</div>
+</section>
+
+<!-- ============ TEHNICI ============ -->
+<section class="page" id="page-tehnici">
+  <h1>Tehnici de programare</h1>
+  <p class="lead">Cele trei paradigme cerute: Divide et Impera, Backtracking și Greedy.</p>
+
+  <h2>Divide et Impera</h2>
+  <p>Spargi problema în subprobleme independente de același tip, le rezolvi recursiv și <b>combini</b> rezultatele. Complexitatea se calculează cu Teorema Master.</p>
+  <ul>
+    <li><b>Exemple:</b> Merge Sort, Quick Sort, căutare binară, înmulțirea Karatsuba.</li>
+    <li><b>Căutare binară:</b> <code>T(n)=T(n/2)+O(1) → O(log n)</code>.</li>
+  </ul>
+
+  <h2>Backtracking</h2>
+  <p>Construiești soluția incremental; când o alegere parțială nu poate duce la o soluție validă, te întorci (backtrack). Explorează tot spațiul soluțiilor, dar taie ramurile imposibile.</p>
+  <pre><span class="kw">void</span> <span class="fn">back</span>(<span class="ty">int</span> k) {
+    <span class="kw">if</span> (<span class="fn">solutie_completa</span>(k)) { <span class="fn">afiseaza</span>(); <span class="kw">return</span>; }
+    <span class="kw">for</span> (<span class="kw">each</span> candidat c <span class="kw">la</span> pasul k)
+        <span class="kw">if</span> (<span class="fn">valid</span>(c)) {
+            <span class="fn">pune</span>(c);
+            <span class="fn">back</span>(k+1);
+            <span class="fn">scoate</span>(c);     <span class="cm">// backtrack</span>
+        }
+}</pre>
+  <p><b>Probleme reprezentative:</b> generare permutări/combinări, problema celor N dame, labirint, suma de submulțimi, colorarea grafurilor.</p>
+
+  <h2>Greedy (metoda lacomă)</h2>
+  <p>La fiecare pas faci alegerea care pare <b>optimă local</b>, sperând că ajungi la optimul global. Rapidă, dar corectă doar dacă problema are „proprietatea de alegere greedy".</p>
+  <ul>
+    <li><b>Exemple corecte:</b> restul cu monede (sisteme canonice), selecția activităților, arbore Huffman, Kruskal/Prim, Dijkstra.</li>
+    <li><b>Atenție:</b> pentru rucsacul 0/1 greedy <b>nu</b> dă optim — acolo e nevoie de programare dinamică.</li>
+  </ul>
+  <div class="note"><b>Greedy vs Backtracking:</b> greedy alege o singură cale (rapid, fără revenire); backtracking explorează toate căile (corect mereu, dar mai lent).</p></div>
+</section>
+
+<!-- ============ EXERCITII ============ -->
+<section class="page" id="page-exercitii">
+  <h1>Exerciții rezolvate — stil examen</h1>
+  <p class="lead">Probleme reale din subiectele de licență (ATM) și din colecția oficială, cu rezolvări complete. Apasă <b>„Arată rezolvarea"</b> pe fiecare.</p>
+
+  <!-- EX 1: BST function -->
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Examen 2024 · Subiectul III.3</span>
+        Fie un BST ce reține valori întregi. Implementați în C o funcție care returnează <b>numărul de noduri cuprinse între două valori min și max</b>. Menționați și cum se apelează.</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <h4>Idee</h4>
+      <p>Folosim proprietatea BST ca să <b>tăiem</b> subarborii: dacă valoarea nodului e sub <code>min</code>, tot subarborele stâng e prea mic → mergem doar la dreapta; dacă e peste <code>max</code> → doar la stânga; altfel numărăm nodul și coborâm în ambii subarbori.</p>
+      <h4>Cod</h4>
+      <pre><span class="ty">int</span> <span class="fn">countBetween</span>(<span class="ty">Node</span>* r, <span class="ty">int</span> min, <span class="ty">int</span> max) {
+    <span class="kw">if</span> (r == NULL) <span class="kw">return</span> 0;
+    <span class="kw">if</span> (r-&gt;val &lt; min)                 <span class="cm">// nod prea mic -&gt; doar dreapta</span>
+        <span class="kw">return</span> <span class="fn">countBetween</span>(r-&gt;right, min, max);
+    <span class="kw">if</span> (r-&gt;val &gt; max)                 <span class="cm">// nod prea mare -&gt; doar stanga</span>
+        <span class="kw">return</span> <span class="fn">countBetween</span>(r-&gt;left, min, max);
+    <span class="cm">// min &lt;= r-&gt;val &lt;= max : numaram nodul si continuam in ambele parti</span>
+    <span class="kw">return</span> 1 + <span class="fn">countBetween</span>(r-&gt;left,  min, max)
+             + <span class="fn">countBetween</span>(r-&gt;right, min, max);
+}
+
+<span class="cm">// Apel:</span>
+<span class="ty">int</span> n = <span class="fn">countBetween</span>(root, min, max);</pre>
+      <p><span class="badge">Complexitate: O(h + k), cu k = nr. noduri din interval. Datorită tăierii nu vizităm subarborii complet în afara intervalului.</span></p>
+    </div>
+  </div>
+
+  <!-- EX 2: AVL insert sequence -->
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Examen 2024 · Subiectul III.4</span>
+        Pentru un AVL, menționați fiecare operație de echilibrare și configurația arborelui după fiecare inserare, pentru ordinea: <b>2, 4, 6, 8, 7, 9</b>.</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <h4>Pas cu pas</h4>
+      <p><b>+2, +4</b> — fără dezechilibru:</p>
+      <pre class="tree">2          2
+            \
+             4</pre>
+      <p><b>+6</b> — nodul 2 are BF = −2 (caz <b>RR</b>) → rotație <b>stânga</b> la 2:</p>
+      <pre class="tree">  2  -&gt; RR -&gt;    4
+   \            / \
+    4          2   6
+     \
+      6</pre>
+      <p><b>+8</b> — rămâne echilibrat:</p>
+      <pre class="tree">    4
+   / \
+  2   6
+       \
+        8</pre>
+      <p><b>+7</b> — nodul 6 are BF = −2, dar 7 intră în <b>stânga</b> lui 8 (caz <b>RL</b>) → rotație dreapta pe 8, apoi stânga pe 6:</p>
+      <pre class="tree">    4              4
+   / \            / \
+  2   6    -&gt;    2   7
+       \            / \
+        8          6   8
+       /
+      7</pre>
+      <p><b>+9</b> — nodul 4 (rădăcina) are BF = −2, inserare în dreapta-dreapta (caz <b>RR</b>) → rotație <b>stânga</b> la 4:</p>
+      <pre class="tree">    4                  7
+   / \                / \
+  2   7       -&gt;      4   8
+     / \             / \   \
+    6   8           2   6   9
+         \
+          9</pre>
+      <div class="tip"><b>Rezumat rotații:</b> după +6 → rotație stânga (RR) la 2; după +7 → rotație dublă RL la 6; după +9 → rotație stânga (RR) la 4. Arbore final echilibrat, înălțime 2.</div>
+    </div>
+  </div>
+
+  <!-- EX 3: BST from preorder -->
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Colecție oficială</span>
+        Desenați BST-ul a cărui parcurgere în <b>preordine</b> este: 6, 2, 1, 4, 3, 5, 9, 7, 8, 11, 10.</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <h4>Metodă</h4>
+      <p>Preordinea unui BST <b>determină unic</b> arborele: inserezi valorile, în ordine, într-un BST gol (primul element e rădăcina).</p>
+      <pre class="tree">              6
+            /   \
+           2     9
+          / \   / \
+         1   4 7   11
+            / \ \  /
+           3   5 8 10</pre>
+      <p><b>Verificare:</b> inordinea trebuie să fie sortată → 1,2,3,4,5,6,7,8,9,10,11 ✓</p>
+    </div>
+  </div>
+
+  <!-- EX 4: complexity nested -->
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Colecție oficială</span>
+        Analizați complexitatea fragmentului:
+        <pre style="margin-top:8px"><span class="ty">int</span> s=0;
+<span class="kw">for</span>(<span class="ty">int</span> i=n; i&gt;0; i--)
+  <span class="kw">for</span>(<span class="ty">int</span> j=1; j&lt;n; j*=2)
+    <span class="kw">for</span>(<span class="ty">int</span> k=0; k&lt;j; k++)
+      s++;</pre></div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <h4>Rezolvare</h4>
+      <p>Cele două bucle interioare: <code>j</code> ia valorile 1, 2, 4, …, &lt; n, iar bucla pe <code>k</code> rulează de <code>j</code> ori. Suma muncii interioare este <code>1 + 2 + 4 + … + 2^m ≈ 2n</code> (serie geometrică) → <b>Θ(n)</b>.</p>
+      <p>Bucla exterioară pe <code>i</code> rulează de <code>n</code> ori. Total:</p>
+      <pre>Θ(n) × Θ(n) = <b>Θ(n²)</b></pre>
+      <div class="note">Capcană: deși apare un <code>j*=2</code> (care „miroase" a log n), suma <code>1+2+4+…</code> e dominată de ultimul termen ≈ n, deci interiorul e liniar, nu logaritmic.</div>
+    </div>
+  </div>
+
+  <!-- EX 5: sqrt loop -->
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Colecție oficială</span>
+        Pentru codul de mai jos (<code>sqrt</code> = radical), dacă <b>n = 256</b> care e valoarea finală a lui <code>k</code>? Analizați complexitatea.
+        <pre style="margin-top:8px"><span class="ty">int</span> k=0;
+<span class="kw">for</span>(<span class="ty">int</span> j=n; j&gt;1; j=<span class="fn">sqrt</span>(j))
+  <span class="kw">for</span>(<span class="ty">int</span> i=j; i&gt;0; i/=2)
+    k++;</pre></div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <h4>Valoarea lui k (n = 256)</h4>
+      <p><code>j</code> ia valorile <b>256 → 16 → 4 → 2</b> (apoi sqrt(2)=1, bucla se oprește). Bucla interioară (<code>i/=2</code>) rulează <code>⌊log₂ j⌋ + 1</code> ori:</p>
+      <table>
+        <tr><th>j</th><td>256</td><td>16</td><td>4</td><td>2</td></tr>
+        <tr><th>iterații i</th><td>9</td><td>5</td><td>3</td><td>2</td></tr>
+      </table>
+      <pre>k = 9 + 5 + 3 + 2 = <b>19</b></pre>
+      <h4>Complexitate</h4>
+      <p>Bucla interioară e <code>O(log j)</code>. Suma: <code>log n + log√n + log⁴√n + … = log n·(1 + ½ + ¼ + …) = 2·log n</code> → <b>Θ(log n)</b>.</p>
+    </div>
+  </div>
+
+  <!-- EX 6: AVL min nodes / root -->
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Colecție oficială</span>
+        (a) Care e numărul minim de noduri al unui AVL de înălțime 5? Dar 7?
+        (b) Care e valoarea minimă a rădăcinii unui AVL care conține numerele 1..12?</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <h4>(a) Noduri minime</h4>
+      <p>Cu <code>N(h)=N(h−1)+N(h−2)+1</code>: N(5) = <b>20</b>, N(7) = <b>54</b> (vezi tabelul din secțiunea AVL).</p>
+      <h4>(b) Rădăcina minimă pentru 1..12</h4>
+      <p>Valorile fiind 1..12, dacă rădăcina e a <code>k</code>-a valoare, subarborele stâng are <code>k−1</code> noduri, iar cel drept <code>12−k</code>. Vrem <code>k</code> minim cu condiția ca ambii subarbori să fie AVL valizi, cu înălțimi care diferă cel mult cu 1.</p>
+      <ul>
+        <li><b>k=4</b>: stânga=3 (înălțime 1), dreapta=8 (necesită înălțime 3). Diferență de înălțime 2 → <span class="pill r">invalid</span></li>
+        <li><b>k=5</b>: stânga=4 (înălțime 2), dreapta=7 (înălțime 3). Diferență 1 → <span class="pill g">valid AVL</span></li>
+      </ul>
+      <p>Deci valoarea minimă a rădăcinii este <b>5</b>.</p>
+    </div>
+  </div>
+
+  <!-- EX 7: complexity true/false -->
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Examen 2024 · Subiectul III.5</span>
+        Adevărat sau fals (cu justificare):
+        a) <code>n² ∈ O(2ⁿ)</code> &nbsp; b) <code>n! ∈ Ω(nⁿ)</code> &nbsp; c) <code>n³+5n ∈ Θ(n²+500n)</code> &nbsp; d) <code>2^(n+1) ∈ Θ(2ⁿ)</code></div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <table>
+        <tr><th>Pct</th><th>Verdict</th><th>Justificare</th></tr>
+        <tr><td>a)</td><td class="pill g" style="border:none">Adevărat</td><td>exponențiala 2ⁿ domină orice polinom, deci n² e mărginit superior de 2ⁿ.</td></tr>
+        <tr><td>b)</td><td class="pill r" style="border:none">Fals</td><td><code>nⁿ</code> crește mai repede decât <code>n!</code> (n! ≤ nⁿ), deci n! NU e ≥ c·nⁿ. Corect ar fi <code>n! ∈ O(nⁿ)</code>.</td></tr>
+        <tr><td>c)</td><td class="pill r" style="border:none">Fals</td><td>termenul dominant din stânga e <code>n³</code>, din dreapta <code>n²</code>. <code>n³ ∉ Θ(n²)</code> (crește strict mai repede).</td></tr>
+        <tr><td>d)</td><td class="pill g" style="border:none">Adevărat</td><td><code>2^(n+1) = 2·2ⁿ</code>; constanta 2 se ignoră → aceeași clasă Θ(2ⁿ).</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- EX 8: sort without comparison -->
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Examen 2024 · Subiectul III.6</span>
+        Fie un vector de întregi. Nu se poate folosi operația de comparație. Cum poate fi sortat?</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <h4>Counting Sort / Radix Sort</h4>
+      <p>Fără comparații folosim <b>valoarea ca indice</b>. <b>Counting Sort</b>: numeri de câte ori apare fiecare valoare, apoi reconstruiești vectorul în ordine:</p>
+      <pre><span class="cm">// valori in [0, k]</span>
+<span class="ty">int</span> cnt[k+1] = {0};
+<span class="kw">for</span>(<span class="ty">int</span> i=0;i&lt;n;i++) cnt[a[i]]++;        <span class="cm">// numara</span>
+<span class="ty">int</span> idx=0;
+<span class="kw">for</span>(<span class="ty">int</span> v=0;v&lt;=k;v++)
+    <span class="kw">while</span>(cnt[v]--) a[idx++]=v;            <span class="cm">// reconstruieste sortat</span></pre>
+      <p>Complexitate <code>O(n + k)</code>, fără nicio comparație între elemente. Pentru numere mari se aplică <b>Radix Sort</b>: Counting Sort succesiv pe fiecare cifră (de la cea mai puțin semnificativă), <code>O(d·(n+k))</code>.</p>
+    </div>
+  </div>
+
+</section>
+
+</div>
+
+<script>
+/* ============ TABS (controlate de aplicația gazdă) + EXERCIȚII + TEMĂ ============ */
+function activateTab(tab){
+  var page = document.getElementById('page-' + tab);
+  if(!page) return;
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  page.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function tabFromHash(){ var t = location.hash.replace('#',''); if(t) activateTab(t); }
+window.addEventListener('hashchange', tabFromHash);
+tabFromHash();
+
+function toggleEx(btn){
+  var ex = btn.closest('.ex');
+  var open = ex.classList.toggle('open');
+  btn.textContent = open ? 'Ascunde rezolvarea' : 'Arată rezolvarea';
+}
+
+function setTheme(t){ document.documentElement.dataset.theme = t; try{ localStorage.setItem('sda-theme', t); }catch(e){} }
+try{ setTheme(localStorage.getItem('sda-theme') || 'dark'); }catch(e){}
+
+/* aplicația gazdă trimite tema și tab-ul prin postMessage (iframe cross-origin sub file://) */
+window.addEventListener('message', function(e){
+  var d = e.data || {};
+  if(d.type === 'theme' && d.theme) setTheme(d.theme);
+  else if(d.type === 'tab' && d.tab) activateTab(d.tab);
+});
+</script>
+</body>
+</html>

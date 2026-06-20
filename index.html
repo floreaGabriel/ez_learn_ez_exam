@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Licență Trainer — Pregătire examen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    // aplică tema salvată înainte de randare (fără flash)
+    try{ document.documentElement.dataset.theme = localStorage.getItem("app-theme") || "dark"; }catch(e){}
+  </script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand" onclick="showDashboard()" style="cursor:pointer">
+      <h1>Licență Trainer 🎓</h1>
+      <div class="sub">Pregătire examen de licență</div>
+      <span class="pill">Materii</span>
+    </div>
+    <div id="nav"></div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="crumb" id="crumb">Pregătire licență</div>
+        <h2 id="title">Acasă</h2>
+      </div>
+      <button class="theme-toggle" id="themeToggle" title="Comută tema (dark/light)" onclick="toggleTheme()">🌙</button>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+
+  <!-- date -->
+  <script src="js/data/concepte.js"></script>
+  <script src="js/data/intrebari.js"></script>
+  <!-- logica -->
+  <script src="js/quiz.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
