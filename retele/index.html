@@ -77,6 +77,14 @@ select{background:var(--bg3);color:var(--txt);border:1px solid var(--border);bor
 .flexfield{flex:1 1 auto}
 .note{color:var(--muted);font-size:.85rem;margin-top:8px}
 .legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+/* Descrieri per câmp (sub cadru, în „Învață") */
+.fielddesc{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.fd-row{display:flex;gap:12px;align-items:flex-start;padding:10px 13px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);border-left:4px solid hsl(var(--h),var(--field-s),var(--field-border-l));transition:.15s}
+.fd-row:hover{border-color:var(--accent);transform:translateX(2px)}
+.fd-sw{flex-shrink:0;width:14px;height:14px;border-radius:4px;margin-top:3px;background:hsl(var(--h),var(--field-s),var(--field-l));border:1px solid hsl(var(--h),var(--field-s),var(--field-border-l))}
+.fd-name{font-weight:600;font-size:.9rem}
+.fd-sz{font-weight:500;font-size:.74rem;color:var(--muted);margin-left:6px}
+.fd-desc{font-size:.85rem;color:var(--muted);margin-top:2px}
 .chip{display:inline-flex;align-items:center;gap:7px;font-size:.74rem;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:4px 11px 4px 6px;cursor:pointer;transition:.15s}
 .chip:hover{border-color:var(--accent);transform:translateY(-1px)}
 .chip .sw{width:13px;height:13px;border-radius:4px;background:hsl(var(--h),var(--field-s),var(--field-l));border:1px solid hsl(var(--h),var(--field-s),var(--field-border-l))}
@@ -287,6 +295,80 @@ const HUE = {
 const hueFor = k => (HUE[k] !== undefined ? HUE[k] : (Math.abs([...k].reduce((a,c)=>a*31+c.charCodeAt(0),7))%360));
 
 /* ============================================================
+   DESCRIERI — ce semnifică fiecare câmp (afișate sub cadru în „Învață")
+   ============================================================ */
+const FIELD_DESC = {
+  // Ethernet
+  'eth-dst':'Adresa MAC (hardware) a plăcii de rețea destinație. FF:FF:FF:FF:FF:FF înseamnă broadcast (către toți).',
+  'eth-src':'Adresa MAC a plăcii de rețea care trimite cadrul.',
+  'eth-type':'Tipul protocolului încapsulat: 0x0800 = IPv4, 0x0806 = ARP, 0x86DD = IPv6.',
+  'eth-data':'Datele transportate (pachetul de nivel superior). Între 46 și 1500 de octeți.',
+  'eth-fcs':'Frame Check Sequence — CRC pentru detectarea erorilor de transmisie ale cadrului.',
+  // IPv4
+  'ip-ver':'Versiunea protocolului IP. Valoarea 4 pentru IPv4.',
+  'ip-ihl':'Internet Header Length — lungimea headerului în cuvinte de 32 biți (minim 5 = 20 octeți).',
+  'ip-tos':'Type of Service / DSCP — prioritizarea și calitatea serviciului (QoS).',
+  'ip-len':'Lungimea totală a pachetului (header + date) în octeți.',
+  'ip-id':'Identificator unic al pachetului; folosit la reasamblarea fragmentelor.',
+  'ip-flags':'Control fragmentare: bitul DF (Don\'t Fragment) și MF (More Fragments).',
+  'ip-frag':'Fragment Offset — poziția fragmentului în pachetul original (în unități de 8 octeți).',
+  'ip-ttl':'Time To Live — număr maxim de hopuri. Scade cu 1 la fiecare router; la 0 pachetul e aruncat.',
+  'ip-proto':'Protocolul de nivel transport încapsulat: 6 = TCP, 17 = UDP, 1 = ICMP.',
+  'ip-cksum':'Sumă de control calculată DOAR pentru header.',
+  'ip-src':'Adresa IP a expeditorului.',
+  'ip-dst':'Adresa IP a destinatarului.',
+  'ip-opt':'Opțiuni rar folosite (rutare, timestamp). Lungime variabilă.',
+  // TCP
+  'tcp-sport':'Portul aplicației expeditoare.',
+  'tcp-dport':'Portul aplicației destinație (ex. 80 = HTTP, 443 = HTTPS).',
+  'tcp-seq':'Sequence Number — numărul de secvență al primului octet de date din segment.',
+  'tcp-ack':'Acknowledgment Number — următorul octet așteptat (confirmă datele primite).',
+  'tcp-off':'Data Offset — lungimea headerului TCP în cuvinte de 32 biți.',
+  'tcp-res':'Biți rezervați pentru utilizări viitoare, setați pe 0.',
+  'tcp-flags':'Biți de control: URG, ACK, PSH, RST, SYN, FIN (ex. SYN deschide conexiunea).',
+  'tcp-win':'Window — câți octeți poate primi receptorul (control de flux).',
+  'tcp-cksum':'Sumă de control pentru header + date.',
+  'tcp-urg':'Urgent Pointer — marchează sfârșitul datelor urgente (când flagul URG = 1).',
+  'tcp-opt':'Opțiuni: MSS, window scaling, SACK etc. Lungime variabilă.',
+  // UDP
+  'udp-sport':'Portul aplicației expeditoare.',
+  'udp-dport':'Portul aplicației destinație.',
+  'udp-len':'Lungimea totală (header + date) în octeți.',
+  'udp-cksum':'Sumă de control (opțională în IPv4, obligatorie în IPv6).',
+  // ICMP
+  'icmp-type':'Tipul mesajului: 0 = Echo Reply, 8 = Echo Request, 3 = Destination Unreachable.',
+  'icmp-code':'Sub-tipul care detaliază câmpul Type (ex. motivul exact al „unreachable").',
+  'icmp-cksum':'Sumă de control a mesajului ICMP.',
+  'icmp-rest':'Câmp dependent de tip (ex. Identifier + Sequence Number la ping).',
+  // ARP
+  'arp-htype':'Tipul rețelei hardware: 1 = Ethernet.',
+  'arp-ptype':'Protocolul de nivel rețea rezolvat: 0x0800 = IPv4.',
+  'arp-hlen':'Lungimea adresei hardware (6 octeți pentru MAC).',
+  'arp-plen':'Lungimea adresei de protocol (4 octeți pentru IPv4).',
+  'arp-op':'Operation Code: 1 = ARP Request (cerere), 2 = ARP Reply (răspuns).',
+  'arp-sha':'Adresa MAC a expeditorului.',
+  'arp-spa':'Adresa IP a expeditorului.',
+  'arp-tha':'Adresa MAC țintă (00:00:00:00:00:00 într-un request — încă necunoscută).',
+  'arp-tpa':'Adresa IP căutată (cea pentru care se cere adresa MAC).',
+  // DHCP
+  'dh-op':'OpCode: 1 = cerere (BOOTREQUEST), 2 = răspuns (BOOTREPLY).',
+  'dh-htype':'Tipul de hardware: 1 = Ethernet.',
+  'dh-hlen':'Lungimea adresei hardware (6 pentru MAC).',
+  'dh-hops':'Numărul de relee (DHCP relay) traversate.',
+  'dh-xid':'Transaction ID — leagă cererea de răspuns în aceeași tranzacție.',
+  'dh-secs':'Secunde scurse de la începutul procesului de obținere a adresei.',
+  'dh-flags':'Doar bitul B (Broadcast) e folosit: 1 = serverul răspunde prin broadcast.',
+  'dh-ci':'Client IP (ciaddr) — IP-ul clientului, dacă îl are deja.',
+  'dh-yi':'Your IP (yiaddr) — IP-ul oferit clientului de către server.',
+  'dh-si':'Server IP (siaddr) — IP-ul serverului următor din proces.',
+  'dh-gi':'Gateway IP (giaddr) — IP-ul releului DHCP.',
+  'dh-ch':'Client HW Address (chaddr) — adresa MAC a clientului.',
+  'dh-sname':'Numele serverului (opțional).',
+  'dh-file':'Numele fișierului de boot (opțional, pentru boot prin rețea).',
+  'dh-opt':'Opțiuni DHCP: tip mesaj, mască, gateway, DNS, durată lease etc. Lungime variabilă.'
+};
+
+/* ============================================================
    HEADERS (referință / exerciții). bits = lățime câmp.
    mode word32 -> grid pe cuvinte de 32 biți; flex -> rânduri libere.
    ============================================================ */
@@ -446,10 +528,25 @@ const refSel=document.getElementById('refSel'), refCard=document.getElementById(
 fillSel(refSel);
 function drawRef(){
   const k=refSel.value, H=HEADERS[k];
-  refCard.innerHTML='<div class="hwrap" id="refDia"></div>'+(H.note?'<p class="note">ℹ️ '+H.note+'</p>':'')+'<div class="legend" id="refLeg"></div>';
+  refCard.innerHTML='<div class="hwrap" id="refDia"></div>'+(H.note?'<p class="note">ℹ️ '+H.note+'</p>':'')+'<div class="legend" id="refLeg"></div>'
+    +'<h2 style="font-size:1.05rem;margin:22px 0 4px">Ce semnifică fiecare câmp</h2>'
+    +'<div class="fielddesc" id="refDesc"></div>';
   const dia=renderDiagram(document.getElementById('refDia'),k);
   renderLegend(document.getElementById('refLeg'),k,(key,on)=>{
     dia.querySelectorAll('.field').forEach(el=>{ el.style.filter = on ? (el.dataset.k===key?'brightness(1.25)':'opacity(.3)') : ''; el.style.transform = (on&&el.dataset.k===key)?'translateY(-3px) scale(1.02)':''; });
+  });
+  // descrieri per câmp; evidențiază câmpul corespunzător din diagramă la hover
+  const desc=document.getElementById('refDesc');
+  desc.innerHTML=H.fields.map(f=>(
+    '<div class="fd-row" data-k="'+f.k+'" style="--h:'+hueFor(f.k)+'">'
+    +'<span class="fd-sw"></span>'
+    +'<div class="fd-body"><div class="fd-name">'+f.n+' <span class="fd-sz">'+sizeLabel(f,H.unit)+'</span></div>'
+    +'<div class="fd-desc">'+(FIELD_DESC[f.k]||'—')+'</div></div></div>'
+  )).join('');
+  desc.querySelectorAll('.fd-row').forEach(row=>{
+    const key=row.dataset.k;
+    row.onmouseenter=()=>dia.querySelectorAll('.field').forEach(el=>{ el.style.filter=el.dataset.k===key?'brightness(1.25)':'opacity(.3)'; el.style.transform=el.dataset.k===key?'translateY(-3px) scale(1.02)':''; });
+    row.onmouseleave=()=>dia.querySelectorAll('.field').forEach(el=>{ el.style.filter=''; el.style.transform=''; });
   });
   const fixed=H.fields.filter(f=>!f.var).reduce((a,f)=>a+f.bits,0);
   refTotal.textContent='Header fix: '+fixed+' biți = '+(fixed/8)+' octeți'+(H.fields.some(f=>f.var)?' (+ câmpuri variabile)':'');
