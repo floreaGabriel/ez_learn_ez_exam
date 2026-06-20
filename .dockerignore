@@ -1,0 +1,9 @@
+# Fișiere care NU trebuie copiate în html (nginx.conf e folosit separat de Dockerfile)
+Dockerfile
+docker-compose.yml
+.dockerignore
+README.md
+**/.DS_Store
+.git
+.gitignore
+diagrams/

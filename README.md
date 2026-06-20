@@ -17,6 +17,22 @@ Apoi deschide în browser: **http://localhost:8000**
 
 > De ce server local? Materiile Rețele și SDA se încarcă în `iframe`, iar unele browsere (mai ales Chrome) blochează încărcarea lor sau redarea video atunci când deschizi fișierul direct prin `file://`. Pe un server local totul funcționează curat.
 
+**Cu Docker** (containerizat, nginx):
+```bash
+cd app
+docker compose up -d        # sau: docker compose up --build
+```
+Apoi deschide: **http://localhost:8080**
+
+Oprire: `docker compose down`.
+
+Fără Docker Compose poți folosi direct Docker:
+```bash
+cd app
+docker build -t licenta-trainer .
+docker run -d -p 8080:80 --name licenta-trainer licenta-trainer
+```
+
 ---
 
 ## 📥 Cum obții aplicația (pentru cineva care vrea s-o folosească)
