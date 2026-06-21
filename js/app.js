@@ -96,17 +96,20 @@ function materie(id){ return MATERII.find(function(m){ return m.id===id; }); }
 // ============================================================
 const VIDEOS = [
   { materie:"PSO", icon:"🧠", items:[
-    { cat:"Procese & fork()",            id:"taNzTCO-k3U", titlu:"fork() System Call Explained — demo proces copil & zombie", canal:"OS Tutorial" },
-    { cat:"Sincronizare (mutex/semafor)",id:"8wcuLCvMmF8", titlu:"Semaphore vs. Mutex — A Clear Understanding", canal:"Jacob Sorber" },
+    { cat:"Procese & fork()",            id:"cex9XrZCU14", start:23, titlu:"fork() — crearea proceselor în C", canal:"YouTube" },
+    { cat:"Stări proces",                id:"2dJdHMpCLIg", titlu:"Stările unui proces (process states)", canal:"YouTube" },
+    { cat:"Fire de execuție (threads)",  id:"M9HHWFp84f0", titlu:"Threads — fire de execuție", canal:"YouTube" },
+    { cat:"Memorie partajată",           id:"Y2mDwW2pMv4", titlu:"Shared memory — memorie partajată între procese", canal:"YouTube" },
+    { cat:"Sincronizare (mutex/semafor)",id:"kd8b9Fr0Xbo", titlu:"Mutex vs Semaphore în C++", canal:"YouTube" },
     { cat:"Deadlock",                    id:"y7DOHyBTWps", titlu:"Deadlock — Operating Systems, Simply Explained", canal:"Kantan Coding" },
     { cat:"Planificare (scheduling)",    id:"zFnrUVqtiOY", titlu:"Process Scheduling Algorithms (Preemptive vs Non-preemptive)", canal:"Gate Smashers" }
   ]},
   { materie:"Rețele", icon:"🌐", items:[
     { cat:"Model OSI & TCP/IP",      id:"3up1FsVRUfE", titlu:"The OSI Model and TCP/IP: Explained", canal:"PowerCert" },
-    { cat:"TCP — 3-way handshake",   id:"rmFX1V49K8U", titlu:"How TCP really works — Three-way handshake", canal:"Practical Networking" },
-    { cat:"Subnetting",              id:"GSX1GlaznKM", titlu:"Subnetting Made Easy", canal:"Sunny Classroom" },
+    { cat:"TCP — 3-way handshake",   id:"F27PLin3TV0", titlu:"TCP — stabilirea conexiunii (3-way handshake)", canal:"YouTube" },
+    { cat:"Subnetting",              id:"nFYilGQ-p-8", titlu:"Subnetting explicat", canal:"YouTube" },
     { cat:"ARP",                     id:"cn8Zxh9bPio", titlu:"ARP Explained — Address Resolution Protocol", canal:"PowerCert" },
-    { cat:"DHCP (DORA)",             id:"4pkDL1pgCgQ", titlu:"DHCP Explained — procesul DORA", canal:"TechTerms" }
+    { cat:"DHCP (DORA)",             id:"kS42C3vqFco", titlu:"DHCP — procesul DORA", canal:"YouTube" }
   ]},
   { materie:"SDA", icon:"🧮", items:[
     { cat:"Complexitate (Big-O)",  id:"__vX2sjlpXU", titlu:"Big-O notation in 5 minutes — The basics", canal:"Michael Sambol" },
@@ -277,13 +280,15 @@ function showVideos(){
     html += '<h3 class="vid-mat">'+grup.icon+' '+grup.materie+'</h3>';
     html += '<div class="vid-grid">';
     grup.items.forEach(function(v){
+      const embed = "https://www.youtube.com/embed/"+v.id+(v.start?"?start="+v.start:"");
+      const watch = "https://www.youtube.com/watch?v="+v.id+(v.start?"&t="+v.start+"s":"");
       html += '<div class="vid-card">'
-        + '<div class="vid-frame"><iframe loading="lazy" src="https://www.youtube.com/embed/'+v.id+'" '
+        + '<div class="vid-frame"><iframe loading="lazy" src="'+embed+'" '
         + 'title="'+v.titlu+'" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>'
         + '<div class="vid-meta">'
         + '<span class="vid-cat">'+v.cat+'</span>'
         + '<div class="vid-title">'+v.titlu+'</div>'
-        + '<a class="vid-yt" href="https://www.youtube.com/watch?v='+v.id+'" target="_blank" rel="noopener">▶ '+(v.canal||"YouTube")+'</a>'
+        + '<a class="vid-yt" href="'+watch+'" target="_blank" rel="noopener">▶ '+(v.canal||"YouTube")+'</a>'
         + '</div></div>';
     });
     html += '</div>';
