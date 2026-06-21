@@ -148,6 +148,22 @@ body{
 .embed-wrap{height:calc(100vh - 66px)}
 .embed-frame{width:100%; height:100%; border:0; display:block; background:var(--bg)}
 
+/* ---------- Materiale Video (carduri pe 3 coloane) ---------- */
+.content.videos{max-width:1180px}
+.vid-mat{font-size:17px; color:var(--accent); margin:26px 0 12px; padding-bottom:8px; border-bottom:1px solid var(--line)}
+.vid-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+.vid-card{background:var(--panel); border:1px solid var(--line); border-radius:13px; overflow:hidden; transition:.15s; display:flex; flex-direction:column}
+.vid-card:hover{border-color:var(--accent); transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,0,0,.28)}
+.vid-frame{position:relative; width:100%; padding-top:56.25%; background:#000}
+.vid-frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0; display:block}
+.vid-meta{padding:12px 14px 13px; display:flex; flex-direction:column; gap:5px; flex:1}
+.vid-cat{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#1a1714; background:var(--accent); align-self:flex-start; padding:2px 9px; border-radius:20px}
+.vid-title{font-size:13.5px; color:var(--ink); line-height:1.4; font-weight:500}
+.vid-yt{margin-top:auto; font-size:12px; color:var(--muted); text-decoration:none; font-weight:600}
+.vid-yt:hover{color:var(--red)}
+@media (max-width:1024px){ .vid-grid{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:640px){ .vid-grid{grid-template-columns:1fr} }
+
 /* ---------- Main ---------- */
 .main{margin-left:var(--sidebar-w); min-height:100vh}
 .topbar{

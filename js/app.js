@@ -91,6 +91,34 @@ const MATERII = [
 ];
 function materie(id){ return MATERII.find(function(m){ return m.id===id; }); }
 
+// ============================================================
+//  MATERIALE VIDEO — clipuri YouTube pe categorii, per materie
+// ============================================================
+const VIDEOS = [
+  { materie:"PSO", icon:"🧠", items:[
+    { cat:"Procese & fork()",            id:"taNzTCO-k3U", titlu:"fork() System Call Explained — demo proces copil & zombie", canal:"OS Tutorial" },
+    { cat:"Sincronizare (mutex/semafor)",id:"8wcuLCvMmF8", titlu:"Semaphore vs. Mutex — A Clear Understanding", canal:"Jacob Sorber" },
+    { cat:"Deadlock",                    id:"y7DOHyBTWps", titlu:"Deadlock — Operating Systems, Simply Explained", canal:"Kantan Coding" },
+    { cat:"Planificare (scheduling)",    id:"zFnrUVqtiOY", titlu:"Process Scheduling Algorithms (Preemptive vs Non-preemptive)", canal:"Gate Smashers" }
+  ]},
+  { materie:"Rețele", icon:"🌐", items:[
+    { cat:"Model OSI & TCP/IP",      id:"3up1FsVRUfE", titlu:"The OSI Model and TCP/IP: Explained", canal:"PowerCert" },
+    { cat:"TCP — 3-way handshake",   id:"rmFX1V49K8U", titlu:"How TCP really works — Three-way handshake", canal:"Practical Networking" },
+    { cat:"Subnetting",              id:"GSX1GlaznKM", titlu:"Subnetting Made Easy", canal:"Sunny Classroom" },
+    { cat:"ARP",                     id:"cn8Zxh9bPio", titlu:"ARP Explained — Address Resolution Protocol", canal:"PowerCert" },
+    { cat:"DHCP (DORA)",             id:"4pkDL1pgCgQ", titlu:"DHCP Explained — procesul DORA", canal:"TechTerms" }
+  ]},
+  { materie:"SDA", icon:"🧮", items:[
+    { cat:"Complexitate (Big-O)",  id:"__vX2sjlpXU", titlu:"Big-O notation in 5 minutes — The basics", canal:"Michael Sambol" },
+    { cat:"Liste înlănțuite",      id:"N6dOwBde7-M", titlu:"Learn Linked Lists in 13 minutes", canal:"Bro Code" },
+    { cat:"Arbori BST",            id:"cySVml6e_Fc", titlu:"Binary Search Trees — Insertion & Deletion", canal:"Jenny's Lectures" },
+    { cat:"Arbori AVL",            id:"jDM6_TnYIqE", titlu:"AVL Tree — Insertion and Rotations", canal:"Abdul Bari" },
+    { cat:"Grafuri — Dijkstra",    id:"XB4MIexjvY0", titlu:"Dijkstra Algorithm — Single Source Shortest Path", canal:"Abdul Bari" },
+    { cat:"Tabele hash",           id:"KyUTuwz_b7Q", titlu:"Hash Tables and Hash Functions", canal:"Computer Science" },
+    { cat:"Sortări",               id:"6drK7cVIb84", titlu:"Sorting Algorithms — Bubble, Selection, Insertion, Merge, Quick", canal:"Lapix" }
+  ]}
+];
+
 // ---------- Temă (dark/light) — la nivel de întreaga aplicație ----------
 function currentTheme(){ return document.documentElement.dataset.theme === "light" ? "light" : "dark"; }
 function applyThemeToFrames(t){
@@ -116,6 +144,7 @@ function buildNav(){
   let html = ''
     + '<div class="nav-section">'
     + '<div class="nav-item active" data-view="dashboard"><span class="ico">🏠</span> Acasă — Materii</div>'
+    + '<div class="nav-item" data-view="videos"><span class="ico">🎬</span> Materiale Video</div>'
     + '</div>';
   MATERII.forEach(function(m){
     html += '<div class="nav-subject" data-subject="'+m.id+'">';
@@ -164,6 +193,7 @@ function wireNav(){
       e.stopPropagation();
       const v = it.dataset.view;
       if(v==="dashboard") showDashboard();
+      else if(v==="videos") showVideos();
       else if(v==="quiz") showQuiz();
       else if(v==="concept") showConcept(it.dataset.id);
       else if(v==="embed") showEmbed(it.dataset.subject, it.dataset.sec);
@@ -185,6 +215,8 @@ function setActive(view,id,sec){
 
   if(view==="dashboard"){
     const el = document.querySelector('.nav-item[data-view="dashboard"]'); if(el) el.classList.add("active");
+  } else if(view==="videos"){
+    const el = document.querySelector('.nav-item[data-view="videos"]'); if(el) el.classList.add("active");
   } else if(view==="home"){
     const el = document.querySelector('.nav-subhead[data-subject="pso"]'); if(el) el.classList.add("active");
   } else if(view==="quiz"){
@@ -198,7 +230,7 @@ function setActive(view,id,sec){
   if(view!=="quiz"){ const bar=document.getElementById("scorebar"); if(bar) bar.remove(); }
   window.scrollTo(0,0);
   const cnt = document.querySelector(".content");
-  if(cnt){ cnt.classList.toggle("embed", view==="embed"); cnt.scrollTop = 0; }
+  if(cnt){ cnt.classList.toggle("embed", view==="embed"); cnt.classList.toggle("videos", view==="videos"); cnt.scrollTop = 0; }
 }
 
 // deschide o materie din dashboard sau din bara laterală
@@ -229,6 +261,34 @@ function showDashboard(){
           + '<span class="cat-tag">'+m.sub+' →</span></div>';
       }).join("")
     + '</div>';
+}
+
+function showVideos(){
+  setActive("videos");
+  document.getElementById("crumb").textContent = "Pregătire licență";
+  document.getElementById("title").textContent = "Materiale Video";
+  const c = document.getElementById("content");
+  let html = ''
+    + '<div class="hero">'
+    + '<h2>Materiale Video 🎬</h2>'
+    + '<p>Clipuri YouTube selectate, care explică vizual conceptele cheie din fiecare materie. Dă play direct aici sau deschide pe YouTube. Grupate pe categorii.</p>'
+    + '</div>';
+  VIDEOS.forEach(function(grup){
+    html += '<h3 class="vid-mat">'+grup.icon+' '+grup.materie+'</h3>';
+    html += '<div class="vid-grid">';
+    grup.items.forEach(function(v){
+      html += '<div class="vid-card">'
+        + '<div class="vid-frame"><iframe loading="lazy" src="https://www.youtube.com/embed/'+v.id+'" '
+        + 'title="'+v.titlu+'" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>'
+        + '<div class="vid-meta">'
+        + '<span class="vid-cat">'+v.cat+'</span>'
+        + '<div class="vid-title">'+v.titlu+'</div>'
+        + '<a class="vid-yt" href="https://www.youtube.com/watch?v='+v.id+'" target="_blank" rel="noopener">▶ '+(v.canal||"YouTube")+'</a>'
+        + '</div></div>';
+    });
+    html += '</div>';
+  });
+  c.innerHTML = html;
 }
 
 function showHome(){
