@@ -1,59 +1,30 @@
 # Licență Trainer 🎓 — aplicație de pregătire pentru examenul de licență
 
-Aplicație web (HTML + CSS + JavaScript, **fără backend, fără instalare**) pentru pregătirea examenului de licență. Conține mai multe materii: **PSO**, **Rețele** și **SDA**.
+Aplicație web (HTML + CSS + JavaScript, **fără backend**) pentru pregătirea examenului de licență. Conține mai multe materii: **PSO**, **Rețele** și **SDA**.
 
 ---
 
-## 🚀 Pornire rapidă
+## 🌐 Aplicația live
 
-**Cel mai simplu — dublu-click:** deschide `index.html` în browser. Atât.
+Aplicația este găzduită pe un **Raspberry Pi 5** și expusă public la:
 
-**Recomandat — server local** (ca să meargă tot: imagini, iframe-uri, video YouTube):
-```bash
-cd app
-python3 -m http.server 8000
-```
-Apoi deschide în browser: **http://localhost:8000**
+### 👉 https://pi5.komodo-castor.ts.net/
 
-> De ce server local? Materiile Rețele și SDA se încarcă în `iframe`, iar unele browsere (mai ales Chrome) blochează încărcarea lor sau redarea video atunci când deschizi fișierul direct prin `file://`. Pe un server local totul funcționează curat.
-
-**Cu Docker** (containerizat, nginx):
-```bash
-cd app
-docker compose up -d        # sau: docker compose up --build
-```
-Apoi deschide: **http://localhost:8080**
-
-Oprire: `docker compose down`.
-
-Fără Docker Compose poți folosi direct Docker:
-```bash
-cd app
-docker build -t licenta-trainer .
-docker run -d -p 8080:80 --name licenta-trainer licenta-trainer
-```
-
----
-
-## 📥 Cum obții aplicația (pentru cineva care vrea s-o folosească)
-
-1. **Copiază folderul `app/`** întreg (cu tot ce e în el) pe calculatorul tău — prin clonare git, copiere pe stick, descărcare ZIP etc.
-2. Asigură-te că ai **un browser modern** (Chrome, Edge, Firefox sau Safari). Nu trebuie instalat nimic altceva.
-3. Pentru server local ai nevoie de **Python 3** (preinstalat pe macOS/Linux). Verifici cu `python3 --version`.
-   - Nu ai Python? Mergi pe varianta dublu-click, sau folosește orice alt server static (`npx serve`, extensia *Live Server* din VS Code etc.).
-4. Pornește aplicația cu una din variantele de mai sus și începe de la **Dashboard → alege o materie**.
+Deschide link-ul în orice browser modern (Chrome, Edge, Firefox, Safari) — nu trebuie instalat sau pornit nimic. Începe de la **Dashboard → alege o materie**.
 
 ---
 
 ## 📚 Ce conține
 
-La pornire vezi un **dashboard** cu materiile disponibile. Din bara din stânga poți **extinde** materia care te interesează și sări direct la o secțiune. În dreapta sus ai un buton **dark/light** care schimbă tema în toată aplicația (inclusiv în materiile încărcate în iframe).
+La intrare vezi un **dashboard** cu materiile disponibile. Din bara din stânga poți **extinde** materia care te interesează și sări direct la o secțiune. În dreapta sus ai un buton **dark/light** care schimbă tema în toată aplicația (inclusiv în materiile încărcate în iframe).
 
 | Materie | Conținut |
 |---|---|
-| **PSO** 🧠 | Procese, fork/exec/wait, fire de execuție, semafoare/mutex/bariere, planificare, semnale, memorie. 13 lecții + 28 întrebări de examen (grile cu verificare instant și probleme deschise cu rezolvare). |
+| **PSO** 🧠 | Procese, fork/exec/wait, fire de execuție, semafoare/mutex/bariere, planificare, semnale, memorie, IPC (inclusiv pipe-uri). Lecții + întrebări de examen (grile cu verificare instant și probleme deschise cu rezolvare). |
 | **Rețele** 🌐 | Headere Ethernet / IP / TCP / UDP / ARP / DHCP — diagrame interactive, drag & drop, completare câmpuri, analiză de pachete (hexdump) și quiz. |
-| **SDA** 🧮 | Complexitate, liste/stive, arbori BST și AVL, grafuri și Dijkstra, tabele hash, sortări și tehnici (Divide et Impera, Backtracking, Greedy) + 8 exerciții rezolvate în stil examen. |
+| **SDA** 🧮 | Complexitate, liste/stive, arbori BST și AVL, grafuri și Dijkstra, tabele hash, sortări și tehnici (Divide et Impera, Backtracking, Greedy) + exerciții rezolvate în stil examen. |
+
+De asemenea, secțiunea **🎬 Materiale Video** adună clipuri YouTube selectate pentru conceptele cheie din fiecare materie.
 
 ---
 
@@ -64,7 +35,7 @@ app/
 ├── index.html              # shell-ul aplicației (dashboard + sidebar + temă)
 ├── css/styles.css          # stiluri + tema dark/light la nivel de aplicație
 ├── js/
-│   ├── app.js              # registrul de materii (MATERII), navigare, temă
+│   ├── app.js              # registrul de materii (MATERII), navigare, temă, video
 │   ├── quiz.js             # motorul de teste (PSO)
 │   └── data/
 │       ├── concepte.js     # lecțiile PSO (+ diagrame SVG inline)
@@ -72,7 +43,9 @@ app/
 ├── retele/index.html       # materia Rețele (pagină proprie, încărcată în iframe)
 ├── sda/index.html          # materia SDA (pagină proprie, încărcată în iframe)
 ├── diagrams/               # surse editabile draw.io (PSO)
-└── assets/                 # diagrame PNG exportate (PSO)
+├── assets/                 # diagrame PNG exportate (PSO)
+├── Dockerfile              # imagine nginx pentru deploy (folosită pe Raspberry Pi 5)
+└── nginx.conf              # configurarea serverului web
 ```
 
 **Două tipuri de materii:**
@@ -115,4 +88,4 @@ Vezi `sda/index.html` ca model.
   ```
   `multi:true` + `corecte:[0,2]` pentru răspuns multiplu; `tip:"deschis"` + `raspuns:"..."` pentru problemă cu rezolvare.
 - Lecție nouă în `js/data/concepte.js`: obiect cu `id, cat, titlu, rezumat, html`.
-
+- Clip video atașat unei lecții: adaugă în `CONCEPT_VIDEOS` din `js/app.js` (cheia = `id`-ul lecției).
