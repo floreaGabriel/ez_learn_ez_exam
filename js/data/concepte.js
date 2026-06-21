@@ -985,6 +985,123 @@ if (fork() == 0) {
 },
 // ------------------------------------------------------------
 {
+  id:"pipe", cat:"IPC",
+  titlu:"Pipe-uri anonime — comunicare tată-fiu",
+  rezumat:"Canal unidirecțional între procese înrudite; pereche de pipe-uri pentru dialog bidirecțional; redirectare cu dup2.",
+  html:`
+<h2>Ce este un pipe anonim</h2>
+<p>Un <b>pipe</b> este un canal de comunicație <b>unidirecțional</b> în memorie (un buffer <b>FIFO</b> gestionat de kernel) între procese <b>înrudite</b> (tată–fiu). Se creează cu apelul de sistem <code>pipe()</code>:</p>
+<pre class="code" data-lang="c">int fd[2];
+pipe(fd);   // fd[0] = capat de CITIRE, fd[1] = capat de SCRIERE</pre>
+<p>Ce scrii în <code>fd[1]</code> poți citi din <code>fd[0]</code>. Un pipe = <b>un singur sens</b>.</p>
+<pre class="code">   scrie                       citeste
+  --------&gt;  fd[1] [#######] fd[0]  --------&gt;
+                 (kernel buffer FIFO)</pre>
+
+<h2>De ce avem nevoie de DOUĂ pipe-uri</h2>
+<p>Un pipe e unidirecțional. Pentru un <b>dialog bidirecțional</b> (tata trimite fiului <b>și</b> fiul răspunde tatălui) folosim o <b>pereche de pipe-uri</b>, câte unul pe fiecare sens:</p>
+<ul>
+<li><b>pipe 1:</b> tată → fiu (<code>p2c</code> — parent to child)</li>
+<li><b>pipe 2:</b> fiu → tată (<code>c2p</code> — child to parent)</li>
+</ul>
+
+<h2>Schema comunicării</h2>
+<pre class="code">                 pipe1 (tata -&gt; fiu)
+  +---------+   p2c[1] [####] p2c[0]   +---------+
+  |  TATA   |---- scrie ---&gt;  -- citeste --&gt;|  FIU    |
+  | (parent)|                              | (child) |
+  |         |&lt;-- citeste --   &lt;-- scrie ----|         |
+  +---------+   c2p[0] [####] c2p[1]   +---------+
+                 pipe2 (fiu -&gt; tata)
+
+Tata pastreaza: p2c[1] (scriere) + c2p[0] (citire)  -&gt; inchide p2c[0], c2p[1]
+Fiul pastreaza: p2c[0] (citire)  + c2p[1] (scriere)  -&gt; inchide p2c[1], c2p[0]</pre>
+
+<h2>Rolul lui fork() și regula close()</h2>
+<p><code>fork()</code> duplică procesul, iar copilul moștenește <b>copii ale descriptorilor</b> deschiși. Deci după <code>fork()</code> <b>ambele</b> procese au toate cele 4 capete deschise.</p>
+<div class="callout"><b>Regula de aur:</b> fiecare proces <b>închide capetele pe care nu le folosește</b> (<code>close()</code>). E obligatoriu pentru:
+<ul>
+<li>a nu risipi descriptori;</li>
+<li>ca <code>read()</code> să detecteze corect <b>EOF</b> — cititorul primește EOF doar când <b>toate</b> capetele de scriere ale pipe-ului sunt închise. Altfel apare <b>blocaj (deadlock)</b>.</li>
+</ul></div>
+
+<h2>Aplicație completă în C (read / write)</h2>
+<pre class="code" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;      // pipe, fork, read, write, close
+#include &lt;string.h&gt;
+#include &lt;sys/wait.h&gt;    // wait
+
+int main() {
+    int p2c[2];   // pipe TATA -&gt; FIU
+    int c2p[2];   // pipe FIU  -&gt; TATA
+
+    pipe(p2c);    // cream cele DOUA pipe-uri anonime (INAINTE de fork!)
+    pipe(c2p);
+
+    pid_t pid = fork();        // duplicam procesul
+
+    if (pid &gt; 0) {
+        // ===== PROCESUL TATA =====
+        close(p2c[0]);         // tata NU citeste din pipe1
+        close(c2p[1]);         // tata NU scrie in pipe2
+
+        char *mesaj = "Salut, fiule!";
+        char raspuns[100];
+
+        write(p2c[1], mesaj, strlen(mesaj) + 1);   // trimite fiului
+        printf("[TATA] am trimis: %s\n", mesaj);
+
+        read(c2p[0], raspuns, sizeof(raspuns));    // citeste raspunsul
+        printf("[TATA] am primit: %s\n", raspuns);
+
+        close(p2c[1]); close(c2p[0]);
+        wait(NULL);            // asteapta fiul (evita proces zombie)
+    } else {
+        // ===== PROCESUL FIU =====
+        close(p2c[1]);         // fiul NU scrie in pipe1
+        close(c2p[0]);         // fiul NU citeste din pipe2
+
+        char buf[100], raspuns[100];
+
+        read(p2c[0], buf, sizeof(buf));            // citeste de la tata
+        sprintf(raspuns, "Am primit '%s', multumesc!", buf);
+        write(c2p[1], raspuns, strlen(raspuns) + 1); // raspunde tatalui
+
+        close(p2c[0]); close(c2p[1]);
+        exit(0);
+    }
+    return 0;
+}</pre>
+<p class="muted">Rezultat: <code>[TATA] am trimis: Salut, fiule!</code> urmat de <code>[TATA] am primit: Am primit 'Salut, fiule!', multumesc!</code></p>
+
+<h2>Variantă cu stdin/stdout (dup2)</h2>
+<p>Enunțul cere adesea „funcții de I/O specifice <b>standard input/output</b>". Atunci redirectezi capetele pipe-ului peste <code>stdin</code>/<code>stdout</code> cu <code>dup2()</code> și folosești <code>printf</code>/<code>scanf</code>/<code>fgets</code>:</p>
+<pre class="code" data-lang="c">// ---- in PROCESUL FIU, inainte de comunicare ----
+dup2(p2c[0], STDIN_FILENO);   // stdin-ul fiului = citire de la tata
+dup2(c2p[1], STDOUT_FILENO);  // stdout-ul fiului = scriere catre tata
+
+char buf[100];
+fgets(buf, sizeof(buf), stdin);      // CITESTE din pipe ca din stdin
+printf("Fiul a primit: %s", buf);    // SCRIE in pipe ca in stdout
+fflush(stdout);                      // OBLIGATORIU (vezi mai jos)</pre>
+<div class="tip">⚠️ Când <code>stdout</code> e un <b>pipe</b> (nu terminal), <code>printf</code> e <b>buffer-at</b> — datele nu pleacă până nu faci <code>fflush(stdout)</code>. Uiți <code>fflush</code> → tata pare „blocat" la <code>read</code>. La <code>read</code>/<code>write</code> directe problema nu există.</div>
+
+<h2>Greșeli frecvente</h2>
+<table class="tbl">
+<tr><th>Greșeala</th><th>Consecința</th></tr>
+<tr><td>Nu închizi capetele nefolosite</td><td><code>read</code> nu primește EOF → <b>deadlock</b></td></tr>
+<tr><td>Un singur pipe pentru ambele sensuri</td><td>mesajele se amestecă / procesul își citește propriul mesaj</td></tr>
+<tr><td><code>dup2</code> fără <code>fflush(stdout)</code></td><td>tata se blochează la <code>read</code></td></tr>
+<tr><td>Lipsește <code>wait()</code> în tată</td><td>proces <b>zombie</b></td></tr>
+<tr><td><code>pipe()</code> apelat <b>după</b> <code>fork()</code></td><td>procesele au pipe-uri diferite → nu comunică</td></tr>
+</table>
+
+<div class="tip"><b>La examen:</b> pipe = canal <b>unidirecțional</b> (<code>fd[0]</code> citire, <code>fd[1]</code> scriere); pentru dialog bidirecțional ai nevoie de <b>2 pipe-uri</b>; <code>pipe()</code> se face <b>înainte</b> de <code>fork()</code>; fiecare proces <b>închide</b> capetele nefolosite; <code>wait()</code> în tată evită zombie. <span class="muted">Vezi și conceptul <b>IPC</b> și exemplul shell <code>ls | grep</code>.</span></div>
+`
+},
+// ------------------------------------------------------------
+{
   id:"fisiere", cat:"Sistem de fișiere",
   titlu:"Sistemul de fișiere — descriptori, inode, dentry",
   rezumat:"File descriptors (0/1/2), inode, dentry, dup/dup2, buffered vs system I/O.",

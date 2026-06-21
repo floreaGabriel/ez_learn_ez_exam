@@ -100,6 +100,7 @@ const VIDEOS = [
     { cat:"Stări proces",                id:"2dJdHMpCLIg", titlu:"Stările unui proces (process states)", canal:"YouTube" },
     { cat:"Fire de execuție (threads)",  id:"M9HHWFp84f0", titlu:"Threads — fire de execuție", canal:"YouTube" },
     { cat:"Memorie partajată",           id:"Y2mDwW2pMv4", titlu:"Shared memory — memorie partajată între procese", canal:"YouTube" },
+    { cat:"Pipe-uri (IPC tată-fiu)",     id:"Mqb2dVRe0uo", titlu:"Pipes — comunicare inter-proces în C", canal:"YouTube" },
     { cat:"Sincronizare (mutex/semafor)",id:"kd8b9Fr0Xbo", titlu:"Mutex vs Semaphore în C++", canal:"YouTube" },
     { cat:"Deadlock",                    id:"y7DOHyBTWps", titlu:"Deadlock — Operating Systems, Simply Explained", canal:"Kantan Coding" },
     { cat:"Planificare (scheduling)",    id:"zFnrUVqtiOY", titlu:"Process Scheduling Algorithms (Preemptive vs Non-preemptive)", canal:"Gate Smashers" }
@@ -130,7 +131,8 @@ const CONCEPT_VIDEOS = {
   ipc:         { id:"Y2mDwW2pMv4" },
   mutex:       { id:"kd8b9Fr0Xbo" },
   deadlock:    { id:"y7DOHyBTWps" },
-  planificare: { id:"zFnrUVqtiOY" }
+  planificare: { id:"zFnrUVqtiOY" },
+  pipe:        { id:"Mqb2dVRe0uo" }
 };
 function conceptVideoHtml(id){
   const v = CONCEPT_VIDEOS[id];
