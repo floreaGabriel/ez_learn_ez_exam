@@ -122,6 +122,27 @@ const VIDEOS = [
   ]}
 ];
 
+// Clipul atașat fiecărei lecții PSO (apare în pagina conceptului)
+const CONCEPT_VIDEOS = {
+  fork:        { id:"cex9XrZCU14", start:23 },
+  stari:       { id:"2dJdHMpCLIg" },
+  fire:        { id:"M9HHWFp84f0" },
+  ipc:         { id:"Y2mDwW2pMv4" },
+  mutex:       { id:"kd8b9Fr0Xbo" },
+  deadlock:    { id:"y7DOHyBTWps" },
+  planificare: { id:"zFnrUVqtiOY" }
+};
+function conceptVideoHtml(id){
+  const v = CONCEPT_VIDEOS[id];
+  if(!v) return "";
+  const embed = "https://www.youtube.com/embed/"+v.id+(v.start?"?start="+v.start:"");
+  const watch = "https://www.youtube.com/watch?v="+v.id+(v.start?"&t="+v.start+"s":"");
+  return '<h2>📺 Video explicativ</h2>'
+    + '<div class="video"><iframe loading="lazy" src="'+embed+'" title="Video explicativ" '
+    + 'allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>'
+    + '<p class="vid-fallback">Nu pornește în pagină? <a href="'+watch+'" target="_blank" rel="noopener">Deschide pe YouTube</a></p>';
+}
+
 // ---------- Temă (dark/light) — la nivel de întreaga aplicație ----------
 function currentTheme(){ return document.documentElement.dataset.theme === "light" ? "light" : "dark"; }
 function applyThemeToFrames(t){
@@ -351,7 +372,7 @@ function showConcept(id){
   document.getElementById("crumb").textContent = "Concepte · "+c.cat;
   document.getElementById("title").textContent = shortTitle(c.titlu);
   const el = document.getElementById("content");
-  el.innerHTML = '<article class="article">'+c.html+'</article>'+conceptNav(id);
+  el.innerHTML = '<article class="article">'+c.html+conceptVideoHtml(id)+'</article>'+conceptNav(id);
   applyHighlight(el);
 }
 

@@ -136,6 +136,10 @@ td code{font-size:12.5px}
     <tr><td>3</td><td><code>f(n) = Ω(n^(log_b a + ε))</code> (+ regularitate)</td><td><code>T(n) = Θ(f(n))</code></td></tr>
   </table>
   <p><b>Exemplu — Merge Sort:</b> <code>T(n) = 2T(n/2) + n</code>. Aici <code>a=2, b=2 → n^(log₂2) = n¹ = n</code>, iar <code>f(n)=n</code> → cazul 2 → <code>T(n) = Θ(n log n)</code>.</p>
+
+  <h2>Video explicativ</h2>
+  <div class="video"><iframe src="https://www.youtube.com/embed/__vX2sjlpXU" title="Big-O notation" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  <p class="video-link">Nu se încarcă? <a href="https://www.youtube.com/watch?v=__vX2sjlpXU" target="_blank" rel="noopener">Deschide pe YouTube</a></p>
 </section>
 
 <!-- ============ LISTE ============ -->
@@ -195,6 +199,10 @@ td code{font-size:12.5px}
     <tr><td>Inserare la sfârșit</td><td><code>O(1)</code>* amortizat</td><td><code>O(1)</code> cu pointer la coadă</td></tr>
     <tr><td>Căutare</td><td><code>O(n)</code></td><td><code>O(n)</code></td></tr>
   </table>
+
+  <h2>Video explicativ</h2>
+  <div class="video"><iframe src="https://www.youtube.com/embed/N6dOwBde7-M" title="Linked Lists" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  <p class="video-link">Nu se încarcă? <a href="https://www.youtube.com/watch?v=N6dOwBde7-M" target="_blank" rel="noopener">Deschide pe YouTube</a></p>
 </section>
 
 <!-- ============ BST ============ -->
@@ -275,6 +283,10 @@ td code{font-size:12.5px}
     <span class="kw">return</span> r;
 }</pre>
   <div class="tip"><b>Complexitate:</b> toate operațiile sunt <code>O(h)</code>, unde h = înălțimea. Pentru un BST <b>echilibrat</b> h = O(log n); pentru unul <b>degenerat</b> (inserare în ordine sortată) h = O(n) — de aici nevoia arborilor AVL.</div>
+
+  <h2>Video explicativ</h2>
+  <div class="video"><iframe src="https://www.youtube.com/embed/cySVml6e_Fc" title="Binary Search Trees" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  <p class="video-link">Nu se încarcă? <a href="https://www.youtube.com/watch?v=cySVml6e_Fc" target="_blank" rel="noopener">Deschide pe YouTube</a></p>
 </section>
 
 <!-- ============ AVL ============ -->
@@ -320,6 +332,10 @@ td code{font-size:12.5px}
       allowfullscreen></iframe>
   </div>
   <p class="video-link">Dacă nu se încarcă, deschide pe YouTube: <a href="https://www.youtube.com/watch?v=zP2xbKerIds&amp;t=3s" target="_blank" rel="noopener">youtube.com/watch?v=zP2xbKerIds</a></p>
+
+  <h3>Alt clip — rotații în detaliu (Abdul Bari)</h3>
+  <div class="video"><iframe src="https://www.youtube.com/embed/jDM6_TnYIqE" title="AVL Tree — Insertion and Rotations" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  <p class="video-link">Nu se încarcă? <a href="https://www.youtube.com/watch?v=jDM6_TnYIqE" target="_blank" rel="noopener">Deschide pe YouTube</a></p>
 </section>
 
 <!-- ============ GRAFURI ============ -->
@@ -361,6 +377,10 @@ td code{font-size:12.5px}
 }</pre>
   <p>Algoritmul: <code>d[sursa]=0</code>, restul <code>∞</code>. Cât timp există noduri ne-vizitate: extragi nodul <code>u</code> cu <code>d[u]</code> minim, îl marchezi finalizat, relaxezi toate muchiile lui. Complexitate: <code>O(V²)</code> cu vector simplu, <code>O((V+E)·log V)</code> cu heap (coadă de priorități).</p>
   <div class="warn"><b>Limitare:</b> Dijkstra <b>nu</b> funcționează cu costuri negative (acolo se folosește Bellman-Ford).</div>
+
+  <h2>Video explicativ</h2>
+  <div class="video"><iframe src="https://www.youtube.com/embed/XB4MIexjvY0" title="Dijkstra Algorithm" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  <p class="video-link">Nu se încarcă? <a href="https://www.youtube.com/watch?v=XB4MIexjvY0" target="_blank" rel="noopener">Deschide pe YouTube</a></p>
 </section>
 
 <!-- ============ HASH ============ -->
@@ -392,6 +412,10 @@ td code{font-size:12.5px}
 
   <h2>Bloom filters (filtre Bloom)</h2>
   <p>Structură probabilistică compactă care răspunde la „elementul ar putea fi în mulțime?". Folosește <code>k</code> funcții de dispersie și un vector de biți. <b>Fără fals-negative</b> (dacă spune „nu", sigur nu e), dar cu <b>posibile fals-pozitive</b>. Nu permite ștergere și nu stochează elementele efective — doar prezența probabilă.</p>
+
+  <h2>Video explicativ</h2>
+  <div class="video"><iframe src="https://www.youtube.com/embed/KyUTuwz_b7Q" title="Hash Tables" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  <p class="video-link">Nu se încarcă? <a href="https://www.youtube.com/watch?v=KyUTuwz_b7Q" target="_blank" rel="noopener">Deschide pe YouTube</a></p>
 </section>
 
 <!-- ============ SORTARI ============ -->
@@ -427,6 +451,10 @@ td code{font-size:12.5px}
 }</pre>
 
   <div class="tip"><b>Sortare fără comparații:</b> Counting Sort și Radix Sort nu compară elementele între ele — folosesc valoarea ca indice. Astfel sparg bariera <code>O(n log n)</code>, atingând <code>O(n)</code> când domeniul valorilor e mărginit. Vezi exercițiul rezolvat.</div>
+
+  <h2>Video explicativ</h2>
+  <div class="video"><iframe src="https://www.youtube.com/embed/6drK7cVIb84" title="Sorting Algorithms" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  <p class="video-link">Nu se încarcă? <a href="https://www.youtube.com/watch?v=6drK7cVIb84" target="_blank" rel="noopener">Deschide pe YouTube</a></p>
 </section>
 
 <!-- ============ TEHNICI ============ -->
