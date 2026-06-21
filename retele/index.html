@@ -323,10 +323,10 @@ const FIELD_DESC = {
   'tcp-dport':'Portul aplicației destinație (ex. 80 = HTTP, 443 = HTTPS).',
   'tcp-seq':'Sequence Number — numărul de secvență al primului octet de date din segment.',
   'tcp-ack':'Acknowledgment Number — următorul octet așteptat (confirmă datele primite).',
-  'tcp-off':'Data Offset — lungimea headerului TCP în cuvinte de 32 biți.',
+  'tcp-off':'Header Length — lungimea headerului TCP în cuvinte de 32 biți.',
   'tcp-res':'Biți rezervați pentru utilizări viitoare, setați pe 0.',
   'tcp-flags':'Biți de control: URG, ACK, PSH, RST, SYN, FIN (ex. SYN deschide conexiunea).',
-  'tcp-win':'Window — câți octeți poate primi receptorul (control de flux).',
+  'tcp-win':'Window Size — câți octeți poate primi receptorul (control de flux).',
   'tcp-cksum':'Sumă de control pentru header + date.',
   'tcp-urg':'Urgent Pointer — marchează sfârșitul datelor urgente (când flagul URG = 1).',
   'tcp-opt':'Opțiuni: MSS, window scaling, SACK etc. Lungime variabilă.',
@@ -403,10 +403,10 @@ const HEADERS = {
       {n:'Port Destinație',k:'tcp-dport',bits:16,alt:['destination port','port destinatie']},
       {n:'Număr Secvență (SEQ)',k:'tcp-seq',bits:32,alt:['sequence number','seq','numar secventa']},
       {n:'Număr Confirmare (ACK)',k:'tcp-ack',bits:32,alt:['acknowledgment','ack','numar confirmare']},
-      {n:'Data Offset',k:'tcp-off',bits:4,alt:['offset','data offset']},
+      {n:'Header Length',k:'tcp-off',bits:4,alt:['offset','data offset','header length']},
       {n:'Rezervat',k:'tcp-res',bits:6,alt:['reserved','rezervat']},
       {n:'Flags (U·A·P·R·S·F)',k:'tcp-flags',bits:6,alt:['flags','flaguri','control bits']},
-      {n:'Fereastră',k:'tcp-win',bits:16,alt:['window','fereastra']},
+      {n:'Window Size',k:'tcp-win',bits:16,alt:['window','fereastra','window size']},
       {n:'Checksum',k:'tcp-cksum',bits:16,alt:['suma de control','suma control']},
       {n:'Urgent Pointer',k:'tcp-urg',bits:16,alt:['urgent']},
       {n:'Opțiuni',k:'tcp-opt',bits:0,var:true,vtxt:'variabil',alt:['options','optiuni']},
@@ -488,7 +488,10 @@ function renderDiagram(container, hkey, opt={}){
     el.style.setProperty('--h',hueFor(f.k));
     el.dataset.k=f.k; el.dataset.idx=idx;
     if(H.mode==='word32'){
-      el.style.gridColumn='span '+(f.var?32:f.bits);
+      // câmpurile mai mari de un cuvânt (ex. chaddr/sname/file la DHCP) se
+      // limitează la 32 de coloane = un rând; altfel span-ul uriaș creează
+      // coloane implicite care lățesc diagrama și strică ordinea vizuală.
+      el.style.gridColumn='span '+(f.var?32:Math.min(32,f.bits));
     }else{
       el.style.flexGrow = f.var?6:Math.max(1,f.bits/8);
       el.style.flexBasis=(f.var?160:Math.max(54,f.bits/8*22))+'px';
@@ -870,9 +873,9 @@ const PACKETS={
       {n:'Port Destinație',k:'tcp-dport',start:36,len:2,fmt:'port'},
       {n:'Număr Secvență',k:'tcp-seq',start:38,len:4,fmt:'hex'},
       {n:'Număr Confirmare (ACK)',k:'tcp-ack',start:42,len:4,fmt:'hex'},
-      {n:'Data Offset + Rezervat',k:'tcp-off',start:46,len:1,fmt:'hex'},
+      {n:'Header Length + Rezervat',k:'tcp-off',start:46,len:1,fmt:'hex'},
       {n:'Flags TCP',k:'tcp-flags',start:47,len:1,fmt:'tcpflags'},
-      {n:'Fereastră',k:'tcp-win',start:48,len:2,fmt:'uint'},
+      {n:'Window Size',k:'tcp-win',start:48,len:2,fmt:'uint'},
       {n:'Checksum',k:'tcp-cksum',start:50,len:2,fmt:'hex'},
       {n:'Urgent Pointer',k:'tcp-urg',start:52,len:2,fmt:'hex'},
       {n:'Date (HTTP)',k:'data',start:54,len:18,fmt:'ascii'},
