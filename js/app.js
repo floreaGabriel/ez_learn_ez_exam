@@ -247,9 +247,16 @@ function wireNav(){
       else if(v==="exam") showExam(it.dataset.id);
       else if(v==="examindex") showExamIndex();
       else if(v==="embed") showEmbed(it.dataset.subject, it.dataset.sec);
+      closeSidebar();   // pe mobil, închide drawer-ul după ce alegi ceva
     });
   });
 }
+
+// ---------- Bară laterală pe mobil (drawer) ----------
+function openSidebar(){ document.body.classList.add("nav-open"); var t=document.getElementById("navToggle"); if(t) t.setAttribute("aria-expanded","true"); }
+function closeSidebar(){ document.body.classList.remove("nav-open"); var t=document.getElementById("navToggle"); if(t) t.setAttribute("aria-expanded","false"); }
+function toggleSidebar(){ document.body.classList.contains("nav-open") ? closeSidebar() : openSidebar(); }
+document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeSidebar(); });
 
 // extinde grupul materiei (acordeon) și marchează elementul activ
 function setActive(view,id,sec){

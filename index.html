@@ -20,7 +20,7 @@
 </head>
 <body>
   <aside class="sidebar">
-    <div class="brand" onclick="showDashboard()" style="cursor:pointer">
+    <div class="brand" onclick="showDashboard(); closeSidebar()" style="cursor:pointer">
       <h1>Licență Trainer 🎓</h1>
       <div class="sub">Pregătire examen de licență</div>
       <span class="pill">Materii</span>
@@ -28,10 +28,12 @@
     <div id="nav"></div>
     <div id="live-stats" class="live-stats" aria-live="polite"></div>
   </aside>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
 
   <div class="main">
     <div class="topbar">
-      <div>
+      <button class="nav-toggle" id="navToggle" aria-label="Meniu" aria-expanded="false" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-titles">
         <div class="crumb" id="crumb">Pregătire licență</div>
         <h2 id="title">Acasă</h2>
       </div>

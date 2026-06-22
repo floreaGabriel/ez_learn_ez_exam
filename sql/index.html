@@ -167,6 +167,71 @@ details.anexa pre{margin-top:12px}
 .chip.sel{border-color:var(--accent); background:rgba(233,177,67,.18); box-shadow:0 0 0 2px var(--accent) inset}
 .chip.used{display:none}
 .chip.dragging{opacity:.4}
+
+/* ============================================================
+   RESPONSIVE — telefoane (doar CSS adăugat, fără a rescrie nimic)
+   ============================================================ */
+@media (max-width:760px){
+  /* container: padding orizontal redus, fără overflow pe pagină */
+  .wrap{padding:18px 14px 90px; max-width:100%}
+  body{font-size:14.5px}
+
+  /* titluri ușor reduse ca să nu depășească */
+  h1{font-size:22px; word-break:break-word}
+  h2{font-size:18px}
+  h3{font-size:15px}
+  .lead{max-width:100%}
+
+  /* carduri cu padding mai mic */
+  .card{padding:16px 15px}
+  .qcard{padding:15px 14px}
+
+  /* grile multi-coloană → o singură coloană (stivuit vertical) */
+  .tbl-row{flex-direction:column; gap:12px}
+  .schema-card{min-width:0; width:100%}
+  .build-cols{flex-direction:column; gap:14px}
+  .build-cols > div{min-width:0; width:100%}
+
+  /* tabele largi (schema/rezultate) — scroll orizontal local */
+  table{display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; white-space:nowrap; max-width:100%}
+  /* schema-tbl rămâne lizibilă în cardul propriu, dar fără să iasă din ecran */
+  .schema-tbl{white-space:normal}
+
+  /* blocuri de cod SQL — scroll orizontal, fără overflow de pagină */
+  pre{overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; font-size:12.2px}
+
+  /* joc „construiește”: clauze tappabile, se rup cuvintele lungi */
+  .clause{font-size:12.5px; white-space:pre-wrap; word-break:break-word; min-height:36px}
+  .bank,.answer{min-height:56px}
+
+  /* joc „potrivește”: rândul devine stivuit, slotul pe lățime întreagă */
+  .match-row{flex-direction:column; align-items:stretch; gap:8px}
+  .match-access{min-width:0}
+  .match-nota{min-width:0}
+  .match-slot{min-width:0; width:100%; min-height:40px}
+  .chip{min-height:36px; display:flex; align-items:center; word-break:break-word}
+
+  /* exerciții / cerințe: capul se stivuiește ca butonul să nu strângă textul */
+  .ex-head{flex-direction:column; gap:10px}
+  .ex-btn{align-self:flex-start; min-height:36px}
+
+  /* opțiuni quiz/capcană tappabile */
+  .opt{min-height:40px}
+  .btn,.ex-btn{min-height:36px}
+
+  /* protecție generală contra overflow-ului orizontal */
+  code{word-break:break-word}
+  .match-bank{min-height:50px}
+}
+
+@media (max-width:460px){
+  .wrap{padding:14px 10px 80px}
+  h1{font-size:20px}
+  h2{font-size:16.5px}
+  pre{font-size:11.6px}
+  .row{gap:8px}
+  .btn-row{gap:8px}
+}
 </style>
 </head>
 <body>

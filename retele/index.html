@@ -217,6 +217,57 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
 .topo2{display:grid;grid-template-columns:150px 36px 150px 36px 150px;grid-template-rows:88px 34px 88px 26px;min-width:580px}
 .wire-h.observe{background:var(--accent);height:3px}
 .observe-tag{grid-row:4;font-size:.64rem;color:var(--accent);text-align:center;font-weight:700;white-space:nowrap}
+
+/* ===== Responsive (mobil) — adăugat fără a modifica regulile existente ===== */
+@media (max-width: 760px){
+  /* Padding redus ca să încapă conținutul */
+  .top-inner{padding:12px 14px}
+  main{padding:14px 14px 60px}
+  .card{padding:15px}
+  .ex-head{padding:14px 14px 8px}
+  .ex-answer{padding:6px 14px 14px 14px}
+  .ex-actions{padding:0 14px 16px 14px}
+  .ex-sol{padding:2px 14px 18px 14px}
+
+  /* Bara de taburi rămâne accesibilă: scroll orizontal */
+  nav.tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-left:0;width:100%;padding-bottom:4px}
+  nav.tabs button{flex:0 0 auto;white-space:nowrap}
+
+  /* Grile multi-coloană fixe -> auto-fit ca să se stivuiască */
+  .opts,.mcq-opts{grid-template-columns:1fr}
+
+  /* Tabele late: scroll orizontal */
+  .reftable,table.fillt,.subnet-table,.pkt-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;max-width:100%}
+
+  /* Blocuri pre/cod: scroll */
+  .ex-sol pre,.hexbox{overflow-x:auto;max-width:100%}
+
+  /* Diagrame / wrapere — încadrare și scroll intern */
+  .hwrap,.topo-wrap{max-width:100%}
+
+  /* Lăţimi fixe mari plafonate */
+  .lead{max-width:100%}
+  .reftable[style*="max-width"],.reftable[style*="min-width"]{max-width:100% !important}
+
+  /* Şiruri mono lungi (hexdump/MAC) nu forțează overflow în text */
+  .ex-info,.fd-desc,.qa .a-inner{word-break:break-word}
+
+  /* Heading-uri ușor mai mici */
+  h1{font-size:1.45rem}
+  h2{font-size:1.12rem}
+}
+
+@media (max-width: 460px){
+  main{padding:12px 10px 56px}
+  .card{padding:12px}
+  .top-inner{padding:10px 10px}
+  /* Zone exercițiu stivuite, dar tap-target păstrat */
+  .bank{gap:7px}
+  .tok{padding:9px 12px;min-height:38px;display:flex;align-items:center}
+  .dz{min-height:48px}
+  .flagbit{flex:1 1 100%}
+  h1{font-size:1.3rem}
+}
 </style>
 </head>
 <body>
