@@ -54,7 +54,7 @@ select,.btn{font-family:inherit;font-size:.92rem}
 select{background:var(--bg3);color:var(--txt);border:1px solid var(--border);border-radius:9px;padding:9px 12px;cursor:pointer}
 .btn{background:var(--bg3);color:var(--txt);border:1px solid var(--border);border-radius:9px;padding:9px 16px;cursor:pointer;font-weight:600;transition:.18s}
 .btn:hover{transform:translateY(-1px);border-color:var(--accent)}
-.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#1a1714;font-weight:700}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:var(--on-accent,#1a1714);font-weight:700}
 .btn.ghost{background:transparent}
 .pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.4px;padding:3px 9px;border-radius:20px;background:var(--bg3);border:1px solid var(--border);color:var(--muted)}
 
@@ -999,9 +999,14 @@ if(themeBtn) themeBtn.onclick=()=>setTheme(document.documentElement.dataset.them
 let saved='dark'; try{saved=localStorage.getItem('nh-theme')||'dark';}catch(e){} setTheme(saved);
 
 /* aplicația gazdă controlează tema și tab-ul prin postMessage (iframe e cross-origin sub file://) */
+function applyThemeVars(v){
+  var ds=document.documentElement.style, K=['--bg','--bg2','--bg3','--sidebar','--panel','--panel2','--topbar','--ink','--ink-soft','--txt','--muted','--line','--line2','--border','--accent','--accent-2','--accent2','--green','--good','--red','--bad','--blue','--purple','--aqua','--warn','--code-bg','--code-ink','--on-accent'];
+  K.forEach(function(k){ ds.removeProperty(k); });
+  if(v){ for(var k in v){ ds.setProperty(k, v[k]); } }
+}
 window.addEventListener('message', function(e){
   const d=e.data||{};
-  if(d.type==='theme' && d.theme) setTheme(d.theme);
+  if(d.type==='theme' && d.theme){ setTheme(d.theme); applyThemeVars(d.vars); }
   else if(d.type==='tab' && d.tab) activateTab(d.tab);
 });
 </script>
