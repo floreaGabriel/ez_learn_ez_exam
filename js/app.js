@@ -87,6 +87,12 @@ const MATERII = [
       {id:"tehnici",      nume:"Tehnici de programare",icon:"🧩"},
       {id:"exercitii",    nume:"Exerciții examen",     icon:"📝"}
     ]
+  },
+  {
+    id:"subiecte", nume:"Subiecte Generate", icon:"📄",
+    sub:"Modele de examen de licență",
+    descriere:"Modele complete de examen (3 subiecte / 3 ore) generate în stilul subiectelor reale ATM 2017–2024 și pe baza cursurilor: Programare/OOP/SDA + o problemă de arhitecturi, Rețele & protocoale, Baze de date și PSO (cod lung + întrebări, formatul 2024). Fiecare subiect are rezolvarea/baremul ascuns, pentru autoevaluare.",
+    tip:"native"
   }
 ];
 function materie(id){ return MATERII.find(function(m){ return m.id===id; }); }
@@ -180,6 +186,8 @@ function buildNav(){
     html += '<div class="nav-children">';
     if(m.tip==="native" && m.id==="pso"){
       html += psoNavChildren();
+    } else if(m.tip==="native" && m.id==="subiecte"){
+      html += subiecteNavChildren();
     } else if(m.tip==="embed"){
       m.sectiuni.forEach(function(s){
         html += '<div class="nav-item nav-sub" data-view="embed" data-subject="'+m.id+'" data-sec="'+s.id+'">'
@@ -205,6 +213,16 @@ function psoNavChildren(){
   return html;
 }
 
+function subiecteNavChildren(){
+  let html = '<div class="nav-item nav-sub" data-view="examindex"><span class="ico">🗂️</span> Toate modelele</div>';
+  html += '<div class="nav-cat">📄 Modele de examen</div>';
+  SUBIECTE.forEach(function(x){
+    html += '<div class="nav-item nav-sub" data-view="exam" data-id="'+x.id+'">'
+          + '<span class="ico">›</span> '+x.navTitlu+'</div>';
+  });
+  return html;
+}
+
 function wireNav(){
   const nav = document.getElementById("nav");
   nav.querySelectorAll(".nav-subhead").forEach(function(h){
@@ -222,6 +240,8 @@ function wireNav(){
       else if(v==="videos") showVideos();
       else if(v==="quiz") showQuiz();
       else if(v==="concept") showConcept(it.dataset.id);
+      else if(v==="exam") showExam(it.dataset.id);
+      else if(v==="examindex") showExamIndex();
       else if(v==="embed") showEmbed(it.dataset.subject, it.dataset.sec);
     });
   });
@@ -234,6 +254,7 @@ function setActive(view,id,sec){
 
   let subj = null;
   if(view==="home" || view==="quiz" || view==="concept") subj = "pso";
+  else if(view==="exam" || view==="examindex") subj = "subiecte";
   else if(view==="embed") subj = id;
   document.querySelectorAll(".nav-subject").forEach(function(g){
     g.classList.toggle("expanded", g.dataset.subject===subj);
@@ -251,6 +272,10 @@ function setActive(view,id,sec){
     const el = document.querySelector('.nav-item[data-view="concept"][data-id="'+id+'"]'); if(el) el.classList.add("active");
   } else if(view==="embed"){
     const el = document.querySelector('.nav-item[data-view="embed"][data-subject="'+id+'"][data-sec="'+sec+'"]'); if(el) el.classList.add("active");
+  } else if(view==="exam"){
+    const el = document.querySelector('.nav-item[data-view="exam"][data-id="'+id+'"]'); if(el) el.classList.add("active");
+  } else if(view==="examindex"){
+    const el = document.querySelector('.nav-item[data-view="examindex"]'); if(el) el.classList.add("active");
   }
 
   if(view!=="quiz"){ const bar=document.getElementById("scorebar"); if(bar) bar.remove(); }
@@ -264,6 +289,7 @@ function openSubject(id){
   const m = materie(id);
   if(!m){ showDashboard(); return; }
   if(m.tip==="embed") showEmbed(id, m.sectiuni[0].id);
+  else if(m.id==="subiecte") showExamIndex();
   else showHome();
 }
 
@@ -385,6 +411,53 @@ function conceptNav(id){
   out += prev ? '<button class="btn ghost" onclick="showConcept(\''+prev.id+'\')">← '+shortTitle(prev.titlu)+'</button>' : '<span></span>';
   out += next ? '<button class="btn" onclick="showConcept(\''+next.id+'\')">'+shortTitle(next.titlu)+' →</button>'
               : '<button class="btn" onclick="showQuiz()">Testează-te →</button>';
+  out += '</div>';
+  return out;
+}
+
+// ---------- Subiecte generate (modele de examen) ----------
+function exam(id){ return SUBIECTE.find(function(x){ return x.id===id; }); }
+
+function showExamIndex(){
+  setActive("examindex");
+  document.getElementById("crumb").textContent = "Subiecte Generate";
+  document.getElementById("title").textContent = "Modele de examen";
+  const c = document.getElementById("content");
+  c.innerHTML = ''
+    + '<div class="hero">'
+    + '<h2>Modele de examen generate 📄</h2>'
+    + '<p>Modele complete în stilul subiectelor reale ATM (2017–2024), construite pe baza cursurilor. Fiecare model are <b>3 subiecte</b>, este gândit să fie rezolvabil în <b>3 ore</b> și conține <b>rezolvarea/baremul</b> pentru fiecare subiect (ascuns, ca să te poți autoevalua).</p>'
+    + '<p class="muted" style="margin-top:8px">⚠️ Subiecte de antrenament generate automat — nu sunt subiecte oficiale. Folosește-le doar pentru exersare.</p>'
+    + '</div>'
+    + '<div class="grid">'
+    + SUBIECTE.map(function(x){
+        return '<div class="tile feat" onclick="showExam(\''+x.id+'\')">'
+          + '<div class="ico">📄</div>'
+          + '<h3>'+x.titlu+'</h3>'
+          + '<p>'+x.rezumat+'</p>'
+          + '<span class="cat-tag">'+x.combo+' →</span></div>';
+      }).join("")
+    + '</div>';
+}
+
+function showExam(id){
+  const x = exam(id);
+  if(!x){ showExamIndex(); return; }
+  setActive("exam", id);
+  document.getElementById("crumb").textContent = "Subiecte Generate · "+x.navTitlu;
+  document.getElementById("title").textContent = x.titlu;
+  const el = document.getElementById("content");
+  el.innerHTML = '<article class="article">'+x.html+'</article>'+examNav(id);
+  applyHighlight(el);
+}
+
+function examNav(id){
+  const idx = SUBIECTE.findIndex(function(x){ return x.id===id; });
+  const prev = SUBIECTE[idx-1], next = SUBIECTE[idx+1];
+  let out = '<div class="btn-row" style="margin-top:34px; justify-content:space-between">';
+  out += prev ? '<button class="btn ghost" onclick="showExam(\''+prev.id+'\')">← '+prev.navTitlu+'</button>' : '<span></span>';
+  out += next ? '<button class="btn" onclick="showExam(\''+next.id+'\')">'+next.navTitlu+' →</button>'
+              : '<button class="btn ghost" onclick="showExamIndex()">↩ Toate modelele</button>';
   out += '</div>';
   return out;
 }
