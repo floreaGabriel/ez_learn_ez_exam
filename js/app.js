@@ -68,7 +68,8 @@ const MATERII = [
       {id:"bytes", nume:"Octeți",          icon:"🔢"},
       {id:"write", nume:"Scrie câmpurile", icon:"✍️"},
       {id:"quiz",  nume:"Quiz",            icon:"❓"},
-      {id:"hex",   nume:"Analiză pachete", icon:"🔬"}
+      {id:"hex",   nume:"Analiză pachete", icon:"🔬"},
+      {id:"exercitii", nume:"Exerciții examen", icon:"📝"}
     ]
   },
   {
