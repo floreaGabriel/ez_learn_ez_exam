@@ -1,0 +1,44 @@
+# ============================================================
+#  docker-compose pentru Raspberry Pi
+#  Copiază acest fișier în ~/app/docker-compose.yaml pe Pi, apoi:
+#     docker compose pull && docker compose up -d
+#
+#  IMPORTANT (persistență la watchtower):
+#  Contorul "total" se salvează în volumul CU NUME `counter-data`.
+#  Volumul există independent de container — când watchtower schimbă
+#  imaginea și RECREEAZĂ containerul, volumul se remontează cu toate
+#  datele intacte. Doar "live" (în memorie) repornește de la 0 și se
+#  reface în ~15s, pe măsură ce clienții trimit heartbeat.
+# ============================================================
+services:
+  blog:
+    image: ghcr.io/floreagabriel/ez_learn_ez_exam:latest
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - counter
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  counter:
+    image: ghcr.io/floreagabriel/ez_learn_ez_exam_counter:latest
+    restart: unless-stopped
+    # NU expune port pe host: e accesibil doar intern, prin nginx la /api/
+    volumes:
+      - counter-data:/data          # <-- volum cu nume => datele supraviețuiesc redeploy-ului
+    environment:
+      - DATA_FILE=/data/stats.json
+    stop_grace_period: 15s          # timp suficient ca backendul să-și salveze datele la SIGTERM
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  watchtower:
+    image: ghcr.io/nicholas-fedor/watchtower:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 60 --label-enable --cleanup
+
+volumes:
+  counter-data:                     # watchtower NU atinge volumele -> persistă mereu

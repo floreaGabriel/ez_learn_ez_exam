@@ -7,3 +7,8 @@ README.md
 .git
 .gitignore
 diagrams/
+# backend contor + fișiere de deploy (NU fac parte din site-ul static)
+counter/
+deploy/
+docker-compose.yaml
+.github/
