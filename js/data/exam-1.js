@@ -158,12 +158,12 @@ printf("%X %X %X\\n", n ^ 0x3F, n &amp; 0x3F, n | 0x3F);</pre>
 <p>Completați tabelul cu primele 6 cadre/pachete care părăsesc laptopul sau ajung la el (MAC sursă/destinație, IP sursă/destinație, port / detaliu):</p>
 <table class="tbl">
 <tr><th>#</th><th>Protocol / acțiune</th><th>MAC sursă</th><th>MAC dest.</th><th>IP sursă</th><th>IP dest.</th><th>Port / detaliu</th></tr>
-<tr><td>1</td><td>ARP Request</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">—</td><td class="fillcell">—</td><td class="fillcell">…</td></tr>
-<tr><td>2</td><td>ARP Reply</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">—</td><td class="fillcell">—</td><td class="fillcell">…</td></tr>
-<tr><td>3</td><td>DNS Query</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td></tr>
-<tr><td>4</td><td>DNS Response</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td></tr>
-<tr><td>5</td><td>TCP SYN</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td></tr>
-<tr><td>6</td><td>TCP SYN-ACK</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td></tr>
+<tr><td>1</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td></tr>
+<tr><td>2</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td></tr>
+<tr><td>3</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td></tr>
+<tr><td>4</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td></tr>
+<tr><td>5</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td></tr>
+<tr><td>6</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td><td class="fillcell">…</td></tr>
 </table>
 
 <p class="subq">c) (1.5p) Răspundeți scurt: (i) ce porturi standard folosesc HTTP, HTTPS, SSH, DNS? (ii) ce este handshake-ul TCP în 3 pași? (iii) enumerați 4 protocoale care folosesc UDP la transport.</p>
