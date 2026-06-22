@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL — Baze de date (Subiectul III)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Paletă identică cu aplicația gazdă (temă caldă gruvbox) */
+:root{
+  --bg:#1a1714; --panel:#221e1a; --panel2:#2a2521; --topbar:#1d1916;
+  --ink:#ece3d2; --ink-soft:#d6cbb6; --muted:#a8997f; --line:#352f28; --line2:#403930;
+  --accent:#e9b143; --accent-2:#d8843f; --blue:#83a598; --green:#b8bb26; --red:#fb4934;
+  --purple:#d3869b; --aqua:#8ec07c; --code-bg:#14110d;
+  --mono:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+html[data-theme="light"]{
+  --bg:#f3ecdd; --panel:#fbf6ea; --panel2:#f1e8d6; --topbar:#f7f1e3;
+  --ink:#2a2118; --ink-soft:#4a3f30; --muted:#8a7a5f; --line:#ddd0b8; --line2:#cdbf9f;
+  --accent:#bf8b1d; --accent-2:#c46a2a; --blue:#076678; --green:#79740e; --red:#c23a2e;
+  --purple:#8f3f71; --aqua:#427b58; --code-bg:#efe6d2;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans); color:var(--ink); background:var(--bg); line-height:1.65; font-size:15px; -webkit-font-smoothing:antialiased}
+.wrap{max-width:980px; margin:0 auto; padding:28px 36px 110px}
+
+.page{display:none; animation:fade .3s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:0; transform:translateY(6px)}to{opacity:1; transform:none}}
+
+h1{font-size:27px; color:var(--accent); margin-bottom:6px; letter-spacing:.2px}
+.lead{color:var(--ink-soft); max-width:780px; margin-bottom:10px}
+h2{font-size:20px; margin:30px 0 12px; display:flex; align-items:center; gap:10px}
+h2::before{content:""; width:5px; height:.95em; border-radius:3px; background:linear-gradient(var(--accent),var(--accent-2))}
+h3{font-size:16px; margin:20px 0 8px; color:var(--ink)}
+h4{font-size:14px; margin:16px 0 6px; color:var(--ink)}
+p{margin:9px 0}
+b{color:var(--ink)}
+ul,ol{margin:8px 0 8px 22px}
+li{margin:4px 0}
+code{background:var(--panel2); color:var(--accent); padding:1.5px 6px; border-radius:5px; font-size:13px; font-family:var(--mono)}
+
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:16px 0; box-shadow:0 6px 22px rgba(0,0,0,.18)}
+
+pre{background:var(--code-bg); color:var(--ink); border:1px solid var(--line2); border-radius:11px; padding:15px 17px; overflow-x:auto; font-family:var(--mono); font-size:12.8px; line-height:1.7; margin:12px 0; tab-size:3; white-space:pre}
+
+/* tokeni de sintaxă SQL */
+.sql-kw{color:var(--accent); font-weight:600}
+.sql-fn{color:var(--aqua)}
+.sql-str{color:var(--green)}
+.sql-num{color:var(--purple)}
+.sql-com{color:var(--muted); font-style:italic}
+.sql-dt{color:var(--blue)}
+
+table{width:100%; border-collapse:collapse; margin:14px 0; font-size:13.5px}
+th,td{border:1px solid var(--line2); padding:8px 11px; text-align:left; vertical-align:top}
+th{background:var(--panel2); color:var(--accent); font-size:12px; text-transform:uppercase; letter-spacing:.4px}
+td code{font-size:12.5px}
+
+.tip{background:rgba(184,187,38,.10); border-left:4px solid var(--green); padding:13px 16px; border-radius:9px; margin:14px 0; color:var(--ink-soft); font-size:14px}
+.note{background:rgba(131,165,152,.10); border-left:4px solid var(--blue); padding:13px 16px; border-radius:9px; margin:14px 0; color:var(--ink-soft); font-size:14px}
+.warn{background:rgba(251,73,52,.10); border-left:4px solid var(--red); padding:13px 16px; border-radius:9px; margin:12px 0; color:var(--ink-soft); font-size:14px}
+.tip b,.note b,.warn b{color:var(--ink)}
+.note ul{margin:8px 0 0 20px}
+
+.nivel{display:block; font-size:13px; color:var(--ink-soft); background:rgba(233,177,67,.07); border:1px solid var(--line2); border-left:3px solid var(--accent-2); padding:9px 13px; border-radius:8px; margin:8px 0 14px}
+
+/* controale */
+.row{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:14px 0}
+.row label{font-size:13px; color:var(--ink-soft); display:flex; gap:7px; align-items:center}
+select{background:var(--panel2); color:var(--ink); border:1px solid var(--line2); border-radius:8px; padding:7px 11px; font-family:var(--sans); font-size:13px; cursor:pointer}
+.muted{color:var(--muted); font-size:13px}
+.btn{background:var(--panel2); color:var(--ink); border:1px solid var(--line2); padding:8px 15px; border-radius:9px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--sans); transition:.12s}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent); color:#1a1714; border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn-row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+
+/* schema tabelelor */
+.tbl-row{display:flex; gap:14px; flex-wrap:wrap; margin:14px 0}
+.schema-card{flex:1; min-width:240px; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden}
+.schema-h{padding:9px 13px; background:var(--panel2); border-bottom:1px solid var(--line); font-family:var(--mono)}
+.schema-tbl{margin:0; font-size:12.5px}
+.schema-tbl th,.schema-tbl td{border:0; border-bottom:1px solid var(--line); padding:6px 11px}
+.schema-tbl tr:last-child td{border-bottom:0}
+
+/* exerciții / cerințe — card cu dezvăluire rezolvare (din SDA) */
+.ex{border:1px solid var(--line2); border-radius:12px; margin:14px 0; overflow:hidden; background:var(--panel)}
+.ex-head{padding:14px 18px; display:flex; gap:12px; align-items:flex-start; justify-content:space-between}
+.ex-q{font-weight:600}
+.ex-q .src{display:block; font-size:11px; font-weight:700; color:var(--accent); letter-spacing:.4px; text-transform:uppercase; margin-bottom:5px}
+.ex-btn{flex-shrink:0; background:var(--accent); color:#1a1714; border:none; padding:8px 15px; border-radius:9px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--sans); transition:.12s}
+.ex-btn:hover{filter:brightness(1.07)}
+.ex-sol{display:none; padding:2px 18px 18px; border-top:1px solid var(--line)}
+.ex.open .ex-sol{display:block}
+.ex-sol h4{margin:14px 0 6px; color:var(--accent); font-size:12px; text-transform:uppercase; letter-spacing:.4px}
+.sol-note{margin-top:10px; font-size:13.5px; color:var(--ink-soft)}
+.sol-note code{font-size:12.5px}
+details.anexa{margin:20px 0; border:1px solid var(--line2); border-radius:10px; background:var(--panel); padding:12px 16px}
+details.anexa summary{cursor:pointer; font-weight:600; color:var(--accent); user-select:none}
+details.anexa pre{margin-top:12px}
+
+/* quiz + capcană */
+.qcard{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:16px 0}
+.qmeta{display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap}
+.qtag{font-size:10.5px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; padding:3px 9px; border-radius:20px; background:var(--panel2); border:1px solid var(--line2); color:var(--muted)}
+.qtag.multi{color:var(--purple); border-color:var(--purple)}
+.qtext{font-weight:600; margin-bottom:12px}
+.qcard pre{margin:0 0 12px}
+.opts{display:flex; flex-direction:column; gap:8px}
+.opt{display:flex; gap:10px; align-items:flex-start; padding:10px 13px; border:1px solid var(--line2); border-radius:10px; cursor:pointer; transition:.12s; background:var(--bg)}
+.opt:hover{border-color:var(--accent)}
+.opt .mark{width:18px; height:18px; border:2px solid var(--muted); border-radius:50%; flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700}
+.opt.multi .mark{border-radius:5px}
+.opt.selected{border-color:var(--accent); background:rgba(233,177,67,.08)}
+.opt.selected .mark{background:var(--accent); border-color:var(--accent); color:#1a1714}
+.opt.correct{border-color:var(--green); background:rgba(184,187,38,.12)}
+.opt.correct .mark{background:var(--green); border-color:var(--green); color:#1a1714}
+.opt.wrong{border-color:var(--red); background:rgba(251,73,52,.12)}
+.opt.disabled{cursor:default; pointer-events:none}
+.explain{display:none; margin-top:12px; padding:12px 15px; border-radius:9px; font-size:13.5px; border-left:4px solid var(--green); background:rgba(184,187,38,.08); color:var(--ink-soft)}
+.explain.show{display:block}
+.explain.bad{border-left-color:var(--red); background:rgba(251,73,52,.08)}
+.explain b{color:var(--ink)}
+
+/* scorebar */
+.scorebar{position:sticky; bottom:14px; margin-top:24px; background:var(--panel2); border:1px solid var(--line2); border-radius:12px; padding:12px 16px; display:none; align-items:center; gap:14px; flex-wrap:wrap; box-shadow:0 6px 22px rgba(0,0,0,.22)}
+.scorebar.show{display:flex}
+.scorebar .score{font-weight:700; color:var(--accent)}
+.scorebar.good{border-color:var(--green)} .scorebar.good .score{color:var(--green)}
+.scorebar.bad{border-color:var(--red)}
+.progress{flex:1; min-width:120px; height:8px; background:var(--bg); border-radius:5px; overflow:hidden}
+.progress .fill{height:100%; background:var(--green); width:0; transition:width .3s}
+
+/* joc: construiește interogarea */
+.build-task{background:var(--panel); border:1px solid var(--line2); border-left:3px solid var(--accent); border-radius:10px; padding:12px 16px; margin:12px 0; font-weight:600}
+.build-cols{display:flex; gap:16px; flex-wrap:wrap; margin:12px 0}
+.build-cols > div{flex:1; min-width:280px}
+.build-cols h4{font-size:12px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); margin-bottom:8px}
+.bank,.answer{display:flex; flex-direction:column; gap:8px; min-height:64px; padding:10px; border:1px dashed var(--line2); border-radius:10px; background:var(--bg)}
+.answer{counter-reset:step}
+.clause{background:var(--panel2); border:1px solid var(--line2); border-radius:8px; padding:9px 12px; font-family:var(--mono); font-size:12.3px; cursor:pointer; transition:.12s; white-space:pre-wrap; word-break:break-word}
+.clause:hover{border-color:var(--accent)}
+.answer .clause{cursor:grab}
+.answer .clause::before{counter-increment:step; content:counter(step)".  "; color:var(--accent); font-weight:700; font-family:var(--sans)}
+.clause.dragging{opacity:.4}
+.clause.correct{border-color:var(--green); background:rgba(184,187,38,.12)}
+.clause.wrong{border-color:var(--red); background:rgba(251,73,52,.12)}
+
+/* joc: potrivește Access ↔ ANSI */
+.match-grid{display:flex; flex-direction:column; gap:8px; margin:12px 0}
+.match-row{display:flex; gap:12px; align-items:center; background:var(--panel); border:1px solid var(--line2); border-radius:10px; padding:8px 12px; flex-wrap:wrap}
+.match-access{font-family:var(--mono); font-size:13px; color:var(--accent); min-width:130px; font-weight:600}
+.match-nota{font-size:12px; color:var(--muted); flex:1; min-width:140px}
+.match-slot{min-width:170px; min-height:36px; border:2px dashed var(--line2); border-radius:8px; display:flex; align-items:center; justify-content:center; padding:5px 9px; font-family:var(--mono); font-size:12.5px; cursor:pointer; color:var(--muted)}
+.match-slot.filled{border-style:solid; color:var(--ink)}
+.match-slot.over{border-color:var(--accent); background:rgba(233,177,67,.10)}
+.match-slot.correct{border-color:var(--green); background:rgba(184,187,38,.12); color:var(--ink)}
+.match-slot.wrong{border-color:var(--red); background:rgba(251,73,52,.12)}
+.match-bank{display:flex; gap:10px; flex-wrap:wrap; margin:12px 0; padding:12px; border:1px dashed var(--line2); border-radius:10px; background:var(--bg); min-height:60px}
+.chip{background:var(--panel2); border:1px solid var(--line2); border-radius:9px; padding:8px 12px; font-family:var(--mono); font-size:12.5px; cursor:grab; transition:.12s; user-select:none}
+.chip:hover{border-color:var(--accent); transform:translateY(-2px)}
+.chip.sel{border-color:var(--accent); background:rgba(233,177,67,.18); box-shadow:0 0 0 2px var(--accent) inset}
+.chip.used{display:none}
+.chip.dragging{opacity:.4}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============================ ÎNVAȚĂ ============================ -->
+<section class="page active" id="page-ref">
+  <h1>📘 Învață — SQL pentru Subiectul III</h1>
+  <p class="lead">Tehnicile fundamentale testate la examen (stil ATM 2021): <code>SELECT</code>/<code>JOIN</code> în lanț, semantica <code>NULL</code>, <code>LIKE</code> cu clase de caractere, <code>GROUP BY</code>/<code>HAVING</code>. Mai jos găsești dialectul Access/Jet vs ANSI, cele 3 capcane clasice și harta de tehnici a–i. Apoi treci la <b>Scenarii rezolvate</b>, <b>Exerciții</b> și cele 4 jocuri.</p>
+
+  <h2>Ce testează Subiectul III</h2>
+  <p>Trei tabele legate în lanț <code>1—N—N</code> (părinte → cerere → obiect emis) și <b>două câmpuri care acceptă <code>null</code></b> cu semantică specială (ex. <code>Stare</code>, <code>Pierdut</code>). Cele 9 cerințe (a–i) reiau mereu aceleași „mușchi” SQL — de aceea, dacă stăpânești un scenariu, le rezolvi pe toate.</p>
+
+  <h2>Dialectul SQL: Access/Jet vs ANSI</h2>
+  <p>Baremul ATM este scris în <b>MS Access / Jet SQL</b>. La examen scrii varianta Access (cea din barem); mai jos, în fiecare rezolvare, dai și echivalentul ANSI, ca să fii acoperit indiferent de motor.</p>
+  <table>
+    <tr><th>Concept</th><th>Access / Jet (barem)</th><th>ANSI / SQL Server / MySQL</th></tr>
+    <tr><td>„orice șir” în <code>LIKE</code></td><td><code>*</code></td><td><code>%</code></td></tr>
+    <tr><td>„un singur caracter” în <code>LIKE</code></td><td><code>?</code></td><td><code>_</code></td></tr>
+    <tr><td>clasă de caractere</td><td><code>[1-9]</code>, <code>[A-M]</code></td><td><code>[1-9]</code> (SQL Server), <code>REGEXP</code> / <code>SIMILAR TO</code> (MySQL/Postgres)</td></tr>
+    <tr><td>literal de dată</td><td><code>#2021-01-31#</code></td><td><code>'2021-01-31'</code> / <code>DATE '2021-01-31'</code></td></tr>
+    <tr><td>„primele n rânduri”</td><td><code>TOP n</code></td><td><code>TOP n</code> (SQL Server) / <code>LIMIT n</code> (MySQL/Postgres)</td></tr>
+    <tr><td>anul dintr-o dată</td><td><code>Year(Data)</code></td><td><code>YEAR(Data)</code> / <code>EXTRACT(YEAR FROM Data)</code></td></tr>
+    <tr><td>al n-lea caracter</td><td><code>Mid(s, n, 1)</code></td><td><code>SUBSTRING(s, n, 1)</code></td></tr>
+    <tr><td>concatenare</td><td><code>&amp;</code></td><td><code>+</code> (SQL Server) / <code>CONCAT()</code> (MySQL)</td></tr>
+  </table>
+
+  <h2>⚠️ Cele 3 capcane care apar (aproape) mereu</h2>
+  <div class="warn"><b>1. <code>NULL</code> nu se compară cu <code>=</code>.</b> <code>WHERE Blocata &lt;&gt; null</code> întoarce mereu <code>UNKNOWN</code> → 0 rânduri. Se scrie obligatoriu <code>IS NULL</code> / <code>IS NOT NULL</code>.</div>
+  <div class="warn"><b>2. <code>BETWEEN</code> pe <code>datetime</code> „pierde” ziua finală.</b> <code>Data BETWEEN #2021-10-01# AND #2021-10-31#</code> ratează orele de pe 31 oct. de după <code>00:00:00</code> (fiindcă <code>#...10-31#</code> = miezul nopții). Robust: <code>Data &gt;= #2021-10-01# AND Data &lt; #2021-11-01#</code>.</div>
+  <div class="warn"><b>3. <code>NOT IN (subinterogare)</code> se „strică” la <code>NULL</code>.</b> Dacă subinterogarea poate întoarce un <code>NULL</code>, <code>NOT IN</code> dă rezultat vid. Variantă sigură: <code>NOT EXISTS</code> sau <code>LEFT JOIN ... WHERE ... IS NULL</code>.</div>
+
+  <h2>Clauzele fundamentale, cu exemple</h2>
+
+  <h3>Semantica <code>NULL</code> (<code>IS [NOT] NULL</code>)</h3>
+  <pre class="sql">-- gresit: comparatia cu null da mereu UNKNOWN
+SELECT Cod_Bare FROM Volume WHERE Pierdut <> null;   -- 0 randuri (capcana!)
+-- corect:
+SELECT Cod_Bare FROM Volume WHERE Pierdut IS NOT NULL;</pre>
+
+  <h3><code>LIKE</code> — cele 4 forme de potrivire (dialect Access)</h3>
+  <pre class="sql">WHERE Nume LIKE 'Pop*'      -- incepe cu "Pop"
+WHERE Nume LIKE '*escu'     -- se termina in "escu"
+WHERE Nume LIKE '*ana*'     -- contine "ana" oriunde
+WHERE Nume LIKE '????u'     -- exact 5 caractere, ultimul "u" (? = un caracter)
+WHERE Cod_Bare LIKE '[1-9]*'   -- prima cifra nenula (clasa de caractere)</pre>
+
+  <h3><code>INNER JOIN</code> în lanț <code>1—N—N</code></h3>
+  <pre class="sql">SELECT Nume, Prenume, Cod_Bare
+FROM (Cititori
+     INNER JOIN Imprumuturi ON Cititori.Id_Cititor = Imprumuturi.Id_Cititor)
+     INNER JOIN Volume      ON Imprumuturi.Id_Imprumut = Volume.Id_Imprumut
+WHERE Volume.Pierdut IS NULL;
+-- Access cere PARANTEZE la 2+ join-uri; SQL Server/MySQL nu le cer.</pre>
+
+  <h3><code>GROUP BY</code> / <code>HAVING</code> — rețeta canonică</h3>
+  <pre class="sql">SELECT Nume, Prenume, Count(*) AS Nr
+FROM Clienti
+INNER JOIN Comenzi_Service ON Clienti.Id_Client = Comenzi_Service.Id_Client
+WHERE Comenzi_Service.Stare = 'F'          -- filtreaza RANDURI (inainte de grupare)
+GROUP BY Comenzi_Service.Id_Client, Nume, Prenume
+HAVING Count(*) >= 2                        -- filtreaza GRUPE (dupa agregare)
+ORDER BY Count(*) DESC;</pre>
+
+  <h3>Subinterogări: orfani și „niciuna” (<code>NOT EXISTS</code>)</h3>
+  <pre class="sql">-- inregistrari "orfane" (robust, fara capcana NOT IN):
+SELECT P.Cod_Piesa FROM Piese_Montate P
+LEFT JOIN Comenzi_Service C ON P.Id_Comanda = C.Id_Comanda
+WHERE C.Id_Comanda IS NULL;
+
+-- cuantificatorul "niciuna" (corelat):
+SELECT Nume, Prenume FROM Pasageri P
+WHERE NOT EXISTS (SELECT 1 FROM Rezervari R
+                  WHERE R.Id_Pasager = P.Id_Pasager AND R.Stare = 'X');</pre>
+
+  <h2>Harta de tehnici (cerințele a–i)</h2>
+  <table>
+    <tr><th>Cerința</th><th>Tehnica testată</th></tr>
+    <tr><td><b>a</b></td><td><code>LIKE</code> + wildcard / clase de caractere (prefix, sufix, conține, lungime fixă)</td></tr>
+    <tr><td><b>b</b></td><td><code>IS NULL</code> / <code>IS NOT NULL</code> (semantica <code>NULL</code>)</td></tr>
+    <tr><td><b>c</b></td><td>agregare + <code>TOP 1</code> / <code>MAX</code> (maximul unei grupări; egalități cu <code>HAVING = MAX</code>)</td></tr>
+    <tr><td><b>d</b></td><td><code>INNER JOIN</code> + filtre multiple</td></tr>
+    <tr><td><b>e</b></td><td><code>GROUP BY</code> + <code>COUNT</code>/<code>SUM</code> + <code>ORDER BY</code></td></tr>
+    <tr><td><b>f</b></td><td><code>COUNT</code> + interval de date sigur + funcție pe șir (poziția unei cifre)</td></tr>
+    <tr><td><b>g</b></td><td><code>GROUP BY ... HAVING</code> + funcții pe dată (<code>Year/Month/Day</code>) + <code>DISTINCT</code></td></tr>
+    <tr><td><b>h</b></td><td>dublu <code>JOIN</code> în lanț + <code>IS NULL</code> + comparație de date</td></tr>
+    <tr><td><b>i</b></td><td>integritate referențială: orfani (<code>NOT IN</code> / <code>NOT EXISTS</code> / <code>LEFT JOIN</code>)</td></tr>
+  </table>
+
+  <h2>Progresia celor 5 scenarii</h2>
+  <table>
+    <tr><th>#</th><th>Scenariu</th><th>Ce adaugă</th></tr>
+    <tr><td>1</td><td>📚 Bibliotecă universitară</td><td>calibrare 1:1 pe examen (prefix <code>LIKE</code>, grupare pe lună)</td></tr>
+    <tr><td>2</td><td>🩺 Clinică medicală</td><td><code>LIKE '*...*'</code> (conține), grupare pe <b>zi</b> (<code>CAST AS date</code>), clase de cifre pare</td></tr>
+    <tr><td>3</td><td>🛒 Magazin online</td><td>agregare numerică <code>SUM</code>/<code>AVG</code> cu expresii, <code>BETWEEN</code> numeric, <code>OR</code> de <code>LIKE</code></td></tr>
+    <tr><td>4</td><td>✈️ Companie aeriană</td><td><code>COUNT</code> filtrat, egalități la maxim, subinterogări corelate</td></tr>
+    <tr><td>5</td><td>🔧 Service auto (capstone)</td><td><code>EXISTS</code>/<code>NOT EXISTS</code>, dublă negație („doar / niciodată”), comparații între coloane</td></tr>
+  </table>
+  <div class="tip"><b>Antrenament:</b> citește scenariul + „Observații”, acoperă rezolvarea și scrie singur cele 9 interogări, apoi compară cu modelul și citește „capcanele”. La final, rulează interogările pe datele din <b>Anexă</b> și confruntă rezultatul cu cel așteptat.</div>
+</section>
+
+<!-- ============================ SCENARII REZOLVATE ============================ -->
+<section class="page" id="page-scenarii">
+  <h1>📚 Scenarii rezolvate</h1>
+  <p class="lead">Cinci subiecte complete în stilul Subiectului III (ATM 2021). Fiecare are scenariul, cele 3 tabele, „Observațiile” despre câmpurile <code>NULL</code>, cele 9 cerințe (a–i) cu rezolvarea pliabilă (model Access + echivalent ANSI + capcane) și o anexă rulabilă. Alege un scenariu:</p>
+  <div class="row"><label>Scenariu: <select id="scenPick"></select></label></div>
+  <div id="scenBody"></div>
+</section>
+
+<!-- ============================ EXERCIȚII ============================ -->
+<section class="page" id="page-exercitii">
+  <h1>📝 Exerciții — antrenament</h1>
+  <p class="lead">Cele ~47 de cerințe din toate cele 5 scenarii, <b>amestecate</b>. Citește enunțul, încearcă singur interogarea, apoi apasă „Arată rezolvarea”. Reamestecă pentru o nouă rundă.</p>
+  <div class="row"><button class="btn primary" id="exShuffle">↺ Reamestecă</button> <span id="exCount" class="muted"></span></div>
+  <div id="exBody"></div>
+</section>
+
+<!-- ============================ QUIZ ============================ -->
+<section class="page" id="page-quiz">
+  <h1>❓ Quiz</h1>
+  <p class="lead">Întrebări grilă despre concepte și capcane (semantica <code>NULL</code>, <code>LIKE</code> Access vs ANSI, <code>JOIN</code>, <code>GROUP BY</code>/<code>HAVING</code>, <code>NOT IN</code>+<code>NULL</code>). Bifează, apasă „Verifică”, citește explicația. Scorul se actualizează jos.</p>
+  <div class="row"><button class="btn" id="quizReset">↺ Reamestecă întrebările</button></div>
+  <div id="quizBody"></div>
+  <div class="scorebar" id="quizScore"></div>
+</section>
+
+<!-- ============================ CONSTRUIEȘTE INTEROGAREA ============================ -->
+<section class="page" id="page-build">
+  <h1>🧩 Construiește interogarea</h1>
+  <p class="lead">Ordonează clauzele SQL în ordinea corectă: <code>SELECT → FROM → JOIN → WHERE → GROUP BY → HAVING → ORDER BY</code>. <b>Click</b> pe o clauză din „Disponibile” o adaugă în interogare; click pe una plasată o scoate; <b>trage</b> clauzele plasate ca să le reordonezi. Apoi „Verifică”.</p>
+  <div class="row"><label>Sarcină: <select id="buildPick"></select></label> <button class="btn" id="buildReset">↺ Resetează</button> <button class="btn primary" id="buildCheck">✓ Verifică</button></div>
+  <div class="build-task" id="buildTask"></div>
+  <div class="build-cols">
+    <div><h4>Disponibile (amestecate)</h4><div class="bank" id="buildBank"></div></div>
+    <div><h4>Interogarea ta</h4><div class="answer" id="buildAns"></div></div>
+  </div>
+  <div class="scorebar" id="buildScore"></div>
+</section>
+
+<!-- ============================ GĂSEȘTE CAPCANA ============================ -->
+<section class="page" id="page-capcana">
+  <h1>🪤 Găsește capcana</h1>
+  <p class="lead">Fiecare interogare are o greșeală clasică (din cele 3 capcane). Alege fix-ul corect, apasă „Verifică” și citește de ce.</p>
+  <div class="row"><button class="btn" id="capReset">↺ Reia</button></div>
+  <div id="capBody"></div>
+  <div class="scorebar" id="capScore"></div>
+</section>
+
+<!-- ============================ ACCESS ↔ ANSI ============================ -->
+<section class="page" id="page-match">
+  <h1>🔁 Access ↔ ANSI</h1>
+  <p class="lead">Potrivește fiecare sintaxă <b>Access/Jet</b> cu echivalentul <b>ANSI/SQL Server</b>. <b>Click</b> pe un echivalent din bancă, apoi pe slotul rândului potrivit (sau <b>trage</b> echivalentul în slot). Apoi „Verifică”.</p>
+  <div class="row"><button class="btn" id="matchReset">↺ Resetează</button> <button class="btn primary" id="matchCheck">✓ Verifică</button></div>
+  <div class="match-grid" id="matchGrid"></div>
+  <h4 style="margin-top:14px; color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.4px">Echivalente ANSI (trage / dă click)</h4>
+  <div class="match-bank" id="matchBank"></div>
+  <div class="scorebar" id="matchScore"></div>
+</section>
+
+</div>
+
+<script src="scenarii.js"></script>
+<script src="jocuri.js"></script>
+<script>
+/* ============================================================
+   SQL Trainer — controller self-contained (temă, tab-uri,
+   highlighter SQL, randare scenarii/exerciții + 4 jocuri)
+   ============================================================ */
+"use strict";
+
+/* ---------- utilitare ---------- */
+function escSQL(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+
+/* ---------- highlighter SQL pentru pre.sql ---------- */
+var SQL_KW = ["SELECT","FROM","WHERE","INNER","LEFT","RIGHT","OUTER","FULL","CROSS","JOIN","ON","GROUP","BY","HAVING","ORDER","ASC","DESC","AND","OR","NOT","NULL","IS","IN","EXISTS","LIKE","BETWEEN","AS","DISTINCT","TOP","WITH","TIES","UNION","ALL","CASE","WHEN","THEN","ELSE","END","CREATE","TABLE","PRIMARY","KEY","FOREIGN","REFERENCES","INSERT","INTO","VALUES","INT","VARCHAR","CHAR","DATETIME","DECIMAL","DATE"];
+var SQL_FN = ["COUNT","SUM","AVG","MAX","MIN","YEAR","MONTH","DAY","CAST","SUBSTRING","RIGHT","LEFT","LEN","MID","EXTRACT","CONCAT","ROUND"];
+function highlightSQL(text){
+  var store=[];
+  function hold(cls,val){ store.push('<span class="'+cls+'">'+escSQL(val)+'</span>'); return String.fromCharCode(0xE000+store.length-1); }
+  var s=text;
+  s=s.replace(/--[^\n]*/g, function(m){ return hold('sql-com',m); });           // -- comentariu
+  s=s.replace(/'(?:[^'\\]|\\.)*'/g, function(m){ return hold('sql-str',m); });   // 'string'
+  s=s.replace(/#[^#\n]*#/g, function(m){ return hold('sql-dt',m); });            // #data# (Access)
+  s=escSQL(s);
+  s=s.replace(/([A-Za-z_]\w*)|\d+(?:\.\d+)?/g, function(m, ident){
+    if(ident===undefined) return '<span class="sql-num">'+m+'</span>';
+    var up=ident.toUpperCase();
+    if(SQL_KW.indexOf(up)>=0) return '<span class="sql-kw">'+ident+'</span>';
+    if(SQL_FN.indexOf(up)>=0) return '<span class="sql-fn">'+ident+'</span>';
+    return ident;
+  });
+  s=s.replace(/[-]/g, function(ch){ return store[ch.charCodeAt(0)-0xE000]; });
+  return s;
+}
+function applySQL(root){
+  root.querySelectorAll('pre.sql').forEach(function(p){
+    if(p.dataset.hl) return; p.dataset.hl='1';
+    p.innerHTML=highlightSQL(p.textContent);
+  });
+}
+
+/* ---------- tab-uri + temă (controlate de aplicația gazdă) ---------- */
+function activateTab(tab){
+  var p=document.getElementById('page-'+tab); if(!p) return;
+  document.querySelectorAll('.page').forEach(function(x){ x.classList.remove('active'); });
+  p.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function tabFromHash(){ var t=location.hash.replace('#',''); if(t) activateTab(t); }
+window.addEventListener('hashchange', tabFromHash);
+function setTheme(t){ document.documentElement.dataset.theme=t; try{ localStorage.setItem('sql-theme',t); }catch(e){} }
+try{ setTheme(localStorage.getItem('sql-theme')||'dark'); }catch(e){}
+window.addEventListener('message', function(e){
+  var d=e.data||{};
+  if(d.type==='theme' && d.theme) setTheme(d.theme);
+  else if(d.type==='tab' && d.tab) activateTab(d.tab);
+});
+
+/* ---------- exerciții pliabile (din SDA) ---------- */
+function toggleEx(btn){
+  var ex=btn.closest('.ex');
+  var open=ex.classList.toggle('open');
+  btn.textContent=open?'Ascunde rezolvarea':'Arată rezolvarea';
+}
+
+/* ============================================================
+   SCENARII REZOLVATE
+   ============================================================ */
+function renderSolBody(c){
+  var h='<h4>Model (Access / Jet)</h4><pre class="sql">'+escSQL(c.sql)+'</pre>';
+  if(c.ansi) h+='<h4>Echivalent ANSI / SQL Server</h4><pre class="sql">'+escSQL(c.ansi)+'</pre>';
+  h+='<div class="sol-note">'+c.note+'</div>';
+  return h;
+}
+function initScenarii(){
+  var pick=document.getElementById('scenPick');
+  pick.innerHTML=SQL_SCENARII.map(function(s,i){ return '<option value="'+i+'">'+s.icon+' '+s.nume+'</option>'; }).join('');
+  pick.onchange=function(){ renderScen(+pick.value); };
+  renderScen(0);
+}
+function renderScen(idx){
+  var s=SQL_SCENARII[idx]; var el=document.getElementById('scenBody'); var h='';
+  h+='<div class="nivel"><b>Nivel:</b> '+s.nivel+'</div>';
+  h+='<p class="lead">'+s.intro+'</p>';
+  h+='<h2>Structura tabelelor</h2><div class="tbl-row">';
+  s.tabele.forEach(function(t){
+    h+='<div class="schema-card"><div class="schema-h"><code>'+t.nume+'</code></div>'
+      +'<table class="schema-tbl"><tr><th>Câmp</th><th>NULL</th><th>Tip</th></tr>';
+    t.campuri.forEach(function(c){ h+='<tr><td>'+c[0]+'</td><td>'+c[1]+'</td><td><code>'+c[2]+'</code></td></tr>'; });
+    h+='</table></div>';
+  });
+  h+='</div>';
+  h+='<div class="note"><b>Observații:</b><ul>'+s.observatii.map(function(o){ return '<li>'+o+'</li>'; }).join('')+'</ul></div>';
+  h+='<div class="tip"><b>Relațiile dintre tabele:</b> '+s.relatii+'</div>';
+  h+='<h2>Cerințe &amp; rezolvări</h2>';
+  s.cerinte.forEach(function(c){
+    h+='<div class="ex"><div class="ex-head"><div class="ex-q"><span class="src">Cerința '+c.lit+'</span>'+c.enunt+'</div>'
+      +'<button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button></div>'
+      +'<div class="ex-sol">'+renderSolBody(c)+'</div></div>';
+  });
+  h+='<details class="anexa"><summary>📦 Anexă: schema rulabilă (CREATE + INSERT — pentru verificare)</summary>'
+    +'<pre class="sql">'+escSQL(s.anexa)+'</pre></details>';
+  el.innerHTML=h; applySQL(el);
+}
+
+/* ============================================================
+   EXERCIȚII (drill amestecat)
+   ============================================================ */
+function initExercitii(){
+  document.getElementById('exShuffle').onclick=renderEx;
+  renderEx();
+}
+function renderEx(){
+  var all=[];
+  SQL_SCENARII.forEach(function(s){ s.cerinte.forEach(function(c){ all.push({s:s,c:c}); }); });
+  shuffle(all);
+  var el=document.getElementById('exBody'); var h='';
+  all.forEach(function(it){
+    h+='<div class="ex"><div class="ex-head"><div class="ex-q">'
+      +'<span class="src">'+it.s.icon+' '+it.s.nume+' · Cerința '+it.c.lit+'</span>'+it.c.enunt+'</div>'
+      +'<button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button></div>'
+      +'<div class="ex-sol">'+renderSolBody(it.c)+'</div></div>';
+  });
+  el.innerHTML=h; applySQL(el);
+  document.getElementById('exCount').textContent=all.length+' exerciții';
+}
+
+/* ============================================================
+   QUIZ grilă
+   ============================================================ */
+var quizState={};
+function renderQuiz(){
+  var list=shuffle(SQL_QUIZ.slice());
+  quizState={set:list, ans:{}, done:{}, score:0, total:list.length};
+  var h='';
+  list.forEach(function(q,i){
+    h+='<div class="qcard"><div class="qmeta"><span class="qtag">'+q.tema+'</span>'
+      +(q.multi?'<span class="qtag multi">răspuns multiplu</span>':'')
+      +'<span class="qtag">#'+(i+1)+'</span></div>';
+    h+='<div class="qtext">'+q.enunt+'</div>';
+    if(q.cod) h+='<pre class="sql">'+escSQL(q.cod)+'</pre>';
+    h+='<div class="opts" id="op-'+q.id+'">';
+    q.optiuni.forEach(function(o,idx){
+      h+='<div class="opt'+(q.multi?' multi':'')+'" data-q="'+q.id+'" data-i="'+idx+'"><span class="mark"></span><span>'+o+'</span></div>';
+    });
+    h+='</div><div class="btn-row"><button class="btn primary" onclick="checkQuiz(\''+q.id+'\')">Verifică</button></div>';
+    h+='<div class="explain" id="ex-'+q.id+'"></div></div>';
+  });
+  var body=document.getElementById('quizBody');
+  body.innerHTML=h; applySQL(body);
+  body.querySelectorAll('.opt').forEach(function(el){ el.addEventListener('click', function(){ selectOpt(el); }); });
+  updateQuizScore();
+}
+function selectOpt(el){
+  var qid=el.dataset.q; if(quizState.done[qid]) return;
+  var q=quizState.set.find(function(x){ return x.id===qid; });
+  var i=+el.dataset.i; var cur=quizState.ans[qid]||[];
+  if(q.multi){ cur = (cur.indexOf(i)>=0) ? cur.filter(function(x){return x!==i;}) : cur.concat([i]); }
+  else cur=[i];
+  quizState.ans[qid]=cur;
+  document.querySelectorAll('#op-'+qid+' .opt').forEach(function(o){
+    var on=cur.indexOf(+o.dataset.i)>=0;
+    o.classList.toggle('selected', on); o.querySelector('.mark').textContent = on ? '✓' : '';
+  });
+}
+function checkQuiz(qid){
+  if(quizState.done[qid]) return;
+  var sel=(quizState.ans[qid]||[]).slice().sort(function(a,b){return a-b;});
+  if(!sel.length) return;
+  quizState.done[qid]=true;
+  var q=quizState.set.find(function(x){ return x.id===qid; });
+  var cor=q.corecte.slice().sort(function(a,b){return a-b;});
+  var ok = sel.length===cor.length && sel.every(function(v,i){ return v===cor[i]; });
+  if(ok) quizState.score++;
+  document.querySelectorAll('#op-'+qid+' .opt').forEach(function(o){
+    var oi=+o.dataset.i; o.classList.add('disabled');
+    if(q.corecte.indexOf(oi)>=0) o.classList.add('correct');
+    else if(sel.indexOf(oi)>=0) o.classList.add('wrong');
+  });
+  var ex=document.getElementById('ex-'+qid);
+  ex.innerHTML='<b>'+(ok?'✅ Corect!':'❌ Greșit.')+'</b> '+q.explicatie;
+  ex.classList.add('show'); if(!ok) ex.classList.add('bad');
+  updateQuizScore();
+}
+function updateQuizScore(){
+  var bar=document.getElementById('quizScore');
+  var done=Object.keys(quizState.done).length;
+  bar.classList.add('show');
+  var pct=quizState.total?Math.round(100*done/quizState.total):0;
+  bar.innerHTML='<span class="score">Scor: '+quizState.score+' / '+quizState.total+'</span>'
+    +'<div class="progress"><div class="fill" style="width:'+pct+'%"></div></div>'
+    +'<span class="muted">'+done+' din '+quizState.total+' verificate</span>';
+}
+
+/* ============================================================
+   GĂSEȘTE CAPCANA
+   ============================================================ */
+var capState={};
+function renderCapcana(){
+  capState={ans:{}, done:{}, score:0, total:SQL_CAPCANE.length};
+  var h='';
+  SQL_CAPCANE.forEach(function(c,i){
+    h+='<div class="qcard"><div class="qmeta"><span class="qtag" style="color:var(--red);border-color:var(--red)">interogare greșită</span>'
+      +'<span class="qtag">#'+(i+1)+'</span></div>';
+    h+='<pre class="sql">'+escSQL(c.gresit)+'</pre>';
+    h+='<div class="qtext">'+c.intrebare+'</div><div class="opts" id="cop-'+c.id+'">';
+    c.optiuni.forEach(function(o,idx){ h+='<div class="opt" data-c="'+c.id+'" data-i="'+idx+'"><span class="mark"></span><span>'+o+'</span></div>'; });
+    h+='</div><div class="btn-row"><button class="btn primary" onclick="checkCap(\''+c.id+'\')">Verifică</button></div>';
+    h+='<div class="explain" id="cex-'+c.id+'"></div></div>';
+  });
+  var body=document.getElementById('capBody');
+  body.innerHTML=h; applySQL(body);
+  body.querySelectorAll('.opt').forEach(function(el){ el.addEventListener('click', function(){ selCap(el); }); });
+  updateCapScore();
+}
+function selCap(el){
+  var id=el.dataset.c; if(capState.done[id]) return; var i=+el.dataset.i; capState.ans[id]=i;
+  document.querySelectorAll('#cop-'+id+' .opt').forEach(function(o){
+    var on=+o.dataset.i===i; o.classList.toggle('selected', on); o.querySelector('.mark').textContent=on?'✓':'';
+  });
+}
+function checkCap(id){
+  if(capState.done[id]) return; if(capState.ans[id]==null) return; capState.done[id]=true;
+  var c=SQL_CAPCANE.find(function(x){ return x.id===id; }); var sel=capState.ans[id]; var ok=sel===c.corect;
+  if(ok) capState.score++;
+  document.querySelectorAll('#cop-'+id+' .opt').forEach(function(o){
+    var oi=+o.dataset.i; o.classList.add('disabled');
+    if(oi===c.corect) o.classList.add('correct'); else if(oi===sel) o.classList.add('wrong');
+  });
+  var ex=document.getElementById('cex-'+id);
+  ex.innerHTML='<b>'+(ok?'✅ Corect!':'❌ Greșit.')+'</b> '+c.explicatie;
+  ex.classList.add('show'); if(!ok) ex.classList.add('bad');
+  updateCapScore();
+}
+function updateCapScore(){
+  var bar=document.getElementById('capScore'); var done=Object.keys(capState.done).length;
+  bar.classList.add('show'); var pct=Math.round(100*done/capState.total);
+  bar.innerHTML='<span class="score">Scor: '+capState.score+' / '+capState.total+'</span>'
+    +'<div class="progress"><div class="fill" style="width:'+pct+'%"></div></div>';
+}
+
+/* ============================================================
+   CONSTRUIEȘTE INTEROGAREA (ordonează clauzele)
+   ============================================================ */
+var buildState={};
+function initBuild(){
+  var pick=document.getElementById('buildPick');
+  pick.innerHTML=SQL_BUILD.map(function(b,i){ return '<option value="'+i+'">Sarcina '+(i+1)+'</option>'; }).join('');
+  pick.onchange=function(){ loadBuild(+pick.value); };
+  document.getElementById('buildReset').onclick=function(){ loadBuild(buildState.idx); };
+  document.getElementById('buildCheck').onclick=checkBuild;
+  loadBuild(0);
+}
+function loadBuild(idx){
+  var b=SQL_BUILD[idx];
+  buildState={idx:idx, bank:shuffle(b.clauze.map(function(_,i){return i;})), ans:[], n:b.clauze.length, drag:null};
+  document.getElementById('buildTask').innerHTML='🎯 '+b.sarcina;
+  document.getElementById('buildScore').className='scorebar';
+  renderBuild();
+}
+function renderBuild(){
+  var b=SQL_BUILD[buildState.idx];
+  var bank=document.getElementById('buildBank'), ans=document.getElementById('buildAns');
+  bank.innerHTML=''; ans.innerHTML='';
+  buildState.bank.forEach(function(ci){
+    var d=document.createElement('div'); d.className='clause'; d.textContent=b.clauze[ci];
+    d.onclick=function(){ placeBuild(ci); };
+    bank.appendChild(d);
+  });
+  buildState.ans.forEach(function(ci,pos){
+    var d=document.createElement('div'); d.className='clause'; d.textContent=b.clauze[ci]; d.draggable=true;
+    d.onclick=function(){ unplaceBuild(ci); };
+    d.ondragstart=function(e){ buildState.drag=pos; d.classList.add('dragging'); e.dataTransfer.setData('text',''); };
+    d.ondragend=function(){ d.classList.remove('dragging'); };
+    d.ondragover=function(e){ e.preventDefault(); };
+    d.ondrop=function(e){ e.preventDefault(); moveBuild(buildState.drag, pos); };
+    ans.appendChild(d);
+  });
+  ans.ondragover=function(e){ e.preventDefault(); };
+}
+function placeBuild(ci){ buildState.bank=buildState.bank.filter(function(x){return x!==ci;}); buildState.ans.push(ci); renderBuild(); }
+function unplaceBuild(ci){ buildState.ans=buildState.ans.filter(function(x){return x!==ci;}); buildState.bank.push(ci); renderBuild(); }
+function moveBuild(from,to){ if(from==null||from===to) return; var a=buildState.ans; var it=a.splice(from,1)[0]; a.splice(to,0,it); buildState.drag=null; renderBuild(); }
+function checkBuild(){
+  var ans=buildState.ans, n=buildState.n, sb=document.getElementById('buildScore');
+  if(ans.length!==n){ sb.className='scorebar show bad'; sb.innerHTML='<span class="score">Plasează toate cele '+n+' clauze.</span>'; return; }
+  var ok=0;
+  document.querySelectorAll('#buildAns .clause').forEach(function(el,pos){
+    var ci=ans[pos]; el.classList.remove('correct','wrong');
+    if(ci===pos){ el.classList.add('correct'); ok++; } else el.classList.add('wrong');
+  });
+  var allok=ok===n; sb.className='scorebar show '+(allok?'good':'bad');
+  sb.innerHTML='<span class="score">'+(allok?'🎉 Perfect! Ordinea clauzelor e corectă.':'Corecte pe poziție: '+ok+' / '+n)+'</span>';
+}
+
+/* ============================================================
+   POTRIVEȘTE Access ↔ ANSI
+   ============================================================ */
+var matchState={};
+function initMatch(){
+  document.getElementById('matchReset').onclick=loadMatch;
+  document.getElementById('matchCheck').onclick=checkMatch;
+  loadMatch();
+}
+function loadMatch(){
+  matchState={place:{}, bankOrder:shuffle(SQL_MATCH.map(function(_,i){return i;})), sel:null, drag:null};
+  document.getElementById('matchScore').className='scorebar';
+  renderMatch();
+}
+function renderMatch(){
+  var grid=document.getElementById('matchGrid'), bank=document.getElementById('matchBank');
+  grid.innerHTML=''; bank.innerHTML='';
+  SQL_MATCH.forEach(function(m,i){
+    var placed=matchState.place[i];
+    var row=document.createElement('div'); row.className='match-row';
+    row.innerHTML='<span class="match-access">'+escSQL(m.access)+'</span>'
+      +'<span class="match-slot'+(placed!=null?' filled':'')+'" data-i="'+i+'">'+(placed!=null?escSQL(SQL_MATCH[placed].ansi):'…')+'</span>'
+      +'<span class="match-nota">'+m.nota+'</span>';
+    var slot=row.querySelector('.match-slot');
+    slot.onclick=function(){ slotClick(i); };
+    slot.ondragover=function(e){ e.preventDefault(); slot.classList.add('over'); };
+    slot.ondragleave=function(){ slot.classList.remove('over'); };
+    slot.ondrop=function(e){ e.preventDefault(); slot.classList.remove('over'); if(matchState.drag!=null){ placeMatch(matchState.drag,i); matchState.drag=null; } };
+    grid.appendChild(row);
+  });
+  matchState.bankOrder.forEach(function(j){
+    var used=Object.keys(matchState.place).some(function(k){ return matchState.place[k]===j; });
+    var chip=document.createElement('div');
+    chip.className='chip'+(used?' used':'')+(matchState.sel===j?' sel':'');
+    chip.textContent=SQL_MATCH[j].ansi;
+    chip.draggable=true;
+    chip.onclick=function(){ chipClick(j); };
+    chip.ondragstart=function(e){ matchState.drag=j; chip.classList.add('dragging'); e.dataTransfer.setData('text',''); };
+    chip.ondragend=function(){ chip.classList.remove('dragging'); };
+    bank.appendChild(chip);
+  });
+}
+function chipClick(j){ matchState.sel=(matchState.sel===j?null:j); renderMatch(); }
+function slotClick(i){
+  if(matchState.place[i]!=null){ delete matchState.place[i]; renderMatch(); return; }
+  if(matchState.sel!=null){ placeMatch(matchState.sel,i); matchState.sel=null; }
+}
+function placeMatch(j,i){
+  Object.keys(matchState.place).forEach(function(k){ if(matchState.place[k]===j) delete matchState.place[k]; });
+  matchState.place[i]=j; renderMatch();
+}
+function checkMatch(){
+  var sb=document.getElementById('matchScore'); var ok=0, tot=SQL_MATCH.length;
+  document.querySelectorAll('#matchGrid .match-slot').forEach(function(slot){
+    var i=+slot.dataset.i; slot.classList.remove('correct','wrong');
+    var placed=matchState.place[i];
+    if(placed===i){ slot.classList.add('correct'); ok++; }
+    else if(placed!=null){ slot.classList.add('wrong'); }
+  });
+  var allok=ok===tot; sb.className='scorebar show '+(allok?'good':'bad');
+  sb.innerHTML='<span class="score">'+(allok?'🎉 Toate corecte!':'Corecte: '+ok+' / '+tot)+'</span>';
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', function(){
+  applySQL(document);          // pre.sql statice din tab-ul „Învață”
+  initScenarii();
+  initExercitii();
+  renderQuiz();
+  initBuild();
+  renderCapcana();
+  initMatch();
+  document.getElementById('quizReset').onclick=renderQuiz;
+  document.getElementById('capReset').onclick=renderCapcana;
+  tabFromHash();
+});
+</script>
+</body>
+</html>

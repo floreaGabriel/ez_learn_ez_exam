@@ -89,6 +89,21 @@ const MATERII = [
     ]
   },
   {
+    id:"sql", nume:"SQL", icon:"🗄️",
+    sub:"Baze de date — interogări",
+    descriere:"Interogări SQL în stilul Subiectului III (ATM 2021): SELECT/JOIN în lanț, semantica NULL, LIKE cu clase de caractere, GROUP BY/HAVING, dialectul Access/Jet vs ANSI — 5 scenarii rezolvate complet (a–i), exerciții de antrenament și 4 jocuri (quiz, construiește interogarea, găsește capcana, Access↔ANSI).",
+    tip:"embed", src:"sql/index.html",
+    sectiuni:[
+      {id:"ref",       nume:"Învață",                  icon:"📘"},
+      {id:"scenarii",  nume:"Scenarii rezolvate",      icon:"📚"},
+      {id:"exercitii", nume:"Exerciții",               icon:"📝"},
+      {id:"quiz",      nume:"Quiz",                     icon:"❓"},
+      {id:"build",     nume:"Construiește interogarea", icon:"🧩"},
+      {id:"capcana",   nume:"Găsește capcana",          icon:"🪤"},
+      {id:"match",     nume:"Access ↔ ANSI",            icon:"🔁"}
+    ]
+  },
+  {
     id:"subiecte", nume:"Subiecte Generate", icon:"📄",
     sub:"Modele de examen de licență",
     descriere:"Modele complete de examen (3 subiecte / 3 ore) generate în stilul subiectelor reale ATM 2017–2024 și pe baza cursurilor: Programare/OOP/SDA + o problemă de arhitecturi, Rețele & protocoale, Baze de date și PSO (cod lung + întrebări, formatul 2024). Fiecare subiect are rezolvarea/baremul ascuns, pentru autoevaluare.",
