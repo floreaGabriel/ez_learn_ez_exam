@@ -167,22 +167,10 @@ function conceptVideoHtml(id){
     + '<p class="vid-fallback">Nu pornește în pagină? <a href="'+watch+'" target="_blank" rel="noopener">Deschide pe YouTube</a></p>';
 }
 
-// ---------- Temă (dark/light) — la nivel de întreaga aplicație ----------
-function currentTheme(){ return document.documentElement.dataset.theme === "light" ? "light" : "dark"; }
-function applyThemeToFrames(t){
-  // iframe-urile (ex. Rețele) sunt cross-origin sub file:// -> comunicăm prin postMessage
-  document.querySelectorAll("iframe.embed-frame").forEach(function(f){
-    try{ f.contentWindow.postMessage({ type:"theme", theme:t }, "*"); }catch(e){}
-  });
-}
-function applyTheme(t){
-  document.documentElement.dataset.theme = t;
-  try{ localStorage.setItem("app-theme", t); }catch(e){}
-  const btn = document.getElementById("themeToggle");
-  if(btn) btn.textContent = t === "light" ? "☀️" : "🌙";
-  applyThemeToFrames(t);   // propagă către materiile încărcate în iframe (ex. Rețele)
-}
-function toggleTheme(){ applyTheme(currentTheme()==="light" ? "dark" : "light"); }
+// ---------- Temă ----------
+// Logica de teme (selector 100+, dark/light, propagare în iframe-uri) este în
+// js/theme.js, care expune: applyThemeById, toggleTheme, currentTheme,
+// openThemePicker și frameThemeMsg (folosit mai jos la încărcarea iframe-urilor).
 
 // ---------- Navigatie ----------
 function shortTitle(t){ return t.split("—")[0].trim(); }
@@ -404,7 +392,7 @@ function showEmbed(subId, sec){
       + 'data-subject="'+subId+'" src="'+m.src+'#'+sec+'" title="'+m.nume+'"></iframe></div>';
     const f = document.getElementById("embed-frame");
     f.addEventListener("load", function(){
-      try{ f.contentWindow.postMessage({ type:"theme", theme:currentTheme() }, "*"); }catch(e){}
+      try{ f.contentWindow.postMessage(frameThemeMsg(), "*"); }catch(e){}
     });
   }
 }
@@ -480,7 +468,7 @@ function examNav(id){
 
 // ---------- Init ----------
 window.addEventListener("DOMContentLoaded", function(){
-  applyTheme(currentTheme());
+  // tema este aplicată de js/theme.js (tot pe DOMContentLoaded)
   buildNav();
   showDashboard();
 });
