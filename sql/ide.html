@@ -213,7 +213,7 @@ pre.cmd{background:var(--code-bg);border:1px solid var(--line2);border-radius:9p
 </head>
 <body>
 <header class="top">
-  <div class="brand"><span class="n">SQL Workbench</span><span class="s">Motor SQLite local · WebAssembly</span></div>
+  <div class="brand"><span class="n">SQL Workbench</span><span class="s">Motor SQL Server · T-SQL · doar citire</span></div>
   <div class="field"><span class="lab">Bază de date</span><select class="sel" id="scnSel"></select></div>
   <div class="grow"></div>
   <div class="status" id="eng"><span class="dot"></span><span id="engT">inițializare…</span></div>
@@ -231,10 +231,10 @@ pre.cmd{background:var(--code-bg);border:1px solid var(--line2);border-radius:9p
     <div class="toolbar">
       <button class="btn primary" id="runBtn">Execută <span class="kbd">Ctrl+Enter</span></button>
       <select class="sel" id="exSel"><option value="">Exemple de interogări</option></select>
-      <button class="btn" id="resetBtn">Resetează baza</button>
+      <button class="btn" id="resetBtn">↻ Reîncarcă</button>
       <button class="btn" id="clearBtn">Golește</button>
       <span class="grow"></span>
-      <span class="dialect">Dialect SQLite — date: <code>strftime('%Y',col)</code> · limită: <code>LIMIT n</code> · autocompletare: <code>Ctrl+Space</code></span>
+      <span class="dialect">Dialect SQL Server (T-SQL) — dată: <code>YEAR(col)</code>/<code>MONTH(col)</code> · limită: <code>TOP (n)</code> · autocompletare: <code>Ctrl+Space</code></span>
     </div>
     <div class="editor-pane"><textarea id="editor"></textarea></div>
     <div class="bottom">
@@ -253,94 +253,82 @@ pre.cmd{background:var(--code-bg);border:1px solid var(--line2);border-radius:9p
 <script src="../js/data/palettes.js"></script>
 <script src="../js/theme.js"></script>
 <script src="scenarii.js"></script>
-<script src="ide-examples.js"></script>
 <script src="vendor/cm.js"></script>
 <script src="vendor/cm-sql.js"></script>
 <script src="vendor/cm-hint.js"></script>
 <script src="vendor/cm-sql-hint.js"></script>
 <script src="vendor/cm-matchbrackets.js"></script>
 <script src="vendor/cm-closebrackets.js"></script>
-<script src="vendor/sql-wasm.js"></script>
 <script>
 "use strict";
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-var SQL=null, dbs={}, cur=null, cm=null, schemaObj={};
+var SQLAPI='/sqlapi';
+var cur=null, cm=null, schemaObj={}, liveTables=[];
 
-/* tema (selectorul de 100+ teme + dark/light) e gestionată de js/theme.js,
-   care expune toggleTheme() și openThemePicker() și aplică tema salvată la load */
+/* tema (selectorul de teme + dark/light) e gestionată de js/theme.js */
 
-function getDb(scn,fresh){ if(fresh&&dbs[scn.id]){ try{dbs[scn.id].close();}catch(e){} delete dbs[scn.id]; } if(!dbs[scn.id]){ var db=new SQL.Database(); db.exec(scn.anexa); dbs[scn.id]=db; } return dbs[scn.id]; }
-function curDb(){ return dbs[cur.id]; }
-function listTables(db){
-  var t=db.exec("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name");
-  var names=t.length? t[0].values.map(function(v){return v[0];}):[];
-  return names.map(function(n){
-    var info=db.exec('PRAGMA table_info("'+n+'")');
-    var cols=info.length? info[0].values.map(function(c){ return {name:c[1],type:c[2],notnull:c[3],pk:c[5]}; }):[];
-    var fk=db.exec('PRAGMA foreign_key_list("'+n+'")');
-    var fks=fk.length? fk[0].values.map(function(c){ return {from:c[3],table:c[2],to:c[4]}; }):[];
-    var cnt=db.exec('SELECT COUNT(*) FROM "'+n+'"')[0].values[0][0];
-    return {name:n,cols:cols,fks:fks,count:cnt};
+/* PK/FK derivate din scenariul curent (cur.tabele[].campuri: ["Id_X (PK)", ...]) */
+function pkfkFor(tableName){
+  var meta=(cur.tabele||[]).filter(function(t){return t.nume===tableName;})[0];
+  var pk={}, fk={};
+  if(meta) meta.campuri.forEach(function(c){
+    var raw=c[0], name=raw.replace(/\s*\((PK|FK)\)\s*$/,'');
+    if(/\(PK\)/.test(raw)) pk[name]=1;
+    if(/\(FK\)/.test(raw)) fk[name]=1;
   });
+  return {pk:pk, fk:fk};
 }
+function setEng(kind, txt){ $('eng').className='status '+(kind||''); $('engT').textContent=txt; }
 
 function renderSchema(){
-  var tbls=listTables(curDb());
-  $('schCount').textContent=tbls.length+' tabele';
-  $('schema').innerHTML=tbls.map(function(t){
-    var fkc={}; t.fks.forEach(function(f){ fkc[f.from]=f.table; });
+  $('schCount').textContent=liveTables.length+' tabele';
+  $('schema').innerHTML=liveTables.map(function(t){
+    var pf=pkfkFor(t.name);
     return '<div class="sch-tbl"><div class="sch-th" onclick="this.parentNode.classList.toggle(\'open\')">'
-      +'<span class="sch-caret">&#9656;</span>'+esc(t.name)+' <span class="sch-cnt">'+t.count+' r&acirc;nduri</span></div>'
+      +'<span class="sch-caret">&#9656;</span>'+esc(t.name)+' <span class="sch-cnt">'+t.rows.length+' r&acirc;nduri</span></div>'
       +'<div class="sch-body">'
-      + t.cols.map(function(c){ var b=c.pk?'<span class="tag pk">PK</span>':(fkc[c.name]?'<span class="tag fk">FK</span>':'');
-          return '<div class="sch-col" title="'+(fkc[c.name]?('FK → '+esc(fkc[c.name])):'inserează în editor')+'" onclick="insertText(\''+esc(c.name)+'\')">'+esc(c.name)+(b?' '+b:'')+' <span class="ty">'+esc(c.type||'')+'</span></div>'; }).join('')
+      + t.columns.map(function(c){ var b=pf.pk[c.name]?'<span class="tag pk">PK</span>':(pf.fk[c.name]?'<span class="tag fk">FK</span>':'');
+          return '<div class="sch-col" title="inserează în editor" onclick="insertText(\''+esc(c.name)+'\')">'+esc(c.name)+(b?' '+b:'')+' <span class="ty">'+esc(c.type||'')+'</span></div>'; }).join('')
       +'<button class="sch-browse" onclick="browse(\''+esc(t.name)+'\')">Previzualizează datele</button></div></div>';
   }).join('');
 }
 
 function renderER(){
   var order=cur.tabele.map(function(t){ return t.nume; });
-  var tbls=listTables(curDb()), byName={}; tbls.forEach(function(t){ byName[t.name]=t; });
+  var byName={}; liveTables.forEach(function(t){ byName[t.name]=t; });
   var cards=order.filter(function(n){ return byName[n]; });
   var h='<div class="intro"><b>Relațiile dintre tabele:</b> '+cur.relatii+'</div><div class="er">';
   cards.forEach(function(name,i){
-    var t=byName[name], fkc={}; t.fks.forEach(function(f){ fkc[f.from]=f; });
+    var t=byName[name], pf=pkfkFor(name);
     h+='<div class="er-card"><div class="h">'+esc(name)+'</div><div class="cols">'
-      + t.cols.map(function(c){ var cls=c.pk?'pk':(fkc[c.name]?'fk':''); var b=c.pk?'<span class="tag pk">PK</span> ':(fkc[c.name]?'<span class="tag fk">FK</span> ':'');
+      + t.columns.map(function(c){ var cls=pf.pk[c.name]?'pk':(pf.fk[c.name]?'fk':''); var b=pf.pk[c.name]?'<span class="tag pk">PK</span> ':(pf.fk[c.name]?'<span class="tag fk">FK</span> ':'');
           return '<div class="er-row '+cls+'">'+b+esc(c.name)+' <span class="ty">'+esc(c.type||'')+'</span></div>'; }).join('')
       +'</div></div>';
-    if(i<cards.length-1){
-      var next=byName[cards[i+1]], link=null;
-      next.fks.forEach(function(f){ if(f.table===name) link=f; });
-      t.fks.forEach(function(f){ if(f.table===cards[i+1] && !link) link=f; });
-      var lbl=link?('FK <code>'+esc(link.from)+'</code> &rarr; '+esc(link.table)+'.'+esc(link.to)):'cheie externă';
-      h+='<div class="er-link"><div class="wire"></div><div class="card-mid">1 : N</div><div class="lbl">'+lbl+'</div></div>';
-    }
+    if(i<cards.length-1) h+='<div class="er-link"><div class="wire"></div><div class="card-mid">1 : N</div><div class="lbl">cheie externă</div></div>';
   });
   h+='</div><div class="er-legend"><span><b>PK</b> — cheie primară</span><span><b>FK</b> — cheie externă (referă tabela părinte)</span><span><b>1 : N</b> — un părinte, mai mulți copii</span></div>';
   $('pane-rel').innerHTML=h;
 }
 
+function stripTags(s){ return String(s).replace(/<[^>]*>/g,''); }
 function renderReq(){
-  var exById={}; (typeof SQL_IDE_EXAMPLES!=='undefined' && SQL_IDE_EXAMPLES[cur.id] || []).forEach(function(e){ var m=e[0].match(/^([a-z])\)/i); if(m) exById[m[1].toLowerCase()]=e[1]; });
-  var h='<div class="intro"><b>Cerințele scenariului.</b> Apasă „&Icirc;ncarcă &amp; execută" pentru a vedea rezultatul, sau scrie singur interogarea.</div>';
+  var h='<div class="intro"><b>Cerințele scenariului.</b> Apasă „&Icirc;ncarcă &amp; execută" pentru rezultat, sau scrie singur interogarea (T-SQL).</div>';
   cur.cerinte.forEach(function(c){
-    var ex=exById[c.lit];
     h+='<div class="req"><div class="req-h"><span class="req-lit">'+esc(c.lit)+')</span> '+c.enunt
-      +(ex?(' <button class="btn mini" onclick="loadEx(this)" data-sql="'+esc(ex).replace(/"/g,'&quot;')+'">&Icirc;ncarcă &amp; execută</button>'):'')+'</div>'
-      +'<details class="req-sol"><summary>Model (Access/Jet + ANSI)</summary>'
-      +'<div class="req-lbl">Model — Access/Jet</div><pre class="cmd">'+esc(c.sql)+'</pre>'
-      +(c.ansi?('<div class="req-lbl">Echivalent — ANSI / SQL Server</div><pre class="cmd">'+esc(c.ansi)+'</pre>'):'')
+      +' <button class="btn mini" onclick="loadEx(this)" data-sql="'+esc(c.sql).replace(/"/g,'&quot;')+'">&Icirc;ncarcă &amp; execută</button></div>'
+      +'<details class="req-sol"><summary>Model — SQL Server / T-SQL</summary>'
+      +'<pre class="cmd">'+esc(c.sql)+'</pre>'
+      +(c.ansi?('<div class="req-lbl">Variantă alternativă</div><pre class="cmd">'+esc(c.ansi)+'</pre>'):'')
       +'<div class="req-note">'+c.note+'</div></details></div>';
   });
   $('pane-req').innerHTML=h;
 }
 function loadEx(btn){ cm.setValue(btn.getAttribute('data-sql')); run(); }
 
-function cellHtml(c){ return c===null?'<span class="nullv">NULL</span>':esc(String(c)); }
-function resultGrid(r,label){
-  var cols=r.columns,rows=r.values,max=1000,shown=rows.slice(0,max);
+function cellHtml(c){ return (c===null||c===undefined)?'<span class="nullv">NULL</span>':esc(String(c)); }
+function resultGrid(cols, rows, label){
+  var max=1000, shown=rows.slice(0,max);
   var h='<div class="res"><div class="res-head">'+(label?'<span class="res-set">'+esc(label)+'</span>':'')+'<span class="res-rows">'+rows.length+' r&acirc;nduri · '+cols.length+' coloane</span></div>';
   h+='<div class="tablewrap"><table class="rtable"><thead><tr><th class="rn">#</th>'+cols.map(function(c){return '<th>'+esc(c)+'</th>';}).join('')+'</tr></thead><tbody>';
   h+=shown.map(function(row,ri){ return '<tr><td class="rn">'+(ri+1)+'</td>'+row.map(function(c){return '<td>'+cellHtml(c)+'</td>';}).join('')+'</tr>'; }).join('');
@@ -349,67 +337,72 @@ function resultGrid(r,label){
   if(rows.length===0) h+='<div class="empty">Interogarea a rulat corect; niciun rând returnat.</div>';
   return h+'</div>';
 }
-function errTip(m){
-  if(/no such function:\s*(year|month|day)/i.test(m)) return 'SQLite nu are <code>YEAR()/MONTH()/DAY()</code> — folosește <code>strftime(\'%Y\',col)</code>, <code>%m</code>, <code>%d</code>.';
-  if(/near "TOP"/i.test(m)) return 'SQLite nu are <code>TOP n</code> — folosește <code>ORDER BY ... LIMIT n</code>.';
-  if(/no such function/i.test(m)) return 'Funcție inexistentă. Disponibile: <code>strftime</code>, <code>substr</code>, <code>length</code>, <code>upper/lower</code>, agregări.';
-  if(/no such table/i.test(m)) return 'Verifică numele tabelei în exploratorul de schemă.';
-  if(/no such column/i.test(m)) return 'Verifică numele coloanei; pentru JOIN prefixează <code>Tabela.Coloana</code>.';
-  if(/ambiguous/i.test(m)) return 'Coloană prezentă în mai multe tabele — prefixează cu <code>Tabela.Coloana</code>.';
-  if(/syntax error/i.test(m)) return 'Verifică virgulele, ghilimelele simple <code>\'...\'</code> și cuvintele-cheie.';
-  return 'Folosește autocompletarea (Ctrl+Space) pentru tabele și coloane.';
-}
 function errorPanel(m){
-  var k='Eroare SQL';
-  if(/syntax error/i.test(m))k='Eroare de sintaxă'; else if(/no such table/i.test(m))k='Tabel inexistent'; else if(/no such column/i.test(m))k='Coloană inexistentă'; else if(/no such function/i.test(m))k='Funcție necunoscută'; else if(/ambiguous/i.test(m))k='Coloană ambiguă';
-  return '<div class="err"><div class="err-h">'+esc(k)+'</div><div class="err-msg"><span class="err-lbl">SQLite</span> '+esc(m)+'</div><div class="err-tip"><b>Sugestie:</b> '+errTip(m)+'</div></div>';
+  return '<div class="err"><div class="err-h">Eroare SQL Server</div><div class="err-msg"><span class="err-lbl">T-SQL</span> '+esc(m)+'</div>'
+    +'<div class="err-tip"><b>Sugestie:</b> verifică numele tabelelor/coloanelor (exploratorul din stânga), ghilimelele simple <code>\'...\'</code>, și folosește autocompletarea (Ctrl+Space). Permise doar interogări <code>SELECT</code>.</div></div>';
 }
 function showPane(bt){ document.querySelectorAll('.bpane').forEach(function(p){ p.classList.toggle('active',p.id==='pane-'+bt); }); document.querySelectorAll('.btab').forEach(function(b){ b.classList.toggle('active',b.dataset.bt===bt); }); }
+
 function run(){
-  if(!SQL||!cur) return; showPane('res');
+  if(!cur) return; showPane('res');
   var sql=cm.getValue().trim(), out=$('pane-res');
   if(!sql){ out.innerHTML='<div class="note">Editor gol.</div>'; return; }
-  var db=curDb(),res,t0=performance.now();
-  try{ res=db.exec(sql); }catch(e){ out.innerHTML=errorPanel(e.message); return; }
-  var ms=Math.max(1,Math.round(performance.now()-t0)), mod=db.getRowsModified();
-  if(!res||!res.length){ out.innerHTML='<div class="ok">Comandă executată în '+ms+' ms. '+mod+' rând'+(mod===1?'':'uri')+' afectat'+(mod===1?'':'e')+'.</div>'; renderSchema(); buildSchemaObj(); return; }
-  out.innerHTML='<div class="res-meta">Executat în '+ms+' ms · '+res.length+' set'+(res.length===1?'':'uri')+' de rezultate</div>'+res.map(function(r,i){ return resultGrid(r,res.length>1?('Set '+(i+1)):null); }).join('');
-  renderSchema(); buildSchemaObj();
+  out.innerHTML='<div class="res-meta">Se execută…</div>';
+  fetch(SQLAPI+'/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:cur.id,sql:sql})})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.error){ out.innerHTML=errorPanel(d.error); return; }
+      out.innerHTML='<div class="res-meta">Executat în '+d.elapsedMs+' ms · '+d.rowCount+' rânduri'+(d.truncated?' (trunchiat)':'')+'</div>'+resultGrid(d.columns,d.rows,null);
+    })
+    .catch(function(){ out.innerHTML=errorPanel('Backend indisponibil (sqlrunner).'); });
 }
-function browse(t){ if(!SQL||!cur)return; showPane('res'); try{ var r=curDb().exec('SELECT * FROM "'+t+'" LIMIT 500'); $('pane-res').innerHTML='<div class="res-meta">Conținutul tabelei '+esc(t)+'</div>'+(r.length?resultGrid(r[0],null):'<div class="empty">Tabelă goală.</div>'); }catch(e){ $('pane-res').innerHTML=errorPanel(e.message); } }
+function browse(t){ if(!cur)return; cm.setValue('SELECT * FROM '+t+';'); run(); }
 function insertText(x){ if(cm){ cm.replaceSelection(x); cm.focus(); } }
-function reset(){ getDb(cur,true); buildSchemaObj(); renderSchema(); renderER(); $('pane-res').innerHTML='<div class="ok">Baza a fost reîncărcată din schema inițială.</div>'; showPane('res'); }
-function buildSchemaObj(){ schemaObj={}; listTables(curDb()).forEach(function(t){ schemaObj[t.name]=t.cols.map(function(c){return c.name;}); }); if(cm) cm.setOption('hintOptions',{tables:schemaObj,completeSingle:false}); }
-function populateExamples(){ var sel=$('exSel'); var ex=(typeof SQL_IDE_EXAMPLES!=='undefined'&&SQL_IDE_EXAMPLES[cur.id])||[]; sel.innerHTML='<option value="">Exemple de interogări</option>'+ex.map(function(e){ return '<option value="'+esc(e[1]).replace(/"/g,'&quot;')+'">'+esc(e[0])+'</option>'; }).join(''); }
+
+function buildSchemaObj(){ schemaObj={}; liveTables.forEach(function(t){ schemaObj[t.name]=t.columns.map(function(c){return c.name;}); }); if(cm) cm.setOption('hintOptions',{tables:schemaObj,completeSingle:false}); }
+function populateExamples(){ var sel=$('exSel'); sel.innerHTML='<option value="">Exemple (cerințele scenariului)</option>'+cur.cerinte.map(function(c){ return '<option value="'+esc(c.sql).replace(/"/g,'&quot;')+'">'+esc(c.lit)+') '+esc(stripTags(c.enunt).slice(0,70))+'</option>'; }).join(''); }
+
+function loadTables(cb){
+  setEng('', 'încarc tabelele…');
+  fetch(SQLAPI+'/tables?scenario='+encodeURIComponent(cur.id))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.error){ setEng('bad','eroare: '+d.error); return; }
+      liveTables=d.tables||[];
+      setEng('ok','SQL Server · pregătit (doar citire)');
+      buildSchemaObj(); renderSchema(); renderER();
+      if(cb) cb();
+    })
+    .catch(function(){
+      setEng('bad','backend indisponibil');
+      $('pane-res').innerHTML='<div class="err"><div class="err-h">Backendul „Interogare Live" nu răspunde</div><div class="err-msg">Pornește serviciile <code>sqlrunner</code> și <code>sqltrainer-db</code>.</div></div>';
+    });
+}
 
 function selectScenario(id){
   cur=SQL_SCENARII.filter(function(s){return s.id===id;})[0]||SQL_SCENARII[0];
   $('scnSel').value=cur.id;
-  getDb(cur,false); buildSchemaObj(); renderSchema(); renderER(); renderReq(); populateExamples();
-  var t0=Object.keys(schemaObj)[0]||'';
-  cm.setValue('SELECT *\nFROM '+t0+';');
-  $('pane-res').innerHTML='<div class="welcome">Bază: <b>'+esc(cur.nume)+'</b>, motor SQLite local. Selectează o cerință din fila <b>Cerințe</b>, alege un exemplu sau scrie o interogare. Execuție: <b>Ctrl+Enter</b>. Structura tabelelor: panoul din stânga; lanțul cheilor: fila <b>Relații</b>.</div>';
-  showPane('res');
+  renderReq(); populateExamples();
+  loadTables(function(){
+    var t0=(liveTables[0]&&liveTables[0].name)||'';
+    cm.setValue('SELECT *\nFROM '+t0+';');
+    $('pane-res').innerHTML='<div class="welcome">Bază: <b>'+esc(cur.nume)+'</b> · motor SQL Server (T-SQL), doar citire. Alege o cerință din fila <b>Cerințe</b>, un exemplu, sau scrie o interogare. Execuție: <b>Ctrl+Enter</b>.</div>';
+    showPane('res');
+  });
 }
 
 function init(){
   $('scnSel').innerHTML=SQL_SCENARII.map(function(s){ return '<option value="'+s.id+'">'+esc(s.nume)+'</option>'; }).join('');
   $('scnSel').onchange=function(){ selectScenario(this.value); };
   document.querySelectorAll('.btab').forEach(function(b){ b.onclick=function(){ showPane(b.dataset.bt); }; });
-  $('runBtn').onclick=run; $('resetBtn').onclick=reset; $('clearBtn').onclick=function(){ cm.setValue(''); cm.focus(); };
+  $('runBtn').onclick=run; $('resetBtn').onclick=function(){ loadTables(); }; $('clearBtn').onclick=function(){ cm.setValue(''); cm.focus(); };
   $('exSel').onchange=function(){ var v=this.value; if(v===''){return;} cm.setValue(v); this.selectedIndex=0; run(); };
   $('themeBtn').onclick=function(){ if(window.toggleTheme){ toggleTheme(); } if(cm) setTimeout(function(){ cm.refresh(); },30); };
   $('themePickBtn').onclick=function(){ if(window.openThemePicker){ openThemePicker(); } };
   cm=CodeMirror.fromTextArea($('editor'),{ mode:'text/x-sql', lineNumbers:true, matchBrackets:true, autoCloseBrackets:true, smartIndent:true, indentUnit:2, lineWrapping:true, hintOptions:{tables:{},completeSingle:false}, extraKeys:{'Ctrl-Enter':run,'Cmd-Enter':run,'Ctrl-Space':'autocomplete'} });
   cm.on('inputRead',function(c,ch){ if(ch&&ch.text&&/[\w.]/.test(ch.text[0])&&!c.state.completionActive){ c.showHint(); } });
   var want=new URLSearchParams(location.search).get('scn');
-  initSqlJs({ locateFile:function(f){ return 'vendor/'+f; } }).then(function(m){
-    SQL=m; $('eng').className='status ok'; $('engT').textContent='SQLite · pregătit';
-    selectScenario(want||SQL_SCENARII[0].id); setTimeout(function(){ cm.refresh(); },50);
-  }).catch(function(e){
-    $('eng').className='status bad'; $('engT').textContent='motor indisponibil';
-    $('pane-res').innerHTML='<div class="err"><div class="err-h">Motorul nu s-a putut încărca</div><div class="err-msg">'+esc(e&&e.message||'')+'</div><div class="err-tip"><b>Cauză:</b> WebAssembly nu se încarcă pe <code>file://</code>. Rulează prin <code>python3 -m http.server</code> și deschide prin <code>http://localhost</code>.</div></div>';
-  });
+  selectScenario(want||SQL_SCENARII[0].id); setTimeout(function(){ cm.refresh(); },50);
 }
 window.addEventListener('DOMContentLoaded', init);
 </script>

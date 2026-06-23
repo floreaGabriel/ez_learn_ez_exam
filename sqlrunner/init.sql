@@ -24,6 +24,16 @@ IF DB_ID('aeriana') IS NULL CREATE DATABASE aeriana;
 GO
 IF DB_ID('service') IS NULL CREATE DATABASE service;
 GO
+IF DB_ID('hotel') IS NULL CREATE DATABASE hotel;
+GO
+IF DB_ID('banca') IS NULL CREATE DATABASE banca;
+GO
+IF DB_ID('asigurari') IS NULL CREATE DATABASE asigurari;
+GO
+IF DB_ID('curierat') IS NULL CREATE DATABASE curierat;
+GO
+IF DB_ID('universitate') IS NULL CREATE DATABASE universitate;
+GO
 
 -- ===================== 2. Login read-only (la nivel de server) =====================
 IF SUSER_ID('readonly') IS NULL
@@ -266,6 +276,249 @@ INSERT INTO Piese_Montate VALUES
  (101,11,'OEM00990','2021-02-25','2022-02-25','2021-05-01'),  -- reclamata in garantie (k)
  (102,12,'BSX12000','2021-05-10','2021-11-10',NULL),          -- garantie expirata <31.12, nereclamata
  (103,15,'OEM55500','2021-08-09','2023-08-09',NULL);          -- garantie NU expira pana 31.12 -> exclus la f
+CREATE USER readonly FOR LOGIN readonly;
+ALTER ROLE db_datareader ADD MEMBER readonly;
+GO
+
+-- ============================================================
+--  HOTEL
+-- ============================================================
+USE hotel;
+CREATE TABLE Oaspeti (
+    Id_Oaspete INT PRIMARY KEY,
+    Nume    VARCHAR(50) NOT NULL,
+    Prenume VARCHAR(50) NOT NULL,
+    Oras    VARCHAR(50) NOT NULL
+);
+CREATE TABLE Rezervari (
+    Id_Rezervare INT PRIMARY KEY,
+    Id_Oaspete   INT NOT NULL,
+    Data         DATETIME NOT NULL,
+    Stare        CHAR(1) NULL,               -- NULL / 'C' / 'A'
+    FOREIGN KEY (Id_Oaspete) REFERENCES Oaspeti(Id_Oaspete)
+);
+CREATE TABLE Facturi (
+    Id_Factura   INT PRIMARY KEY,
+    Id_Rezervare INT NOT NULL,
+    Cod_Factura  VARCHAR(10) NOT NULL,
+    Emisa_La     DATETIME NOT NULL,
+    Scadenta     DATETIME NOT NULL,
+    Total        DECIMAL(10,2) NOT NULL,
+    Achitata     DATETIME NULL,              -- NULL = neachitata
+    FOREIGN KEY (Id_Rezervare) REFERENCES Rezervari(Id_Rezervare)
+);
+INSERT INTO Oaspeti VALUES
+ (1,'Popescu','Andrei','Brasov'),
+ (2,'Pop','Maria','Brasov'),
+ (3,'Ionescu','Vlad','Cluj-Napoca'),
+ (4,'Popa','Elena','Brasov'),
+ (5,'Georgescu','Radu','Sibiu');      -- fara rezervari -> apare la j) cu 0
+INSERT INTO Rezervari VALUES
+ (10,1,'2021-11-03','C'),
+ (11,1,'2021-11-19','C'),
+ (12,1,'2021-11-28','C'),    -- Popescu: 3 rezervari in nov 2021 -> g)
+ (13,2,'2021-09-15','C'),
+ (14,3,'2021-11-10',NULL),   -- in asteptare
+ (15,4,'2021-12-02','A'),    -- anulata
+ (16,1,'2021-05-04','C');
+INSERT INTO Facturi VALUES
+ (100,10,'1234500001','2021-11-03','2021-11-30',450.00,'2021-11-10'),  -- achitata
+ (101,11,'0567800002','2021-11-19','2021-12-19',300.00,NULL),          -- prima cifra 0 -> exclus la f; neachitata
+ (102,12,'9001200003','2021-11-28','2021-12-28',620.00,NULL),          -- neachitata
+ (103,13,'7777000004','2021-09-15','2021-10-15',180.00,'2021-09-20'),
+ (104,16,'2222330005','2021-05-04','2021-11-29',520.00,NULL);          -- neachitata, scadenta < 31.12
+CREATE USER readonly FOR LOGIN readonly;
+ALTER ROLE db_datareader ADD MEMBER readonly;
+GO
+
+-- ============================================================
+--  BANCA
+-- ============================================================
+USE banca;
+CREATE TABLE Clienti (
+    Id_Client INT PRIMARY KEY,
+    Nume      VARCHAR(50) NOT NULL,
+    Prenume   VARCHAR(50) NOT NULL,
+    Sucursala VARCHAR(50) NOT NULL
+);
+CREATE TABLE Conturi (
+    Id_Cont         INT PRIMARY KEY,
+    Id_Client       INT NOT NULL,
+    Data_Deschidere DATETIME NOT NULL,
+    Stare           CHAR(1) NULL,            -- NULL / 'A' / 'I'
+    FOREIGN KEY (Id_Client) REFERENCES Clienti(Id_Client)
+);
+CREATE TABLE Tranzactii (
+    Id_Tranzactie  INT PRIMARY KEY,
+    Id_Cont        INT NOT NULL,
+    Cod_Tranzactie VARCHAR(10) NOT NULL,
+    Data           DATETIME NOT NULL,
+    Suma           DECIMAL(12,2) NOT NULL,
+    Stornata       DATETIME NULL,            -- NULL = valida
+    FOREIGN KEY (Id_Cont) REFERENCES Conturi(Id_Cont)
+);
+INSERT INTO Clienti VALUES
+ (1,'Ionescu','Bogdan','Cluj-Napoca'),
+ (2,'Popescu','Carmen','Cluj-Napoca'),
+ (3,'Dinu','Vlad','Iasi'),
+ (4,'Stoica','Ana','Cluj-Napoca');
+INSERT INTO Conturi VALUES
+ (10,1,'2021-03-04','A'),
+ (11,1,'2021-03-22','A'),    -- Ionescu: 2 conturi in martie -> g)
+ (12,2,'2021-07-15','A'),
+ (13,3,'2021-10-01',NULL),   -- in procesare
+ (14,4,'2021-05-09','I'),    -- inchis
+ (15,1,'2021-09-01','A');    -- cont fara tranzactii -> apare la j) cu 0
+INSERT INTO Tranzactii VALUES
+ (100,10,'TX1234560','2021-09-03',3200.00,NULL),
+ (101,11,'TX0567892','2021-10-19',1500.00,NULL),  -- octombrie, ultima cifra 2 (para)
+ (102,12,'TX9001234','2021-10-28', 800.00,'2021-10-30'),  -- stornata
+ (103,10,'TX7777008','2021-10-10',6000.00,NULL),  -- octombrie, ultima cifra 8 (para)
+ (104,14,'TX2222333','2021-05-04', 120.00,NULL);
+CREATE USER readonly FOR LOGIN readonly;
+ALTER ROLE db_datareader ADD MEMBER readonly;
+GO
+
+-- ============================================================
+--  ASIGURARI AUTO
+-- ============================================================
+USE asigurari;
+CREATE TABLE Asigurati (
+    Id_Asigurat INT PRIMARY KEY,
+    Nume    VARCHAR(50) NOT NULL,
+    Prenume VARCHAR(50) NOT NULL,
+    Judet   VARCHAR(50) NOT NULL
+);
+CREATE TABLE Polite (
+    Id_Polita    INT PRIMARY KEY,
+    Id_Asigurat  INT NOT NULL,
+    Data_Emitere DATETIME NOT NULL,
+    Stare        CHAR(1) NULL,               -- NULL / 'V' / 'R'
+    FOREIGN KEY (Id_Asigurat) REFERENCES Asigurati(Id_Asigurat)
+);
+CREATE TABLE Daune (
+    Id_Dauna           INT PRIMARY KEY,
+    Id_Polita          INT NOT NULL,
+    Cod_Dosar          VARCHAR(10) NOT NULL,
+    Data_Deschidere    DATETIME NOT NULL,
+    Termen_Solutionare DATETIME NOT NULL,
+    Valoare            DECIMAL(10,2) NOT NULL,
+    Platita            DATETIME NULL,         -- NULL = neplatita
+    FOREIGN KEY (Id_Polita) REFERENCES Polite(Id_Polita)
+);
+INSERT INTO Asigurati VALUES
+ (1,'Stanciu','Mihai','Cluj'),
+ (2,'Manea','Otilia','Cluj'),
+ (3,'Radu','Paul','Sibiu'),
+ (4,'Albu','Sanda','Cluj');     -- fara polite -> j) cu 0
+INSERT INTO Polite VALUES
+ (10,1,'2021-07-03','V'),
+ (11,1,'2021-09-25','V'),    -- Stanciu: 2 polite in 2021 -> g)
+ (12,2,'2021-07-10','V'),
+ (13,3,'2021-06-01',NULL),   -- draft
+ (14,2,'2021-08-15','R');    -- reziliata
+INSERT INTO Daune VALUES
+ (100,10,'D17AB0001','2021-07-03','2021-11-03', 8000.00,'2021-08-01'),  -- pozitia 2 = '7', platita
+ (101,11,'D27CD0002','2021-09-25','2021-12-25', 4500.00,NULL),          -- neplatita, termen < 31.12
+ (102,12,'D70EF0003','2021-07-15','2021-10-15', 3000.00,NULL),          -- pozitia 2 != '7'
+ (103,10,'D17GH0004','2021-07-20','2021-09-20', 2500.00,NULL);          -- pozitia 2 = '7'
+CREATE USER readonly FOR LOGIN readonly;
+ALTER ROLE db_datareader ADD MEMBER readonly;
+GO
+
+-- ============================================================
+--  CURIERAT
+-- ============================================================
+USE curierat;
+CREATE TABLE Expeditori (
+    Id_Expeditor INT PRIMARY KEY,
+    Nume    VARCHAR(50) NOT NULL,
+    Prenume VARCHAR(50) NOT NULL,
+    Oras    VARCHAR(50) NOT NULL
+);
+CREATE TABLE Colete (
+    Id_Colet      INT PRIMARY KEY,
+    Id_Expeditor  INT NOT NULL,
+    Data_Preluare DATETIME NOT NULL,
+    Stare         CHAR(1) NULL,              -- NULL / 'L' / 'R'
+    FOREIGN KEY (Id_Expeditor) REFERENCES Expeditori(Id_Expeditor)
+);
+CREATE TABLE Livrari (
+    Id_Livrare     INT PRIMARY KEY,
+    Id_Colet       INT NOT NULL,
+    Cod_AWB        VARCHAR(10) NOT NULL,
+    Data_Iesire    DATETIME NOT NULL,
+    Termen_Livrare DATETIME NOT NULL,
+    Cost           DECIMAL(8,2) NOT NULL,
+    Esuata         DATETIME NULL,            -- NULL = livrare reusita
+    FOREIGN KEY (Id_Colet) REFERENCES Colete(Id_Colet)
+);
+INSERT INTO Expeditori VALUES
+ (1,'Barbu','Cristian','Timisoara'),    -- B in [A-M]
+ (2,'Marin','Otilia','Timisoara'),      -- M in [A-M]
+ (3,'Nedelcu','Paul','Arad'),           -- N nu e in [A-M]
+ (4,'Olaru','Sanda','Timisoara');       -- fara colete -> j) cu 0
+INSERT INTO Colete VALUES
+ (10,1,'2021-03-03','L'),
+ (11,1,'2021-03-19','L'),
+ (12,1,'2021-03-28','L'),    -- Barbu: 3 colete in martie -> g)
+ (13,2,'2021-05-15','L'),
+ (14,3,'2021-03-10',NULL),   -- in tranzit
+ (15,1,'2021-08-09','R');    -- returnat
+INSERT INTO Livrari VALUES
+ (100,10,'1234560001','2021-03-03','2021-03-06', 19.50,NULL),   -- prima cifra 1, reusita
+ (101,11,'0567800002','2021-03-19','2021-03-22', 24.00,'2021-03-21'),  -- prima cifra 0 -> exclus la f; esuata
+ (102,11,'2345600003','2021-03-20','2021-03-23', 24.00,'2021-03-22'),  -- a 2-a livrare esuata pe coletul 11 -> l)
+ (103,12,'9001200004','2021-03-28','2021-03-30', 30.00,NULL),   -- prima cifra 9, reusita
+ (104,13,'7777000005','2021-05-15','2021-05-18', 15.00,NULL);
+CREATE USER readonly FOR LOGIN readonly;
+ALTER ROLE db_datareader ADD MEMBER readonly;
+GO
+
+-- ============================================================
+--  UNIVERSITATE
+-- ============================================================
+USE universitate;
+CREATE TABLE Studenti (
+    Id_Student INT PRIMARY KEY,
+    Nume      VARCHAR(50) NOT NULL,
+    Prenume   VARCHAR(50) NOT NULL,
+    Facultate VARCHAR(50) NOT NULL
+);
+CREATE TABLE Inscrieri (
+    Id_Inscriere INT PRIMARY KEY,
+    Id_Student   INT NOT NULL,
+    Data         DATETIME NOT NULL,
+    Stare        CHAR(1) NULL,               -- NULL / 'P' / 'A'
+    FOREIGN KEY (Id_Student) REFERENCES Studenti(Id_Student)
+);
+CREATE TABLE Note (
+    Id_Nota        INT PRIMARY KEY,
+    Id_Inscriere   INT NOT NULL,
+    Cod_Disciplina VARCHAR(10) NOT NULL,
+    Data_Examen    DATETIME NOT NULL,
+    Valabila_Pana  DATETIME NOT NULL,
+    Nota           DECIMAL(4,2) NOT NULL,
+    Contestata     DATETIME NULL,            -- NULL = necontestata
+    FOREIGN KEY (Id_Inscriere) REFERENCES Inscrieri(Id_Inscriere)
+);
+INSERT INTO Studenti VALUES
+ (1,'Popescu','Andrei','Automatica'),
+ (2,'Munteanu','Maria','Automatica'),
+ (3,'Ionescu','Vlad','Electronica'),
+ (4,'Georgescu','Radu','Mecanica');   -- fara inscrieri -> j) cu 0; i) il include
+INSERT INTO Inscrieri VALUES
+ (10,1,'2021-06-03','P'),
+ (11,1,'2021-06-19','P'),
+ (12,1,'2021-09-14','P'),    -- Popescu: 3 inscrieri in 2021 -> g)
+ (13,2,'2021-06-15','P'),
+ (14,3,'2021-06-10','A'),    -- absent -> Ionescu exclus la i)
+ (15,1,'2021-01-05',NULL);
+INSERT INTO Note VALUES
+ (100,10,'CS101','2021-06-03','2021-12-01', 9.50,NULL),   -- ultima cifra 1 (impar), necontestata, expira < 31.12
+ (101,11,'CS102','2021-06-19','2022-06-19', 7.00,NULL),   -- ultima cifra 2 (par) -> exclus la f
+ (102,12,'MA205','2021-09-14','2022-01-01', 8.50,'2021-10-01'),  -- contestata
+ (103,13,'CS103','2021-06-15','2021-11-30', 6.00,NULL);
 CREATE USER readonly FOR LOGIN readonly;
 ALTER ROLE db_datareader ADD MEMBER readonly;
 GO

@@ -866,6 +866,26 @@ var LIVE_EXAMPLES = {
   service:[
     "SELECT * FROM Comenzi_Service;",
     "SELECT Nume, Prenume FROM Clienti WHERE Nume LIKE '[A-M]%';"
+  ],
+  hotel:[
+    "SELECT * FROM Facturi;",
+    "SELECT Nume, Prenume, SUM(Total) AS Total_Facturat\nFROM Oaspeti\n     INNER JOIN Rezervari ON Oaspeti.Id_Oaspete = Rezervari.Id_Oaspete\n     INNER JOIN Facturi   ON Rezervari.Id_Rezervare = Facturi.Id_Rezervare\nGROUP BY Oaspeti.Id_Oaspete, Nume, Prenume\nHAVING SUM(Total) >= 1000;"
+  ],
+  banca:[
+    "SELECT * FROM Tranzactii;",
+    "SELECT Id_Cont, SUM(Suma) AS Total FROM Tranzactii\nWHERE Stornata IS NULL GROUP BY Id_Cont HAVING SUM(Suma) > 5000;"
+  ],
+  asigurari:[
+    "SELECT * FROM Daune;",
+    "SELECT Prenume FROM Asigurati WHERE Nume LIKE '%an%';"
+  ],
+  curierat:[
+    "SELECT * FROM Livrari;",
+    "SELECT Prenume FROM Expeditori WHERE Nume LIKE '[A-M]%';"
+  ],
+  universitate:[
+    "SELECT * FROM Note;",
+    "SELECT Nume, Prenume, AVG(Nota) AS Media\nFROM Studenti\n     INNER JOIN Inscrieri ON Studenti.Id_Student = Inscrieri.Id_Student\n     INNER JOIN Note      ON Inscrieri.Id_Inscriere = Note.Id_Inscriere\nGROUP BY Inscrieri.Id_Student, Nume, Prenume\nHAVING AVG(Nota) >= 8;"
   ]
 };
 
