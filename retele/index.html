@@ -331,6 +331,230 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
   .flagbit{flex:1 1 100%}
   h1{font-size:1.3rem}
 }
+
+/* ============ ANATOMIE PE BIȚI ============ */
+#anaDiagram .field{cursor:pointer}
+#anaDiagram .field.selected{outline:3px solid var(--accent);outline-offset:2px;box-shadow:0 0 0 4px hsla(41,85%,55%,.18)}
+.lab-panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-top:16px;box-shadow:var(--shadow);animation:fade .3s ease}
+.lab-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.lab-sw{width:18px;height:18px;border-radius:6px;flex-shrink:0}
+.lab-title{font-size:1.18rem;font-weight:700}
+.lab-size{font-size:.78rem;color:var(--muted);background:var(--bg3);border:1px solid var(--border);padding:2px 9px;border-radius:20px}
+.lab-sub{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--accent);margin:18px 0 7px}
+.lab-bullets{margin:6px 0 4px 2px;list-style:none}
+.lab-bullets li{position:relative;padding-left:20px;margin:6px 0;color:var(--txt);font-size:.92rem}
+.lab-bullets li::before{content:"▸";position:absolute;left:0;color:var(--accent)}
+.lab-bullets code{background:var(--bg3);border:1px solid var(--border);padding:1px 6px;border-radius:5px;font-family:"JetBrains Mono",monospace;font-size:.82rem;color:var(--accent)}
+
+.bitgrid{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px}
+.bitcell{min-width:42px;flex:1 0 42px;max-width:62px;border:1px solid var(--border);border-radius:9px;background:var(--bg3);padding:6px 4px 5px;text-align:center;cursor:pointer;transition:.14s;user-select:none}
+.bitcell:hover{border-color:var(--accent);transform:translateY(-2px)}
+.bitcell .bv{font-family:"JetBrains Mono",monospace;font-size:1.05rem;font-weight:700;line-height:1.2}
+.bitcell .bl{font-size:.62rem;color:var(--muted);margin-top:2px}
+.bitcell .bx{font-size:.6rem;color:var(--muted)}
+.bitcell.on{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:var(--accent);color:var(--on-accent,#1a1714)}
+.bitcell.on .bl,.bitcell.on .bx{color:var(--on-accent,#1a1714);opacity:.85}
+.bitcell.ro{cursor:default}
+.bitcell.ro:hover{transform:none;border-color:var(--border)}
+.bitgrid.bytes{gap:4px}
+.bytegrp{display:flex;gap:4px;padding:5px;border:1px dashed var(--border);border-radius:9px}
+.readout{display:flex;gap:18px;flex-wrap:wrap;margin:10px 0;font-family:"JetBrains Mono",monospace}
+.readout b{color:var(--muted);font-weight:600;margin-right:6px;font-family:var(--sans);font-size:.8rem}
+.readout .rv{font-size:1.02rem;font-weight:700;color:var(--accent)}
+.decoded{background:hsla(135,55%,45%,.12);border:1px solid var(--good);border-left:4px solid var(--good);border-radius:10px;padding:11px 15px;margin:8px 0;font-size:.92rem}
+.decoded b{color:var(--good)}
+.enum-tbl{width:100%;border-collapse:collapse;margin:6px 0;font-size:.86rem}
+.enum-tbl td{border:1px solid var(--border);padding:6px 11px}
+.enum-tbl td:first-child{font-family:"JetBrains Mono",monospace;color:var(--accent);width:120px;font-weight:600}
+.enum-tbl tr.ex td{background:hsla(41,85%,55%,.14);border-color:var(--accent)}
+.enum-tbl tr.ex td:first-child::after{content:" ◀ exemplu";color:var(--muted);font-family:var(--sans);font-size:.72rem;font-weight:400}
+.changes-note{background:hsla(41,85%,55%,.10);border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:10px;padding:11px 15px;margin-top:6px;font-size:.9rem;color:var(--txt)}
+.changes-note b{color:var(--accent2)}
+
+/* ============ CĂLĂTORIA PACHETULUI ============ */
+.jscenes{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0 4px}
+.jscene{padding:9px 15px;border:1px solid var(--border);background:var(--bg3);color:var(--txt);border-radius:11px;cursor:pointer;font-size:.86rem;font-weight:600;transition:.14s}
+.jscene:hover{border-color:var(--accent);transform:translateY(-2px)}
+.jscene.active{background:var(--accent);color:var(--on-accent,#1a1714);border-color:var(--accent)}
+
+/* topologie */
+.jtopo{position:relative;display:flex;justify-content:space-between;align-items:center;padding:30px 26px 18px;min-height:130px}
+.jline{position:absolute;left:46px;right:46px;top:64px;height:4px;background:var(--border);border-radius:3px;z-index:0}
+.jnode{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;width:88px}
+.jnode .ic{width:54px;height:54px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:var(--panel);border:2px solid var(--border);transition:.2s}
+.jnode.act .ic{border-color:var(--accent);box-shadow:0 0 0 4px hsla(41,85%,55%,.18);transform:scale(1.06)}
+.jnode .nl{font-size:.78rem;font-weight:700}
+.jnode .ns{font-size:.66rem;color:var(--muted);font-family:"JetBrains Mono",monospace}
+.packet{position:absolute;top:48px;z-index:3;left:46px;transition:left .8s cubic-bezier(.5,0,.3,1),opacity .25s;opacity:0;transform:translateX(-50%)}
+.packet.show{opacity:1}
+.packet .pbody{display:flex;align-items:center;gap:2px;background:var(--bg2);border:2px solid var(--accent);border-radius:9px;padding:4px 7px;box-shadow:0 6px 18px rgba(0,0,0,.4);font-size:.6rem;font-weight:700}
+.packet .pseg{padding:2px 5px;border-radius:4px;color:#fff}
+.packet.bcast .pbody{border-color:var(--accent2);border-style:dashed}
+.encap{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0 12px}
+.encap .seg{font-size:.7rem;font-weight:700;color:#fff;padding:3px 10px;border-radius:6px}
+.encap .seg small{opacity:.8;font-weight:500}
+
+/* panou stare header */
+.jstate{margin-top:6px}
+.jrow{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:center;padding:8px 12px;border:1px solid var(--border);border-radius:10px;margin:6px 0;background:var(--bg3);transition:.2s}
+.jrow .jk{font-size:.8rem;color:var(--muted);font-weight:600}
+.jrow .jv{font-family:"JetBrains Mono",monospace;font-size:.88rem;font-weight:700}
+.jrow .jv .was{color:var(--muted);text-decoration:line-through;font-weight:500;margin-right:8px}
+.jrow .jv .arr{color:var(--accent2);margin-right:8px}
+.jrow.changed{border-color:var(--accent);background:hsla(41,85%,55%,.10);animation:pulse 1s ease}
+.jrow.same .jv{color:var(--good)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 hsla(41,85%,55%,.5)}70%{box-shadow:0 0 0 10px hsla(41,85%,55%,0)}100%{box-shadow:0 0 0 0 hsla(41,85%,55%,0)}}
+
+/* ladder (handshake) */
+.ladder{position:relative;padding:14px 10px 6px}
+.ladder-head{display:flex;justify-content:space-between;margin-bottom:8px}
+.ladder-head span{font-weight:700;font-size:.9rem;background:var(--bg3);border:1px solid var(--border);padding:6px 16px;border-radius:10px}
+.lmsg{position:relative;margin:14px 4px;opacity:.25;transition:opacity .3s}
+.lmsg.on{opacity:1}
+.lmsg .arrow{position:relative;height:32px;display:flex;align-items:center}
+.lmsg .arrow .ln{position:absolute;top:50%;height:3px;background:var(--accent);border-radius:3px;width:0;transition:width .6s ease}
+.lmsg.on .arrow .ln{width:100%}
+.lmsg.ltr .arrow .ln{left:0}
+.lmsg.rtl .arrow .ln{right:0;background:var(--accent2)}
+.lmsg .tag{position:absolute;left:50%;top:-4px;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--accent);border-radius:20px;padding:3px 13px;font-size:.78rem;font-weight:700;white-space:nowrap;z-index:2}
+.lmsg.rtl .tag{border-color:var(--accent2)}
+.lmsg .head-dot{position:absolute;top:50%;width:11px;height:11px;border-radius:50%;background:var(--accent);transform:translate(-50%,-50%);opacity:0}
+.lmsg.on.ltr .head-dot{left:100%;opacity:1;transition:left .6s ease;animation:none}
+.lmsg .note{font-size:.8rem;color:var(--muted);margin-top:6px;text-align:center}
+.lflags{display:flex;gap:5px;justify-content:center;margin-top:7px;flex-wrap:wrap}
+.lflag{font-size:.68rem;font-weight:700;font-family:"JetBrains Mono",monospace;padding:2px 8px;border-radius:6px;border:1px solid var(--border);color:var(--muted)}
+.lflag.on{background:var(--good);border-color:var(--good);color:#0c0c0c}
+
+/* tabel pachete (completare automată) */
+.ptable{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:4px}
+.ptable th,.ptable td{border:1px solid var(--border);padding:7px 9px;text-align:center;white-space:nowrap}
+.ptable th{background:var(--bg3);color:var(--accent);font-size:.68rem;text-transform:uppercase;letter-spacing:.3px}
+.ptable td.macm{font-family:"JetBrains Mono",monospace;font-size:.75rem}
+.ptable td.sens{text-align:left;white-space:normal;min-width:210px;color:var(--txt)}
+.ptable td.muta{color:var(--muted)}
+.ptable tr.rownew td{background:hsla(41,85%,55%,.13);animation:pulse 1s ease}
+.ptable td.chg{color:var(--accent);font-weight:700}
+/* panou: ce headere se folosesc */
+.userow{display:flex;gap:11px;align-items:flex-start;padding:9px 2px;border-bottom:1px solid var(--border)}
+.userow:last-child{border-bottom:none}
+.utag{flex-shrink:0;font-size:.66rem;font-weight:800;letter-spacing:.3px;text-transform:uppercase;background:var(--accent);color:var(--on-accent,#1a1714);padding:3px 9px;border-radius:7px;min-width:78px;text-align:center}
+.utxt{font-size:.88rem;color:var(--txt);line-height:1.5}
+.utxt code{background:var(--bg3);border:1px solid var(--border);padding:1px 5px;border-radius:5px;font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--accent)}
+
+/* exemplu per câmp în „Învață" */
+.fd-ex{display:inline-block;margin-left:6px;font-size:.78rem;color:var(--accent2)}
+.fd-ex code{background:var(--bg3);border:1px solid var(--border);padding:0 5px;border-radius:4px;font-family:"JetBrains Mono",monospace;font-size:.74rem;color:var(--accent)}
+
+/* workflow „cum se folosesc headerele" (Învață, jos) */
+.wf{border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin:14px 0;background:var(--bg3)}
+.wf-t{font-weight:800;font-size:1rem;color:var(--accent)}
+.wf-i{font-size:.85rem;color:var(--muted);margin:4px 0 12px}
+.wf-layer{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:10px;padding:10px 13px;margin:4px 0}
+.wf-h{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.wf-tag{font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px;color:#fff;padding:3px 9px;border-radius:6px}
+.wf-why{font-size:.82rem;color:var(--muted)}
+.wf-fields{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px}
+.wf-f{font-size:.75rem;font-family:"JetBrains Mono",monospace;background:var(--bg3);border:1px solid var(--border);padding:3px 8px;border-radius:6px}
+.wf-f b{color:var(--accent);font-family:var(--sans);font-weight:600;font-size:.72rem;margin-right:3px}
+.wf-arrow{text-align:center;font-size:.66rem;color:var(--muted);margin:2px 0;letter-spacing:.5px}
+.wf-note{font-size:.82rem;color:var(--muted);margin-top:9px;border-top:1px dashed var(--border);padding-top:8px}
+.wf-note b{color:var(--txt)}
+
+/* SUBNETIZARE */
+.sp-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin:18px 0;box-shadow:var(--shadow)}
+.sp-head{display:flex;align-items:center;gap:11px;margin-bottom:6px;flex-wrap:wrap}
+.sp-head h2{margin:0;font-size:1.12rem}
+.sp-badge{font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:3px 10px;border-radius:20px;background:var(--accent);color:var(--on-accent,#1a1714)}
+.sp-badge.FLSM{background:var(--good);color:#0c0c0c}
+.sp-badge.P2P{background:var(--accent2);color:#1a1714}
+.sp-sub{font-size:.7rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--accent);margin:18px 0 7px}
+.sp-enunt{font-size:.93rem;line-height:1.6}
+.sp-enunt code,.sp-step code,.sp-verif code{background:var(--bg3);border:1px solid var(--border);padding:1px 5px;border-radius:5px;font-family:"JetBrains Mono",monospace;color:var(--accent);font-size:.82rem}
+.sp-topo{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:18px 14px;margin:8px 0;display:flex;justify-content:center;overflow-x:auto}
+.sp-steps{display:flex;flex-direction:column;gap:9px;margin:4px 0}
+.sp-step{display:flex;gap:11px;align-items:flex-start;background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:11px 14px;font-size:.9rem;line-height:1.55;animation:fade .3s ease}
+.sp-stepn{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--on-accent,#1a1714);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.76rem}
+.sp-final{margin-top:12px}
+.sp-verif{background:hsla(135,55%,45%,.12);border:1px solid var(--good);border-left:4px solid var(--good);border-radius:10px;padding:11px 15px;margin-top:10px;font-size:.9rem}
+.sp-verif b{color:var(--good)}
+.sn-ref{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin:14px 0}
+.sn-ref code{background:var(--bg3);border:1px solid var(--border);padding:1px 6px;border-radius:5px;font-family:"JetBrains Mono",monospace;color:var(--accent);font-size:.82rem}
+.sn-ref .big{font-family:"JetBrains Mono",monospace;font-size:1rem;color:var(--accent);letter-spacing:1px}
+
+/* topologii */
+.topo-hub{display:flex;align-items:center;gap:38px;flex-wrap:wrap}
+.topo-chain{display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center}
+.topo-node{background:var(--panel);border:2px solid var(--border);border-radius:12px;padding:9px 14px;text-align:center;min-width:118px}
+.topo-node.router{border-color:var(--accent);position:relative}
+.topo-node.wan{border-color:var(--accent2);border-style:dashed}
+.tn-ic{font-size:1.5rem;line-height:1}
+.tn-l{font-weight:700;font-size:.8rem;margin-top:3px}
+.tn-s{font-size:.72rem;color:var(--muted)}
+.topo-hub .hub::after{content:'';position:absolute;left:100%;top:50%;width:38px;height:2px;background:var(--accent);transform:translateY(-1px)}
+.topo-spokes{display:flex;flex-direction:column;gap:12px;position:relative}
+.topo-spokes::before{content:'';position:absolute;left:-19px;top:18px;bottom:18px;width:2px;background:var(--accent)}
+.topo-spoke{position:relative}
+.topo-spoke::before{content:'';position:absolute;left:-19px;top:50%;width:19px;height:2px;background:var(--accent);transform:translateY(-1px)}
+.topo-link{display:flex;flex-direction:column;align-items:center;min-width:92px;padding:0 4px}
+.topo-link .tl-line{width:100%;height:2px;background:var(--accent)}
+.topo-link .tl-lbl{font-size:.64rem;color:var(--muted);margin-top:4px;font-family:"JetBrains Mono",monospace;text-align:center}
+
+/* ===== Pachet animat realist (stivă de niveluri) ===== */
+.jtopo{min-height:160px}
+.packet{top:20px}
+.packet .pbody{background:none!important;border:none!important;box-shadow:none!important;padding:0!important;display:block!important}
+.pkt-mini{display:flex;flex-direction:column;gap:2px;background:linear-gradient(160deg,var(--bg2),var(--panel));border:2px solid var(--accent);border-radius:10px;padding:4px;box-shadow:0 10px 26px rgba(0,0,0,.55);animation:pktFloat 2.4s ease-in-out infinite}
+.packet.bcast .pkt-mini{border-color:var(--accent2);border-style:dashed}
+.pm-row{display:flex;gap:6px;align-items:center;border-radius:6px;padding:3px 8px;min-width:148px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.pm-tag{font-size:.58rem;font-weight:800;color:#fff;letter-spacing:.4px;text-shadow:0 1px 1px rgba(0,0,0,.4)}
+.pm-brief{font-size:.6rem;font-family:"JetBrains Mono",monospace;color:#fff;opacity:.95;margin-left:auto;text-shadow:0 1px 1px rgba(0,0,0,.4)}
+.pm-row.data{font-style:italic}
+@keyframes pktFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.jnode.act .ic{animation:nodePulse 1s ease}
+@keyframes nodePulse{0%{box-shadow:0 0 0 0 hsla(41,85%,55%,.55)}100%{box-shadow:0 0 0 12px hsla(41,85%,55%,0)}}
+/* linia „pe fir" pulsează când circulă pachetul */
+.jline{background:linear-gradient(90deg,var(--border),var(--border));background-size:200% 100%}
+.jtopo.flow .jline{background:linear-gradient(90deg,var(--border) 0%,var(--accent) 50%,var(--border) 100%);background-size:200% 100%;animation:wireFlow 1s linear infinite}
+@keyframes wireFlow{from{background-position:100% 0}to{background-position:-100% 0}}
+
+/* ===== Pachet detaliat — matryoshka de încapsulare ===== */
+.pkt3d{padding:2px 2px 6px;animation:fade .35s ease}
+.pl{border:1px solid var(--c,var(--accent));border-left:5px solid var(--c,var(--accent));border-radius:11px;padding:9px 11px;margin:9px 0 0;background:var(--panel);position:relative;box-shadow:0 3px 12px rgba(0,0,0,.18)}
+.pl .pl{margin:9px 0 0 4px}
+.pl-bar{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.pl-name{font-size:.76rem;font-weight:800;color:var(--c,var(--accent));letter-spacing:.5px}
+.pl-lvl{font-size:.58rem;color:var(--muted);border:1px solid var(--border);border-radius:11px;padding:1px 8px;font-family:"JetBrains Mono",monospace}
+.pl-wrap{font-size:.6rem;color:var(--muted);margin-left:auto}
+.pl-f{display:flex;gap:7px;flex-wrap:wrap}
+.pl-chip{font-size:.74rem;font-family:"JetBrains Mono",monospace;background:var(--bg3);border:1px solid var(--border);padding:3px 8px;border-radius:7px;color:var(--txt)}
+.pl-chip b{color:var(--accent);font-family:var(--sans);font-weight:600;font-size:.64rem;margin-right:4px;text-transform:uppercase;letter-spacing:.3px}
+.pl.data{border-style:dashed}
+.pl.data .pl-f{font-style:italic}
+
+/* adnotare pe diagramă (rescriere la router etc.) */
+.jannot{position:absolute;z-index:6;top:108px;left:50%;background:linear-gradient(160deg,var(--bg2),var(--panel));border:2px solid var(--accent2);border-radius:11px;padding:7px 12px;font-size:.66rem;line-height:1.45;max-width:248px;box-shadow:0 10px 24px rgba(0,0,0,.5);opacity:0;transform:translateX(-50%) translateY(6px);transition:opacity .25s,transform .25s;pointer-events:none;color:var(--txt)}
+.jannot.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.jannot b{color:var(--accent2)}
+.jannot code{background:var(--bg3);border:1px solid var(--border);padding:0 4px;border-radius:4px;font-family:"JetBrains Mono",monospace;font-size:.62rem;color:var(--accent)}
+.jannot::before{content:'';position:absolute;top:-8px;left:50%;transform:translateX(-50%);border:7px solid transparent;border-bottom-color:var(--accent2)}
+
+/* topologii complexe: tree (ierarhic) + sites (multi-sediu) */
+.topo-tree{display:flex;flex-direction:column;align-items:center;width:100%;padding:6px 0}
+.topo-clusters{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;position:relative;margin-top:26px}
+.topo-clusters::before{content:'';position:absolute;top:-26px;left:14%;right:14%;height:2px;background:var(--accent)}
+.topo-cluster{display:flex;flex-direction:column;align-items:center;gap:9px;position:relative}
+.topo-clusters .topo-cluster::before{content:'';position:absolute;top:-26px;left:50%;width:2px;height:26px;background:var(--accent)}
+.topo-leaves{display:flex;flex-direction:column;gap:6px}
+.topo-node.small{min-width:142px;padding:6px 11px}
+.topo-node.small .tn-l{font-size:.72rem;margin-top:0}
+.topo-node.lan{border-color:var(--good)}
+.hub2::after{display:none!important}
+.topo-sites{display:flex;align-items:flex-start;gap:0;justify-content:center;flex-wrap:wrap;padding:6px 0}
+.topo-sites .topo-cluster{margin-top:6px}
+.topo-sites .topo-link{align-self:flex-start;margin-top:20px}
+.sp-badge.INVERS{background:var(--accent2);color:#1a1714}
+.sp-badge.SUMAR{background:var(--good);color:#0c0c0c}
+
 </style>
 </head>
 <body>
@@ -339,6 +563,9 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
     <div class="brand"><span class="dot"></span> Headere de Rețea</div>
     <nav class="tabs" id="tabs">
       <button data-tab="ref" class="active">📘 Învață</button>
+      <button data-tab="anatomy">🧬 Anatomie pe biți</button>
+      <button data-tab="journey">🎬 Călătoria pachetului</button>
+      <button data-tab="subnet">🧮 Subnetizare</button>
       <button data-tab="drag">🧲 Trage câmpul</button>
       <button data-tab="tryhard">🛠️ Trage câmpul TRYHARD</button>
       <button data-tab="bytes">🔢 Octeți</button>
@@ -361,6 +588,7 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
       <span class="pill" id="refTotal"></span>
     </div>
     <div class="card" id="refCard"></div>
+    <div class="card" id="refFlows"></div>
   </section>
 
   <!-- ============ DRAG ============ -->
@@ -3076,6 +3304,44 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
   </section>
+
+  <!-- ============ ANATOMIE PE BIȚI ============ -->
+  <section class="page" id="page-anatomy">
+    <h1>Anatomie pe biți</h1>
+    <p class="lead">Disecă fiecare câmp, bit și flag. <b>Click pe un câmp</b> din diagramă ca să-l deschizi: vezi <b>ce conține</b>, un <b>exemplu concret</b> (hex / dec / binar), iar la câmpurile cu flaguri poți <b>comuta biții</b> ca să vezi cum se schimbă sensul. La final: <b>când și cum se modifică</b> în timpul transmisiei.</p>
+    <div class="row" style="margin-top:14px">
+      <label>Header: <select id="anaSel"></select></label>
+      <span class="pill" id="anaHint">↓ click pe un câmp</span>
+    </div>
+    <div class="card"><div class="hwrap" id="anaDiagram"></div></div>
+    <div id="anaLab"></div>
+  </section>
+
+  <!-- ============ CĂLĂTORIA PACHETULUI ============ -->
+  <section class="page" id="page-journey">
+    <h1>Călătoria pachetului</h1>
+    <p class="lead">Vezi <b>cum se transmite</b> un pachet și exact <b>ce câmpuri se modifică</b> la fiecare pas. Alege un scenariu, apoi <b>▶ Play</b> sau <b>⏭ Pas</b>. Câmpurile care se schimbă <b>pulsează</b> și arată valoarea <i>înainte → după</i>.</p>
+    <div class="jscenes" id="jScenes"></div>
+    <div class="card" id="jReq" style="display:none"></div>
+    <div class="row" style="margin-top:6px">
+      <button class="btn primary" id="jPlay">▶ Play</button>
+      <button class="btn" id="jStep">⏭ Pas</button>
+      <button class="btn ghost" id="jReset">↺ Reset</button>
+      <span class="pill" id="jProg">0 / 0</span>
+    </div>
+    <div class="card"><div id="jStage"></div></div>
+    <div class="card" id="jPacketWrap" style="display:none"><h2 style="margin-top:0">📦 Pachetul, în detaliu — încapsulare nivel cu nivel</h2><div id="jPacket"></div></div>
+    <div class="card" id="jInfo"></div>
+    <div class="card" id="jTableWrap" style="display:none"><h2 style="margin-top:0">Tabelul pachetelor — se completează automat</h2><div style="overflow-x:auto"><table class="ptable" id="jTable"></table></div></div>
+    <div class="card" id="jUses"></div>
+  </section>
+
+  <!-- ============ SUBNETIZARE ============ -->
+  <section class="page" id="page-subnet">
+    <h1>Exerciții de subnetizare</h1>
+    <p class="lead"><b>Cum citești fiecare problemă:</b> întâi doar <i>Enunțul</i> + topologia, încearcă singur pe ciornă, apoi dezvăluie <i>Rezolvarea</i> pas cu pas. Reflexele de examen se formează doar dacă încerci înainte să te uiți la soluție.</p>
+    <div id="subnetPracticeBody"></div>
+  </section>
 </main>
 
 <div class="tooltip" id="tip"></div>
@@ -3354,7 +3620,7 @@ function drawRef(){
     '<div class="fd-row" data-k="'+f.k+'" style="--h:'+hueFor(f.k)+'">'
     +'<span class="fd-sw"></span>'
     +'<div class="fd-body"><div class="fd-name">'+f.n+' <span class="fd-sz">'+sizeLabel(f,H.unit)+'</span></div>'
-    +'<div class="fd-desc">'+(FIELD_DESC[f.k]||'—')+'</div></div></div>'
+    +'<div class="fd-desc">'+(FIELD_DESC[f.k]||'—')+exHtml(f.k)+'</div></div></div>'
   )).join('');
   desc.querySelectorAll('.fd-row').forEach(row=>{
     const key=row.dataset.k;
@@ -4057,6 +4323,865 @@ document.getElementById('hexClear').onclick=()=>{ colorAll=false; document.getEl
 hexSel.onchange=drawHex; try{drawHex();}catch(e){console.error('hex',e);}
 
 /* ============================================================
+   ANATOMIE PE BIȚI — disecție per câmp/bit/flag
+   ============================================================ */
+const FLAG_LABELS = {
+  tcp:['URG','ACK','PSH','RST','SYN','FIN'],
+  ip:['R','DF','MF'],
+  dh:['B','r','r','r','r','r','r','r','r','r','r','r','r','r','r','r']
+};
+/* metadate bogate per câmp (extind FIELD_DESC). ex = valoare exemplu (număr) */
+const FIELD_LAB = {
+  // Ethernet
+  'eth-dst':{fmt:'mac',show:'B0:2A:43:1C:9F:01',bytes:[0xB0,0x2A,0x43,0x1C,0x9F,0x01],bullets:['Adresa MAC (hardware, 48 biți) a plăcii destinație din segmentul local.','<code>FF:FF:FF:FF:FF:FF</code> = broadcast (către toți).','Primele 3 octeți = OUI (producătorul plăcii).'],changes:'Se REscrie la FIECARE salt L2: fiecare router pune MAC-ul următorului hop.'},
+  'eth-src':{fmt:'mac',show:'A0:1B:2C:3D:4E:5A',bytes:[0xA0,0x1B,0x2C,0x3D,0x4E,0x5A],bullets:['Adresa MAC a interfeței care trimite cadrul.'],changes:'Rescris la fiecare salt cu MAC-ul interfeței care retransmite.'},
+  'eth-type':{fmt:'hex',ex:0x0800,enum:[[0x0800,'IPv4'],[0x0806,'ARP'],[0x86DD,'IPv6'],[0x8100,'VLAN 802.1Q']],bullets:['Ce protocol e încapsulat în payload.'],changes:'Constant (depinde de protocolul transportat).'},
+  'eth-data':{fmt:'text',show:'pachetul IP/ARP (46–1500 oct)',changes:'Conținutul de nivel superior; encapsularea poate fi modificată de NAT etc.'},
+  'eth-fcs':{fmt:'hex',show:'0x9B2D4F6A',changes:'RECALCULAT la fiecare salt (depinde de tot cadrul, deci de MAC-urile rescrise).'},
+  // IPv4
+  'ip-ver':{fmt:'dec',ex:4,enum:[[4,'IPv4'],[6,'IPv6']],bullets:['Versiunea protocolului IP.'],changes:'Constant.'},
+  'ip-ihl':{fmt:'dec',ex:5,bullets:['Lungimea headerului IP în cuvinte de 32 biți (4 octeți).','<code>5</code> = 20 octeți (minim, fără opțiuni); max <code>15</code> = 60 octeți.'],changes:'Constant dacă nu se schimbă opțiunile.'},
+  'ip-tos':{fmt:'hex',ex:0x00,bullets:['Type of Service / DSCP — prioritizare (QoS).'],changes:'De regulă constant; routerele pot rescrie pentru QoS.'},
+  'ip-len':{fmt:'dec',ex:60,bullets:['Lungimea totală (header + date) în octeți.'],changes:'Constant; se schimbă doar la fragmentare.'},
+  'ip-id':{fmt:'hex',ex:0x1C46,bullets:['Identificator al pachetului, folosit la reasamblarea fragmentelor.'],changes:'Setat de sursă; identic pe toate fragmentele aceluiași pachet.'},
+  'ip-flags':{flag:'ip',ex:0x2,bullets:['3 biți: <b>R</b> (rezervat, 0), <b>DF</b> (Don\'t Fragment), <b>MF</b> (More Fragments).'],changes:'DF de obicei constant; MF=1 pe fragmentele intermediare.'},
+  'ip-frag':{fmt:'dec',ex:0,bullets:['Poziția fragmentului în pachetul original, în unități de 8 octeți.'],changes:'0 dacă nefragmentat; altfel diferă pe fiecare fragment.'},
+  'ip-ttl':{fmt:'dec',ex:64,bullets:['Numărul maxim de hop-uri (routere) pe care le poate traversa.','Valori inițiale uzuale: <code>64</code> (Linux/Mac), <code>128</code> (Windows), <code>255</code> (Cisco).','La 0 pachetul e aruncat și se trimite ICMP <i>Time Exceeded</i> — pe asta se bazează <code>traceroute</code>.'],changes:'SCADE cu 1 la FIECARE router.'},
+  'ip-proto':{fmt:'dec',ex:6,enum:[[1,'ICMP'],[6,'TCP'],[17,'UDP']],bullets:['Ce protocol de transport e încapsulat.'],changes:'Constant.'},
+  'ip-cksum':{fmt:'hex',ex:0xB1E6,bullets:['Sumă de control care acoperă DOAR headerul IP (nu datele).'],changes:'RECALCULAT la fiecare router (fiindcă TTL s-a schimbat).'},
+  'ip-src':{fmt:'ipv4',show:'192.168.0.10',bytes:[192,168,0,10],bullets:['Adresa IP a expeditorului.'],changes:'De regulă constant — EXCEPȚIE: <b>NAT</b> îl rescrie (privat → public).'},
+  'ip-dst':{fmt:'ipv4',show:'10.0.0.5',bytes:[10,0,0,5],bullets:['Adresa IP a destinatarului final.'],changes:'Constant (destinația) — exceptând NAT pe calea de întoarcere.'},
+  'ip-opt':{fmt:'text',show:'rar folosit (variabil)',changes:'Rar prezent.'},
+  // TCP
+  'tcp-sport':{fmt:'port',ex:49152,wellknown:[[80,'HTTP'],[443,'HTTPS'],[53,'DNS'],[22,'SSH'],[25,'SMTP']],bullets:['Portul aplicației sursă (de obicei efemer, 49152–65535).'],changes:'Constant — EXCEPȚIE: NAT/PAT îl poate rescrie.'},
+  'tcp-dport':{fmt:'port',ex:443,wellknown:[[20,'FTP-data'],[21,'FTP'],[22,'SSH'],[23,'Telnet'],[25,'SMTP'],[53,'DNS'],[80,'HTTP'],[110,'POP3'],[143,'IMAP'],[443,'HTTPS']],bullets:['Portul serviciului destinație (identifică aplicația).'],changes:'Constant.'},
+  'tcp-seq':{fmt:'dec',ex:3829012,bullets:['Numărul primului octet de date din segment.','Pornește de la un ISN aleator (la SYN).'],changes:'Crește cu numărul de octeți trimiși.'},
+  'tcp-ack':{fmt:'dec',ex:3829013,bullets:['Următorul octet așteptat de la celălalt capăt.'],changes:'Valid doar cu flagul ACK=1; crește pe măsură ce se confirmă date.'},
+  'tcp-off':{fmt:'dec',ex:5,bullets:['Lungimea headerului TCP în cuvinte de 32 biți.','<code>5</code> = 20 octeți (fără opțiuni).'],changes:'Constant dacă nu se schimbă opțiunile.'},
+  'tcp-res':{fmt:'dec',ex:0,bullets:['Biți rezervați; mereu 0.'],changes:'Constant (0).'},
+  'tcp-flags':{flag:'tcp',ex:0x12,bullets:['6 biți de control: <b>URG·ACK·PSH·RST·SYN·FIN</b>.','Exemplul <code>0x12</code> = SYN+ACK (pasul 2 din handshake).'],changes:'Se schimbă în funcție de faza conexiunii (SYN → … → FIN).'},
+  'tcp-win':{fmt:'dec',ex:64240,bullets:['Câți octeți poate primi receptorul (control de flux).'],changes:'Variază dinamic.'},
+  'tcp-cksum':{fmt:'hex',ex:0x1F2A,bullets:['Sumă de control: header + date + pseudo-header IP.'],changes:'Recalculat dacă se schimbă ceva (ex. NAT modifică IP/port).'},
+  'tcp-urg':{fmt:'dec',ex:0,bullets:['Marchează sfârșitul datelor urgente.'],changes:'Valid doar cu URG=1.'},
+  'tcp-opt':{fmt:'text',show:'MSS, window scaling, SACK… (variabil)',changes:'De obicei doar în segmentul SYN.'},
+  // UDP
+  'udp-sport':{fmt:'port',ex:51000,wellknown:[[53,'DNS'],[67,'DHCP srv'],[68,'DHCP cli'],[123,'NTP'],[161,'SNMP']],bullets:['Portul aplicației sursă.'],changes:'Poate fi rescris de NAT/PAT.'},
+  'udp-dport':{fmt:'port',ex:53,wellknown:[[53,'DNS'],[67,'DHCP srv'],[68,'DHCP cli'],[123,'NTP'],[161,'SNMP'],[514,'syslog']],bullets:['Portul serviciului destinație.'],changes:'Constant.'},
+  'udp-len':{fmt:'dec',ex:32,bullets:['Lungimea totală (header UDP de 8 oct + date).'],changes:'Constant.'},
+  'udp-cksum':{fmt:'hex',ex:0x0000,bullets:['Sumă de control (opțională în IPv4, obligatorie în IPv6).'],changes:'0x0000 = checksum dezactivat (IPv4).'},
+  // ICMP
+  'icmp-type':{fmt:'dec',ex:8,enum:[[0,'Echo Reply'],[8,'Echo Request'],[3,'Dest Unreachable'],[5,'Redirect'],[11,'Time Exceeded']],bullets:['Tipul mesajului ICMP.'],changes:'Depinde de eveniment.'},
+  'icmp-code':{fmt:'dec',ex:0,bullets:['Sub-tip care detaliază Type (ex. motivul exact al „unreachable”).'],changes:'Depinde de Type.'},
+  'icmp-cksum':{fmt:'hex',ex:0x4D5A,bullets:['Sumă de control a mesajului ICMP.'],changes:'Recalculat dacă se modifică mesajul.'},
+  'icmp-rest':{fmt:'hex',ex:0x00010001,bullets:['Câmp dependent de tip: la ping = Identifier + Sequence Number.'],changes:'Depinde de Type/Code.'},
+  // ARP
+  'arp-htype':{fmt:'dec',ex:1,enum:[[1,'Ethernet']],bullets:['Tipul rețelei hardware.'],changes:'Constant.'},
+  'arp-ptype':{fmt:'hex',ex:0x0800,enum:[[0x0800,'IPv4']],bullets:['Protocolul de nivel rețea rezolvat.'],changes:'Constant.'},
+  'arp-hlen':{fmt:'dec',ex:6,bullets:['Lungimea adresei hardware (6 pentru MAC).'],changes:'Constant.'},
+  'arp-plen':{fmt:'dec',ex:4,bullets:['Lungimea adresei de protocol (4 pentru IPv4).'],changes:'Constant.'},
+  'arp-op':{fmt:'dec',ex:1,enum:[[1,'Request'],[2,'Reply']],bullets:['1 = cerere (cine are IP-ul X?), 2 = răspuns.'],changes:'1 în cerere, 2 în răspuns.'},
+  'arp-sha':{fmt:'mac',show:'A0:1B:2C:3D:4E:5A',bytes:[0xA0,0x1B,0x2C,0x3D,0x4E,0x5A],bullets:['MAC-ul expeditorului ARP.'],changes:'—'},
+  'arp-spa':{fmt:'ipv4',show:'192.168.0.10',bytes:[192,168,0,10],bullets:['IP-ul expeditorului.'],changes:'—'},
+  'arp-tha':{fmt:'mac',show:'00:00:00:00:00:00',bytes:[0,0,0,0,0,0],bullets:['MAC-ul țintă — <b>tot 0</b> într-un Request (încă necunoscut); completat în Reply.'],changes:'00:..:00 în cerere → MAC real în răspuns.'},
+  'arp-tpa':{fmt:'ipv4',show:'192.168.0.1',bytes:[192,168,0,1],bullets:['IP-ul căutat (pentru care se cere MAC-ul).'],changes:'—'},
+  // DHCP
+  'dh-op':{fmt:'dec',ex:1,enum:[[1,'BOOTREQUEST'],[2,'BOOTREPLY']],bullets:['1 = cerere (client), 2 = răspuns (server).'],changes:'1 în Discover/Request, 2 în Offer/Ack.'},
+  'dh-htype':{fmt:'dec',ex:1,enum:[[1,'Ethernet']],bullets:['Tipul de hardware.'],changes:'Constant.'},
+  'dh-hlen':{fmt:'dec',ex:6,bullets:['Lungimea adresei hardware (6 pentru MAC).'],changes:'Constant.'},
+  'dh-hops':{fmt:'dec',ex:0,bullets:['Numărul de relee DHCP traversate.'],changes:'Crește cu 1 la fiecare relay.'},
+  'dh-xid':{fmt:'hex',ex:0x3903F326,bullets:['Transaction ID — leagă cererea de răspuns.'],changes:'Constant într-o tranzacție DORA.'},
+  'dh-secs':{fmt:'dec',ex:0,bullets:['Secunde de la începutul procesului.'],changes:'Crește în timp.'},
+  'dh-flags':{flag:'dh',ex:0x8000,bullets:['Doar bitul <b>B</b> (Broadcast, MSB) e folosit.','B=1 → serverul răspunde prin broadcast.'],changes:'Setat de client după nevoie.'},
+  'dh-ci':{fmt:'ipv4',show:'0.0.0.0',bytes:[0,0,0,0],bullets:['Client IP — 0.0.0.0 dacă nu are încă adresă.'],changes:'Devine IP-ul real după ce e configurat.'},
+  'dh-yi':{fmt:'ipv4',show:'192.168.0.50',bytes:[192,168,0,50],bullets:['Your IP — adresa OFERITĂ clientului.'],changes:'Completat în Offer/Ack.'},
+  'dh-si':{fmt:'ipv4',show:'192.168.0.1',bytes:[192,168,0,1],bullets:['IP-ul serverului următor.'],changes:'—'},
+  'dh-gi':{fmt:'ipv4',show:'0.0.0.0',bytes:[0,0,0,0],bullets:['Gateway/relay IP (giaddr).'],changes:'Setat de relay-ul DHCP.'},
+  'dh-ch':{fmt:'text',show:'A0:1B:2C:3D:4E:5A (+ padding la 16 oct)',bullets:['Adresa MAC a clientului (chaddr).'],changes:'—'},
+  'dh-sname':{fmt:'text',show:'(opțional, 64 oct)',changes:'—'},
+  'dh-file':{fmt:'text',show:'(opțional, 128 oct)',changes:'—'},
+  'dh-opt':{fmt:'text',show:'tip mesaj, mască, gateway, DNS, lease… (variabil)',changes:'Aici stă efectiv „Discover/Offer/Request/Ack” (opțiunea 53).'}
+};
+
+let anaCur={hkey:null,fkey:null,bits:[],mode:'none',flag:null,labels:null};
+function valToBits(val,n){ val=val>>>0; const a=[]; for(let i=0;i<n;i++) a.push((val>>>(n-1-i))&1); return a; }
+function bitsToVal(bits){ return bits.reduce((a,b)=>a*2+b,0); }
+function hex2(b){ return b.toString(16).toUpperCase().padStart(2,'0'); }
+function fmtEnumKey(v,lab){ return (lab.fmt==='hex') ? '0x'+v.toString(16).toUpperCase() : ''+v; }
+
+function initAnatomy(){
+  const sel=document.getElementById('anaSel');
+  sel.innerHTML=Object.keys(HEADERS).map(k=>'<option value="'+k+'">'+HEADERS[k].name+'</option>').join('');
+  sel.onchange=()=>drawAnaHeader(sel.value);
+  drawAnaHeader(sel.value);
+}
+function drawAnaHeader(hkey){
+  anaCur.hkey=hkey;
+  const grid=renderDiagram(document.getElementById('anaDiagram'),hkey);
+  grid.querySelectorAll('.field').forEach(el=>{ el.onclick=()=>selectAnaField(hkey,el.dataset.k); });
+  selectAnaField(hkey,HEADERS[hkey].fields[0].k);
+}
+function selectAnaField(hkey,fkey){
+  anaCur.hkey=hkey; anaCur.fkey=fkey;
+  document.querySelectorAll('#anaDiagram .field').forEach(el=>el.classList.toggle('selected',el.dataset.k===fkey));
+  const f=HEADERS[hkey].fields.find(x=>x.k===fkey);
+  document.getElementById('anaHint').textContent=f.n;
+  renderBitLab();
+}
+function renderBitLab(){
+  const f=HEADERS[anaCur.hkey].fields.find(x=>x.k===anaCur.fkey);
+  const lab=FIELD_LAB[anaCur.fkey]||{};
+  const hue=hueFor(anaCur.fkey);
+  const bullets=lab.bullets||(FIELD_DESC[anaCur.fkey]?[FIELD_DESC[anaCur.fkey]]:[]);
+  let html='<div class="lab-panel">'
+    +'<div class="lab-head"><span class="lab-sw" style="background:hsl('+hue+',var(--field-s),var(--field-l))"></span>'
+    +'<span class="lab-title">'+f.n+'</span><span class="lab-size">'+sizeLabel(f,HEADERS[anaCur.hkey].unit)+'</span></div>';
+  if(bullets.length) html+='<div class="lab-sub">Ce conține</div><ul class="lab-bullets">'+bullets.map(b=>'<li>'+b+'</li>').join('')+'</ul>';
+  html+='<div class="lab-sub">Biți'+(lab.flag||(f.bits>0&&f.bits<=16&&lab.ex!=null)?' <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(click pe celule ca să le comuți)</span>':'')+'</div><div id="anaBits"></div>';
+  html+='<div id="anaReadout"></div>';
+  if(lab.changes) html+='<div class="lab-sub">Când / cum se modifică în transmisie</div><div class="changes-note">'+lab.changes+'</div>';
+  html+='</div>';
+  document.getElementById('anaLab').innerHTML=html;
+  buildBits(f,lab);
+}
+function bitGridHTML(bits,labels){
+  const n=bits.length;
+  let h='<div class="bitgrid">';
+  for(let i=0;i<n;i++){ const w=n-1-i; const lbl=labels?labels[i]:('bit '+w);
+    h+='<div class="bitcell'+(bits[i]?' on':'')+'" data-i="'+i+'"><div class="bv">'+bits[i]+'</div><div class="bl">'+lbl+'</div>'+(labels?'<div class="bx">bit '+w+'</div>':'')+'</div>'; }
+  return h+'</div>';
+}
+function bitGroupsHTML(bits){
+  let g='';
+  for(let o=0;o<bits.length;o+=8){ g+='<div class="bytegrp">'; for(let i=o;i<Math.min(o+8,bits.length);i++) g+='<div class="bitcell ro"><div class="bv">'+(bits[i]||0)+'</div></div>'; g+='</div>'; }
+  return '<div class="bitgrid bytes">'+g+'</div>';
+}
+function bytesHTML(bytes){
+  return '<div class="bitgrid bytes">'+bytes.map(b=>{ const bb=valToBits(b,8); let c=''; for(let i=0;i<8;i++)c+='<div class="bitcell ro"><div class="bv">'+bb[i]+'</div></div>'; return '<div class="bytegrp" title="0x'+hex2(b)+'">'+c+'</div>'; }).join('')+'</div>';
+}
+function buildBits(f,lab){
+  const host=document.getElementById('anaBits');
+  if(lab.flag){
+    const labels=FLAG_LABELS[lab.flag]; anaCur.mode='flag'; anaCur.flag=lab.flag; anaCur.labels=labels;
+    anaCur.bits=valToBits(lab.ex||0,labels.length); host.innerHTML=bitGridHTML(anaCur.bits,labels); wireToggles();
+  } else if(f.bits>0&&f.bits<=16&&lab.ex!=null){
+    anaCur.mode='num'; anaCur.flag=null; anaCur.bits=valToBits(lab.ex,f.bits); host.innerHTML=bitGridHTML(anaCur.bits,null); wireToggles();
+  } else if(f.bits>=17&&f.bits<=32&&lab.ex!=null){
+    anaCur.mode='ro'; anaCur.bits=valToBits(lab.ex,f.bits); host.innerHTML=bitGroupsHTML(anaCur.bits);
+  } else if(lab.bytes){
+    anaCur.mode='bytes'; host.innerHTML=bytesHTML(lab.bytes);
+  } else {
+    anaCur.mode='none'; host.innerHTML='<p class="hint">'+(f.var?('Câmp de lungime variabilă ('+(f.vtxt||'variabil')+') — fără grilă fixă de biți. '):'')+(lab.show?('Exemplu: <code>'+lab.show+'</code>'):'')+'</p>';
+  }
+  renderReadout(f,lab);
+}
+function wireToggles(){
+  document.querySelectorAll('#anaBits .bitcell').forEach(c=>{
+    c.onclick=()=>{ const i=+c.dataset.i; anaCur.bits[i]=anaCur.bits[i]?0:1; c.classList.toggle('on',!!anaCur.bits[i]); c.querySelector('.bv').textContent=anaCur.bits[i];
+      renderReadout(HEADERS[anaCur.hkey].fields.find(f=>f.k===anaCur.fkey),FIELD_LAB[anaCur.fkey]||{}); };
+  });
+}
+function decodeFlags(flag,bits,labels){
+  const s={}; labels.forEach((l,i)=>{ if(s[l]===undefined) s[l]=bits[i]; });
+  if(flag==='tcp'){
+    if(s.RST) return '<b>RST</b> — resetare/abandon conexiune.';
+    if(s.SYN&&s.ACK) return '<b>SYN+ACK</b> — pasul 2 din 3-way handshake (serverul acceptă).';
+    if(s.SYN) return '<b>SYN</b> — pasul 1: clientul cere deschiderea conexiunii.';
+    if(s.FIN&&s.ACK) return '<b>FIN+ACK</b> — închiderea conexiunii.';
+    if(s.FIN) return '<b>FIN</b> — cerere de închidere.';
+    if(s.PSH&&s.ACK) return '<b>PSH+ACK</b> — date livrate imediat aplicației.';
+    if(s.ACK) return '<b>ACK</b> — confirmare (date primite sau pasul 3).';
+    const on=labels.filter((l,i)=>bits[i]); return on.length?on.join('+'):'niciun flag setat.';
+  }
+  if(flag==='ip'){ let p=[]; if(s.DF)p.push('<b>DF=1</b>: fragmentarea interzisă'); if(s.MF)p.push('<b>MF=1</b>: mai urmează fragmente'); if(!s.DF&&!s.MF)p.push('pachet nefragmentat (singur)'); return p.join(' · '); }
+  if(flag==='dh'){ return bits[0]?'<b>B=1</b>: serverul răspunde prin broadcast.':'B=0: răspuns unicast.'; }
+  return '';
+}
+function renderReadout(f,lab){
+  const host=document.getElementById('anaReadout'); if(!host)return;
+  let html='';
+  if(anaCur.mode==='flag'||anaCur.mode==='num'||anaCur.mode==='ro'){
+    const val=bitsToVal(anaCur.bits), hd=Math.ceil(anaCur.bits.length/4);
+    html+='<div class="lab-sub">Valoare</div><div class="readout">'
+      +'<span><b>Binar</b><span class="rv">'+anaCur.bits.join('')+'</span></span>'
+      +'<span><b>Dec</b><span class="rv">'+val+'</span></span>'
+      +'<span><b>Hex</b><span class="rv">0x'+val.toString(16).toUpperCase().padStart(hd,'0')+'</span></span></div>';
+    if(anaCur.mode==='flag') html+='<div class="decoded"><b>Decodat:</b> '+decodeFlags(anaCur.flag,anaCur.bits,anaCur.labels)+'</div>';
+    else if(lab.enum){ const m=lab.enum.find(e=>e[0]===val); html+='<div class="decoded"><b>Semnificație:</b> '+(m?fmtEnumKey(val,lab)+' = '+m[1]:'valoare neuzuală')+'</div>'; }
+    else if(lab.wellknown){ const m=lab.wellknown.find(e=>e[0]===val); if(m) html+='<div class="decoded"><b>Port cunoscut:</b> '+val+' = '+m[1]+'</div>'; }
+  } else if(anaCur.mode==='bytes'){
+    html+='<div class="lab-sub">Exemplu concret</div><div class="readout"><span><b>'+(lab.fmt==='mac'?'MAC':'IPv4')+'</b><span class="rv">'+lab.show+'</span></span></div>';
+  } else if(lab.show){
+    html+='<div class="lab-sub">Exemplu concret</div><div class="readout"><span class="rv">'+lab.show+'</span></div>';
+  }
+  if(lab.enum&&lab.enum.length){ const v=(anaCur.mode!=='none')?bitsToVal(anaCur.bits):lab.ex;
+    html+='<div class="lab-sub">Valori uzuale</div><table class="enum-tbl">'+lab.enum.map(e=>'<tr class="'+(e[0]===v?'ex':'')+'"><td>'+fmtEnumKey(e[0],lab)+'</td><td>'+e[1]+'</td></tr>').join('')+'</table>'; }
+  if(lab.wellknown&&lab.wellknown.length){ const v=bitsToVal(anaCur.bits);
+    html+='<div class="lab-sub">Porturi cunoscute</div><table class="enum-tbl">'+lab.wellknown.map(e=>'<tr class="'+(e[0]===v?'ex':'')+'"><td>'+e[0]+'</td><td>'+e[1]+'</td></tr>').join('')+'</table>'; }
+  host.innerHTML=html;
+}
+
+/* ============================================================
+   CĂLĂTORIA PACHETULUI — flux animat + ce câmpuri se schimbă
+   ============================================================ */
+const JOURNEYS = {
+  unicast:{ name:'Unicast prin routere', mode:'topo', encap:['Eth','IP','TCP','Date'],
+    nodes:[ {ic:'💻',label:'Host A',sub:'192.168.0.10'},{ic:'🔀',label:'Switch',sub:'L2'},{ic:'📡',label:'Router R1',sub:'gateway'},{ic:'📡',label:'Router R2',sub:''},{ic:'💻',label:'Host B',sub:'10.0.0.5'} ],
+    rows:[ {key:'ttl',label:'TTL'},{key:'esrc',label:'MAC sursă'},{key:'edst',label:'MAC dest'},{key:'isrc',label:'IP sursă'},{key:'idst',label:'IP dest'},{key:'dport',label:'Port dest'} ],
+    base:{ ttl:64, esrc:'A0:..:5A', edst:'R1:..:01', isrc:'192.168.0.10', idst:'10.0.0.5', dport:443 },
+    steps:[
+      {seg:[0,1], title:'1 · Host A → Switch', note:'Host A încapsulează Eth ⊃ IP ⊃ TCP. MAC destinație = routerul-gateway (R1), IP destinație = Host B. Trimite cadrul pe LAN.', set:{},
+        uses:[ {tag:'Ethernet',txt:'<b>adăugat de Host A</b> — MAC dst = gateway-ul (R1), fiindcă Host B e în altă rețea.'},{tag:'IP',txt:'<b>adăugat de Host A</b> — IP dst = Host B (destinația finală). TTL inițial 64.'},{tag:'TCP',txt:'identifică aplicația (port dst 443).'} ]},
+      {seg:[1,2], title:'2 · Switch → R1', note:'Switch-ul comută cadrul pe baza adresei MAC destinație (tabela CAM). NU modifică niciun câmp din header — lucrează la nivel 2.', set:{},
+        uses:[ {tag:'Ethernet',txt:'<b>citit de switch</b> — doar MAC destinație, pentru a alege portul de ieșire. Restul headerelor nu sunt atinse.'} ]},
+      {seg:[2,3], title:'3 · R1 rutează → R2', note:'R1 e router (nivel 3): scade TTL cu 1, recalculează Header Checksum-ul IP și REscrie MAC sursă/destinație pentru următorul salt. IP sursă/dest și porturile rămân neschimbate!', set:{ ttl:63, esrc:'R1:..:01', edst:'R2:..:02' },
+        uses:[ {tag:'IP',txt:'<b>citit + modificat de R1</b> — caută IP dst în tabela de rutare, scade <code>TTL</code>, recalculează checksum-ul.'},{tag:'Ethernet',txt:'<b>rescris de R1</b> — MAC nou pentru următorul salt (R2).'} ]},
+      {seg:[3,4], title:'4 · R2 → Host B', note:'Încă un salt L3: TTL 63→62, MAC rescris cu adresele ultimei legături. Pachetul ajunge la Host B, care urcă datele la aplicație.', set:{ ttl:62, esrc:'R2:..:02', edst:'B0:..:0B' },
+        uses:[ {tag:'IP',txt:'<b>modificat de R2</b> — TTL 63→62, checksum recalculat.'},{tag:'Ethernet',txt:'<b>rescris de R2</b> — MAC dst = Host B (livrare finală).'},{tag:'TCP',txt:'<b>citit de Host B</b> — portul livrează datele aplicației.'} ]},
+    ]},
+  arpnat:{ name:'ARP + NAT', mode:'topo', encap:['Eth','IP','TCP','Date'],
+    nodes:[ {ic:'💻',label:'Host A',sub:'192.168.0.10'},{ic:'📡',label:'Router NAT',sub:'86.34.10.2'},{ic:'🖥️',label:'Server',sub:'93.184.216.34'} ],
+    rows:[ {key:'op',label:'ARP op'},{key:'map',label:'Întrebare / mapare'},{key:'isrc',label:'IP sursă'},{key:'idst',label:'IP dest'},{key:'sport',label:'Port sursă'} ],
+    base:{ op:'—', map:'—', isrc:'192.168.0.10 (privat)', idst:'93.184.216.34', sport:'49152' },
+    steps:[
+      {seg:[0,1], bcast:true, title:'1 · ARP Request (broadcast)', note:'Host A nu știe MAC-ul gateway-ului. Întreabă tot segmentul (broadcast FF:FF:FF:FF:FF:FF): „Cine are 192.168.0.1?”', set:{ op:'1 (Request)', map:'Cine are 192.168.0.1 ?' },
+        uses:[ {tag:'Ethernet',txt:'<b>adăugat de Host A</b> — dst broadcast <code>FF:..:FF</code>.'},{tag:'ARP',txt:'<b>adăugat de Host A</b> — cere MAC pentru 192.168.0.1.'},{tag:'fără IP',txt:'ARP e nivel 2 — nu are header IP.'} ]},
+      {seg:[1,0], title:'2 · ARP Reply (unicast)', note:'Gateway-ul răspunde direct lui A: „192.168.0.1 e la MAC R1”. Host A reține maparea IP↔MAC în cache-ul ARP.', set:{ op:'2 (Reply)', map:'192.168.0.1 → MAC R1' },
+        uses:[ {tag:'Ethernet',txt:'<b>de la router</b> — răspuns unicast către Host A.'},{tag:'ARP',txt:'<b>completat de router</b> — perechea IP↔MAC, salvată în cache.'} ]},
+      {seg:[0,1], title:'3 · Host A → Router', note:'Acum poate trimite pachetul TCP către server. IP sursă = adresa privată 192.168.0.10.', set:{ op:'—', map:'—' },
+        uses:[ {tag:'IP',txt:'IP dst = serverul; IP sursă = privat (192.168.0.10).'},{tag:'Ethernet',txt:'MAC dst = gateway (cunoscut din ARP).'} ]},
+      {seg:[1,2], title:'4 · NAT: rescrie IP sursă', note:'Routerul face NAT/PAT: REscrie IP sursă din privat (192.168.0.10) în public (86.34.10.2), schimbă portul sursă și recalculează checksum-urile. Reține maparea ca să rutează răspunsul înapoi.', set:{ isrc:'86.34.10.2 (public)', sport:'61234' },
+        uses:[ {tag:'IP',txt:'<b>modificat de router</b> — IP sursă privat → public, checksum recalculat.'},{tag:'TCP',txt:'<b>port sursă rescris</b> (PAT) — reține maparea pentru răspuns.'} ]},
+    ]},
+  tcp:{ name:'TCP 3-way handshake', mode:'ladder', actors:['Client','Server'],
+    steps:[
+      {dir:'ltr', tag:'SYN · seq=0', title:'1 · SYN', flags:{SYN:1}, note:'Clientul cere deschiderea: trimite SYN cu un număr de secvență inițial (ISN).',
+        uses:[ {tag:'TCP',txt:'<b>flag SYN</b> setat de client + ISN (seq). Portul dst = serviciul țintă.'} ]},
+      {dir:'rtl', tag:'SYN, ACK · seq=0 ack=1', title:'2 · SYN + ACK', flags:{SYN:1,ACK:1}, note:'Serverul acceptă: răspunde SYN+ACK, confirmă (ack=1) și trimite propriul ISN.',
+        uses:[ {tag:'TCP',txt:'<b>SYN+ACK</b> de la server — confirmă (ack) și deschide propriul sens.'} ]},
+      {dir:'ltr', tag:'ACK · ack=1', title:'3 · ACK', flags:{ACK:1}, note:'Clientul confirmă. Conexiunea e stabilită — pot începe datele.',
+        uses:[ {tag:'TCP',txt:'<b>ACK</b> de la client — încheie handshake-ul. Conexiunea e gata.'} ]},
+    ]},
+  dhcp:{ name:'DHCP DORA', mode:'ladder', actors:['Client','Server DHCP'],
+    steps:[
+      {dir:'ltr', tag:'DISCOVER (broadcast)', title:'1 · Discover', note:'Clientul nu are IP. Trimite broadcast „caut un server DHCP” (flagul B poate fi 1).',
+        uses:[ {tag:'UDP',txt:'port sursă 68 → dst 67 (broadcast). Nu există încă IP propriu.'},{tag:'DHCP',txt:'opțiunea 53 = <b>Discover</b>.'} ]},
+      {dir:'rtl', tag:'OFFER · yiaddr=192.168.0.50', title:'2 · Offer', note:'Serverul oferă o adresă: completează yiaddr (Your IP) și parametrii (mască, gateway, DNS, durată lease).',
+        uses:[ {tag:'DHCP',txt:'<b>Offer</b> — câmpul <code>yiaddr</code> conține IP-ul oferit.'} ]},
+      {dir:'ltr', tag:'REQUEST (broadcast)', title:'3 · Request', note:'Clientul cere oficial IP-ul oferit (broadcast, ca să afle și celelalte servere că oferta a fost aleasă).',
+        uses:[ {tag:'DHCP',txt:'<b>Request</b> — clientul acceptă oferta (broadcast).'} ]},
+      {dir:'rtl', tag:'ACK · lease 24h', title:'4 · Ack', note:'Serverul confirmă: IP-ul e atribuit pe durata lease-ului. DORA = Discover · Offer · Request · Ack.',
+        uses:[ {tag:'DHCP',txt:'<b>Ack</b> — IP atribuit + durata lease. Configurarea e completă.'} ]},
+    ]},
+  web:{ name:'🌐 Acces web (www.mta.ro)', mode:'trace', encap:['Eth','IP','TCP','Date'],
+    nodes:[ {ic:'💻',label:'Laptop',sub:'192.168.0.7 · 77:77'},{ic:'🔀',label:'Switch',sub:'L2'},{ic:'📡',label:'Router GW',sub:'LAN 11:11 · WAN 22:22'},{ic:'☁️',label:'Internet',sub:''},{ic:'🖥️',label:'Server',sub:''} ],
+    cols:['#','MAC Src','MAC Dst','IP Src','IP Dst','Port Src','Port Dst','Semnificație'],
+    req:`<h2 style="margin-top:0">📋 Cerința exercițiului</h2>
+      <p>Se consideră arhitectura din figură. Utilizatorul laptopului dorește să acceseze pagina <code>http://www.mta.ro/</code>. Inițial, cache-urile <b>ARP și DNS</b> de pe laptop sunt <b>goale</b>. Prezentați secvența de pachete transmise/recepționate de laptop până la <b>stabilirea conexiunii TCP</b> cu serverul Web. Pentru fiecare pachet completați datele din tabel (MAC src/dst, IP src/dst, port src/dst, semnificație).</p>
+      <div style="overflow-x:auto"><table class="ptable" style="max-width:560px;font-size:.76rem">
+        <tr><th>Dispozitiv</th><th>MAC</th><th>IP</th></tr>
+        <tr><td>💻 Laptop</td><td class="macm">77:77:77:77:77:77</td><td class="macm">192.168.0.7 · GW 192.168.0.1 · DNS 8.8.8.8</td></tr>
+        <tr><td>📡 Router</td><td class="macm">LAN 11:.. · WAN 22:..</td><td class="macm">192.168.0.1</td></tr>
+        <tr><td>🖥️ DNS</td><td class="macm">88:88:88:88:88:88</td><td class="macm">8.8.8.8</td></tr>
+        <tr><td>🌐 www.mta.ro</td><td class="macm">AA:AA:AA:AA:AA:AA</td><td class="macm">213.177.4.168</td></tr>
+      </table></div>
+      <p class="hint">Versiunea <b>granulară</b>: fiecare pachet off-subnet e arătat pe <b>ambele</b> salturi — laptop→gateway, apoi rescrierea L2/TTL pe interfața WAN a routerului → server (și invers la întoarcere).</p>`,
+    steps:[
+      {seg:[0,2], bcast:true, target:null, pkt:['Eth','ARP'], title:'1 · ARP Request (laptop → broadcast)', note:'Laptopul vrea cererea DNS către 8.8.8.8 (off-subnet) → are nevoie de MAC-ul gateway-ului. Cache ARP gol ⇒ broadcast „Cine are 192.168.0.1?”.',
+        row:{ ms:'77:77:77:77:77:77', md:'FF:FF:FF:FF:FF:FF', is:'–', id:'–', ps:'–', pd:'–', sens:'ARP Request (broadcast) — cine are 192.168.0.1?' },
+        uses:[ {tag:'Ethernet',txt:'<b>laptop</b> — dst broadcast <code>FF:FF:FF:FF:FF:FF</code>; switch-ul inundă cadrul.'},{tag:'ARP',txt:'cere MAC pentru 192.168.0.1.'},{tag:'fără IP',txt:'ARP = nivel 2, fără header IP/porturi.'} ]},
+      {seg:[2,0], target:null, pkt:['Eth','ARP'], title:'2 · ARP Reply (router → laptop)', note:'Routerul răspunde unicast cu MAC-ul interfeței LAN. Laptopul salvează maparea în cache și nu mai întreabă.',
+        row:{ ms:'11:11:11:11:11:11', md:'77:77:77:77:77:77', is:'–', id:'–', ps:'–', pd:'–', sens:'ARP Reply — 192.168.0.1 e la 11:11:11:11:11:11' },
+        uses:[ {tag:'Ethernet',txt:'<b>router (LAN)</b> — răspuns unicast către laptop.'},{tag:'ARP',txt:'mapare 192.168.0.1 ↔ 11:11:..'} ]},
+      {seg:[0,2], target:'dns', pkt:['Eth','IP','UDP','DNS'], title:'3 · DNS Query · laptop → gateway (LAN)', note:'Primul salt: pe LAN. La L2 MAC dst = gateway (11:11), fiindcă 8.8.8.8 e off-subnet; la L3 IP dst = serverul DNS real.',
+        row:{ ms:'77:77:77:77:77:77', md:'11:11:11:11:11:11', is:'192.168.0.7', id:'8.8.8.8', ps:'49152', pd:'53', sens:'DNS Query pe LAN — laptop → gateway (MAC dst = router LAN)' },
+        uses:[ {tag:'Ethernet',txt:'MAC dst = <b>gateway 11:11</b> (nu serverul DNS).'},{tag:'IP',txt:'IP dst = <b>8.8.8.8</b> (DNS real).'},{tag:'UDP',txt:'port dst <b>53</b>, sursă 49152.'} ]},
+      {seg:[2,4], target:'dns', pkt:['Eth','IP','UDP','DNS'], title:'4 · DNS Query · gateway → DNS (WAN)', note:'Al doilea salt: routerul forwardează pe interfața WAN. REscrie complet adresele L2 și scade TTL. IP-urile și porturile rămân neschimbate end-to-end.',
+        annot:{ node:2, text:'<b>🔧 Router → interfața WAN:</b> MAC src 11:11→<b>22:22</b>, MAC dst 77:77→<b>88:88</b>. <b>TTL 64→63</b>, checksum IP recalculat. IP/porturi neatinse.' },
+        row:{ ms:'22:22:22:22:22:22', md:'88:88:88:88:88:88', is:'192.168.0.7', id:'8.8.8.8', ps:'49152', pd:'53', sens:'Router forwardează pe WAN — MAC noi, TTL−1; IP & porturi neschimbate' },
+        uses:[ {tag:'Ethernet',txt:'<b>rescris de router</b> — MAC-uri de pe interfața WAN (22:22 → 88:88).'},{tag:'IP',txt:'doar <b>TTL−1</b> + checksum; IP src/dst rămân.'},{tag:'UDP',txt:'porturi neschimbate.'} ]},
+      {seg:[4,2], target:'dns', pkt:['Eth','IP','UDP','DNS'], title:'5 · DNS Response · DNS → gateway (WAN)', note:'Serverul DNS răspunde; pachetul intră pe interfața WAN a routerului. Conține IP-ul lui www.mta.ro.',
+        row:{ ms:'88:88:88:88:88:88', md:'22:22:22:22:22:22', is:'8.8.8.8', id:'192.168.0.7', ps:'53', pd:'49152', sens:'DNS Response (WAN) — www.mta.ro = 213.177.4.168' },
+        uses:[ {tag:'Ethernet',txt:'DNS → interfața WAN a routerului (88:88 → 22:22).'},{tag:'IP',txt:'IP src 8.8.8.8 → 192.168.0.7.'},{tag:'UDP',txt:'53 → 49152.'} ]},
+      {seg:[2,0], target:'dns', pkt:['Eth','IP','UDP','DNS'], title:'6 · DNS Response · gateway → laptop (LAN)', note:'Routerul rescrie iar L2, acum pentru LAN, și livrează răspunsul laptopului. Acesta învață 213.177.4.168.',
+        annot:{ node:2, text:'<b>🔧 Router → interfața LAN:</b> MAC src→<b>11:11</b>, MAC dst→<b>77:77</b>. <b>TTL−1</b>. Laptopul învață IP-ul serverului web.' },
+        row:{ ms:'11:11:11:11:11:11', md:'77:77:77:77:77:77', is:'8.8.8.8', id:'192.168.0.7', ps:'53', pd:'49152', sens:'Router livrează răspunsul în LAN — laptopul are acum 213.177.4.168' },
+        uses:[ {tag:'Ethernet',txt:'<b>rescris de router</b> — MAC-uri de pe LAN (11:11 → 77:77).'},{tag:'IP',txt:'TTL−1; IP-urile rămân.'} ]},
+      {seg:[0,2], target:'web', pkt:['Eth','IP','TCP'], title:'7 · TCP SYN · laptop → gateway (LAN)', note:'Laptopul are IP-ul web (213.177.4.168), tot off-subnet → refolosește MAC-ul gateway-ului din cache. FĂRĂ ARP nou. Trimite SYN, port 80.',
+        row:{ ms:'77:77:77:77:77:77', md:'11:11:11:11:11:11', is:'192.168.0.7', id:'213.177.4.168', ps:'49153', pd:'80', sens:'TCP SYN pe LAN → gateway (fără ARP nou — MAC în cache)' },
+        uses:[ {tag:'Ethernet',txt:'MAC dst = gateway; <b>fără ARP nou</b>.'},{tag:'IP',txt:'IP dst = 213.177.4.168.'},{tag:'TCP',txt:'flag <b>SYN</b>, port dst <b>80</b>.'} ]},
+      {seg:[2,4], target:'web', pkt:['Eth','IP','TCP'], title:'8 · TCP SYN · gateway → server (WAN)', note:'Routerul forwardează SYN pe WAN: rescrie L2 (22:22 → AA:AA) și scade TTL.',
+        annot:{ node:2, text:'<b>🔧 Router → WAN:</b> MAC src→<b>22:22</b>, MAC dst→<b>AA:AA</b> (server). <b>TTL−1</b>.' },
+        row:{ ms:'22:22:22:22:22:22', md:'AA:AA:AA:AA:AA:AA', is:'192.168.0.7', id:'213.177.4.168', ps:'49153', pd:'80', sens:'Router forwardează SYN spre server (L2 nou, TTL−1)' },
+        uses:[ {tag:'Ethernet',txt:'<b>rescris de router</b> — 22:22 → AA:AA.'},{tag:'TCP',txt:'flag SYN, neschimbat.'} ]},
+      {seg:[4,2], target:'web', pkt:['Eth','IP','TCP'], title:'9 · TCP SYN-ACK · server → gateway (WAN)', note:'Serverul web acceptă: răspunde SYN+ACK; pachetul intră pe WAN-ul routerului.',
+        row:{ ms:'AA:AA:AA:AA:AA:AA', md:'22:22:22:22:22:22', is:'213.177.4.168', id:'192.168.0.7', ps:'80', pd:'49153', sens:'TCP SYN-ACK (WAN) — serverul acceptă conexiunea' },
+        uses:[ {tag:'Ethernet',txt:'server → interfața WAN (AA:AA → 22:22).'},{tag:'TCP',txt:'flaguri <b>SYN+ACK</b>.'} ]},
+      {seg:[2,0], target:'web', pkt:['Eth','IP','TCP'], title:'10 · TCP SYN-ACK · gateway → laptop (LAN)', note:'Routerul rescrie L2 pentru LAN și livrează SYN-ACK laptopului.',
+        annot:{ node:2, text:'<b>🔧 Router → LAN:</b> MAC src→<b>11:11</b>, MAC dst→<b>77:77</b>. <b>TTL−1</b>.' },
+        row:{ ms:'11:11:11:11:11:11', md:'77:77:77:77:77:77', is:'213.177.4.168', id:'192.168.0.7', ps:'80', pd:'49153', sens:'Router livrează SYN-ACK în LAN' },
+        uses:[ {tag:'Ethernet',txt:'<b>rescris de router</b> — 11:11 → 77:77.'},{tag:'TCP',txt:'SYN+ACK, neschimbat.'} ]},
+      {seg:[0,2], target:'web', pkt:['Eth','IP','TCP'], title:'11 · TCP ACK · laptop → gateway (LAN)', note:'Laptopul confirmă cu ACK. Pe LAN, către gateway.',
+        row:{ ms:'77:77:77:77:77:77', md:'11:11:11:11:11:11', is:'192.168.0.7', id:'213.177.4.168', ps:'49153', pd:'80', sens:'TCP ACK pe LAN → gateway' },
+        uses:[ {tag:'Ethernet',txt:'MAC dst = gateway.'},{tag:'TCP',txt:'flag <b>ACK</b>.'} ]},
+      {seg:[2,4], target:'web', pkt:['Eth','IP','TCP'], title:'12 · TCP ACK · gateway → server (WAN)', note:'Routerul forwardează ACK pe WAN. Conexiunea TCP e acum STABILITĂ — urmează HTTP GET /.',
+        annot:{ node:2, text:'<b>🔧 Router → WAN:</b> MAC src→<b>22:22</b>, MAC dst→<b>AA:AA</b>. <b>TTL−1</b>. ✅ Conexiunea TCP e stabilită.' },
+        row:{ ms:'22:22:22:22:22:22', md:'AA:AA:AA:AA:AA:AA', is:'192.168.0.7', id:'213.177.4.168', ps:'49153', pd:'80', sens:'Router forwardează ACK — conexiune TCP stabilită ✅ (urmează HTTP GET /)' },
+        uses:[ {tag:'Ethernet',txt:'<b>rescris de router</b> — 22:22 → AA:AA.'},{tag:'TCP',txt:'flag ACK — handshake complet.'} ]},
+    ]},
+  natpat:{ name:'NAT/PAT + HTTPS (acces site)', mode:'trace', encap:['Eth','IP','TCP','Date'],
+    nodes:[ {ic:'💻',label:'PC',sub:'10.0.0.50 · AA:AA'},{ic:'🔀',label:'Switch',sub:'L2'},{ic:'📡',label:'Router NAT',sub:'LAN B1 · WAN B2 · 203.0.113.5'},{ic:'☁️',label:'Internet',sub:''},{ic:'🖥️',label:'Server',sub:''} ],
+    cols:['#','MAC Src','MAC Dst','IP Src','IP Dst','Port Src','Port Dst','Semnificație'],
+    far:{ dns:{ic:'🖥️',label:'DNS',sub:'1.1.1.1'}, web:{ic:'🌐',label:'www.shop.ro',sub:'198.51.100.20'} },
+    req:`<h2 style="margin-top:0">📋 Cerința</h2><p>Utilizatorul PC-ului accesează <code>https://www.shop.ro/</code>. Cache-urile ARP și DNS sunt goale. Routerul face <b>NAT/PAT (overload)</b>: rescrie adresa <b>și</b> portul sursă private cu adresa publică WAN. Secvența granulară (ambele salturi) până la conexiunea TCP pe portul <b>443</b>.</p>
+      <div style="overflow-x:auto"><table class="ptable" style="max-width:600px;font-size:.76rem"><tr><th>Dispozitiv</th><th>MAC</th><th>IP</th></tr>
+      <tr><td>💻 PC</td><td class="macm">AA:AA:AA:AA:AA:AA</td><td class="macm">10.0.0.50/24 · GW 10.0.0.1 · DNS 1.1.1.1</td></tr>
+      <tr><td>📡 Router NAT</td><td class="macm">LAN B1:.. · WAN B2:..</td><td class="macm">LAN 10.0.0.1 · WAN 203.0.113.5</td></tr>
+      <tr><td>🖥️ DNS</td><td class="macm">DD:DD:DD:DD:DD:DD</td><td class="macm">1.1.1.1</td></tr>
+      <tr><td>🌐 www.shop.ro</td><td class="macm">CC:CC:CC:CC:CC:CC</td><td class="macm">198.51.100.20</td></tr></table></div>
+      <p class="hint">Mapare NAT: <code>10.0.0.50:50000 ↔ 203.0.113.5:40000</code> (DNS), <code>:50001 ↔ :40001</code> (TCP).</p>`,
+    steps:[
+      {seg:[0,2], bcast:true, target:null, pkt:['Eth','ARP'], title:'1 · ARP Request', note:'PC-ul are nevoie de MAC-ul gateway-ului (www.shop.ro e off-subnet). Broadcast: cine are 10.0.0.1?', row:{ms:'AA:AA:AA:AA:AA:AA',md:'FF:FF:FF:FF:FF:FF',is:'–',id:'–',ps:'–',pd:'–',sens:'ARP Request (broadcast) — cine are 10.0.0.1?'}, uses:[{tag:'Ethernet',txt:'broadcast <code>FF:..:FF</code>; ARP cere MAC-ul gateway-ului.'}]},
+      {seg:[2,0], target:null, pkt:['Eth','ARP'], title:'2 · ARP Reply', note:'Routerul răspunde cu MAC-ul interfeței LAN.', row:{ms:'B1:B1:B1:B1:B1:B1',md:'AA:AA:AA:AA:AA:AA',is:'–',id:'–',ps:'–',pd:'–',sens:'ARP Reply — 10.0.0.1 este la B1:B1:…'}, uses:[{tag:'ARP',txt:'mapare 10.0.0.1 ↔ B1:B1:..'}]},
+      {seg:[0,2], target:'dns', pkt:['Eth','IP','UDP','DNS'], title:'3 · DNS Query (LAN)', note:'PC → gateway; IP dst = DNS real, MAC dst = gateway.', row:{ms:'AA:AA:AA:AA:AA:AA',md:'B1:B1:B1:B1:B1:B1',is:'10.0.0.50',id:'1.1.1.1',ps:'50000',pd:'53',sens:'DNS Query (LAN) — PC → gateway, întreabă www.shop.ro'}, uses:[{tag:'UDP',txt:'port 53; sursă privată 10.0.0.50:50000.'}]},
+      {seg:[2,4], target:'dns', pkt:['Eth','IP','UDP','DNS'], title:'4 · DNS Query (WAN) — NAT', note:'Routerul face NAT/PAT: IP & port sursă devin publice; MAC-uri WAN; TTL−1.', annot:{node:2,text:'<b>🔧 NAT pe WAN:</b> IP src 10.0.0.50→<b>203.0.113.5</b>, port src 50000→<b>40000</b>, MAC src→B2:B2, MAC dst→DD:DD. TTL−1.'}, row:{ms:'B2:B2:B2:B2:B2:B2',md:'DD:DD:DD:DD:DD:DD',is:'203.0.113.5',id:'1.1.1.1',ps:'40000',pd:'53',sens:'DNS Query (WAN) — NAT: IP & port sursă rescrise, TTL−1'}, uses:[{tag:'IP',txt:'<b>NAT</b> rescrie IP sursă privat→public.'},{tag:'UDP',txt:'<b>PAT</b> rescrie portul sursă (50000→40000).'}]},
+      {seg:[4,2], target:'dns', pkt:['Eth','IP','UDP','DNS'], title:'5 · DNS Response (WAN)', note:'Serverul DNS răspunde către IP-ul public.', row:{ms:'DD:DD:DD:DD:DD:DD',md:'B2:B2:B2:B2:B2:B2',is:'1.1.1.1',id:'203.0.113.5',ps:'53',pd:'40000',sens:'DNS Response (WAN) — www.shop.ro = 198.51.100.20'}, uses:[{tag:'IP',txt:'dst = adresa publică a routerului.'}]},
+      {seg:[2,0], target:'dns', pkt:['Eth','IP','UDP','DNS'], title:'6 · DNS Response (LAN) — un-NAT', note:'Routerul restaurează IP/port destinație din mapare și livrează PC-ului.', annot:{node:2,text:'<b>🔧 un-NAT pe LAN:</b> IP dst 203.0.113.5→<b>10.0.0.50</b>, port dst 40000→<b>50000</b>, MAC src→B1:B1.'}, row:{ms:'B1:B1:B1:B1:B1:B1',md:'AA:AA:AA:AA:AA:AA',is:'1.1.1.1',id:'10.0.0.50',ps:'53',pd:'50000',sens:'DNS Response (LAN) — un-NAT: livrare către PC'}, uses:[{tag:'IP',txt:'NAT restaurează destinația privată.'}]},
+      {seg:[0,2], target:'web', pkt:['Eth','IP','TCP'], title:'7 · TCP SYN (LAN)', note:'PC are IP-ul site-ului; off-subnet → MAC gateway din cache (fără ARP nou). SYN, port 443.', row:{ms:'AA:AA:AA:AA:AA:AA',md:'B1:B1:B1:B1:B1:B1',is:'10.0.0.50',id:'198.51.100.20',ps:'50001',pd:'443',sens:'TCP SYN (LAN) — PC → gateway (fără ARP nou)'}, uses:[{tag:'TCP',txt:'flag SYN, port dst 443 (HTTPS).'}]},
+      {seg:[2,4], target:'web', pkt:['Eth','IP','TCP'], title:'8 · TCP SYN (WAN) — NAT', note:'NAT: IP & port sursă publice; TTL−1.', annot:{node:2,text:'<b>🔧 NAT pe WAN:</b> IP src→<b>203.0.113.5</b>, port src 50001→<b>40001</b>, MAC src→B2:B2, MAC dst→CC:CC. TTL−1.'}, row:{ms:'B2:B2:B2:B2:B2:B2',md:'CC:CC:CC:CC:CC:CC',is:'203.0.113.5',id:'198.51.100.20',ps:'40001',pd:'443',sens:'TCP SYN (WAN) — NAT, TTL−1'}, uses:[{tag:'TCP',txt:'PAT rescrie portul sursă (50001→40001).'}]},
+      {seg:[4,2], target:'web', pkt:['Eth','IP','TCP'], title:'9 · TCP SYN-ACK (WAN)', note:'Serverul acceptă conexiunea.', row:{ms:'CC:CC:CC:CC:CC:CC',md:'B2:B2:B2:B2:B2:B2',is:'198.51.100.20',id:'203.0.113.5',ps:'443',pd:'40001',sens:'TCP SYN-ACK (WAN) — serverul acceptă'}, uses:[{tag:'TCP',txt:'flaguri SYN+ACK.'}]},
+      {seg:[2,0], target:'web', pkt:['Eth','IP','TCP'], title:'10 · TCP SYN-ACK (LAN) — un-NAT', note:'Un-NAT și livrare către PC.', annot:{node:2,text:'<b>🔧 un-NAT:</b> IP dst→<b>10.0.0.50</b>, port dst 40001→<b>50001</b>, MAC src→B1:B1.'}, row:{ms:'B1:B1:B1:B1:B1:B1',md:'AA:AA:AA:AA:AA:AA',is:'198.51.100.20',id:'10.0.0.50',ps:'443',pd:'50001',sens:'TCP SYN-ACK (LAN) — un-NAT către PC'}, uses:[{tag:'IP',txt:'destinația privată restaurată.'}]},
+      {seg:[0,2], target:'web', pkt:['Eth','IP','TCP'], title:'11 · TCP ACK (LAN)', note:'PC confirmă.', row:{ms:'AA:AA:AA:AA:AA:AA',md:'B1:B1:B1:B1:B1:B1',is:'10.0.0.50',id:'198.51.100.20',ps:'50001',pd:'443',sens:'TCP ACK (LAN) — PC → gateway'}, uses:[{tag:'TCP',txt:'flag ACK.'}]},
+      {seg:[2,4], target:'web', pkt:['Eth','IP','TCP'], title:'12 · TCP ACK (WAN) — NAT', note:'NAT; conexiunea TCP e stabilită (urmează TLS ClientHello).', annot:{node:2,text:'<b>🔧 NAT:</b> IP src→<b>203.0.113.5</b>, port→<b>40001</b>. ✅ Conexiune TCP stabilită.'}, row:{ms:'B2:B2:B2:B2:B2:B2',md:'CC:CC:CC:CC:CC:CC',is:'203.0.113.5',id:'198.51.100.20',ps:'40001',pd:'443',sens:'TCP ACK (WAN) — NAT; conexiune TCP stabilită ✅'}, uses:[{tag:'TCP',txt:'handshake complet; urmează TLS.'}]}
+    ]},
+  icmp:{ name:'Ping ICMP între subrețele', mode:'trace', encap:['Eth','IP','ICMP'],
+    nodes:[ {ic:'💻',label:'PC-A',sub:'192.168.1.10 · 0A:0A'},{ic:'📡',label:'Router',sub:'G0/0 R0 · G0/1 R1'},{ic:'💻',label:'PC-B',sub:'192.168.2.20 · 0B:0B'} ],
+    cols:['#','MAC Src','MAC Dst','IP Src','IP Dst','Port Src','Port Dst','Semnificație'],
+    req:`<h2 style="margin-top:0">📋 Cerința</h2><p>PC-A execută <code>ping 192.168.2.20</code>. Stațiile sunt în subrețele diferite, legate prin router; cache-urile ARP sunt goale. <b>ICMP nu are porturi</b>; IP-urile rămân <b>neschimbate cap-coadă</b> (fără NAT); doar MAC-urile se rescriu și scade TTL.</p>
+      <div style="overflow-x:auto"><table class="ptable" style="max-width:600px;font-size:.76rem"><tr><th>Dispozitiv</th><th>MAC</th><th>IP</th></tr>
+      <tr><td>💻 PC-A</td><td class="macm">0A:0A:0A:0A:0A:0A</td><td class="macm">192.168.1.10/24 · GW 192.168.1.1</td></tr>
+      <tr><td>📡 Router</td><td class="macm">G0/0 R0:.. · G0/1 R1:..</td><td class="macm">G0/0 192.168.1.1 · G0/1 192.168.2.1</td></tr>
+      <tr><td>💻 PC-B</td><td class="macm">0B:0B:0B:0B:0B:0B</td><td class="macm">192.168.2.20/24 · GW 192.168.2.1</td></tr></table></div>`,
+    steps:[
+      {seg:[0,1], bcast:true, target:null, pkt:['Eth','ARP'], title:'1 · ARP Request (subrețea 1)', note:'PC-A întreabă cine are gateway-ul 192.168.1.1.', row:{ms:'0A:0A:0A:0A:0A:0A',md:'FF:FF:FF:FF:FF:FF',is:'–',id:'–',ps:'–',pd:'–',sens:'ARP Request (subrețea 1) — cine are 192.168.1.1?'}, uses:[{tag:'ARP',txt:'broadcast în LAN1.'}]},
+      {seg:[1,0], target:null, pkt:['Eth','ARP'], title:'2 · ARP Reply (G0/0)', note:'Routerul răspunde cu MAC-ul interfeței G0/0.', row:{ms:'R0:R0:R0:R0:R0:R0',md:'0A:0A:0A:0A:0A:0A',is:'–',id:'–',ps:'–',pd:'–',sens:'ARP Reply (G0/0) — 192.168.1.1 este la R0:R0:…'}, uses:[{tag:'ARP',txt:'mapare gateway-ul LAN1.'}]},
+      {seg:[0,1], target:null, pkt:['Eth','IP','ICMP'], title:'3 · Echo Request (hop 1, LAN1)', note:'PC-A trimite Echo Request (tip 8) către router; IP dst = PC-B.', row:{ms:'0A:0A:0A:0A:0A:0A',md:'R0:R0:R0:R0:R0:R0',is:'192.168.1.10',id:'192.168.2.20',ps:'–',pd:'–',sens:'ICMP Echo Request (hop 1, LAN1) · tip 8'}, uses:[{tag:'ICMP',txt:'tip 8 (Echo Request); fără porturi.'}]},
+      {seg:[1,2], bcast:true, target:null, pkt:['Eth','ARP'], title:'4 · ARP Request (subrețea 2)', note:'Routerul are nevoie de MAC-ul lui PC-B: cine are 192.168.2.20?', row:{ms:'R1:R1:R1:R1:R1:R1',md:'FF:FF:FF:FF:FF:FF',is:'–',id:'–',ps:'–',pd:'–',sens:'ARP Request (subrețea 2) — cine are 192.168.2.20?'}, uses:[{tag:'ARP',txt:'broadcast în LAN2, de pe G0/1.'}]},
+      {seg:[2,1], target:null, pkt:['Eth','ARP'], title:'5 · ARP Reply', note:'PC-B răspunde cu MAC-ul său.', row:{ms:'0B:0B:0B:0B:0B:0B',md:'R1:R1:R1:R1:R1:R1',is:'–',id:'–',ps:'–',pd:'–',sens:'ARP Reply — 192.168.2.20 este la 0B:0B:…'}, uses:[{tag:'ARP',txt:'mapare PC-B.'}]},
+      {seg:[1,2], target:null, pkt:['Eth','IP','ICMP'], title:'6 · Echo Request (hop 2, LAN2)', note:'Routerul rescrie MAC-urile și scade TTL; IP-urile rămân.', annot:{node:1,text:'<b>🔧 Router → LAN2:</b> MAC src→<b>R1:R1</b>, MAC dst→<b>0B:0B</b>. <b>TTL−1</b>. IP rămân 192.168.1.10 → 192.168.2.20.'}, row:{ms:'R1:R1:R1:R1:R1:R1',md:'0B:0B:0B:0B:0B:0B',is:'192.168.1.10',id:'192.168.2.20',ps:'–',pd:'–',sens:'ICMP Echo Request (hop 2, LAN2) · TTL−1 · tip 8'}, uses:[{tag:'Ethernet',txt:'<b>rescris de router</b>; IP neschimbat cap-coadă.'}]},
+      {seg:[2,1], target:null, pkt:['Eth','IP','ICMP'], title:'7 · Echo Reply (hop 1, LAN2)', note:'PC-B răspunde Echo Reply (tip 0); știe MAC-ul routerului din pașii 4–5.', row:{ms:'0B:0B:0B:0B:0B:0B',md:'R1:R1:R1:R1:R1:R1',is:'192.168.2.20',id:'192.168.1.10',ps:'–',pd:'–',sens:'ICMP Echo Reply (hop 1, LAN2) · tip 0'}, uses:[{tag:'ICMP',txt:'tip 0 (Echo Reply).'}]},
+      {seg:[1,0], target:null, pkt:['Eth','IP','ICMP'], title:'8 · Echo Reply (hop 2, LAN1)', note:'Routerul rescrie MAC-urile, TTL−1; ping reușit.', annot:{node:1,text:'<b>🔧 Router → LAN1:</b> MAC src→<b>R0:R0</b>, MAC dst→<b>0A:0A</b>. <b>TTL−1</b>. ✅ ping reușit.'}, row:{ms:'R0:R0:R0:R0:R0:R0',md:'0A:0A:0A:0A:0A:0A',is:'192.168.2.20',id:'192.168.1.10',ps:'–',pd:'–',sens:'ICMP Echo Reply (hop 2, LAN1) · TTL−1 · tip 0 ✅'}, uses:[{tag:'Ethernet',txt:'rescris de router; livrare la PC-A.'}]}
+    ]},
+  boot:{ name:'Boot complet: DHCP → DNS → TCP', mode:'trace', encap:['Eth','IP','TCP','Date'],
+    nodes:[ {ic:'💻',label:'Laptop',sub:'0.0.0.0 → 192.168.10.100'},{ic:'🔀',label:'Switch',sub:'L2'},{ic:'📡',label:'Router',sub:'LAN FA:..:01 · WAN FA:..:02 · 81.0.0.10'},{ic:'☁️',label:'Internet',sub:''},{ic:'🖥️',label:'Server',sub:''} ],
+    cols:['#','MAC Src','MAC Dst','IP Src','IP Dst','Port Src','Port Dst','Semnificație'],
+    far:{ dns:{ic:'🖥️',label:'DNS',sub:'9.9.9.9'}, web:{ic:'🌐',label:'www.info.ro',sub:'100.25.30.40'} },
+    req:`<h2 style="margin-top:0">📋 Cerința</h2><p>Laptopul tocmai a pornit (fără IP). Obține adresa prin <b>DHCP</b> de la router, apoi accesează <code>http://www.info.ro/</code>; routerul face și NAT. Secvența: DHCP (DISCOVER → OFFER → REQUEST → ACK) → ARP gateway → DNS → handshake TCP pe portul 80.</p>
+      <div style="overflow-x:auto"><table class="ptable" style="max-width:620px;font-size:.76rem"><tr><th>Dispozitiv</th><th>MAC</th><th>IP</th></tr>
+      <tr><td>💻 Laptop</td><td class="macm">1A:2B:3C:4D:5E:6F</td><td class="macm">0.0.0.0 → 192.168.10.100/24</td></tr>
+      <tr><td>📡 Router (DHCP+NAT)</td><td class="macm">LAN FA:CE:FA:CE:00:01 · WAN FA:CE:FA:CE:00:02</td><td class="macm">LAN 192.168.10.1 · WAN 81.0.0.10 · oferă DNS 9.9.9.9</td></tr>
+      <tr><td>🖥️ DNS</td><td class="macm">D1:D1:D1:D1:D1:D1</td><td class="macm">9.9.9.9</td></tr>
+      <tr><td>🌐 www.info.ro</td><td class="macm">E5:E5:E5:E5:E5:E5</td><td class="macm">100.25.30.40</td></tr></table></div>
+      <p class="hint">DHCP peste UDP (client 68, server 67); DISCOVER/REQUEST cu IP <code>0.0.0.0</code> și broadcast. Mapare NAT: <code>:51000 ↔ :41000</code> (DNS), <code>:51001 ↔ :41001</code> (TCP).</p>`,
+    steps:[
+      {seg:[0,2], bcast:true, target:null, pkt:['Eth','IP','UDP','DHCP'], title:'1 · DHCP DISCOVER', note:'Laptopul nu are IP. Broadcast: caut un server DHCP.', row:{ms:'1A:2B:3C:4D:5E:6F',md:'FF:FF:FF:FF:FF:FF',is:'0.0.0.0',id:'255.255.255.255',ps:'68',pd:'67',sens:'DHCP DISCOVER (broadcast) — caut un server DHCP'}, uses:[{tag:'UDP',txt:'port sursă 68 → 67; IP sursă 0.0.0.0.'},{tag:'DHCP',txt:'opțiunea 53 = Discover.'}]},
+      {seg:[2,0], bcast:true, target:null, pkt:['Eth','IP','UDP','DHCP'], title:'2 · DHCP OFFER', note:'Serverul oferă 192.168.10.100 (în interiorul mesajului).', row:{ms:'FA:CE:FA:CE:00:01',md:'FF:FF:FF:FF:FF:FF',is:'192.168.10.1',id:'255.255.255.255',ps:'67',pd:'68',sens:'DHCP OFFER — îți propun 192.168.10.100'}, uses:[{tag:'DHCP',txt:'Offer — yiaddr = 192.168.10.100.'}]},
+      {seg:[0,2], bcast:true, target:null, pkt:['Eth','IP','UDP','DHCP'], title:'3 · DHCP REQUEST', note:'Clientul cere oficial IP-ul oferit (broadcast).', row:{ms:'1A:2B:3C:4D:5E:6F',md:'FF:FF:FF:FF:FF:FF',is:'0.0.0.0',id:'255.255.255.255',ps:'68',pd:'67',sens:'DHCP REQUEST (broadcast) — accept 192.168.10.100'}, uses:[{tag:'DHCP',txt:'Request — confirmă oferta aleasă.'}]},
+      {seg:[2,0], bcast:true, target:null, pkt:['Eth','IP','UDP','DHCP'], title:'4 · DHCP ACK', note:'Serverul confirmă: IP, GW, DNS, lease.', row:{ms:'FA:CE:FA:CE:00:01',md:'FF:FF:FF:FF:FF:FF',is:'192.168.10.1',id:'255.255.255.255',ps:'67',pd:'68',sens:'DHCP ACK — confirmat: IP, GW, DNS, lease'}, uses:[{tag:'DHCP',txt:'Ack — laptopul are acum 192.168.10.100.'}]},
+      {seg:[0,2], bcast:true, target:null, pkt:['Eth','ARP'], title:'5 · ARP Request (gateway)', note:'Pentru DNS (off-subnet) trebuie MAC-ul gateway-ului.', row:{ms:'1A:2B:3C:4D:5E:6F',md:'FF:FF:FF:FF:FF:FF',is:'–',id:'–',ps:'–',pd:'–',sens:'ARP Request — cine are 192.168.10.1? (gateway)'}, uses:[{tag:'ARP',txt:'broadcast pentru MAC-ul gateway-ului.'}]},
+      {seg:[2,0], target:null, pkt:['Eth','ARP'], title:'6 · ARP Reply', note:'Routerul răspunde cu MAC-ul LAN.', row:{ms:'FA:CE:FA:CE:00:01',md:'1A:2B:3C:4D:5E:6F',is:'–',id:'–',ps:'–',pd:'–',sens:'ARP Reply — 192.168.10.1 este la FA:CE:FA:CE:00:01'}, uses:[{tag:'ARP',txt:'mapare gateway.'}]},
+      {seg:[0,2], target:'dns', pkt:['Eth','IP','UDP','DNS'], title:'7 · DNS Query (LAN)', note:'Laptop → gateway, întreabă www.info.ro.', row:{ms:'1A:2B:3C:4D:5E:6F',md:'FA:CE:FA:CE:00:01',is:'192.168.10.100',id:'9.9.9.9',ps:'51000',pd:'53',sens:'DNS Query (LAN) — laptop → gateway, întreabă www.info.ro'}, uses:[{tag:'UDP',txt:'port 53; IP dst = DNS real.'}]},
+      {seg:[2,4], target:'dns', pkt:['Eth','IP','UDP','DNS'], title:'8 · DNS Query (WAN) — NAT', note:'NAT: IP & port sursă rescrise, TTL−1.', annot:{node:2,text:'<b>🔧 NAT pe WAN:</b> IP src→<b>81.0.0.10</b>, port src 51000→<b>41000</b>, MAC src→WAN, MAC dst→D1:D1. TTL−1.'}, row:{ms:'FA:CE:FA:CE:00:02',md:'D1:D1:D1:D1:D1:D1',is:'81.0.0.10',id:'9.9.9.9',ps:'41000',pd:'53',sens:'DNS Query (WAN) — NAT: IP & port sursă rescrise, TTL−1'}, uses:[{tag:'IP',txt:'NAT rescrie IP sursă privat→public.'}]},
+      {seg:[4,2], target:'dns', pkt:['Eth','IP','UDP','DNS'], title:'9 · DNS Response (WAN)', note:'Serverul DNS răspunde.', row:{ms:'D1:D1:D1:D1:D1:D1',md:'FA:CE:FA:CE:00:02',is:'9.9.9.9',id:'81.0.0.10',ps:'53',pd:'41000',sens:'DNS Response (WAN) — www.info.ro = 100.25.30.40'}, uses:[{tag:'IP',txt:'dst = adresa publică.'}]},
+      {seg:[2,0], target:'dns', pkt:['Eth','IP','UDP','DNS'], title:'10 · DNS Response (LAN) — un-NAT', note:'Un-NAT și livrare către laptop.', annot:{node:2,text:'<b>🔧 un-NAT:</b> IP dst→<b>192.168.10.100</b>, port dst 41000→<b>51000</b>, MAC src→LAN.'}, row:{ms:'FA:CE:FA:CE:00:01',md:'1A:2B:3C:4D:5E:6F',is:'9.9.9.9',id:'192.168.10.100',ps:'53',pd:'51000',sens:'DNS Response (LAN) — un-NAT: livrare către laptop'}, uses:[{tag:'IP',txt:'destinația privată restaurată.'}]},
+      {seg:[0,2], target:'web', pkt:['Eth','IP','TCP'], title:'11 · TCP SYN (LAN)', note:'Laptop → gateway, SYN port 80.', row:{ms:'1A:2B:3C:4D:5E:6F',md:'FA:CE:FA:CE:00:01',is:'192.168.10.100',id:'100.25.30.40',ps:'51001',pd:'80',sens:'TCP SYN (LAN) — laptop → gateway'}, uses:[{tag:'TCP',txt:'flag SYN, port 80 (HTTP).'}]},
+      {seg:[2,4], target:'web', pkt:['Eth','IP','TCP'], title:'12 · TCP SYN (WAN) — NAT', note:'NAT, TTL−1.', annot:{node:2,text:'<b>🔧 NAT:</b> IP src→<b>81.0.0.10</b>, port 51001→<b>41001</b>, MAC dst→E5:E5. TTL−1.'}, row:{ms:'FA:CE:FA:CE:00:02',md:'E5:E5:E5:E5:E5:E5',is:'81.0.0.10',id:'100.25.30.40',ps:'41001',pd:'80',sens:'TCP SYN (WAN) — NAT, TTL−1'}, uses:[{tag:'TCP',txt:'PAT rescrie portul sursă.'}]},
+      {seg:[4,2], target:'web', pkt:['Eth','IP','TCP'], title:'13 · TCP SYN-ACK (WAN)', note:'Serverul acceptă.', row:{ms:'E5:E5:E5:E5:E5:E5',md:'FA:CE:FA:CE:00:02',is:'100.25.30.40',id:'81.0.0.10',ps:'80',pd:'41001',sens:'TCP SYN-ACK (WAN) — serverul acceptă'}, uses:[{tag:'TCP',txt:'flaguri SYN+ACK.'}]},
+      {seg:[2,0], target:'web', pkt:['Eth','IP','TCP'], title:'14 · TCP SYN-ACK (LAN) — un-NAT', note:'Un-NAT către laptop.', annot:{node:2,text:'<b>🔧 un-NAT:</b> IP dst→<b>192.168.10.100</b>, port dst→<b>51001</b>, MAC src→LAN.'}, row:{ms:'FA:CE:FA:CE:00:01',md:'1A:2B:3C:4D:5E:6F',is:'100.25.30.40',id:'192.168.10.100',ps:'80',pd:'51001',sens:'TCP SYN-ACK (LAN) — un-NAT către laptop'}, uses:[{tag:'IP',txt:'destinația privată restaurată.'}]},
+      {seg:[0,2], target:'web', pkt:['Eth','IP','TCP'], title:'15 · TCP ACK (LAN)', note:'Laptopul confirmă.', row:{ms:'1A:2B:3C:4D:5E:6F',md:'FA:CE:FA:CE:00:01',is:'192.168.10.100',id:'100.25.30.40',ps:'51001',pd:'80',sens:'TCP ACK (LAN) — laptop → gateway'}, uses:[{tag:'TCP',txt:'flag ACK.'}]},
+      {seg:[2,4], target:'web', pkt:['Eth','IP','TCP'], title:'16 · TCP ACK (WAN) — NAT', note:'NAT; conexiunea TCP stabilită (urmează HTTP GET /).', annot:{node:2,text:'<b>🔧 NAT:</b> IP src→<b>81.0.0.10</b>, port→<b>41001</b>. ✅ Conexiune TCP stabilită.'}, row:{ms:'FA:CE:FA:CE:00:02',md:'E5:E5:E5:E5:E5:E5',is:'81.0.0.10',id:'100.25.30.40',ps:'41001',pd:'80',sens:'TCP ACK (WAN) — NAT; conexiune TCP stabilită ✅'}, uses:[{tag:'TCP',txt:'handshake complet; urmează HTTP GET /.'}]}
+    ]},
+};
+let jCur={id:null,j:null,idx:-1,timer:null};
+function segColor(name){ const m={Eth:'eth-src',IP:'ip-ttl',TCP:'tcp-flags',UDP:'udp-len',Date:'eth-data',ARP:'arp-op',DHCP:'dh-op',DNS:'udp-dport',HTTP:'tcp-dport',ICMP:'icmp-type'}; return 'hsl('+hueFor(m[name]||'eth-data')+',60%,46%)'; }
+function encapHTML(a){ return a.map(s=>'<span class="seg" style="background:'+segColor(s)+'">'+s+'</span>').join(''); }
+function encapMini(a){ return a.map(s=>'<span class="pseg" style="background:'+segColor(s)+'">'+s+'</span>').join(''); }
+function shMac(m){ if(!m) return m||''; var p=String(m).split(':'); return p.length>=6 ? (p[0]+':'+p[1]+':..:'+p[5]) : m; }
+function tcpFlagFromTitle(t){ t=String(t||''); if(t.indexOf('SYN-ACK')>=0) return 'SYN+ACK'; if(t.indexOf('SYN')>=0) return 'SYN'; if(t.indexOf('ACK')>=0) return 'ACK'; if(t.indexOf('FIN')>=0) return 'FIN'; return 'ACK'; }
+/* construiește stiva de niveluri a pachetului la pasul i (din datele pasului) */
+function packetLayers(j,i){
+  var st=j.steps[i];
+  if(j.mode==='trace'){
+    var r=st.row, names=st.pkt||['Eth','IP','TCP'];
+    var hasARP=names.indexOf('ARP')>=0;
+    var proto=names.indexOf('TCP')>=0?'6 (TCP)':(names.indexOf('UDP')>=0?'17 (UDP)':(names.indexOf('ICMP')>=0?'1 (ICMP)':'—'));
+    var isReq=/Request/i.test(st.title||'');
+    return names.map(function(nm){
+      if(nm==='Eth') return {tag:'ETHERNET',color:'Eth',l:'L2',brief:shMac(r.ms)+' → '+shMac(r.md),det:[['MAC src',r.ms],['MAC dst',r.md],['EtherType',hasARP?'0x0806 (ARP)':'0x0800 (IPv4)']]};
+      if(nm==='ARP') return {tag:'ARP',color:'ARP',l:'L2',brief:'who-has',det:[['Mesaj',r.sens]],data:true};
+      if(nm==='IP') return {tag:'IP',color:'IP',l:'L3',brief:r.is+' → '+r.id,det:[['IP src',r.is],['IP dst',r.id],['TTL','64'],['Proto',proto]]};
+      if(nm==='UDP') return {tag:'UDP',color:'UDP',l:'L4',brief:r.ps+' → '+r.pd,det:[['Port src',r.ps],['Port dst',r.pd]]};
+      if(nm==='TCP') return {tag:'TCP',color:'TCP',l:'L4',brief:r.ps+' → '+r.pd,det:[['Port src',r.ps],['Port dst',r.pd],['Flag',tcpFlagFromTitle(st.title)]]};
+      if(nm==='ICMP') return {tag:'ICMP',color:'ICMP',l:'L3',brief:isReq?'Echo Request':'Echo Reply',det:[['Tip',isReq?'8 (Echo Request)':'0 (Echo Reply)'],['Cod','0']],data:true};
+      if(nm==='DNS') return {tag:'DNS',color:'DNS',l:'L7',brief:'mesaj DNS',det:[['Mesaj',r.sens]],data:true};
+      if(nm==='DHCP') return {tag:'DHCP',color:'DHCP',l:'L7',brief:'mesaj DHCP',det:[['Mesaj',r.sens]],data:true};
+      return {tag:'DATA',color:'Date',l:'',brief:'payload',det:[['Payload','…']],data:true};
+    });
+  }
+  var s=Object.assign({},j.base); for(var k=0;k<=i;k++) Object.assign(s,j.steps[k].set||{});
+  if(j.id==='arpnat'){
+    if(String(s.op).indexOf('Request')>=0 || String(s.op).indexOf('Reply')>=0)
+      return [ {tag:'ETHERNET',color:'Eth',l:'L2',brief:'ARP · '+(st.bcast?'broadcast':'unicast'),det:[['EtherType','0x0806 (ARP)'],['Dst',st.bcast?'FF:FF:FF:FF:FF:FF':'unicast']]},
+               {tag:'ARP',color:'ARP',l:'L2',brief:s.map,det:[['Operație',s.op],['Mapare',s.map]],data:true} ];
+    return [ {tag:'ETHERNET',color:'Eth',l:'L2',brief:'→ gateway',det:[['MAC dst','gateway (R1)'],['EtherType','0x0800']]},
+             {tag:'IP',color:'IP',l:'L3',brief:s.isrc+' → '+s.idst,det:[['IP src',s.isrc],['IP dst',s.idst],['TTL','64'],['Proto','6 (TCP)']]},
+             {tag:'TCP',color:'TCP',l:'L4',brief:s.sport+' → 443',det:[['Port src',s.sport],['Port dst','443'],['Flag','SYN']]},
+             {tag:'DATA',color:'Date',l:'',brief:'payload',det:[['Payload','…']],data:true} ];
+  }
+  return [ {tag:'ETHERNET',color:'Eth',l:'L2',brief:shMac(s.esrc)+' → '+shMac(s.edst),det:[['MAC src',s.esrc],['MAC dst',s.edst],['EtherType','0x0800']]},
+           {tag:'IP',color:'IP',l:'L3',brief:s.isrc+' → '+s.idst,det:[['IP src',s.isrc],['IP dst',s.idst],['TTL',s.ttl],['Proto','6 (TCP)']]},
+           {tag:'TCP',color:'TCP',l:'L4',brief:'→ '+s.dport,det:[['Port dst',s.dport],['Flag','ACK'],['Seq','3829012']]},
+           {tag:'DATA',color:'Date',l:'',brief:'GET / HTTP/1.1',det:[['Payload','GET / HTTP/1.1 · Host: …']],data:true} ];
+}
+function packetMini(layers){
+  return '<div class="pkt-mini">'+layers.map(function(L){ return '<div class="pm-row'+(L.data?' data':'')+'" style="background:'+segColor(L.color)+'"><span class="pm-tag">'+L.tag+'</span><span class="pm-brief">'+L.brief+'</span></div>'; }).join('')+'</div>';
+}
+function packetDetail(layers){
+  var inner='';
+  for(var k=layers.length-1;k>=0;k--){ var L=layers[k];
+    inner='<div class="pl'+(L.data?' data':'')+'" style="--c:'+segColor(L.color)+'"><div class="pl-bar"><span class="pl-name">'+L.tag+'</span>'+(L.l?'<span class="pl-lvl">'+L.l+'</span>':'')+(k<layers.length-1?'<span class="pl-wrap">▽ încapsulează</span>':'')+'</div><div class="pl-f">'+L.det.map(function(d){return '<span class="pl-chip"><b>'+d[0]+'</b>'+d[1]+'</span>';}).join('')+'</div>'+inner+'</div>';
+  }
+  return '<div class="pkt3d">'+inner+'</div>';
+}
+function nodeHTML(n,i){ return '<div class="jnode" id="jn-'+i+'"><div class="ic">'+n.ic+'</div><div class="nl">'+n.label+'</div><div class="ns">'+(n.sub||'')+'</div></div>'; }
+function topoCore(j){
+  return '<div class="encap">'+encapHTML(j.encap)+'</div>'
+    +'<div class="jtopo"><div class="jline"></div>'
+    + j.nodes.map((n,i)=>nodeHTML(n,i)).join('')
+    + '<div class="packet" id="jpkt"><div class="pbody">'+encapMini(j.encap)+'</div></div>'
+    + '<div class="jannot" id="jannot"></div>'
+    + '</div>';
+}
+function positionAnnot(nodeIdx,text){
+  var a=document.getElementById('jannot'); if(!a) return;
+  if(text==null){ a.classList.remove('show'); return; }
+  var node=document.getElementById('jn-'+nodeIdx); if(node) a.style.left=(node.offsetLeft+node.offsetWidth/2)+'px';
+  a.innerHTML=text; a.classList.add('show');
+}
+function topoHTML(j){ return topoCore(j)+'<div class="jstate" id="jStateBox"></div>'; }
+function setTraceFar(target){
+  var el=document.getElementById('jn-4'); if(!el) return;
+  var far=(jCur.j && jCur.j.far) || { dns:{ic:'🖥️',label:'DNS',sub:'8.8.8.8'}, web:{ic:'🌐',label:'www.mta.ro',sub:'213.177.4.168'} };
+  var d=(target && far[target]) || {ic:'🖥️',label:'Server',sub:''};
+  var i=el.querySelector('.ic'), l=el.querySelector('.nl'), s=el.querySelector('.ns');
+  if(i)i.textContent=d.ic; if(l)l.textContent=d.label; if(s)s.textContent=d.sub;
+}
+function renderUses(uses){
+  const box=document.getElementById('jUses'); if(!box)return;
+  if(!uses||!uses.length){ box.innerHTML='<p class="hint">La fiecare pas vezi aici <b>ce headere se folosesc</b>, <b>de cine</b> și <b>de ce</b>.</p>'; return; }
+  box.innerHTML='<div class="lab-sub" style="margin-top:0">Ce headere se folosesc la acest pas</div>'+uses.map(u=>'<div class="userow"><span class="utag">'+u.tag+'</span><span class="utxt">'+u.txt+'</span></div>').join('');
+}
+function renderTraceTable(j,upto){
+  const t=document.getElementById('jTable'); if(!t)return;
+  let h='<tr>'+j.cols.map(c=>'<th>'+c+'</th>').join('')+'</tr>';
+  for(let i=0;i<=upto;i++){ const r=j.steps[i].row, p=i>0?j.steps[i-1].row:null;
+    const cell=(v,key,mono)=>{ const ch=p&&p[key]!==v?' chg':''; const mu=(v==='–')?' muta':''; return '<td class="'+(mono?'macm':'')+ch+mu+'">'+v+'</td>'; };
+    h+='<tr'+(i===upto?' class="rownew"':'')+'><td>'+(i+1)+'</td>'+cell(r.ms,'ms',1)+cell(r.md,'md',1)+cell(r.is,'is')+cell(r.id,'id')+cell(r.ps,'ps')+cell(r.pd,'pd')+'<td class="sens">'+r.sens+'</td></tr>';
+  }
+  t.innerHTML=h;
+}
+function ladderHTML(j){
+  return '<div class="ladder"><div class="ladder-head"><span>'+j.actors[0]+'</span><span>'+j.actors[1]+'</span></div>'
+    + j.steps.map((s,i)=>'<div class="lmsg '+s.dir+'" id="lm-'+i+'"><div class="arrow"><div class="ln"></div><div class="tag">'+s.tag+'</div></div>'
+        +(s.flags?('<div class="lflags">'+FLAG_LABELS.tcp.map(fl=>'<span class="lflag '+(s.flags[fl]?'on':'')+'">'+fl+'</span>').join('')+'</div>'):'')
+        +'<div class="note">'+s.note+'</div></div>').join('')
+    + '</div>';
+}
+function computeTopoState(j,upTo){ const cur=Object.assign({},j.base); for(let s=0;s<upTo;s++) Object.assign(cur,j.steps[s].set||{}); return cur; }
+function renderTopoState(i){
+  const j=jCur.j, box=document.getElementById('jStateBox'); if(!box)return;
+  const before=computeTopoState(j,i==null?0:i);
+  const after=(i==null)?before:Object.assign({},before,j.steps[i].set||{});
+  const ch=(i==null||!j.steps[i].set)?{}:j.steps[i].set;
+  box.innerHTML=j.rows.map(r=>{ const isCh=(r.key in ch); const val=after[r.key], was=before[r.key];
+    const vh=(isCh&&was!==val)?('<span class="was">'+was+'</span><span class="arr">→</span>'+val):val;
+    return '<div class="jrow '+(isCh?'changed':'')+'"><div class="jk">'+r.label+'</div><div class="jv">'+vh+'</div></div>'; }).join('');
+}
+function stepInfoHTML(st){ return st?('<h2 style="margin-top:0">'+st.title+'</h2><p style="margin:0;color:var(--txt)">'+st.note+'</p>'):'<p class="hint">Apasă <b>▶ Play</b> sau <b>⏭ Pas</b> ca să pornești fluxul.</p>'; }
+function positionPacket(idx,anim){
+  const pkt=document.getElementById('jpkt'), node=document.getElementById('jn-'+idx); if(!pkt||!node)return;
+  const c=node.offsetLeft+node.offsetWidth/2;
+  if(!anim){ pkt.style.transition='none'; pkt.style.left=c+'px'; void pkt.offsetWidth; pkt.style.transition=''; }
+  else pkt.style.left=c+'px';
+}
+function jReposition(){ if(jCur.j&&(jCur.j.mode==='topo'||jCur.j.mode==='trace')){ const idx=jCur.idx<0?0:jCur.j.steps[jCur.idx].seg[1]; positionPacket(idx,false); } }
+function jStepCount(){ return jCur.j?jCur.j.steps.length:0; }
+function updateProg(){ document.getElementById('jProg').textContent=(jCur.idx+1)+' / '+jStepCount(); }
+function initJourney(){
+  const host=document.getElementById('jScenes');
+  host.innerHTML=Object.keys(JOURNEYS).map(id=>'<button class="jscene" data-id="'+id+'">'+JOURNEYS[id].name+'</button>').join('');
+  host.querySelectorAll('.jscene').forEach(b=>b.onclick=()=>selectJourney(b.dataset.id));
+  document.getElementById('jPlay').onclick=jPlay;
+  document.getElementById('jStep').onclick=()=>{ jStop(); jNext(); };
+  document.getElementById('jReset').onclick=()=>{ jStop(); jResetSteps(); };
+  selectJourney(Object.keys(JOURNEYS)[0]);
+}
+function selectJourney(id){
+  jStop(); jCur.id=id; jCur.j=JOURNEYS[id]; jCur.idx=-1;
+  document.querySelectorAll('#jScenes .jscene').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+  const m=jCur.j.mode;
+  document.getElementById('jStage').innerHTML = (m==='ladder')?ladderHTML(jCur.j):(m==='trace')?topoCore(jCur.j):topoHTML(jCur.j);
+  const tw=document.getElementById('jTableWrap'); if(tw) tw.style.display=(m==='trace')?'':'none';
+  const pw=document.getElementById('jPacketWrap'); if(pw) pw.style.display=(m==='ladder')?'none':'';
+  const rq=document.getElementById('jReq'); if(rq){ if(jCur.j.req){ rq.innerHTML=jCur.j.req; rq.style.display=''; } else { rq.style.display='none'; } }
+  jResetSteps();
+}
+function jResetSteps(){
+  jCur.idx=-1; updateProg();
+  document.getElementById('jInfo').innerHTML=stepInfoHTML(null);
+  renderUses(null);
+  const m=jCur.j.mode;
+  if(m==='topo'||m==='trace'){
+    const pkt=document.getElementById('jpkt'); if(pkt) pkt.classList.remove('show','bcast');
+    document.querySelectorAll('#jStage .jnode').forEach(n=>n.classList.remove('act'));
+    positionPacket(0,false);
+    positionAnnot(null,null);
+    var jp=document.getElementById('jPacket'); if(jp) jp.innerHTML='<p class="hint">Apasă <b>▶ Play</b> sau <b>⏭ Pas</b> — pachetul se construiește aici, nivel cu nivel (Ethernet ⊃ IP ⊃ TCP ⊃ Date), cu valorile reale.</p>';
+    if(m==='topo') renderTopoState(null); else { setTraceFar(null); renderTraceTable(jCur.j,-1); }
+  } else { document.querySelectorAll('#jStage .lmsg').forEach(x=>x.classList.remove('on')); }
+}
+function jStepTo(i){
+  jCur.idx=i; updateProg(); const st=jCur.j.steps[i]; const m=jCur.j.mode;
+  if(m==='topo'||m==='trace'){
+    const pkt=document.getElementById('jpkt'); pkt.classList.add('show'); pkt.classList.toggle('bcast',!!st.bcast);
+    if(m==='trace') setTraceFar(st.target);
+    const layers=packetLayers(jCur.j,i);
+    const pb=pkt.querySelector('.pbody'); if(pb) pb.innerHTML=packetMini(layers);
+    const jp=document.getElementById('jPacket'); if(jp) jp.innerHTML=packetDetail(layers);
+    document.querySelectorAll('#jStage .jnode').forEach((n,idx)=>n.classList.toggle('act',idx===st.seg[0]||idx===st.seg[1]));
+    const topo=document.querySelector('#jStage .jtopo'); if(topo){ topo.classList.add('flow'); setTimeout(function(){ topo.classList.remove('flow'); },900); }
+    positionPacket(st.seg[0],false); requestAnimationFrame(()=>positionPacket(st.seg[1],true));
+    if(st.annot) positionAnnot(st.annot.node, st.annot.text); else positionAnnot(null,null);
+    if(m==='topo') renderTopoState(i); else renderTraceTable(jCur.j,i);
+  } else { document.querySelectorAll('#jStage .lmsg').forEach((x,idx)=>x.classList.toggle('on',idx<=i)); }
+  renderUses(st.uses);
+  document.getElementById('jInfo').innerHTML=stepInfoHTML(st);
+}
+function jNext(){ if(jCur.idx<jStepCount()-1) jStepTo(jCur.idx+1); }
+function jPlay(){ jStop(); if(jCur.idx>=jStepCount()-1) jResetSteps(); jNext(); jCur.timer=setInterval(()=>{ if(jCur.idx>=jStepCount()-1){ jStop(); return; } jNext(); },1500); }
+function jStop(){ if(jCur.timer){ clearInterval(jCur.timer); jCur.timer=null; } }
+
+try{ initAnatomy(); }catch(e){ console.error('anatomy',e); }
+try{ initJourney(); }catch(e){ console.error('journey',e); }
+
+/* ============================================================
+   ÎNVAȚĂ — exemplu per câmp + workflow „cum se trimit datele"
+   ============================================================ */
+function fieldExample(k){
+  try{
+    var lab=FIELD_LAB[k]; if(!lab) return '';
+    if(lab.show) return lab.show;
+    if(lab.enum){ var m=lab.enum.find(function(e){return e[0]===lab.ex;}); return fmtEnumKey(lab.ex,lab)+(m?' = '+m[1]:''); }
+    if(lab.wellknown){ var w=lab.wellknown.find(function(e){return e[0]===lab.ex;}); return lab.ex+(w?' = '+w[1]:''); }
+    if(lab.ex!=null) return (lab.fmt==='hex'?'0x'+lab.ex.toString(16).toUpperCase():''+lab.ex);
+    return '';
+  }catch(e){ return ''; }
+}
+function exHtml(k){ var e=fieldExample(k); return e?(' <span class="fd-ex">ex: <code>'+e+'</code></span>'):''; }
+
+const WORKFLOWS_REF = [
+  { titlu:'1 · Încarci pagina http://www.mta.ro/  (HTTP → TCP → IP → Ethernet)',
+    intro:'Datele aplicației sunt „împachetate" de sus în jos; fiecare nivel adaugă propriul header.',
+    stack:[
+      {tag:'HTTP',color:'HTTP',why:'cererea aplicației',fields:[['GET','/'],['Host','www.mta.ro']]},
+      {tag:'TCP',color:'TCP',why:'transport sigur + port',fields:[['Port sursă','49153'],['Port dest','80'],['Flag','ACK'],['Seq','3829012']]},
+      {tag:'IP',color:'IP',why:'adresare logică + rutare',fields:[['IP sursă','192.168.0.7'],['IP dest','213.177.4.168'],['TTL','64'],['Protocol','6 (TCP)']]},
+      {tag:'Ethernet',color:'Eth',why:'livrare pe segmentul local',fields:[['MAC sursă','77:..:77'],['MAC dest','11:..:11 (gateway)'],['EtherType','0x0800']]}
+    ],
+    note:'<b>La recepție</b> serverul despachetează invers: Ethernet → IP → TCP → HTTP. Fiecare nivel citește DOAR headerul lui.' },
+  { titlu:'2 · Cauți un nume de domeniu  (DNS → UDP → IP → Ethernet)',
+    intro:'DNS folosește UDP (rapid, fără conexiune) pe portul 53.',
+    stack:[
+      {tag:'DNS',color:'DNS',why:'interogarea numelui',fields:[['Query','A www.mta.ro']]},
+      {tag:'UDP',color:'UDP',why:'transport simplu',fields:[['Port sursă','49152'],['Port dest','53']]},
+      {tag:'IP',color:'IP',why:'rutare către serverul DNS',fields:[['IP sursă','192.168.0.7'],['IP dest','8.8.8.8'],['Protocol','17 (UDP)']]},
+      {tag:'Ethernet',color:'Eth',why:'la gateway (8.8.8.8 e off-subnet)',fields:[['MAC dest','11:..:11 (gateway)'],['EtherType','0x0800']]}
+    ],
+    note:'Răspunsul vine la fel, invers, și conține <code>www.mta.ro = 213.177.4.168</code>.' },
+  { titlu:'3 · Testezi conectivitatea cu ping  (ICMP → IP → Ethernet)',
+    intro:'ping NU folosește port/transport — ICMP stă direct în IP.',
+    stack:[
+      {tag:'ICMP',color:'ICMP',why:'mesaj de control',fields:[['Type','8 (Echo Request)'],['Code','0'],['Id+Seq','1, 1']]},
+      {tag:'IP',color:'IP',why:'adresare + TTL',fields:[['IP sursă','192.168.0.7'],['IP dest','8.8.8.8'],['TTL','64'],['Protocol','1 (ICMP)']]},
+      {tag:'Ethernet',color:'Eth',why:'livrare locală',fields:[['MAC dest','11:..:11 (gateway)'],['EtherType','0x0800']]}
+    ],
+    note:'Răspunsul e un <b>Echo Reply</b> (Type 0). Nu există porturi, fiindcă nu există nivel transport.' }
+];
+function renderRefFlows(){
+  var host=document.getElementById('refFlows'); if(!host)return;
+  var h='<h2 style="margin-top:0">🔄 Cum se folosesc headerele — exemple de trimitere a datelor</h2>'
+    +'<p class="hint">Headerele nu se folosesc izolat: la o transmisie reală, fiecare nivel adaugă headerul lui peste datele de la nivelul superior (încapsulare). Trei exemple concrete, de sus în jos:</p>';
+  WORKFLOWS_REF.forEach(function(w){
+    h+='<div class="wf"><div class="wf-t">'+w.titlu+'</div><div class="wf-i">'+w.intro+'</div>';
+    w.stack.forEach(function(L,i){
+      h+='<div class="wf-layer" style="border-left-color:'+segColor(L.color)+'"><div class="wf-h"><span class="wf-tag" style="background:'+segColor(L.color)+'">'+L.tag+'</span><span class="wf-why">'+L.why+'</span></div>'
+        +'<div class="wf-fields">'+L.fields.map(function(f){return '<span class="wf-f"><b>'+f[0]+'</b>'+f[1]+'</span>';}).join('')+'</div></div>';
+      if(i<w.stack.length-1) h+='<div class="wf-arrow">▼ adaugă header</div>';
+    });
+    h+='<div class="wf-note">'+w.note+'</div></div>';
+  });
+  host.innerHTML=h;
+}
+
+/* ============================================================
+   SUBNETIZARE — povești cu topologie + dezvăluire pas cu pas
+   ============================================================ */
+const REFLEXE_HTML = `<div class="sn-ref">
+  <div class="sp-sub" style="margin-top:0">⚡ Reflexele de bază (memorează-le)</div>
+  <p><b>Puterile lui 2</b> (de aici afli câți biți de host îți trebuie):<br><span class="big">2 · 4 · 8 · 16 · 32 · 64 · 128 · 256 · 512 · 1024</span></p>
+  <p><b>Formula:</b> dintr-un bloc de <code>2^n</code> adrese, hosturi utilizabile = <code>2^n − 2</code> (scazi rețeaua și broadcastul). <b>Mască</b> = <code>32 − biți de host</code>. <b>Mărimea blocului</b> = <code>256 − valoarea măștii</code> din octetul „care se mișcă".</p>
+  <div style="overflow-x:auto"><table class="ptable" style="max-width:520px">
+    <tr><th>Mască</th><th>Biți host</th><th>Bloc</th><th>Utilizabile</th></tr>
+    <tr><td>/30</td><td>2</td><td>4</td><td>2</td></tr>
+    <tr><td>/29</td><td>3</td><td>8</td><td>6</td></tr>
+    <tr><td>/28</td><td>4</td><td>16</td><td>14</td></tr>
+    <tr><td>/27</td><td>5</td><td>32</td><td>30</td></tr>
+    <tr><td>/26</td><td>6</td><td>64</td><td>62</td></tr>
+    <tr><td>/25</td><td>7</td><td>128</td><td>126</td></tr>
+    <tr><td>/24</td><td>8</td><td>256</td><td>254</td></tr>
+    <tr><td>/23</td><td>9</td><td>512</td><td>510</td></tr>
+    <tr><td>/22</td><td>10</td><td>1024</td><td>1022</td></tr>
+  </table></div>
+  <p><b>Regula de aur VLSM:</b> aloci blocurile <b>de la cel mai mare la cel mai mic</b>, lipite, fără goluri.</p>
+</div>`;
+const RETETA_HTML = `<div class="sn-ref">
+  <div class="sp-sub" style="margin-top:0">🧾 Rețeta universală (pune-o pe colțul foii)</div>
+  <ol style="margin:6px 0 0 18px;line-height:1.7;font-size:.92rem">
+    <li><b>Câte adrese are blocul de pornire?</b> <code>2^(32−prefix)</code> și ce interval acoperă.</li>
+    <li><b>Ordonează cererile descrescător</b> (mare → mic).</li>
+    <li>Pentru fiecare: <b>primul <code>2^n ≥ hosturi+2</code></b> → de acolo afli biții de host și masca (<code>32 − biți</code>).</li>
+    <li><b>Așază blocurile lipite</b>, de la prima adresă; fiecare bloc începe unde s-a terminat precedentul.</li>
+    <li>Pentru fiecare bloc: rețea = prima adresă, broadcast = ultima, primul host = rețea+1, ultimul host = broadcast−1.</li>
+    <li><b>Verifică</b> suma blocurilor ≤ blocul total și că nu se suprapun.</li>
+  </ol>
+</div>`;
+
+const SUBNET_PROBLEMS = [
+  { tip:'VLSM', titlu:'Problema 1 — Campusul universitar',
+    enunt:`Universitatea „Nord" are un router central care leagă trei clădiri. <b>Clădirea A</b> (Biblioteca) are nevoie de <b>200 hosturi</b>, <b>Clădirea B</b> (Laboratoarele) de <b>100 hosturi</b>, iar <b>Clădirea C</b> (Administrația) de <b>50 hosturi</b>. Administratorul a primit blocul <code>192.168.10.0/23</code>. Pentru fiecare clădire dă: adresa de rețea, masca, prima și ultima adresă utilizabilă, broadcastul.`,
+    topo:{ type:'hub', router:'Router central', branches:[ {label:'Clădirea A',sub:'Biblioteca · 200 h'},{label:'Clădirea B',sub:'Laboratoare · 100 h'},{label:'Clădirea C',sub:'Administrație · 50 h'} ] },
+    pasi:[
+      `<b>Cât teren ai.</b> <code>/23</code> = 512 adrese. Octetul 3 se mișcă pe valorile <b>10 și 11</b> → intervalul total <code>192.168.10.0 → 192.168.11.255</code>.`,
+      `<b>Ordonezi descrescător:</b> A (200) → B (100) → C (50).`,
+      `<b>Câți biți de host:</b> A: 200 → primul bloc ≥ 202 e <b>256</b> (254 utiliz.) → <code>/24</code>. B: 100 → <b>128</b> (126) → <code>/25</code>. C: 50 → <b>64</b> (62) → <code>/26</code>.`,
+      `<b>Așezi blocurile de la 192.168.10.0:</b> A /24 → <code>192.168.10.0 – .10.255</code>; B /25 → <code>192.168.11.0 – .11.127</code>; C /26 → <code>192.168.11.128 – .11.191</code>.`,
+      `💡 <b>Rollover de octet:</b> blocul A umple tot octetul <code>.10</code>, deci B și C trec în octetul <code>.11</code> — locul clasic unde se greșește.`
+    ],
+    tabel:{ cols:['Clădire','Hosturi','Adresă rețea','Mască','Prima utiliz.','Ultima utiliz.','Broadcast'],
+      rows:[
+        ['A','200','192.168.10.0','255.255.255.0 (/24)','192.168.10.1','192.168.10.254','192.168.10.255'],
+        ['B','100','192.168.11.0','255.255.255.128 (/25)','192.168.11.1','192.168.11.126','192.168.11.127'],
+        ['C','50','192.168.11.128','255.255.255.192 (/26)','192.168.11.129','192.168.11.190','192.168.11.191']
+      ]},
+    verificare:`256 + 128 + 64 = <b>448 ≤ 512</b>. Încape, fără suprapuneri.` },
+
+  { tip:'P2P', titlu:'Problema 2 — Legăturile dintre routere (toate /30)',
+    enunt:`Un ISP regional are routerele în lanț <b>R1 — R2 — R3</b>, plus o legătură de la R3 către un router de backup <b>R4</b>. Sunt <b>3 legături seriale punct-la-punct</b>, fiecare cu exact <b>2 hosturi</b> (o interfață pe fiecare capăt). Ai blocul <code>10.0.0.0/24</code>. Adresează economic.`,
+    topo:{ type:'chain', nodes:[ {label:'R1'},{label:'R2'},{label:'R3'},{label:'R4',sub:'backup'} ], links:['10.0.0.0/30','10.0.0.4/30','10.0.0.8/30'] },
+    pasi:[
+      `<b>Câți biți pentru o legătură P2P?</b> Ai nevoie de 2 adrese utilizabile → <b>4</b> dă 2 ✅ → <code>/30</code>, bloc 4. (Masca standard pentru router-la-router; pierzi doar rețea + broadcast.)`,
+      `<b>Așezi blocuri de câte 4, de la 10.0.0.0:</b> L1 <code>10.0.0.0 – .3</code>; L2 <code>10.0.0.4 – .7</code>; L3 <code>10.0.0.8 – .11</code>.`,
+      `💡 <b>Bonus:</b> există și <code>/31</code> (RFC 3021) pentru P2P fără broadcast (2 adrese, ambele utilizabile). La examen, răspunsul „de manual" rămâne <code>/30</code>.`
+    ],
+    tabel:{ cols:['Legătură','Adresă rețea','Mască','Prima utiliz.','Ultima utiliz.','Broadcast'],
+      rows:[
+        ['R1–R2','10.0.0.0','255.255.255.252 (/30)','10.0.0.1','10.0.0.2','10.0.0.3'],
+        ['R2–R3','10.0.0.4','255.255.255.252 (/30)','10.0.0.5','10.0.0.6','10.0.0.7'],
+        ['R3–R4','10.0.0.8','255.255.255.252 (/30)','10.0.0.9','10.0.0.10','10.0.0.11']
+      ]},
+    verificare:`3 × 4 = 12 adrese folosite din 256 disponibile.` },
+
+  { tip:'FLSM', titlu:'Problema 3 — Patru departamente egale (FLSM)',
+    enunt:`Firma „DataCore" împarte rețeaua în <b>4 departamente egale</b> (Vânzări, IT, Contabilitate, Resurse Umane), fiecare cu cel mult <b>25 hosturi</b>. Ai blocul <code>172.16.5.0/24</code>. Pentru subrețele identice folosești <b>mască fixă (FLSM)</b>.`,
+    topo:{ type:'hub', router:'Router DataCore', branches:[ {label:'Vânzări',sub:'≤25 h'},{label:'IT',sub:'≤25 h'},{label:'Contabilitate',sub:'≤25 h'},{label:'Resurse Umane',sub:'≤25 h'} ] },
+    pasi:[
+      `<b>Câți biți „împrumuți"</b> ca să faci 4 subrețele? <code>4 = 2^2</code> → împrumuți <b>2 biți</b> din host → <code>/24 + 2 = /26</code>.`,
+      `<b>Verifici capacitatea:</b> <code>/26</code> = bloc 64, utilizabile 62 ≥ 25 ✅.`,
+      `<b>Așezi 4 blocuri de câte 64, de la 172.16.5.0:</b> 0, 64, 128, 192.`,
+      `💡 <b>FLSM vs VLSM:</b> aici toate subrețelele au <b>aceeași mască</b> (aceeași mărime). La VLSM măștile diferă, fiindcă subrețelele au mărimi diferite.`
+    ],
+    tabel:{ cols:['Departament','Adresă rețea','Mască','Prima utiliz.','Ultima utiliz.','Broadcast'],
+      rows:[
+        ['Vânzări','172.16.5.0','255.255.255.192 (/26)','172.16.5.1','172.16.5.62','172.16.5.63'],
+        ['IT','172.16.5.64','255.255.255.192 (/26)','172.16.5.65','172.16.5.126','172.16.5.127'],
+        ['Contabilitate','172.16.5.128','255.255.255.192 (/26)','172.16.5.129','172.16.5.190','172.16.5.191'],
+        ['Resurse Umane','172.16.5.192','255.255.255.192 (/26)','172.16.5.193','172.16.5.254','172.16.5.255']
+      ]},
+    verificare:`4 × 64 = 256 = tot blocul /24, exact.` },
+
+  { tip:'VLSM', titlu:'Problema 4 — Rețeaua completă a unei firme (VLSM + WAN)',
+    enunt:`Routerul firmei „Helios" leagă trei rețele locale și o legătură WAN către sediul central: <b>LAN1 (Producție)</b> 300 hosturi, <b>LAN2 (Birouri)</b> 120 hosturi, <b>LAN3 (Depozit)</b> 60 hosturi, <b>WAN</b> punct-la-punct 2 hosturi. Blocul disponibil: <code>10.10.0.0/22</code>. Proiectează schema completă.`,
+    topo:{ type:'hub', router:'Router Helios', branches:[ {label:'LAN1',sub:'Producție · 300 h'},{label:'LAN2',sub:'Birouri · 120 h'},{label:'LAN3',sub:'Depozit · 60 h'},{label:'WAN → Sediu',sub:'P2P · 2 h',kind:'wan'} ] },
+    pasi:[
+      `<b>Terenul:</b> <code>/22</code> = 1024 adrese, octetul 3 se mișcă pe <b>0, 1, 2, 3</b> → <code>10.10.0.0 → 10.10.3.255</code>.`,
+      `<b>Ordonezi descrescător:</b> 300 → 120 → 60 → 2.`,
+      `<b>Biți de host:</b> LAN1: 300 → <b>512</b> (510) → <code>/23</code>. LAN2: 120 → <b>128</b> (126) → <code>/25</code>. LAN3: 60 → <b>64</b> (62) → <code>/26</code>. WAN: 2 → <b>4</b> (2) → <code>/30</code>.`,
+      `<b>Așezi de la 10.10.0.0:</b> LAN1 /23 → <code>10.10.0.0 – 10.10.1.255</code>; LAN2 /25 → <code>10.10.2.0 – .2.127</code>; LAN3 /26 → <code>10.10.2.128 – .2.191</code>; WAN /30 → <code>10.10.2.192 – .2.195</code>.`
+    ],
+    tabel:{ cols:['Segment','Hosturi','Adresă rețea','Mască','Prima utiliz.','Ultima utiliz.','Broadcast'],
+      rows:[
+        ['LAN1','300','10.10.0.0','255.255.254.0 (/23)','10.10.0.1','10.10.1.254','10.10.1.255'],
+        ['LAN2','120','10.10.2.0','255.255.255.128 (/25)','10.10.2.1','10.10.2.126','10.10.2.127'],
+        ['LAN3','60','10.10.2.128','255.255.255.192 (/26)','10.10.2.129','10.10.2.190','10.10.2.191'],
+        ['WAN','2','10.10.2.192','255.255.255.252 (/30)','10.10.2.193','10.10.2.194','10.10.2.195']
+      ]},
+    verificare:`512 + 128 + 64 + 4 = <b>708 ≤ 1024</b>. Încape, mai rămâne spațiu de extindere de la <code>10.10.2.196</code> în sus.` },
+
+  { tip:'VLSM', titlu:'Problema 5 — Campus ierarhic (Core + 3 distribuții)',
+    enunt:`Universitatea „Centru" are un <b>router Core</b> care leagă <b>3 routere de distribuție</b> (câte unul pe clădire). <b>Clădirea 1:</b> LAN-A 500 host, LAN-B 200 host. <b>Clădirea 2:</b> LAN-C 100 host, LAN-D 60 host. <b>Clădirea 3:</b> LAN-E 30 host, LAN-F 10 host. În plus, <b>3 legături WAN</b> Core↔distribuție (punct-la-punct, 2 host). Bloc: <code>10.20.0.0/21</code>. Proiectează schema VLSM completă (6 LAN-uri + 3 WAN).`,
+    topo:{ type:'tree', core:'Router Core', clusters:[
+      {router:'Distribuție 1', leaves:[{label:'LAN-A',sub:'500 h · /23'},{label:'LAN-B',sub:'200 h · /24'}]},
+      {router:'Distribuție 2', leaves:[{label:'LAN-C',sub:'100 h · /25'},{label:'LAN-D',sub:'60 h · /26'}]},
+      {router:'Distribuție 3', leaves:[{label:'LAN-E',sub:'30 h · /27'},{label:'LAN-F',sub:'10 h · /28'}]} ] },
+    pasi:[
+      `<b>Terenul:</b> <code>/21</code> = 2048 adrese (<code>10.20.0.0 → 10.20.7.255</code>). <b>Ordonezi descrescător:</b> 500, 200, 100, 60, 30, 10, apoi 3 × WAN (2).`,
+      `<b>Măști (primul 2^n ≥ host+2):</b> 500→<code>/23</code>, 200→<code>/24</code>, 100→<code>/25</code>, 60→<code>/26</code>, 30→<code>/27</code>, 10→<code>/28</code>, WAN→<code>/30</code>.`,
+      `<b>Așezi lipit de la 10.20.0.0:</b> A <code>0.0</code>, B <code>2.0</code>, C <code>3.0</code>, D <code>3.128</code>, E <code>3.192</code>, F <code>3.224</code>, apoi WAN-urile <code>3.240</code>, <code>3.244</code>, <code>3.248</code>.`,
+      `💡 <b>Regula la ierarhie:</b> aloci întâi TOATE LAN-urile (mare→mic), apoi legăturile WAN /30. Așa eviți fragmentarea și păstrezi blocuri rotunde.`
+    ],
+    tabel:{ cols:['Segment','Hosturi','Adresă rețea','Mască','Prima utiliz.','Ultima utiliz.','Broadcast'],
+      rows:[
+        ['LAN-A','500','10.20.0.0','255.255.254.0 (/23)','10.20.0.1','10.20.1.254','10.20.1.255'],
+        ['LAN-B','200','10.20.2.0','255.255.255.0 (/24)','10.20.2.1','10.20.2.254','10.20.2.255'],
+        ['LAN-C','100','10.20.3.0','255.255.255.128 (/25)','10.20.3.1','10.20.3.126','10.20.3.127'],
+        ['LAN-D','60','10.20.3.128','255.255.255.192 (/26)','10.20.3.129','10.20.3.190','10.20.3.191'],
+        ['LAN-E','30','10.20.3.192','255.255.255.224 (/27)','10.20.3.193','10.20.3.222','10.20.3.223'],
+        ['LAN-F','10','10.20.3.224','255.255.255.240 (/28)','10.20.3.225','10.20.3.238','10.20.3.239'],
+        ['WAN Core–D1','2','10.20.3.240','255.255.255.252 (/30)','10.20.3.241','10.20.3.242','10.20.3.243'],
+        ['WAN Core–D2','2','10.20.3.244','255.255.255.252 (/30)','10.20.3.245','10.20.3.246','10.20.3.247'],
+        ['WAN Core–D3','2','10.20.3.248','255.255.255.252 (/30)','10.20.3.249','10.20.3.250','10.20.3.251']
+      ]},
+    verificare:`512+256+128+64+32+16+12 = <b>1020 ≤ 2048</b>. Toate cele 9 segmente încap, fără suprapuneri, cu mult spațiu liber (de la 10.20.3.252 în sus).` },
+
+  { tip:'INVERS', titlu:'Problema 6 — Problema inversă: în ce subrețea e gazda?',
+    enunt:`O gazdă are adresa IP <code>172.16.135.77</code> cu masca <code>/20</code>. Fără să-ți spună nimeni subrețeaua, află: <b>adresa de rețea</b>, masca zecimală, <b>prima și ultima adresă utilizabilă</b>, <b>broadcastul</b> și câte gazde are subrețeaua.`,
+    topo:{ type:'hub', router:'Router /20', branches:[ {label:'🖥️ Gazdă',sub:'172.16.135.77 /20 — ce subrețea?'} ] },
+    pasi:[
+      `<b>Care octet „se mișcă"?</b> <code>/20</code> e între <code>/16</code> și <code>/24</code> → octetul <b>al 3-lea</b>. Masca pe octetul 3 = <code>240</code> (11110000), deci <b>mărimea blocului = 256 − 240 = 16</b>.`,
+      `<b>Rotunjești octetul 3 în jos</b> la cel mai apropiat multiplu de 16: <code>135 = 8×16 + 7</code> → <b>128</b>. Adresa de rețea = <code>172.16.128.0</code>.`,
+      `<b>Broadcast</b> = următoarea rețea − 1 = <code>172.16.144.0 − 1 = 172.16.143.255</code>. Utilizabile: <code>172.16.128.1 – 172.16.143.254</code>.`,
+      `<b>Gazde:</b> <code>2^(32−20) − 2 = 4096 − 2 = 4094</code>.`
+    ],
+    tabel:{ cols:['IP-ul gazdei','Adresă rețea','Mască','Prima utiliz.','Ultima utiliz.','Broadcast','Gazde'],
+      rows:[ ['172.16.135.77','172.16.128.0','255.255.240.0 (/20)','172.16.128.1','172.16.143.254','172.16.143.255','4094'] ]},
+    verificare:`<code>172.16.135.77</code> ∈ [172.16.128.0 ÷ 172.16.143.255] ✅. Trucul: blocul de 16 din octetul 3, rotunjit în jos.` },
+
+  { tip:'SUMAR', titlu:'Problema 7 — Sumarizare (route summarization)',
+    enunt:`Un router are 4 rețele LAN consecutive: <code>192.168.4.0/24</code>, <code>192.168.5.0/24</code>, <code>192.168.6.0/24</code>, <code>192.168.7.0/24</code>. Vrei să le anunți către restul rețelei printr-o <b>singură rută-sumar</b>. Găsește adresa-sumar și masca.`,
+    topo:{ type:'hub', router:'Router → sumar /22', branches:[ {label:'192.168.4.0/24'},{label:'192.168.5.0/24'},{label:'192.168.6.0/24'},{label:'192.168.7.0/24'} ] },
+    pasi:[
+      `<b>Scrii octetul 3 în binar:</b> 4=<code>00000100</code>, 5=<code>00000101</code>, 6=<code>00000110</code>, 7=<code>00000111</code>. Primii <b>6 biți</b> sunt comuni (<code>000001</code>), ultimii 2 variază.`,
+      `<b>Biți comuni la mască:</b> 16 (octeții 1–2: 192.168) + 6 (din octetul 3) = <b>/22</b>. Adresa-sumar = <code>192.168.4.0/22</code> (masca <code>255.255.252.0</code>).`,
+      `<b>Verifici acoperirea:</b> <code>/22</code> = 1024 adrese → <code>192.168.4.0 – 192.168.7.255</code>, exact cele 4 rețele <code>/24</code>.`
+    ],
+    tabel:{ cols:['Componente','Adresă rețea (sumar)','Mască','Prima utiliz.','Ultima utiliz.','Broadcast'],
+      rows:[ ['4× /24 (192.168.4–7)','192.168.4.0','255.255.252.0 (/22)','192.168.4.1','192.168.7.254','192.168.7.255'] ]},
+    verificare:`4 × 256 = 1024 = exact un bloc <code>/22</code> ✅. Sumarizarea merge doar dacă rețelele sunt <b>consecutive</b> și aliniate pe limita blocului.` },
+
+  { tip:'VLSM', titlu:'Problema 8 — Trei sedii legate prin WAN',
+    enunt:`Firma „Atlas" are sediul central (<b>HQ</b>) și două filiale (<b>A</b> și <b>B</b>), legate prin WAN. <b>HQ:</b> LAN 500 host. <b>Filiala A:</b> LAN 200 host. <b>Filiala B:</b> LAN 100 host. Legături WAN: A–HQ și HQ–B (2 × /30). Bloc: <code>172.20.0.0/22</code>. Proiectează adresarea completă.`,
+    topo:{ type:'sites', sites:[
+      {router:'Filiala A', leaves:[{label:'LAN A',sub:'200 h · /24'}]},
+      {router:'HQ', leaves:[{label:'LAN HQ',sub:'500 h · /23'}]},
+      {router:'Filiala B', leaves:[{label:'LAN B',sub:'100 h · /25'}]} ], wan:['/30 · A–HQ','/30 · HQ–B'] },
+    pasi:[
+      `<b>Terenul:</b> <code>/22</code> = 1024 (<code>172.20.0.0 → 172.20.3.255</code>). <b>Ordonezi:</b> 500, 200, 100, 2, 2.`,
+      `<b>Măști:</b> 500→<code>/23</code>, 200→<code>/24</code>, 100→<code>/25</code>, WAN→<code>/30</code>.`,
+      `<b>Așezi de la 172.20.0.0:</b> HQ <code>0.0/23</code>; Fil A <code>2.0/24</code>; Fil B <code>3.0/25</code>; WAN A–HQ <code>3.128/30</code>; WAN HQ–B <code>3.132/30</code>.`,
+      `💡 <b>Tipar de examen:</b> LAN-urile mari întâi, apoi legăturile WAN /30 lipite — exact ca la o firmă reală cu mai multe sedii.`
+    ],
+    tabel:{ cols:['Segment','Hosturi','Adresă rețea','Mască','Prima utiliz.','Ultima utiliz.','Broadcast'],
+      rows:[
+        ['HQ LAN','500','172.20.0.0','255.255.254.0 (/23)','172.20.0.1','172.20.1.254','172.20.1.255'],
+        ['Filiala A LAN','200','172.20.2.0','255.255.255.0 (/24)','172.20.2.1','172.20.2.254','172.20.2.255'],
+        ['Filiala B LAN','100','172.20.3.0','255.255.255.128 (/25)','172.20.3.1','172.20.3.126','172.20.3.127'],
+        ['WAN A–HQ','2','172.20.3.128','255.255.255.252 (/30)','172.20.3.129','172.20.3.130','172.20.3.131'],
+        ['WAN HQ–B','2','172.20.3.132','255.255.255.252 (/30)','172.20.3.133','172.20.3.134','172.20.3.135']
+      ]},
+    verificare:`512 + 256 + 128 + 4 + 4 = <b>904 ≤ 1024</b>. Toate cele 3 LAN-uri și 2 WAN-uri încap, fără suprapuneri.` }
+];
+
+function renderTopo(t){
+  if(t.type==='chain'){
+    var h='<div class="topo-chain">';
+    t.nodes.forEach(function(n,i){
+      h+='<div class="topo-node router"><div class="tn-ic">📡</div><div class="tn-l">'+n.label+'</div>'+(n.sub?'<div class="tn-s">'+n.sub+'</div>':'')+'</div>';
+      if(i<t.nodes.length-1){ var lk=(t.links&&t.links[i])||''; h+='<div class="topo-link"><span class="tl-line"></span><span class="tl-lbl">'+lk+'</span></div>'; }
+    });
+    return h+'</div>';
+  }
+  if(t.type==='tree'){
+    var h='<div class="topo-tree"><div class="topo-node router hub2"><div class="tn-ic">🌐</div><div class="tn-l">'+t.core+'</div></div><div class="topo-clusters">';
+    t.clusters.forEach(function(cl){
+      h+='<div class="topo-cluster"><div class="topo-node router"><div class="tn-ic">📡</div><div class="tn-l">'+cl.router+'</div></div><div class="topo-leaves">'+cl.leaves.map(function(L){return '<div class="topo-node lan small"><div class="tn-l">🏢 '+L.label+'</div><div class="tn-s">'+(L.sub||'')+'</div></div>';}).join('')+'</div></div>';
+    });
+    return h+'</div></div>';
+  }
+  if(t.type==='sites'){
+    var h='<div class="topo-sites">';
+    t.sites.forEach(function(s,i){
+      h+='<div class="topo-cluster"><div class="topo-node router"><div class="tn-ic">📡</div><div class="tn-l">'+s.router+'</div></div><div class="topo-leaves">'+s.leaves.map(function(L){return '<div class="topo-node lan small"><div class="tn-l">🏢 '+L.label+'</div><div class="tn-s">'+(L.sub||'')+'</div></div>';}).join('')+'</div></div>';
+      if(i<t.sites.length-1){ var w=(t.wan&&t.wan[i])||'WAN'; h+='<div class="topo-link"><span class="tl-line"></span><span class="tl-lbl">'+w+'</span></div>'; }
+    });
+    return h+'</div>';
+  }
+  var h='<div class="topo-hub"><div class="topo-node router hub"><div class="tn-ic">📡</div><div class="tn-l">'+t.router+'</div></div><div class="topo-spokes">';
+  t.branches.forEach(function(b){ var ic=b.kind==='wan'?'🌐':'🏢'; h+='<div class="topo-spoke"><div class="topo-node '+(b.kind||'lan')+'"><div class="tn-ic">'+ic+'</div><div class="tn-l">'+b.label+'</div><div class="tn-s">'+(b.sub||'')+'</div></div></div>'; });
+  return h+'</div></div>';
+}
+function finalHTML(p){
+  var h='<div class="sp-sub">📋 Tabel final</div><div style="overflow-x:auto"><table class="ptable"><tr>'+p.tabel.cols.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr>';
+  h+=p.tabel.rows.map(function(r){ return '<tr>'+r.map(function(c){ var mono=/\d\.\d/.test(c)?' class="macm"':''; return '<td'+mono+'>'+c+'</td>'; }).join('')+'</tr>'; }).join('');
+  h+='</table></div><div class="sp-verif">✅ <b>Verificare:</b> '+p.verificare+'</div>';
+  return h;
+}
+let subnetState=[];
+function renderSubnet(){
+  var h=REFLEXE_HTML;
+  SUBNET_PROBLEMS.forEach(function(p,idx){
+    h+='<div class="sp-card"><div class="sp-head"><span class="sp-badge '+p.tip+'">'+p.tip+'</span><h2>'+p.titlu+'</h2></div>'
+      +'<div class="sp-sub">📖 Enunț</div><div class="sp-enunt">'+p.enunt+'</div>'
+      +'<div class="sp-sub">🗺️ Topologia</div><div class="sp-topo">'+renderTopo(p.topo)+'</div>'
+      +'<div class="sp-sub">🧩 Rezolvare pas cu pas</div><div class="sp-steps" id="spSteps-'+idx+'"></div>'
+      +'<div class="row" style="margin-top:4px"><button class="btn primary" id="spNext-'+idx+'" onclick="subnetStep('+idx+')">▶ Pasul următor</button>'
+      +'<button class="btn" onclick="subnetAll('+idx+')">Arată tot</button>'
+      +'<button class="btn ghost" onclick="subnetReset('+idx+')">↺ Ascunde</button>'
+      +'<span class="pill" id="spProg-'+idx+'">0 / '+p.pasi.length+'</span></div>'
+      +'<div class="sp-final" id="spFinal-'+idx+'" style="display:none">'+finalHTML(p)+'</div></div>';
+  });
+  h+=RETETA_HTML;
+  document.getElementById('subnetPracticeBody').innerHTML=h;
+  subnetState=SUBNET_PROBLEMS.map(function(){return 0;});
+}
+function subnetStep(idx){
+  var p=SUBNET_PROBLEMS[idx]; var n=subnetState[idx]; if(n>=p.pasi.length) return;
+  var el=document.createElement('div'); el.className='sp-step'; el.innerHTML='<span class="sp-stepn">'+(n+1)+'</span><div>'+p.pasi[n]+'</div>';
+  document.getElementById('spSteps-'+idx).appendChild(el);
+  subnetState[idx]=++n; document.getElementById('spProg-'+idx).textContent=n+' / '+p.pasi.length;
+  if(n>=p.pasi.length){ document.getElementById('spFinal-'+idx).style.display='block'; document.getElementById('spNext-'+idx).disabled=true; }
+}
+function subnetAll(idx){ while(subnetState[idx]<SUBNET_PROBLEMS[idx].pasi.length) subnetStep(idx); }
+function subnetReset(idx){
+  subnetState[idx]=0; document.getElementById('spSteps-'+idx).innerHTML='';
+  document.getElementById('spFinal-'+idx).style.display='none';
+  var b=document.getElementById('spNext-'+idx); b.disabled=false;
+  document.getElementById('spProg-'+idx).textContent='0 / '+SUBNET_PROBLEMS[idx].pasi.length;
+}
+
+try{ renderRefFlows(); }catch(e){ console.error('refflows',e); }
+try{ renderSubnet(); }catch(e){ console.error('subnet',e); }
+try{ drawRef(); }catch(e){}   /* re-randare ca să apară și exemplele per câmp (FIELD_LAB e definit acum) */
+
+/* ============================================================
    TABS + THEME
    ============================================================ */
 function activateTab(tab){
@@ -4067,6 +5192,7 @@ function activateTab(tab){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
   page.classList.add('active');
+  if(tab==='journey'){ try{ jReposition(); }catch(e){} }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 document.querySelectorAll('#tabs button').forEach(b=>{

@@ -39,7 +39,17 @@ const SCENARIOS = {
   aeriana:    { nume:"Companie aeriană", icon:"✈️", db:"aeriana",
                 tables:["Pasageri","Rezervari","Bilete"] },
   service:    { nume:"Service auto", icon:"🔧", db:"service",
-                tables:["Clienti","Comenzi_Service","Piese_Montate"] }
+                tables:["Clienti","Comenzi_Service","Piese_Montate"] },
+  hotel:      { nume:"Hotel", icon:"🏨", db:"hotel",
+                tables:["Oaspeti","Rezervari","Facturi"] },
+  banca:      { nume:"Bancă", icon:"🏦", db:"banca",
+                tables:["Clienti","Conturi","Tranzactii"] },
+  asigurari:  { nume:"Asigurări auto", icon:"🚗", db:"asigurari",
+                tables:["Asigurati","Polite","Daune"] },
+  curierat:   { nume:"Curierat", icon:"📦", db:"curierat",
+                tables:["Expeditori","Colete","Livrari"] },
+  universitate:{ nume:"Universitate", icon:"🎓", db:"universitate",
+                tables:["Studenti","Inscrieri","Note"] }
 };
 
 function baseCfg(extra){
