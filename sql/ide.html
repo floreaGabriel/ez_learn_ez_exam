@@ -411,6 +411,12 @@ function init(){
     delete _kw.limit; delete _kw.offset; delete _kw.fetch;   // LIMIT/OFFSET/FETCH — non-T-SQL la nivel de trainer
     delete _kw.go;                                           // GO = separator de batch (SSMS), inutil aici (un singur SELECT)
     _kw.top=true;
+    // adaugam keyword-urile de JOIN lipsa (build-ul are doar "join" simplu)
+    ['inner','left','right','outer','full','cross'].forEach(function(k){ _kw[k]=true; });
+    // + functii T-SQL uzuale din scenarii (ca sa fie sugerate si colorate)
+    ['count','sum','avg','min','max','year','month','day','datepart','datediff',
+     'substring','charindex','len','cast','convert','isnull','coalesce','getdate',
+     'round','upper','lower','ltrim','rtrim','concat'].forEach(function(k){ _kw[k]=true; });
     var _spec=_clone(_mssql); _spec.name='sql'; _spec.keywords=_kw;
     CodeMirror.defineMIME('text/x-tsql', _spec);
   }catch(e){}
