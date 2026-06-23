@@ -167,6 +167,14 @@ details.anexa pre{margin-top:12px}
 .chip.sel{border-color:var(--accent); background:rgba(233,177,67,.18); box-shadow:0 0 0 2px var(--accent) inset}
 .chip.used{display:none}
 .chip.dragging{opacity:.4}
+
+/* ============ Buton deschidere SQL Workbench ============ */
+.ide-cta{margin:18px 0;border:1px solid var(--line);border-radius:16px;background:linear-gradient(135deg,var(--panel2),var(--panel));padding:22px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;box-shadow:0 6px 22px rgba(0,0,0,.18)}
+.ide-cta-body{flex:1;min-width:260px}
+.ide-cta-h{font-size:1.06rem;font-weight:800;color:var(--accent);margin-bottom:5px}
+.ide-cta-p{font-size:.88rem;color:var(--ink-soft);line-height:1.6;max-width:640px}
+.ide-cta-btn{background:var(--accent);color:var(--on-accent,#1a1714);border:none;border-radius:11px;padding:13px 24px;font-size:.92rem;font-weight:700;cursor:pointer;font-family:var(--sans);white-space:nowrap;transition:.14s}
+.ide-cta-btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
 </style>
 </head>
 <body>
@@ -273,6 +281,7 @@ WHERE NOT EXISTS (SELECT 1 FROM Rezervari R
   <h1>📚 Scenarii rezolvate</h1>
   <p class="lead">Cinci subiecte complete în stilul Subiectului III (ATM 2021). Fiecare are scenariul, cele 3 tabele, „Observațiile” despre câmpurile <code>NULL</code>, cele 9 cerințe (a–i) cu rezolvarea pliabilă (model Access + echivalent ANSI + capcane) și o anexă rulabilă. Alege un scenariu:</p>
   <div class="row"><label>Scenariu: <select id="scenPick"></select></label></div>
+  <div id="ideHost"></div>
   <div id="scenBody"></div>
 </section>
 
@@ -374,6 +383,7 @@ function activateTab(tab){
   var p=document.getElementById('page-'+tab); if(!p) return;
   document.querySelectorAll('.page').forEach(function(x){ x.classList.remove('active'); });
   p.classList.add('active');
+  if(tab==='scenarii' && window.SqlIde && SqlIde.refresh){ setTimeout(SqlIde.refresh, 40); }
   window.scrollTo({top:0, behavior:'smooth'});
 }
 function tabFromHash(){ var t=location.hash.replace('#',''); if(t) activateTab(t); }
@@ -436,7 +446,12 @@ function renderScen(idx){
   h+='<details class="anexa"><summary>📦 Anexă: schema rulabilă (CREATE + INSERT — pentru verificare)</summary>'
     +'<pre class="sql">'+escSQL(s.anexa)+'</pre></details>';
   el.innerHTML=h; applySQL(el);
+  var ide=document.getElementById('ideHost');
+  if(ide) ide.innerHTML='<div class="ide-cta"><div class="ide-cta-body"><div class="ide-cta-h">SQL Workbench — editor interactiv</div>'
+    +'<div class="ide-cta-p">Editor SQL cu motor SQLite real, local în browser: autocompletare, explorator de schemă, relațiile dintre tabele, cerințele scenariului și rezultate live. Se deschide pe tot ecranul, într-un tab nou — pentru baza „'+s.nume+'".</div></div>'
+    +'<button class="ide-cta-btn" onclick="openIde(\''+s.id+'\')">Deschide SQL Workbench &nearr;</button></div>';
 }
+function openIde(id){ window.open('ide.html?scn='+encodeURIComponent(id),'_blank','noopener'); }
 
 /* ============================================================
    EXERCIȚII (drill amestecat)

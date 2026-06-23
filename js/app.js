@@ -63,7 +63,10 @@ const MATERII = [
     descriere:"Headere Ethernet / IP / TCP / UDP / ARP / DHCP — diagrame interactive, exerciții drag & drop, completare câmpuri, analiză de pachete (hexdump) și quiz.",
     tip:"embed", src:"retele/index.html",
     sectiuni:[
-      {id:"ref",   nume:"Învață",          icon:"📘"},
+      {id:"ref",     nume:"Învață",                  icon:"📘"},
+      {id:"anatomy", nume:"Anatomie pe biți",        icon:"🧬"},
+      {id:"journey", nume:"Călătoria pachetului",    icon:"🎬"},
+      {id:"subnet",  nume:"Subnetizare",             icon:"🧮"},
       {id:"drag",  nume:"Trage câmpul",    icon:"🧲"},
       {id:"bytes", nume:"Octeți",          icon:"🔢"},
       {id:"write", nume:"Scrie câmpurile", icon:"✍️"},

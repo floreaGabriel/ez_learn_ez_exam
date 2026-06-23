@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Workbench — motor local</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/cm.css">
+<link rel="stylesheet" href="vendor/cm-hint.css">
+<script>
+  try{
+    document.documentElement.dataset.theme = localStorage.getItem('app-theme-mode') || localStorage.getItem('sql-theme') || 'dark';
+    var _tv = localStorage.getItem('app-theme-vars');
+    if(_tv){ _tv = JSON.parse(_tv); for(var _k in _tv){ document.documentElement.style.setProperty(_k, _tv[_k]); } }
+  }catch(e){}
+</script>
+<style>
+:root{
+  --bg:#1a1714; --panel:#221e1a; --panel2:#2a2521; --topbar:#1d1916;
+  --ink:#ece3d2; --ink-soft:#d6cbb6; --muted:#a8997f; --line:#352f28; --line2:#403930;
+  --accent:#e9b143; --accent-2:#d8843f; --blue:#83a598; --green:#b8bb26; --red:#fb4934;
+  --purple:#d3869b; --aqua:#8ec07c; --code-bg:#14110d; --on-accent:#1a1714;
+  --mono:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+html[data-theme="light"]{
+  --bg:#f3ecdd; --panel:#fbf6ea; --panel2:#f1e8d6; --topbar:#f7f1e3;
+  --ink:#2a2118; --ink-soft:#4a3f30; --muted:#8a7a5f; --line:#ddd0b8; --line2:#cdbf9f;
+  --accent:#bf8b1d; --accent-2:#c46a2a; --blue:#076678; --green:#79740e; --red:#c23a2e;
+  --purple:#8f3f71; --aqua:#427b58; --code-bg:#efe6d2; --on-accent:#fbf6ea;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--sans);color:var(--ink);background:var(--bg);display:flex;flex-direction:column;overflow:hidden;font-size:14px;-webkit-font-smoothing:antialiased}
+
+/* topbar */
+.top{display:flex;align-items:center;gap:22px;padding:13px 24px;background:var(--topbar);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;line-height:1.25}
+.brand .n{font-size:1.02rem;font-weight:800;letter-spacing:.2px}
+.brand .s{font-size:.7rem;color:var(--muted);font-weight:500}
+.field{display:flex;align-items:center;gap:9px;font-size:.82rem;color:var(--ink-soft)}
+.field .lab{font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700}
+.sel{background:var(--panel2);color:var(--ink);border:1px solid var(--line2);border-radius:8px;padding:8px 12px;font-family:var(--sans);font-size:.86rem;cursor:pointer}
+.sel:focus{outline:none;border-color:var(--accent)}
+.grow{flex:1}
+.status{display:flex;align-items:center;gap:8px;font-size:.76rem;color:var(--muted);font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.status.ok .dot{background:var(--green)} .status.bad .dot{background:var(--red)} .status.ok{color:var(--green)} .status.bad{color:var(--red)}
+.ghost{background:transparent;border:1px solid var(--line2);color:var(--ink-soft);padding:8px 13px;border-radius:8px;cursor:pointer;font-family:var(--sans);font-size:.8rem;font-weight:600;text-decoration:none}
+.ghost:hover{border-color:var(--accent);color:var(--ink)}
+
+/* layout */
+.app{flex:1;display:grid;grid-template-columns:288px 1fr;min-height:0}
+.side{border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
+.side-h{padding:13px 16px;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.side-scroll{overflow:auto;padding:11px 12px;flex:1}
+.work{display:flex;flex-direction:column;min-width:0;min-height:0}
+.toolbar{display:flex;gap:10px;align-items:center;padding:11px 18px;border-bottom:1px solid var(--line);background:var(--topbar);flex-wrap:wrap}
+.btn{background:var(--panel2);color:var(--ink);border:1px solid var(--line2);padding:9px 16px;border-radius:8px;font-size:.84rem;font-weight:600;cursor:pointer;font-family:var(--sans);display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.06)}
+.kbd{font-size:.66rem;font-weight:600;opacity:.8;border:1px solid currentColor;border-radius:4px;padding:0 5px;opacity:.55}
+.dialect{font-size:.74rem;color:var(--muted)}
+.dialect code{background:var(--panel2);border:1px solid var(--line2);padding:0 5px;border-radius:4px;font-family:var(--mono);color:var(--accent);font-size:.72rem}
+.editor-pane{flex:0 0 44%;min-height:150px;border-bottom:1px solid var(--line)}
+.bottom{flex:1;display:flex;flex-direction:column;min-height:0}
+.btabs{display:flex;gap:3px;padding:9px 16px 0;border-bottom:1px solid var(--line);background:var(--panel)}
+.btab{padding:9px 18px;border:1px solid transparent;border-bottom:none;border-radius:8px 8px 0 0;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--muted);letter-spacing:.2px}
+.btab.active{color:var(--accent);background:var(--bg);border-color:var(--line);border-bottom:1px solid var(--bg);margin-bottom:-1px}
+.bpane{flex:1;overflow:auto;padding:18px 20px;display:none}
+.bpane.active{display:block}
+
+/* schema explorer */
+.sch-tbl{margin-bottom:7px;border:1px solid var(--line2);border-radius:9px;overflow:hidden;background:var(--bg)}
+.sch-th{padding:9px 12px;background:var(--panel2);cursor:pointer;font-size:.86rem;font-weight:700;display:flex;align-items:center;gap:8px;font-family:var(--mono)}
+.sch-caret{font-size:.6rem;color:var(--muted);transition:.15s}
+.sch-tbl.open .sch-caret{transform:rotate(90deg)}
+.sch-cnt{margin-left:auto;font-size:.66rem;color:var(--muted);background:var(--bg);border:1px solid var(--line2);border-radius:10px;padding:1px 9px;font-family:var(--sans)}
+.sch-body{display:none;padding:8px 10px}
+.sch-tbl.open .sch-body{display:block}
+.sch-col{font-family:var(--mono);font-size:.78rem;padding:4px 6px;border-radius:6px;cursor:pointer;color:var(--ink-soft);display:flex;align-items:center;gap:7px}
+.sch-col:hover{background:var(--panel2);color:var(--ink)}
+.sch-col .ty{color:var(--muted);font-size:.68rem;margin-left:auto}
+.tag{font-size:.58rem;font-weight:800;letter-spacing:.3px;padding:1px 6px;border-radius:4px;border:1px solid currentColor}
+.tag.pk{color:var(--accent)} .tag.fk{color:var(--aqua)}
+.sch-browse{margin-top:8px;width:100%;background:var(--panel2);border:1px solid var(--line2);color:var(--ink-soft);border-radius:8px;padding:7px;font-size:.76rem;cursor:pointer;font-family:var(--sans);font-weight:600}
+.sch-browse:hover{border-color:var(--accent);color:var(--ink)}
+
+/* CodeMirror */
+.CodeMirror{height:100%;background:var(--code-bg);color:var(--ink);font-family:var(--mono);font-size:15px;line-height:1.7}
+.CodeMirror-gutters{background:var(--panel2);border-right:1px solid var(--line2)}
+.CodeMirror-linenumber{color:var(--muted)}
+.CodeMirror-cursor{border-left:2px solid var(--accent)}
+.CodeMirror-selected{background:rgba(233,177,67,.18)!important}
+.cm-s-default .cm-keyword{color:var(--accent);font-weight:600}
+.cm-s-default .cm-string,.cm-s-default .cm-string-2{color:var(--green)}
+.cm-s-default .cm-number{color:var(--purple)}
+.cm-s-default .cm-comment{color:var(--muted);font-style:italic}
+.cm-s-default .cm-operator{color:var(--ink-soft)}
+.cm-s-default .cm-variable,.cm-s-default .cm-variable-2,.cm-s-default .cm-variable-3{color:var(--ink)}
+.cm-s-default .cm-builtin,.cm-s-default .cm-type{color:var(--blue)}
+.CodeMirror-matchingbracket{color:var(--accent)!important;font-weight:700;text-decoration:underline}
+.CodeMirror-hints{background:var(--panel);border:1px solid var(--line2);border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,.45);font-family:var(--mono);font-size:13.5px;z-index:99999}
+.CodeMirror-hint{color:var(--ink-soft);padding:4px 13px}
+li.CodeMirror-hint-active{background:var(--accent);color:var(--on-accent)}
+
+/* results */
+.res-meta{font-size:.78rem;color:var(--muted);margin-bottom:9px;letter-spacing:.2px}
+.res{margin-bottom:18px}
+.res-head{display:flex;gap:11px;align-items:center;margin-bottom:7px}
+.res-rows{font-size:.74rem;color:var(--muted)}
+.res-set{font-size:.66rem;font-weight:700;background:var(--accent);color:var(--on-accent);padding:2px 9px;border-radius:6px}
+.tablewrap{overflow:auto;border:1px solid var(--line2);border-radius:10px}
+.rtable{width:100%;border-collapse:collapse;font-size:.85rem;font-family:var(--mono)}
+.rtable th{position:sticky;top:0;background:var(--panel2);color:var(--accent);text-align:left;padding:9px 14px;border-bottom:1px solid var(--line2);white-space:nowrap;font-family:var(--sans);font-size:.7rem;text-transform:uppercase;letter-spacing:.4px}
+.rtable td{padding:7px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+.rtable td.rn,.rtable th.rn{color:var(--muted);text-align:right;background:var(--bg);width:1%}
+.rtable tr:hover td{background:var(--panel2)}
+.nullv{color:var(--muted);font-style:italic;opacity:.65}
+.empty{padding:14px;color:var(--muted)}
+.note{font-size:.74rem;color:var(--muted);margin-top:7px}
+.ok{background:hsla(135,55%,45%,.10);border:1px solid var(--green);border-left:3px solid var(--green);border-radius:10px;padding:13px 17px;color:var(--ink-soft);font-size:.88rem}
+.err{background:hsla(0,70%,55%,.08);border:1px solid var(--red);border-left:3px solid var(--red);border-radius:10px;padding:15px 19px}
+.err-h{font-weight:800;color:var(--red);font-size:.95rem;margin-bottom:7px;letter-spacing:.3px}
+.err-msg{font-family:var(--mono);font-size:.86rem;color:var(--ink);background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:10px 14px;margin:7px 0}
+.err-lbl{color:var(--red);font-family:var(--sans);font-weight:700;margin-right:7px}
+.err-tip{font-size:.84rem;color:var(--ink-soft)}
+.err-tip code,.welcome code,.err-msg code{background:var(--panel2);border:1px solid var(--line2);padding:0 5px;border-radius:4px;font-family:var(--mono);font-size:.78rem;color:var(--accent)}
+.welcome{font-size:.92rem;color:var(--ink-soft);line-height:1.7;border:1px solid var(--line2);border-radius:11px;padding:18px 22px;max-width:680px}
+.welcome b{color:var(--ink)}
+
+/* requirements */
+.intro{font-size:.9rem;color:var(--ink-soft);margin-bottom:16px;line-height:1.6}
+.intro b{color:var(--ink)}
+.req{border:1px solid var(--line2);border-radius:11px;background:var(--bg);margin:10px 0;padding:14px 17px}
+.req-h{font-size:.92rem;line-height:1.6}
+.req-h code{background:var(--panel2);border:1px solid var(--line2);padding:0 5px;border-radius:4px;font-family:var(--mono);color:var(--accent);font-size:.82rem}
+.req-h b{color:var(--ink)}
+.req-lit{font-weight:800;color:var(--accent);margin-right:5px}
+.btn.mini{padding:3px 12px;font-size:.72rem;margin-left:7px;vertical-align:middle}
+.req-sol{margin-top:10px}
+.req-sol summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.82rem;user-select:none}
+.req-lbl{font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin:11px 0 5px}
+pre.cmd{background:var(--code-bg);border:1px solid var(--line2);border-radius:9px;padding:12px 14px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.6;color:var(--ink);white-space:pre}
+.req-note{margin-top:10px;font-size:.85rem;color:var(--ink-soft);line-height:1.6}
+.req-note code{background:var(--panel2);border:1px solid var(--line2);padding:0 5px;border-radius:4px;font-family:var(--mono);color:var(--accent);font-size:.78rem}
+.req-note b{color:var(--ink)}
+
+/* relationship diagram */
+.er{display:flex;align-items:stretch;overflow-x:auto;padding:12px 4px 20px}
+.er-card{flex:0 0 auto;min-width:224px;background:var(--panel);border:1px solid var(--line2);border-radius:12px;overflow:hidden;align-self:center;box-shadow:0 6px 20px rgba(0,0,0,.16)}
+.er-card .h{background:var(--panel2);border-bottom:1px solid var(--line2);color:var(--ink);font-weight:700;padding:11px 15px;font-size:.92rem;font-family:var(--mono)}
+.er-card .cols{padding:8px 0}
+.er-row{display:flex;align-items:center;gap:8px;padding:5px 15px;font-family:var(--mono);font-size:.8rem;color:var(--ink-soft)}
+.er-row .ty{margin-left:auto;color:var(--muted);font-size:.66rem}
+.er-row.pk{color:var(--accent)} .er-row.fk{color:var(--aqua)}
+.er-link{flex:0 0 auto;align-self:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:138px;padding:0 8px;position:relative}
+.er-link .wire{width:100%;height:2px;background:var(--line2);position:relative}
+.er-link .wire::before{content:"1";position:absolute;left:0;top:-19px;font-weight:800;color:var(--accent);font-size:.78rem}
+.er-link .wire::after{content:"N";position:absolute;right:0;top:-19px;font-weight:800;color:var(--aqua);font-size:.78rem}
+.er-link .card-mid{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:.6rem;color:var(--muted);background:var(--bg);padding:0 7px;font-weight:700;letter-spacing:.5px}
+.er-link .lbl{margin-top:12px;text-align:center;font-size:.68rem;color:var(--muted);line-height:1.45}
+.er-link .lbl code{font-family:var(--mono);color:var(--accent);font-size:.68rem}
+.er-legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:8px;font-size:.78rem;color:var(--muted)}
+.er-legend b{color:var(--ink)}
+@media(max-width:860px){ .app{grid-template-columns:1fr} .side{display:none} }
+
+/* galeria de teme (js/theme.js) */
+.tm-overlay{position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.55); backdrop-filter:blur(3px); display:none; align-items:flex-start; justify-content:center; padding:5vh 16px}
+.tm-overlay.open{display:flex}
+.tm-dialog{background:var(--bg); border:1px solid var(--line2); border-radius:18px; width:min(960px,100%); max-height:90vh; display:flex; flex-direction:column; box-shadow:0 24px 70px rgba(0,0,0,.5); overflow:hidden; animation:tmpop .2s ease}
+@keyframes tmpop{from{opacity:0; transform:translateY(10px) scale(.99)}to{opacity:1; transform:none}}
+.tm-head{display:flex; justify-content:space-between; align-items:center; padding:18px 22px; border-bottom:1px solid var(--line)}
+.tm-title{font-size:18px; font-weight:700; color:var(--accent)}
+.tm-sub{font-size:12px; color:var(--muted); margin-top:2px}
+.tm-x{width:36px; height:36px; border-radius:10px; border:1px solid var(--line2); background:var(--panel); color:var(--ink); cursor:pointer; font-size:15px}
+.tm-x:hover{border-color:var(--accent)}
+.tm-tools{display:flex; gap:12px; align-items:center; padding:14px 22px; border-bottom:1px solid var(--line); flex-wrap:wrap}
+.tm-filters{display:flex; gap:8px}
+.tm-chip{padding:7px 14px; border:1px solid var(--line2); background:var(--panel); color:var(--ink-soft); border-radius:20px; cursor:pointer; font-size:13px; font-weight:600; font-family:var(--sans)}
+.tm-chip:hover{border-color:var(--accent)}
+.tm-chip.active{background:var(--accent); color:var(--on-accent); border-color:var(--accent)}
+.tm-search{flex:1; min-width:160px; background:var(--panel); border:1px solid var(--line2); border-radius:10px; padding:9px 13px; color:var(--ink); font-size:13px; font-family:var(--sans)}
+.tm-search:focus{outline:none; border-color:var(--accent)}
+.tm-grid{overflow-y:auto; padding:18px 22px; display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px}
+.tm-card{position:relative; background:var(--panel); border:1px solid var(--line2); border-radius:14px; padding:8px; cursor:pointer; text-align:left; font-family:var(--sans); transition:.14s; display:flex; flex-direction:column; gap:6px}
+.tm-card:hover{border-color:var(--accent); transform:translateY(-3px); box-shadow:0 10px 26px rgba(0,0,0,.3)}
+.tm-card.active{border-color:var(--accent); box-shadow:0 0 0 2px var(--accent) inset}
+.tm-name{font-size:12.5px; font-weight:600; color:var(--ink); padding:0 4px 2px}
+.tm-mode{position:absolute; top:12px; right:12px; font-size:11px; opacity:.9}
+.tm-check{position:absolute; top:11px; left:11px; width:20px; height:20px; border-radius:50%; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700}
+.tm-prev{height:74px; border-radius:9px; overflow:hidden; display:flex; border:1px solid rgba(0,0,0,.18)}
+.tm-prev-side{width:30%; padding:7px 5px; display:flex; flex-direction:column; gap:4px}
+.tm-prev-side span{height:5px; border-radius:3px; display:block}
+.tm-prev-side span:first-child{width:80%; height:7px}
+.tm-prev-side span:nth-child(2){width:60%}
+.tm-prev-side span:nth-child(3){width:72%}
+.tm-prev-main{flex:1; display:flex; flex-direction:column}
+.tm-prev-top{height:16px; display:flex; align-items:center; padding:0 6px}
+.tm-prev-top i{width:18px; height:6px; border-radius:3px; display:block}
+.tm-prev-card{margin:6px; flex:1; border-radius:6px; border:1px solid; padding:7px; display:flex; flex-direction:column; gap:4px; justify-content:center}
+.tm-prev-card b{height:5px; width:75%; border-radius:3px; display:block}
+.tm-prev-card b.sh{width:50%}
+.tm-prev-card u{height:9px; width:34%; border-radius:4px; display:block; margin-top:3px}
+.tm-foot{display:flex; justify-content:space-between; align-items:center; padding:14px 22px; border-top:1px solid var(--line); gap:12px}
+.tm-hint{font-size:12px; color:var(--muted)}
+.tm-done{background:var(--accent); color:var(--on-accent); border:none; padding:9px 20px; border-radius:10px; font-weight:600; cursor:pointer; font-size:13px; font-family:var(--sans)}
+.tm-empty{grid-column:1/-1; text-align:center; color:var(--muted); padding:40px}
+@media(max-width:560px){ .tm-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))} }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="n">SQL Workbench</span><span class="s">Motor SQLite local · WebAssembly</span></div>
+  <div class="field"><span class="lab">Bază de date</span><select class="sel" id="scnSel"></select></div>
+  <div class="grow"></div>
+  <div class="status" id="eng"><span class="dot"></span><span id="engT">inițializare…</span></div>
+  <button class="ghost" id="themePickBtn">Teme</button>
+  <button class="ghost" id="themeBtn">Comută tema</button>
+  <a class="ghost" href="../index.html" target="_blank" rel="noopener">Aplicația</a>
+</header>
+
+<div class="app">
+  <aside class="side">
+    <div class="side-h"><span>Explorator schemă</span><span id="schCount"></span></div>
+    <div class="side-scroll" id="schema"></div>
+  </aside>
+  <section class="work">
+    <div class="toolbar">
+      <button class="btn primary" id="runBtn">Execută <span class="kbd">Ctrl+Enter</span></button>
+      <select class="sel" id="exSel"><option value="">Exemple de interogări</option></select>
+      <button class="btn" id="resetBtn">Resetează baza</button>
+      <button class="btn" id="clearBtn">Golește</button>
+      <span class="grow"></span>
+      <span class="dialect">Dialect SQLite — date: <code>strftime('%Y',col)</code> · limită: <code>LIMIT n</code> · autocompletare: <code>Ctrl+Space</code></span>
+    </div>
+    <div class="editor-pane"><textarea id="editor"></textarea></div>
+    <div class="bottom">
+      <div class="btabs">
+        <div class="btab active" data-bt="res">Rezultate</div>
+        <div class="btab" data-bt="req">Cerințe</div>
+        <div class="btab" data-bt="rel">Relații</div>
+      </div>
+      <div class="bpane active" id="pane-res"></div>
+      <div class="bpane" id="pane-req"></div>
+      <div class="bpane" id="pane-rel"></div>
+    </div>
+  </section>
+</div>
+
+<script src="../js/data/palettes.js"></script>
+<script src="../js/theme.js"></script>
+<script src="scenarii.js"></script>
+<script src="ide-examples.js"></script>
+<script src="vendor/cm.js"></script>
+<script src="vendor/cm-sql.js"></script>
+<script src="vendor/cm-hint.js"></script>
+<script src="vendor/cm-sql-hint.js"></script>
+<script src="vendor/cm-matchbrackets.js"></script>
+<script src="vendor/cm-closebrackets.js"></script>
+<script src="vendor/sql-wasm.js"></script>
+<script>
+"use strict";
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+var SQL=null, dbs={}, cur=null, cm=null, schemaObj={};
+
+/* tema (selectorul de 100+ teme + dark/light) e gestionată de js/theme.js,
+   care expune toggleTheme() și openThemePicker() și aplică tema salvată la load */
+
+function getDb(scn,fresh){ if(fresh&&dbs[scn.id]){ try{dbs[scn.id].close();}catch(e){} delete dbs[scn.id]; } if(!dbs[scn.id]){ var db=new SQL.Database(); db.exec(scn.anexa); dbs[scn.id]=db; } return dbs[scn.id]; }
+function curDb(){ return dbs[cur.id]; }
+function listTables(db){
+  var t=db.exec("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name");
+  var names=t.length? t[0].values.map(function(v){return v[0];}):[];
+  return names.map(function(n){
+    var info=db.exec('PRAGMA table_info("'+n+'")');
+    var cols=info.length? info[0].values.map(function(c){ return {name:c[1],type:c[2],notnull:c[3],pk:c[5]}; }):[];
+    var fk=db.exec('PRAGMA foreign_key_list("'+n+'")');
+    var fks=fk.length? fk[0].values.map(function(c){ return {from:c[3],table:c[2],to:c[4]}; }):[];
+    var cnt=db.exec('SELECT COUNT(*) FROM "'+n+'"')[0].values[0][0];
+    return {name:n,cols:cols,fks:fks,count:cnt};
+  });
+}
+
+function renderSchema(){
+  var tbls=listTables(curDb());
+  $('schCount').textContent=tbls.length+' tabele';
+  $('schema').innerHTML=tbls.map(function(t){
+    var fkc={}; t.fks.forEach(function(f){ fkc[f.from]=f.table; });
+    return '<div class="sch-tbl"><div class="sch-th" onclick="this.parentNode.classList.toggle(\'open\')">'
+      +'<span class="sch-caret">&#9656;</span>'+esc(t.name)+' <span class="sch-cnt">'+t.count+' r&acirc;nduri</span></div>'
+      +'<div class="sch-body">'
+      + t.cols.map(function(c){ var b=c.pk?'<span class="tag pk">PK</span>':(fkc[c.name]?'<span class="tag fk">FK</span>':'');
+          return '<div class="sch-col" title="'+(fkc[c.name]?('FK → '+esc(fkc[c.name])):'inserează în editor')+'" onclick="insertText(\''+esc(c.name)+'\')">'+esc(c.name)+(b?' '+b:'')+' <span class="ty">'+esc(c.type||'')+'</span></div>'; }).join('')
+      +'<button class="sch-browse" onclick="browse(\''+esc(t.name)+'\')">Previzualizează datele</button></div></div>';
+  }).join('');
+}
+
+function renderER(){
+  var order=cur.tabele.map(function(t){ return t.nume; });
+  var tbls=listTables(curDb()), byName={}; tbls.forEach(function(t){ byName[t.name]=t; });
+  var cards=order.filter(function(n){ return byName[n]; });
+  var h='<div class="intro"><b>Relațiile dintre tabele:</b> '+cur.relatii+'</div><div class="er">';
+  cards.forEach(function(name,i){
+    var t=byName[name], fkc={}; t.fks.forEach(function(f){ fkc[f.from]=f; });
+    h+='<div class="er-card"><div class="h">'+esc(name)+'</div><div class="cols">'
+      + t.cols.map(function(c){ var cls=c.pk?'pk':(fkc[c.name]?'fk':''); var b=c.pk?'<span class="tag pk">PK</span> ':(fkc[c.name]?'<span class="tag fk">FK</span> ':'');
+          return '<div class="er-row '+cls+'">'+b+esc(c.name)+' <span class="ty">'+esc(c.type||'')+'</span></div>'; }).join('')
+      +'</div></div>';
+    if(i<cards.length-1){
+      var next=byName[cards[i+1]], link=null;
+      next.fks.forEach(function(f){ if(f.table===name) link=f; });
+      t.fks.forEach(function(f){ if(f.table===cards[i+1] && !link) link=f; });
+      var lbl=link?('FK <code>'+esc(link.from)+'</code> &rarr; '+esc(link.table)+'.'+esc(link.to)):'cheie externă';
+      h+='<div class="er-link"><div class="wire"></div><div class="card-mid">1 : N</div><div class="lbl">'+lbl+'</div></div>';
+    }
+  });
+  h+='</div><div class="er-legend"><span><b>PK</b> — cheie primară</span><span><b>FK</b> — cheie externă (referă tabela părinte)</span><span><b>1 : N</b> — un părinte, mai mulți copii</span></div>';
+  $('pane-rel').innerHTML=h;
+}
+
+function renderReq(){
+  var exById={}; (typeof SQL_IDE_EXAMPLES!=='undefined' && SQL_IDE_EXAMPLES[cur.id] || []).forEach(function(e){ var m=e[0].match(/^([a-z])\)/i); if(m) exById[m[1].toLowerCase()]=e[1]; });
+  var h='<div class="intro"><b>Cerințele scenariului.</b> Apasă „&Icirc;ncarcă &amp; execută" pentru a vedea rezultatul, sau scrie singur interogarea.</div>';
+  cur.cerinte.forEach(function(c){
+    var ex=exById[c.lit];
+    h+='<div class="req"><div class="req-h"><span class="req-lit">'+esc(c.lit)+')</span> '+c.enunt
+      +(ex?(' <button class="btn mini" onclick="loadEx(this)" data-sql="'+esc(ex).replace(/"/g,'&quot;')+'">&Icirc;ncarcă &amp; execută</button>'):'')+'</div>'
+      +'<details class="req-sol"><summary>Model (Access/Jet + ANSI)</summary>'
+      +'<div class="req-lbl">Model — Access/Jet</div><pre class="cmd">'+esc(c.sql)+'</pre>'
+      +(c.ansi?('<div class="req-lbl">Echivalent — ANSI / SQL Server</div><pre class="cmd">'+esc(c.ansi)+'</pre>'):'')
+      +'<div class="req-note">'+c.note+'</div></details></div>';
+  });
+  $('pane-req').innerHTML=h;
+}
+function loadEx(btn){ cm.setValue(btn.getAttribute('data-sql')); run(); }
+
+function cellHtml(c){ return c===null?'<span class="nullv">NULL</span>':esc(String(c)); }
+function resultGrid(r,label){
+  var cols=r.columns,rows=r.values,max=1000,shown=rows.slice(0,max);
+  var h='<div class="res"><div class="res-head">'+(label?'<span class="res-set">'+esc(label)+'</span>':'')+'<span class="res-rows">'+rows.length+' r&acirc;nduri · '+cols.length+' coloane</span></div>';
+  h+='<div class="tablewrap"><table class="rtable"><thead><tr><th class="rn">#</th>'+cols.map(function(c){return '<th>'+esc(c)+'</th>';}).join('')+'</tr></thead><tbody>';
+  h+=shown.map(function(row,ri){ return '<tr><td class="rn">'+(ri+1)+'</td>'+row.map(function(c){return '<td>'+cellHtml(c)+'</td>';}).join('')+'</tr>'; }).join('');
+  h+='</tbody></table></div>';
+  if(rows.length>max) h+='<div class="note">Se afișează primele '+max+' din '+rows.length+' rânduri.</div>';
+  if(rows.length===0) h+='<div class="empty">Interogarea a rulat corect; niciun rând returnat.</div>';
+  return h+'</div>';
+}
+function errTip(m){
+  if(/no such function:\s*(year|month|day)/i.test(m)) return 'SQLite nu are <code>YEAR()/MONTH()/DAY()</code> — folosește <code>strftime(\'%Y\',col)</code>, <code>%m</code>, <code>%d</code>.';
+  if(/near "TOP"/i.test(m)) return 'SQLite nu are <code>TOP n</code> — folosește <code>ORDER BY ... LIMIT n</code>.';
+  if(/no such function/i.test(m)) return 'Funcție inexistentă. Disponibile: <code>strftime</code>, <code>substr</code>, <code>length</code>, <code>upper/lower</code>, agregări.';
+  if(/no such table/i.test(m)) return 'Verifică numele tabelei în exploratorul de schemă.';
+  if(/no such column/i.test(m)) return 'Verifică numele coloanei; pentru JOIN prefixează <code>Tabela.Coloana</code>.';
+  if(/ambiguous/i.test(m)) return 'Coloană prezentă în mai multe tabele — prefixează cu <code>Tabela.Coloana</code>.';
+  if(/syntax error/i.test(m)) return 'Verifică virgulele, ghilimelele simple <code>\'...\'</code> și cuvintele-cheie.';
+  return 'Folosește autocompletarea (Ctrl+Space) pentru tabele și coloane.';
+}
+function errorPanel(m){
+  var k='Eroare SQL';
+  if(/syntax error/i.test(m))k='Eroare de sintaxă'; else if(/no such table/i.test(m))k='Tabel inexistent'; else if(/no such column/i.test(m))k='Coloană inexistentă'; else if(/no such function/i.test(m))k='Funcție necunoscută'; else if(/ambiguous/i.test(m))k='Coloană ambiguă';
+  return '<div class="err"><div class="err-h">'+esc(k)+'</div><div class="err-msg"><span class="err-lbl">SQLite</span> '+esc(m)+'</div><div class="err-tip"><b>Sugestie:</b> '+errTip(m)+'</div></div>';
+}
+function showPane(bt){ document.querySelectorAll('.bpane').forEach(function(p){ p.classList.toggle('active',p.id==='pane-'+bt); }); document.querySelectorAll('.btab').forEach(function(b){ b.classList.toggle('active',b.dataset.bt===bt); }); }
+function run(){
+  if(!SQL||!cur) return; showPane('res');
+  var sql=cm.getValue().trim(), out=$('pane-res');
+  if(!sql){ out.innerHTML='<div class="note">Editor gol.</div>'; return; }
+  var db=curDb(),res,t0=performance.now();
+  try{ res=db.exec(sql); }catch(e){ out.innerHTML=errorPanel(e.message); return; }
+  var ms=Math.max(1,Math.round(performance.now()-t0)), mod=db.getRowsModified();
+  if(!res||!res.length){ out.innerHTML='<div class="ok">Comandă executată în '+ms+' ms. '+mod+' rând'+(mod===1?'':'uri')+' afectat'+(mod===1?'':'e')+'.</div>'; renderSchema(); buildSchemaObj(); return; }
+  out.innerHTML='<div class="res-meta">Executat în '+ms+' ms · '+res.length+' set'+(res.length===1?'':'uri')+' de rezultate</div>'+res.map(function(r,i){ return resultGrid(r,res.length>1?('Set '+(i+1)):null); }).join('');
+  renderSchema(); buildSchemaObj();
+}
+function browse(t){ if(!SQL||!cur)return; showPane('res'); try{ var r=curDb().exec('SELECT * FROM "'+t+'" LIMIT 500'); $('pane-res').innerHTML='<div class="res-meta">Conținutul tabelei '+esc(t)+'</div>'+(r.length?resultGrid(r[0],null):'<div class="empty">Tabelă goală.</div>'); }catch(e){ $('pane-res').innerHTML=errorPanel(e.message); } }
+function insertText(x){ if(cm){ cm.replaceSelection(x); cm.focus(); } }
+function reset(){ getDb(cur,true); buildSchemaObj(); renderSchema(); renderER(); $('pane-res').innerHTML='<div class="ok">Baza a fost reîncărcată din schema inițială.</div>'; showPane('res'); }
+function buildSchemaObj(){ schemaObj={}; listTables(curDb()).forEach(function(t){ schemaObj[t.name]=t.cols.map(function(c){return c.name;}); }); if(cm) cm.setOption('hintOptions',{tables:schemaObj,completeSingle:false}); }
+function populateExamples(){ var sel=$('exSel'); var ex=(typeof SQL_IDE_EXAMPLES!=='undefined'&&SQL_IDE_EXAMPLES[cur.id])||[]; sel.innerHTML='<option value="">Exemple de interogări</option>'+ex.map(function(e){ return '<option value="'+esc(e[1]).replace(/"/g,'&quot;')+'">'+esc(e[0])+'</option>'; }).join(''); }
+
+function selectScenario(id){
+  cur=SQL_SCENARII.filter(function(s){return s.id===id;})[0]||SQL_SCENARII[0];
+  $('scnSel').value=cur.id;
+  getDb(cur,false); buildSchemaObj(); renderSchema(); renderER(); renderReq(); populateExamples();
+  var t0=Object.keys(schemaObj)[0]||'';
+  cm.setValue('SELECT *\nFROM '+t0+';');
+  $('pane-res').innerHTML='<div class="welcome">Bază: <b>'+esc(cur.nume)+'</b>, motor SQLite local. Selectează o cerință din fila <b>Cerințe</b>, alege un exemplu sau scrie o interogare. Execuție: <b>Ctrl+Enter</b>. Structura tabelelor: panoul din stânga; lanțul cheilor: fila <b>Relații</b>.</div>';
+  showPane('res');
+}
+
+function init(){
+  $('scnSel').innerHTML=SQL_SCENARII.map(function(s){ return '<option value="'+s.id+'">'+esc(s.nume)+'</option>'; }).join('');
+  $('scnSel').onchange=function(){ selectScenario(this.value); };
+  document.querySelectorAll('.btab').forEach(function(b){ b.onclick=function(){ showPane(b.dataset.bt); }; });
+  $('runBtn').onclick=run; $('resetBtn').onclick=reset; $('clearBtn').onclick=function(){ cm.setValue(''); cm.focus(); };
+  $('exSel').onchange=function(){ var v=this.value; if(v===''){return;} cm.setValue(v); this.selectedIndex=0; run(); };
+  $('themeBtn').onclick=function(){ if(window.toggleTheme){ toggleTheme(); } if(cm) setTimeout(function(){ cm.refresh(); },30); };
+  $('themePickBtn').onclick=function(){ if(window.openThemePicker){ openThemePicker(); } };
+  cm=CodeMirror.fromTextArea($('editor'),{ mode:'text/x-sql', lineNumbers:true, matchBrackets:true, autoCloseBrackets:true, smartIndent:true, indentUnit:2, lineWrapping:true, hintOptions:{tables:{},completeSingle:false}, extraKeys:{'Ctrl-Enter':run,'Cmd-Enter':run,'Ctrl-Space':'autocomplete'} });
+  cm.on('inputRead',function(c,ch){ if(ch&&ch.text&&/[\w.]/.test(ch.text[0])&&!c.state.completionActive){ c.showHint(); } });
+  var want=new URLSearchParams(location.search).get('scn');
+  initSqlJs({ locateFile:function(f){ return 'vendor/'+f; } }).then(function(m){
+    SQL=m; $('eng').className='status ok'; $('engT').textContent='SQLite · pregătit';
+    selectScenario(want||SQL_SCENARII[0].id); setTimeout(function(){ cm.refresh(); },50);
+  }).catch(function(e){
+    $('eng').className='status bad'; $('engT').textContent='motor indisponibil';
+    $('pane-res').innerHTML='<div class="err"><div class="err-h">Motorul nu s-a putut încărca</div><div class="err-msg">'+esc(e&&e.message||'')+'</div><div class="err-tip"><b>Cauză:</b> WebAssembly nu se încarcă pe <code>file://</code>. Rulează prin <code>python3 -m http.server</code> și deschide prin <code>http://localhost</code>.</div></div>';
+  });
+}
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
