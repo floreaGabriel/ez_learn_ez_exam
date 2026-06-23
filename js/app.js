@@ -101,7 +101,6 @@ const MATERII = [
     sectiuni:[
       {id:"ref",       nume:"Învață",                  icon:"📘"},
       {id:"scenarii",  nume:"Scenarii rezolvate",      icon:"📚"},
-      {id:"live",      nume:"Interogare Live",         icon:"⚡"},
       {id:"exercitii", nume:"Exerciții",               icon:"📝"},
       {id:"quiz",      nume:"Quiz",                     icon:"❓"},
       {id:"build",     nume:"Construiește interogarea", icon:"🧩"},

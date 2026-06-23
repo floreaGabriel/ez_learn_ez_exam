@@ -233,40 +233,6 @@ details.anexa pre{margin-top:12px}
   .btn-row{gap:8px}
 }
 
-/* ============================ INTEROGARE LIVE ============================ */
-.live-status{font-size:12.5px; padding:7px 12px; border-radius:9px; border:1px solid var(--line2); display:inline-flex; align-items:center; gap:7px; margin:4px 0}
-.live-status.ok{color:var(--green,#3fb950); border-color:var(--green,#3fb950)}
-.live-status.err{color:var(--red,#f85149); border-color:var(--red,#f85149)}
-.live-dot{width:8px; height:8px; border-radius:50%; background:currentColor; flex:0 0 auto}
-.live-tables{display:flex; flex-wrap:wrap; gap:14px; margin:14px 0}
-.live-tcard{flex:1; min-width:280px; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden}
-.live-tcard h4{margin:0; padding:9px 13px; background:var(--panel2); border-bottom:1px solid var(--line); font-family:var(--mono); color:var(--accent); font-size:13.5px; display:flex; justify-content:space-between; align-items:center; gap:8px}
-.live-tcard h4 .cnt{font-family:var(--sans); font-size:11px; font-weight:600; color:var(--muted)}
-.live-tcard .scroll{overflow-x:auto; -webkit-overflow-scrolling:touch}
-.res-tbl{border-collapse:collapse; width:100%; font-size:12.5px; font-family:var(--mono)}
-.res-tbl th,.res-tbl td{border:1px solid var(--line2); padding:5px 9px; text-align:left; white-space:nowrap}
-.res-tbl th{background:var(--panel2); color:var(--accent); position:sticky; top:0; font-size:11px; text-transform:uppercase; letter-spacing:.3px}
-.res-tbl td .nullv{color:var(--muted); font-style:italic; opacity:.7}
-.res-tbl tr:nth-child(even) td{background:rgba(127,127,127,.045)}
-.live-editor-wrap{margin:8px 0}
-.live-editor{width:100%; min-height:150px; resize:vertical; background:var(--code-bg,var(--panel2)); color:var(--code-ink,var(--ink)); border:1px solid var(--line2); border-radius:10px; padding:13px 15px; font-family:var(--mono); font-size:14px; line-height:1.55; tab-size:2}
-.live-editor:focus{outline:none; border-color:var(--accent)}
-.live-bar{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:10px 0}
-.live-bar .spacer{flex:1}
-.live-hint{font-size:12px; color:var(--muted)}
-.live-examples{display:flex; flex-wrap:wrap; gap:7px; margin:8px 0 2px}
-.live-ex{background:var(--panel2); border:1px solid var(--line2); border-radius:8px; padding:5px 10px; font-family:var(--mono); font-size:11.8px; color:var(--ink); cursor:pointer; transition:.12s}
-.live-ex:hover{border-color:var(--accent); color:var(--accent)}
-.live-result{margin-top:14px}
-.live-meta{font-size:12px; color:var(--muted); margin-bottom:7px}
-.live-error{background:rgba(248,81,73,.08); border:1px solid var(--red,#f85149); color:var(--red,#f85149); border-radius:10px; padding:12px 15px; font-family:var(--mono); font-size:12.8px; white-space:pre-wrap}
-.live-empty{color:var(--muted); padding:14px; border:1px dashed var(--line2); border-radius:10px; text-align:center}
-.res-box{max-height:460px; overflow:auto; border:1px solid var(--line); border-radius:12px}
-@media (max-width:760px){
-  .live-tcard{min-width:0; width:100%}
-  .live-editor{font-size:13px}
-}
-
 /* ============ Buton deschidere SQL Workbench ============ */
 .ide-cta{margin:18px 0;border:1px solid var(--line);border-radius:16px;background:linear-gradient(135deg,var(--panel2),var(--panel));padding:22px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;box-shadow:0 6px 22px rgba(0,0,0,.18)}
 .ide-cta-body{flex:1;min-width:260px}
@@ -385,34 +351,6 @@ WHERE NOT EXISTS (SELECT 1 FROM Rezervari R
   <div id="scenBody"></div>
 </section>
 
-<!-- ============================ INTEROGARE LIVE ============================ -->
-<section class="page" id="page-live">
-  <h1>⚡ Interogare Live</h1>
-  <p class="lead">Scrie <b>SELECT</b>-uri reale și rulează-le pe o bază de date <b>SQL Server (T-SQL)</b> cu datele celor 5 scenarii. Te joci în voie: conexiunea e <b>doar de citire</b> — nu poți strica nimic (<code>INSERT</code>/<code>UPDATE</code>/<code>DELETE</code> sunt blocate de motor). Alege un scenariu, uită-te la tabele și execută interogarea când vrei.</p>
-
-  <div class="row">
-    <label>Scenariu: <select id="liveScen"></select></label>
-    <span id="liveStatus" class="live-status"><span class="live-dot"></span><span class="t">verific conexiunea…</span></span>
-  </div>
-
-  <h2 style="margin-top:18px">Tabelele scenariului</h2>
-  <div id="liveTables" class="live-tables"></div>
-
-  <h2 style="margin-top:22px">Zona de cod</h2>
-  <div class="live-examples" id="liveExamples"></div>
-  <div class="live-editor-wrap">
-    <textarea id="liveSQL" class="live-editor" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="SELECT * FROM Cititori;"></textarea>
-  </div>
-  <div class="live-bar">
-    <button class="btn primary" id="liveRun">▶ Rulează (Ctrl+Enter)</button>
-    <button class="btn" id="liveClear">✕ Golește</button>
-    <span class="spacer"></span>
-    <span class="live-hint">Doar <code>SELECT</code> • un singur statement</span>
-  </div>
-
-  <div class="live-result" id="liveResult"></div>
-</section>
-
 <!-- ============================ EXERCIȚII ============================ -->
 <section class="page" id="page-exercitii">
   <h1>📝 Exerciții — antrenament</h1>
@@ -511,7 +449,6 @@ function activateTab(tab){
   var p=document.getElementById('page-'+tab); if(!p) return;
   document.querySelectorAll('.page').forEach(function(x){ x.classList.remove('active'); });
   p.classList.add('active');
-  if(tab==='live' && typeof ensureLiveLoaded==='function') ensureLiveLoaded();
   window.scrollTo({top:0, behavior:'smooth'});
 }
 function tabFromHash(){ var t=location.hash.replace('#',''); if(t) activateTab(t); }
@@ -576,7 +513,7 @@ function renderScen(idx){
   el.innerHTML=h; applySQL(el);
   var ide=document.getElementById('ideHost');
   if(ide) ide.innerHTML='<div class="ide-cta"><div class="ide-cta-body"><div class="ide-cta-h">SQL Workbench — editor interactiv</div>'
-    +'<div class="ide-cta-p">Editor SQL cu motor SQLite real, local în browser: autocompletare, explorator de schemă, relațiile dintre tabele, cerințele scenariului și rezultate live. Se deschide pe tot ecranul, într-un tab nou — pentru baza „'+s.nume+'".</div></div>'
+    +'<div class="ide-cta-p">Editor SQL cu motor <b>SQL Server (T-SQL)</b> real, doar citire: scrii și execuți interogări, cu autocompletare, explorator de schemă, relațiile dintre tabele, cerințele scenariului și rezultate live. Se deschide pe tot ecranul, într-un tab nou — pentru baza „'+s.nume+'".</div></div>'
     +'<button class="ide-cta-btn" onclick="openIde(\''+s.id+'\')">Deschide SQL Workbench &nearr;</button></div>';
 }
 function openIde(id){ window.open('ide.html?scn='+encodeURIComponent(id),'_blank','noopener'); }
@@ -835,172 +772,6 @@ function checkMatch(){
 }
 
 /* ============================================================
-   INTEROGARE LIVE — rulează SELECT-uri reale pe SQL Server (T-SQL)
-   prin backendul read-only `sqlrunner` (proxy nginx la /sqlapi/).
-   ============================================================ */
-var SQLAPI = '/sqlapi';
-var liveLoaded = false;          // încărcăm scenariile/tabelele o singură dată
-var liveScenarios = [];          // [{id,nume,icon,tables}]
-var liveTablesCache = {};        // scenario -> [{name,columns,rows}]
-
-/* exemple de pornire per scenariu (sugestii „dă click și rulează”) */
-var LIVE_EXAMPLES = {
-  biblioteca:[
-    "SELECT * FROM Cititori;",
-    "SELECT Prenume FROM Cititori WHERE Nume LIKE 'Pop%';",
-    "SELECT TOP (1) Facultate FROM Cititori GROUP BY Facultate ORDER BY COUNT(*) DESC;"
-  ],
-  clinica:[
-    "SELECT * FROM Pacienti;",
-    "SELECT Cod_Reteta FROM Retete WHERE Onorata IS NOT NULL;",
-    "SELECT Prenume FROM Pacienti WHERE Nume LIKE '%ana%';"
-  ],
-  magazin:[
-    "SELECT * FROM Comenzi;",
-    "SELECT Cod_Produs, Pret_Unitar FROM Produse_Comandate WHERE Pret_Unitar BETWEEN 100 AND 500;"
-  ],
-  aeriana:[
-    "SELECT * FROM Pasageri;",
-    "SELECT Nume, Prenume FROM Pasageri WHERE Nume LIKE '____u';"
-  ],
-  service:[
-    "SELECT * FROM Comenzi_Service;",
-    "SELECT Nume, Prenume FROM Clienti WHERE Nume LIKE '[A-M]%';"
-  ],
-  hotel:[
-    "SELECT * FROM Facturi;",
-    "SELECT Nume, Prenume, SUM(Total) AS Total_Facturat\nFROM Oaspeti\n     INNER JOIN Rezervari ON Oaspeti.Id_Oaspete = Rezervari.Id_Oaspete\n     INNER JOIN Facturi   ON Rezervari.Id_Rezervare = Facturi.Id_Rezervare\nGROUP BY Oaspeti.Id_Oaspete, Nume, Prenume\nHAVING SUM(Total) >= 1000;"
-  ],
-  banca:[
-    "SELECT * FROM Tranzactii;",
-    "SELECT Id_Cont, SUM(Suma) AS Total FROM Tranzactii\nWHERE Stornata IS NULL GROUP BY Id_Cont HAVING SUM(Suma) > 5000;"
-  ],
-  asigurari:[
-    "SELECT * FROM Daune;",
-    "SELECT Prenume FROM Asigurati WHERE Nume LIKE '%an%';"
-  ],
-  curierat:[
-    "SELECT * FROM Livrari;",
-    "SELECT Prenume FROM Expeditori WHERE Nume LIKE '[A-M]%';"
-  ],
-  universitate:[
-    "SELECT * FROM Note;",
-    "SELECT Nume, Prenume, AVG(Nota) AS Media\nFROM Studenti\n     INNER JOIN Inscrieri ON Studenti.Id_Student = Inscrieri.Id_Student\n     INNER JOIN Note      ON Inscrieri.Id_Inscriere = Note.Id_Inscriere\nGROUP BY Inscrieri.Id_Student, Nume, Prenume\nHAVING AVG(Nota) >= 8;"
-  ]
-};
-
-function liveSetStatus(kind, text){
-  var el=document.getElementById('liveStatus'); if(!el) return;
-  el.className='live-status '+(kind||'');
-  el.querySelector('.t').textContent=text;
-}
-function liveCell(v){
-  if(v===null || v===undefined) return '<td><span class="nullv">NULL</span></td>';
-  return '<td>'+escSQL(v)+'</td>';
-}
-function renderResTable(columns, rows){
-  if(!columns.length) return '<div class="live-empty">Interogarea nu a întors coloane.</div>';
-  var h='<div class="res-box"><table class="res-tbl"><thead><tr>';
-  columns.forEach(function(c){ h+='<th>'+escSQL(c)+'</th>'; });
-  h+='</tr></thead><tbody>';
-  if(!rows.length){ h+='<tr><td colspan="'+columns.length+'" style="text-align:center;color:var(--muted)">0 rânduri</td></tr>'; }
-  rows.forEach(function(r){ h+='<tr>'+r.map(liveCell).join('')+'</tr>'; });
-  h+='</tbody></table></div>';
-  return h;
-}
-
-function renderLiveTables(scenario){
-  var box=document.getElementById('liveTables');
-  var tables=liveTablesCache[scenario];
-  if(!tables){ box.innerHTML='<div class="live-empty">Se încarcă tabelele…</div>'; return; }
-  box.innerHTML=tables.map(function(t){
-    var head='<h4>'+escSQL(t.name)+' <span class="cnt">'+t.rows.length+' rânduri</span></h4>';
-    return '<div class="live-tcard">'+head+'<div class="scroll">'+renderResTable(t.columns.map(function(c){return c.name;}), t.rows)+'</div></div>';
-  }).join('');
-}
-
-function renderLiveExamples(scenario){
-  var box=document.getElementById('liveExamples');
-  var ex=LIVE_EXAMPLES[scenario]||[];
-  box.innerHTML=ex.map(function(q){ return '<span class="live-ex">'+escSQL(q)+'</span>'; }).join('');
-  box.querySelectorAll('.live-ex').forEach(function(el){
-    el.onclick=function(){ document.getElementById('liveSQL').value=el.textContent; runLiveQuery(); };
-  });
-}
-
-function loadLiveTables(scenario){
-  var box=document.getElementById('liveTables');
-  if(liveTablesCache[scenario]){ renderLiveTables(scenario); return; }
-  box.innerHTML='<div class="live-empty">Se încarcă tabelele…</div>';
-  fetch(SQLAPI+'/tables?scenario='+encodeURIComponent(scenario))
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if(d.error){ box.innerHTML='<div class="live-error">'+escSQL(d.error)+'</div>'; return; }
-      liveTablesCache[scenario]=d.tables||[];
-      renderLiveTables(scenario);
-    })
-    .catch(function(){ box.innerHTML='<div class="live-error">Nu pot încărca tabelele (backend indisponibil).</div>'; });
-}
-
-function onLiveScenChange(){
-  var scen=document.getElementById('liveScen').value;
-  document.getElementById('liveResult').innerHTML='';
-  renderLiveExamples(scen);
-  loadLiveTables(scen);
-}
-
-function runLiveQuery(){
-  var scen=document.getElementById('liveScen').value;
-  var sqlText=document.getElementById('liveSQL').value;
-  var out=document.getElementById('liveResult');
-  if(!sqlText.trim()){ out.innerHTML='<div class="live-empty">Scrie o interogare mai întâi.</div>'; return; }
-  out.innerHTML='<div class="live-meta">Se execută…</div>';
-  fetch(SQLAPI+'/query', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({ scenario:scen, sql:sqlText })
-  })
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if(d.error){ out.innerHTML='<div class="live-error">⚠ '+escSQL(d.error)+'</div>'; return; }
-      var meta='<div class="live-meta">'+d.rowCount+' rânduri • '+d.elapsedMs+' ms'+
-               (d.truncated?' • <b>trunchiat</b> (primele '+d.rowCount+')':'')+'</div>';
-      out.innerHTML=meta+renderResTable(d.columns, d.rows);
-    })
-    .catch(function(){ out.innerHTML='<div class="live-error">Nu pot rula interogarea (backend indisponibil).</div>'; });
-}
-
-function ensureLiveLoaded(){
-  if(liveLoaded) return; liveLoaded=true;
-  liveSetStatus('', 'verific conexiunea…');
-  fetch(SQLAPI+'/scenarios')
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      liveScenarios=d.scenarios||[];
-      var sel=document.getElementById('liveScen');
-      sel.innerHTML=liveScenarios.map(function(s){ return '<option value="'+s.id+'">'+s.icon+' '+s.nume+'</option>'; }).join('');
-      sel.onchange=onLiveScenChange;
-      liveSetStatus('ok', 'conectat • baza de date e activă (doar citire)');
-      onLiveScenChange();
-    })
-    .catch(function(){
-      liveLoaded=false;   // permite reîncercarea la următoarea intrare în tab
-      liveSetStatus('err', 'backend indisponibil — pornește containerele sqlrunner + bază de date');
-      document.getElementById('liveTables').innerHTML='<div class="live-error">Serviciul „Interogare Live” nu răspunde. Verifică serviciile <code>sqlrunner</code> și <code>sqltrainer-db</code>.</div>';
-    });
-}
-
-function initLive(){
-  document.getElementById('liveRun').onclick=runLiveQuery;
-  document.getElementById('liveClear').onclick=function(){
-    document.getElementById('liveSQL').value='';
-    document.getElementById('liveResult').innerHTML='';
-  };
-  document.getElementById('liveSQL').addEventListener('keydown', function(e){
-    if((e.ctrlKey||e.metaKey) && e.key==='Enter'){ e.preventDefault(); runLiveQuery(); }
-  });
-}
-
-/* ============================================================
    INIT
    ============================================================ */
 window.addEventListener('DOMContentLoaded', function(){
@@ -1011,7 +782,6 @@ window.addEventListener('DOMContentLoaded', function(){
   initBuild();
   renderCapcana();
   initMatch();
-  initLive();
   document.getElementById('quizReset').onclick=renderQuiz;
   document.getElementById('capReset').onclick=renderCapcana;
   tabFromHash();
