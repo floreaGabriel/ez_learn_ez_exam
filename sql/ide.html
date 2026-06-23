@@ -402,7 +402,19 @@ function init(){
   $('exSel').onchange=function(){ var v=this.value; if(v===''){return;} cm.setValue(v); this.selectedIndex=0; run(); };
   $('themeBtn').onclick=function(){ if(window.toggleTheme){ toggleTheme(); } if(cm) setTimeout(function(){ cm.refresh(); },30); };
   $('themePickBtn').onclick=function(){ if(window.openThemePicker){ openThemePicker(); } };
-  cm=CodeMirror.fromTextArea($('editor'),{ mode:'text/x-sql', lineNumbers:true, matchBrackets:true, autoCloseBrackets:true, smartIndent:true, indentUnit:2, lineWrapping:true, hintOptions:{tables:{},completeSingle:false}, extraKeys:{'Ctrl-Enter':run,'Cmd-Enter':run,'Ctrl-Space':'autocomplete'} });
+  // Dialect T-SQL: pornim de la mssql, dar scoatem LIMIT (nu există în SQL Server)
+  // și adăugăm TOP. Afectează atât highlight-ul, cât și autocompletarea.
+  try{
+    var _mssql=CodeMirror.resolveMode('text/x-mssql');
+    function _clone(o){ var r={}; for(var k in o) r[k]=o[k]; return r; }
+    var _kw=_clone(_mssql.keywords||{});
+    delete _kw.limit; delete _kw.offset; delete _kw.fetch;   // LIMIT/OFFSET/FETCH — non-T-SQL la nivel de trainer
+    delete _kw.go;                                           // GO = separator de batch (SSMS), inutil aici (un singur SELECT)
+    _kw.top=true;
+    var _spec=_clone(_mssql); _spec.name='sql'; _spec.keywords=_kw;
+    CodeMirror.defineMIME('text/x-tsql', _spec);
+  }catch(e){}
+  cm=CodeMirror.fromTextArea($('editor'),{ mode:'text/x-tsql', lineNumbers:true, matchBrackets:true, autoCloseBrackets:true, smartIndent:true, indentUnit:2, lineWrapping:true, hintOptions:{tables:{},completeSingle:false}, extraKeys:{'Ctrl-Enter':run,'Cmd-Enter':run,'Ctrl-Space':'autocomplete'} });
   cm.on('inputRead',function(c,ch){ if(ch&&ch.text&&/[\w.]/.test(ch.text[0])&&!c.state.completionActive){ c.showHint(); } });
   var want=new URLSearchParams(location.search).get('scn');
   selectScenario(want||SQL_SCENARII[0].id); setTimeout(function(){ cm.refresh(); },50);
