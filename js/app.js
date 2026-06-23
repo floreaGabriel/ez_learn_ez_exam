@@ -252,10 +252,34 @@ function wireNav(){
   });
 }
 
-// ---------- Bară laterală pe mobil (drawer) ----------
+// ---------- Bară laterală ----------
+// Pe mobil (≤860px): drawer glisant (clasa "nav-open").
+// Pe desktop: se poate restrânge/extinde (clasa "sidebar-collapsed"), stare salvată.
+function isMobileNav(){ return window.matchMedia("(max-width:860px)").matches; }
+
 function openSidebar(){ document.body.classList.add("nav-open"); var t=document.getElementById("navToggle"); if(t) t.setAttribute("aria-expanded","true"); }
 function closeSidebar(){ document.body.classList.remove("nav-open"); var t=document.getElementById("navToggle"); if(t) t.setAttribute("aria-expanded","false"); }
-function toggleSidebar(){ document.body.classList.contains("nav-open") ? closeSidebar() : openSidebar(); }
+
+function setSidebarCollapsed(collapsed){
+  document.body.classList.toggle("sidebar-collapsed", collapsed);
+  var t=document.getElementById("navToggle"); if(t) t.setAttribute("aria-expanded", collapsed ? "false" : "true");
+  try{ localStorage.setItem("app-sidebar-collapsed", collapsed ? "1" : "0"); }catch(e){}
+}
+
+function toggleSidebar(){
+  if(isMobileNav())
+    document.body.classList.contains("nav-open") ? closeSidebar() : openSidebar();
+  else
+    setSidebarCollapsed(!document.body.classList.contains("sidebar-collapsed"));
+}
+
+// La pornire: reaplică starea salvată (relevant doar pe desktop; pe mobil clasa nu afectează drawerul)
+function initSidebar(){
+  try{ if(localStorage.getItem("app-sidebar-collapsed")==="1") document.body.classList.add("sidebar-collapsed"); }catch(e){}
+  var t=document.getElementById("navToggle");
+  if(t && !isMobileNav()) t.setAttribute("aria-expanded", document.body.classList.contains("sidebar-collapsed") ? "false" : "true");
+}
+
 document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeSidebar(); });
 
 // extinde grupul materiei (acordeon) și marchează elementul activ
@@ -476,6 +500,7 @@ function examNav(id){
 // ---------- Init ----------
 window.addEventListener("DOMContentLoaded", function(){
   // tema este aplicată de js/theme.js (tot pe DOMContentLoaded)
+  initSidebar();
   buildNav();
   showDashboard();
 });

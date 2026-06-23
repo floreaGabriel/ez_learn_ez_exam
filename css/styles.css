@@ -81,6 +81,7 @@ body{
   position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-w);
   background:var(--sidebar); border-right:1px solid var(--line);
   display:flex; flex-direction:column; overflow-y:auto; z-index:50;
+  transition:transform .25s ease;
 }
 .sidebar::-webkit-scrollbar{width:9px}
 .sidebar::-webkit-scrollbar-thumb{background:#2c2620; border-radius:6px}
@@ -146,7 +147,7 @@ body{
 @media (max-width:640px){ .vid-grid{grid-template-columns:1fr} }
 
 /* ---------- Main ---------- */
-.main{margin-left:var(--sidebar-w); min-height:100vh}
+.main{margin-left:var(--sidebar-w); min-height:100vh; transition:margin-left .25s ease}
 .topbar{
   background:var(--topbar); border-bottom:1px solid var(--line); padding:15px 34px;
   position:sticky; top:0; z-index:20;
@@ -282,7 +283,7 @@ figure.diagram figcaption{margin-top:10px}
 .model-answer b{color:var(--ink)}
 .model-answer code{background:#2c2418; color:var(--accent); padding:1.5px 5px; border-radius:4px; font-family:var(--mono)}
 
-.scorebar{position:fixed; bottom:0; left:var(--sidebar-w); right:0; background:var(--topbar); border-top:1px solid var(--line2); padding:14px 34px; display:flex; justify-content:space-between; align-items:center; gap:16px; z-index:30}
+.scorebar{position:fixed; bottom:0; left:var(--sidebar-w); right:0; background:var(--topbar); border-top:1px solid var(--line2); padding:14px 34px; display:flex; justify-content:space-between; align-items:center; gap:16px; z-index:30; transition:left .25s ease}
 .scorebar .score{font-size:15px; font-weight:600; color:var(--ink)}
 .progress{height:9px; background:var(--line); border-radius:20px; overflow:hidden; flex:1; max-width:320px}
 .progress .fill{height:100%; background:var(--green); width:0; transition:.3s}
@@ -349,9 +350,9 @@ details.rezolvare>summary:hover{color:var(--accent-2); background:var(--panel2)}
 /* ============================================================
    RESPONSIVE — drawer pe mobil + layout adaptiv
    ============================================================ */
-/* buton hamburger (ascuns pe desktop), titluri trunchiabile, backdrop */
+/* buton hamburger (vizibil mereu: pe desktop restrânge/extinde, pe mobil deschide drawerul) */
 .nav-toggle{
-  display:none; flex:0 0 auto; width:42px; height:40px; margin-right:6px;
+  display:flex; flex:0 0 auto; width:42px; height:40px; margin-right:6px;
   border-radius:11px; border:1px solid var(--line2); background:var(--panel); color:var(--ink);
   font-size:19px; cursor:pointer; align-items:center; justify-content:center;
 }
@@ -361,6 +362,13 @@ details.rezolvare>summary:hover{color:var(--accent-2); background:var(--panel2)}
 .sidebar-backdrop{
   position:fixed; inset:0; z-index:45; background:rgba(0,0,0,.5);
   opacity:0; pointer-events:none; transition:opacity .25s; display:none;
+}
+
+/* Desktop: bara laterală restrânsă -> iese spre stânga, conținutul ocupă tot */
+@media(min-width:861px){
+  body.sidebar-collapsed .sidebar{transform:translateX(-100%)}
+  body.sidebar-collapsed .main{margin-left:0}
+  body.sidebar-collapsed .scorebar{left:0}
 }
 
 @media(max-width:860px){
