@@ -127,6 +127,62 @@ select{background:var(--bg3);color:var(--txt);border:1px solid var(--border);bor
 .tok.dragging{opacity:.4}
 .tok.used{display:none}
 .dz{cursor:pointer}
+/* ---- TRYHARD builder ---- */
+.th-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 6px}
+.th-hints{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 6px}
+.th-hints .btn.ghost{font-size:.78rem;padding:6px 11px}
+.th-hintout{font-size:.74rem;color:var(--muted);margin:4px 0;line-height:1.9}
+.th-hintout .pill{margin:0 3px 3px 0}
+.th-cap{font-size:.66rem;color:var(--muted);margin:0 0 4px;line-height:1.5}
+.th-cap b{color:var(--accent)}
+.th-build{display:flex;flex-direction:column;gap:7px}
+.th-row{position:relative;padding-right:30px}
+.th-rownum{font-size:.6rem;color:var(--muted);font-weight:700;margin-bottom:1px;letter-spacing:.03em}
+.th-wrap{padding:0}
+.th-ruler{position:relative;height:14px;color:var(--muted);font-size:.58rem;font-variant-numeric:tabular-nums;cursor:crosshair;margin-bottom:3px}
+.th-ruler .tk{position:absolute;top:0;transform:translateX(-50%)}
+.th-ruler .tk::after{content:'';position:absolute;left:50%;top:10px;width:1px;height:4px;background:var(--border)}
+.th-del{position:absolute;right:0;top:30px;bottom:0;width:26px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:.82rem;transition:.15s}
+.th-del:hover{color:var(--bad);border-color:var(--bad);background:hsla(0,70%,55%,.08)}
+.th-cells{position:relative;display:flex;min-height:58px}
+.th-cell{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;padding:8px 5px;min-width:0;overflow:hidden;border-radius:9px;
+  border:3px solid transparent;background-clip:padding-box;
+  background:hsl(var(--h),var(--field-s),var(--field-l));color:var(--field-txt);
+  box-shadow:inset 0 0 0 1px hsl(var(--h),var(--field-s),var(--field-border-l))}
+.th-cell.varcell{background:repeating-linear-gradient(45deg,hsl(var(--h),var(--field-s),var(--field-l)),hsl(var(--h),var(--field-s),var(--field-l)) 8px,hsl(var(--h),var(--field-s),calc(var(--field-l) + 6%)) 8px,hsl(var(--h),var(--field-s),calc(var(--field-l) + 6%)) 16px)}
+.th-cell.ok{box-shadow:inset 0 0 0 3px var(--good)}
+.th-cell.no{box-shadow:inset 0 0 0 3px var(--bad)}
+.th-name{width:100%;max-width:160px;font-size:.72rem;padding:4px 6px;border:1px solid rgba(0,0,0,.22);border-radius:6px;background:rgba(255,255,255,.94);color:#111;font-weight:700;text-align:center}
+.th-name:focus{outline:none;box-shadow:0 0 0 2px var(--accent)}
+.th-cbits{display:flex;align-items:center;gap:4px;font-size:.62rem;font-weight:700}
+.th-cbits .th-bits{width:48px;font-size:.7rem;padding:2px 4px;border:1px solid rgba(0,0,0,.22);border-radius:6px;background:rgba(255,255,255,.94);color:#111;text-align:center;font-weight:700}
+.th-cbits .th-varlbl{font-style:italic;opacity:.9}
+.th-handle{position:absolute;top:-2px;bottom:-2px;width:16px;margin-left:-8px;cursor:ew-resize;z-index:6;display:flex;justify-content:center}
+.th-handle::before{content:'';width:3px;border-radius:3px;background:var(--accent);box-shadow:0 0 0 1px rgba(0,0,0,.15);opacity:.8}
+.th-handle:hover::before{opacity:1;width:4px}
+.th-x{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--bad);color:#fff;border-radius:50%;width:16px;height:16px;font-size:.62rem;line-height:16px;text-align:center;cursor:pointer;opacity:0;transition:.12s}
+.th-handle:hover .th-x{opacity:1}
+.th-learn{margin-top:28px;border-top:1px solid var(--border);padding-top:18px}
+.th-fq{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;margin-bottom:11px}
+.th-fq h4{margin:0 0 4px;font-size:.92rem}
+.th-fq .desc{font-size:.82rem;color:var(--muted);margin-bottom:7px;line-height:1.5}
+.th-q{margin:7px 0;padding-top:7px;border-top:1px dashed var(--border)}
+.th-q:first-of-type{border-top:none}
+.th-q .qq{font-size:.84rem;font-weight:600;margin-bottom:6px}
+.th-q .revbtn{font-size:.72rem;padding:4px 11px;border:1px solid var(--border);border-radius:7px;background:var(--bg3);color:var(--txt);cursor:pointer;font-weight:600}
+.th-q .revbtn:hover{border-color:var(--accent)}
+.th-q .qa{display:none;font-size:.82rem;background:var(--bg);border-left:3px solid var(--accent);padding:7px 11px;border-radius:0 8px 8px 0;margin-top:7px;line-height:1.55}
+.th-q.show .qa{display:block}
+.th-qa-row{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:2px}
+.th-qa-inp{flex:1 1 200px;min-width:150px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:6px 9px;color:var(--txt);font-size:.8rem;font-family:inherit}
+.th-qa-inp:focus{outline:none;border-color:var(--accent)}
+.th-qa-inp.okin{border-color:var(--good);box-shadow:0 0 0 2px hsla(135,55%,45%,.18)}
+.th-qa-inp.noin{border-color:var(--bad);box-shadow:0 0 0 2px hsla(0,70%,55%,.16)}
+.th-qa-btn{font-size:.72rem;padding:6px 12px;border:1px solid var(--accent);border-radius:7px;background:var(--accent);color:var(--on-accent,#111);cursor:pointer;font-weight:700}
+.th-qa-btn:hover{filter:brightness(1.08)}
+.th-qa-fb{font-size:.76rem;font-weight:600;margin-top:5px;min-height:1px}
+.th-qa-fb.good{color:var(--good)}
+.th-qa-fb.bad{color:var(--bad)}
 .inp{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:7px 9px;color:var(--txt);font-size:.78rem;text-align:center;font-family:inherit}
 .inp:focus{outline:none;border-color:var(--accent)}
 .inp.ok{border-color:var(--good);background:hsla(135,55%,45%,.1)}
@@ -217,6 +273,12 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
 .topo2{display:grid;grid-template-columns:150px 36px 150px 36px 150px;grid-template-rows:88px 34px 88px 26px;min-width:580px}
 .wire-h.observe{background:var(--accent);height:3px}
 .observe-tag{grid-row:4;font-size:.64rem;color:var(--accent);text-align:center;font-weight:700;white-space:nowrap}
+.topo-box span{font-size:.66rem;color:var(--muted);line-height:1.35}
+.topo-tag{align-self:center;justify-self:center;text-align:center;font-size:.6rem;color:var(--accent);font-weight:700;line-height:1.3}
+.topo-cap{font-size:.72rem;color:var(--muted);margin:2px 0 12px}
+.topoSub{display:grid;grid-template-columns:repeat(4,148px);grid-template-rows:76px 26px 78px 26px 70px;gap:0 14px;min-width:646px}
+.topoTtl{display:grid;grid-template-columns:172px 116px 172px;grid-template-rows:84px 32px 98px;min-width:484px}
+.topoR1{display:grid;grid-template-columns:160px 40px 184px 40px 184px;grid-template-rows:110px;min-width:620px}
 
 /* ===== Responsive (mobil) — adăugat fără a modifica regulile existente ===== */
 @media (max-width: 760px){
@@ -277,6 +339,7 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
     <nav class="tabs" id="tabs">
       <button data-tab="ref" class="active">📘 Învață</button>
       <button data-tab="drag">🧲 Trage câmpul</button>
+      <button data-tab="tryhard">🛠️ Trage câmpul TRYHARD</button>
       <button data-tab="bytes">🔢 Octeți</button>
       <button data-tab="write">✍️ Scrie câmpurile</button>
       <button data-tab="quiz">❓ Quiz</button>
@@ -311,6 +374,29 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
     <div class="card"><div class="hwrap" id="dragArea"></div></div>
     <div class="bank" id="dragBank"></div>
     <div class="scorebar" id="dragScore"></div>
+  </section>
+
+  <!-- ============ TRYHARD ============ -->
+  <section class="page" id="page-tryhard">
+    <h1>Trage câmpul — TRYHARD 🛠️</h1>
+    <p class="lead">Aici <b>nu</b> primești casetele gata făcute. Pornești de la o linie goală de 32 de biți și o <b>tai singur</b>: dă click pe bara „✂" ca să adaugi o tăietură la poziția dorită, <b>trage de mâner stânga–dreapta</b> ca s-o muți, apasă <b>✕</b> ca s-o ștergi. Sau scrie direct <b>numărul de biți</b> în casetă și se ajustează. În fiecare casetă scrie <b>numele câmpului</b> și <b>câți biți</b> are. Adaugă linii noi până reconstruiești tot headerul, apoi apasă <b>Verifică</b>. La headerele pe octeți (Ethernet / ARP / DHCP) tai o singură bandă, în octeți.</p>
+    <div class="th-toolbar">
+      <label>Header: <select id="thSel"></select></label>
+      <button class="btn primary" id="thCheck">✓ Verifică</button>
+      <button class="btn ghost" id="thAddRow">➕ Adaugă linie (32 biți)</button>
+      <button class="btn ghost" id="thReset">↺ Resetează</button>
+    </div>
+    <div class="th-hints">
+      <span class="pill">💡 Hints</span>
+      <button class="btn ghost" id="thHN">Numele câmpurilor</button>
+      <button class="btn ghost" id="thHNB">Nume + biți</button>
+      <button class="btn ghost" id="thHC">Taie liniile corect</button>
+      <button class="btn ghost" id="thSol">👁 Soluția completă</button>
+    </div>
+    <div id="thHintOut" class="th-hintout"></div>
+    <div class="card"><div class="th-build" id="thBuild"></div></div>
+    <div class="scorebar" id="thScore"></div>
+    <div class="th-learn" id="thLearn"></div>
   </section>
 
   <!-- ============ BYTES ============ -->
@@ -1182,8 +1268,25 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
           Se consideră arhitectura de rețea din figura de mai jos, pentru care trebuie să proiectați o schemă de adresare. Presupunând că aveți la dispoziție adresa de rețea <code>192.168.10.0/24</code>: a) specificați câte subrețele sunt în figură; b) pentru fiecare subrețea, stabiliți adresa subrețelei, masca și numărul maxim de adrese IP disponibile.</div>
       </div>
       <div class="ex-answer" style="padding-left:64px">
-        <div class="ex-info">
-          <b>Topologie</b> — un router central conectat la 3 switch-uri prin legături punct-la-punct; router-ul are și un LAN propriu de 120 hosturi; cele 3 switch-uri deservesc LAN-uri de 10, 30 și 60 hosturi.
+        <div class="topo-cap"><b>Topologie</b> — un router central (rețeaua 192.168.10.0/24) cu un LAN propriu de 120 hosturi, conectat prin 3 legături punct-la-punct la 3 switch-uri ce deservesc LAN-uri de 10, 30 și 60 hosturi:</div>
+        <div class="topo-wrap">
+          <div class="topo topoSub">
+            <div class="topo-box center" style="grid-column:1/5;grid-row:1"><b>📡 Router central</b><span>Rețea: 192.168.10.0/24</span></div>
+            <div class="wire-v" style="grid-column:1;grid-row:2"></div>
+            <div class="wire-v" style="grid-column:2;grid-row:2"></div>
+            <div class="wire-v" style="grid-column:3;grid-row:2"></div>
+            <div class="wire-v" style="grid-column:4;grid-row:2"></div>
+            <div class="topo-box" style="grid-column:1;grid-row:3"><b>🖧 LAN propriu</b><span>120 hosturi<br>(direct pe router)</span></div>
+            <div class="topo-box center" style="grid-column:2;grid-row:3"><b>🔀 SW1</b><span>link p2p</span></div>
+            <div class="topo-box center" style="grid-column:3;grid-row:3"><b>🔀 SW2</b><span>link p2p</span></div>
+            <div class="topo-box center" style="grid-column:4;grid-row:3"><b>🔀 SW3</b><span>link p2p</span></div>
+            <div class="wire-v" style="grid-column:2;grid-row:4"></div>
+            <div class="wire-v" style="grid-column:3;grid-row:4"></div>
+            <div class="wire-v" style="grid-column:4;grid-row:4"></div>
+            <div class="topo-box" style="grid-column:2;grid-row:5"><b>🖥️ LAN</b><span>10 hosturi</span></div>
+            <div class="topo-box" style="grid-column:3;grid-row:5"><b>🖥️ LAN</b><span>30 hosturi</span></div>
+            <div class="topo-box" style="grid-column:4;grid-row:5"><b>🖥️ LAN</b><span>60 hosturi</span></div>
+          </div>
         </div>
         <label class="ex-label">✍️ a) Câte subrețele sunt în total?</label>
         <input class="inp" id="vlsm7-count" style="max-width:100px">
@@ -1289,13 +1392,17 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
           Calculatorul A transmite un pachet IP către calculatorul B, având câmpul TTL setat la valoarea 128. A se află pe rețeaua 172.168.10.64/26 (alături de R2, interfața 172.168.10.65/26), iar B se află pe rețeaua 172.168.11.64/26 (alături de R1, interfața 172.168.11.65/26). R2 și R1 sunt interconectate punct-la-punct. a) Ce adresă MAC destinație va avea cadrul care pleacă de la A? b) Care va fi valoarea câmpului TTL când pachetul ajunge la B?</div>
       </div>
       <div class="ex-answer" style="padding-left:64px">
-        <div class="ex-info">
-          <b>Adrese</b>
-          <div class="row">
-            <span>A: IP 172.168.10.99/26 · MAC AA:AA:AA:AA:AA:AA</span>
-            <span>R2 (gateway-ul lui A): IP 172.168.10.65/26 · MAC BB:BB:BB:BB:BB:BB</span>
-            <span>R1 (gateway-ul lui B): IP 172.168.11.65/26 · MAC CC:CC:CC:CC:CC:CC</span>
-            <span>B: IP 172.168.11.88/26 · MAC DD:DD:DD:DD:DD:DD</span>
+        <div class="topo-cap"><b>Topologie</b> — A și B sunt în subrețele diferite (/26), legate prin 2 routere R2–R1 interconectate punct-la-punct:</div>
+        <div class="topo-wrap">
+          <div class="topo topoTtl">
+            <div class="topo-box" style="grid-column:1;grid-row:1"><b>📡 R2</b><span>if: 172.168.10.65/26<br>MAC BB:BB:BB:BB:BB:BB</span></div>
+            <div class="wire-h" style="grid-column:2;grid-row:1"></div>
+            <div class="topo-box" style="grid-column:3;grid-row:1"><b>📡 R1</b><span>if: 172.168.11.65/26<br>MAC CC:CC:CC:CC:CC:CC</span></div>
+            <div class="wire-v" style="grid-column:1;grid-row:2"></div>
+            <div class="topo-tag" style="grid-column:2;grid-row:2">legătură p2p<br>(R2 ↔ R1)</div>
+            <div class="wire-v" style="grid-column:3;grid-row:2"></div>
+            <div class="topo-box" style="grid-column:1;grid-row:3"><b>💻 A</b><span>rețea 172.168.10.64/26<br>IP 172.168.10.99/26<br>MAC AA:AA:AA:AA:AA:AA</span></div>
+            <div class="topo-box" style="grid-column:3;grid-row:3"><b>💻 B</b><span>rețea 172.168.11.64/26<br>IP 172.168.11.88/26<br>MAC DD:DD:DD:DD:DD:DD</span></div>
           </div>
         </div>
         <table class="reftable" style="max-width:420px">
@@ -1447,12 +1554,14 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
           Se consideră o arhitectură de rețea cu un router care interconectează subrețeaua calculatorului A (IP 111.111.111.111) cu subrețeaua calculatorului B (IP 222.222.222.222). Calculatorul A transmite un pachet IP către B, cu TTL inițial = 128. Răspundeți: a) Care este adresa IP destinație a pachetului când părăsește calculatorul sursă? b) Care este adresa MAC destinație a cadrului când părăsește calculatorul sursă? c) Care este adresa MAC destinație a cadrului când părăsește routerul (pe ultimul hop, către B)? d) Care va fi valoarea câmpului TTL când pachetul ajunge la B?</div>
       </div>
       <div class="ex-answer" style="padding-left:64px">
-        <div class="ex-info">
-          <b>Adrese cunoscute</b>
-          <div class="row">
-            <span>A: IP 111.111.111.111</span>
-            <span>Router (interfața dinspre A): MAC E6-E9-00-17-BB-4B</span>
-            <span>B: IP 222.222.222.222 · MAC 49-BD-D2-C7-56-2A</span>
+        <div class="topo-cap"><b>Topologie</b> — un singur router interconectează subrețeaua lui A cu subrețeaua lui B:</div>
+        <div class="topo-wrap">
+          <div class="topo topoR1">
+            <div class="topo-box" style="grid-column:1;grid-row:1"><b>💻 A</b><span>IP 111.111.111.111<br>(sursă, TTL=128)</span></div>
+            <div class="wire-h" style="grid-column:2;grid-row:1"></div>
+            <div class="topo-box center" style="grid-column:3;grid-row:1"><b>📡 Router</b><span>interfața dinspre A:<br>MAC E6-E9-00-17-BB-4B</span></div>
+            <div class="wire-h" style="grid-column:4;grid-row:1"></div>
+            <div class="topo-box" style="grid-column:5;grid-row:1"><b>💻 B</b><span>IP 222.222.222.222<br>MAC 49-BD-D2-C7-56-2A</span></div>
           </div>
         </div>
         <table class="reftable" style="max-width:420px">
@@ -3194,6 +3303,279 @@ document.getElementById('dragCheck').onclick=()=>{
 };
 document.getElementById('dragReset').onclick=buildDrag;
 dragSel.onchange=buildDrag; try{buildDrag();}catch(e){console.error('drag',e);}
+
+/* ============================================================
+   TRYHARD — construiește headerul de la zero
+   (taie linii de 32 biți / banda de octeți, etichetează, verifică)
+   ============================================================ */
+const TH = { hkey:'ip', byteMode:false, expRows:[], stripWidth:0, rows:[] };
+const TH_HUES = [205,150,38,260,330,95,18,300,130,240,178,55];   // culori ciclice pt casete
+
+/* întrebări conceptuale specifice unor câmpuri (cheia = f.k). Pe lângă acestea,
+   fiecărui câmp i se adaugă automat o întrebare „câți biți are". */
+const TH_FIELD_Q = {
+  'eth-dst':[{q:'Ce adresă MAC destinație înseamnă „trimite la toți" (broadcast)?',a:'<b>FF:FF:FF:FF:FF:FF</b> — toți biții pe 1. O folosește, de ex., ARP Request.',k:['ffffffffffff','broadcast']}],
+  'eth-type':[{q:'EtherType este o valoare fixă? Ce valori au IPv4 și ARP?',a:'E un cod fix pe 16 biți: <b>0x0800</b> = IPv4, <b>0x0806</b> = ARP, <b>0x86DD</b> = IPv6.',k:['0800','0806','86dd']}],
+  'ip-ver':[{q:'Este „Version" o valoare fixă? Dacă da, care e (în binar) pentru IPv4 și care ar fi pentru IPv6?',a:'Da, fixă pe 4 biți. IPv4 = <b>0100</b> (=4), IPv6 = <b>0110</b> (=6).',k:['0100','0110']}],
+  'ip-ihl':[{q:'În ce unitate se măsoară IHL și care e valoarea minimă (fără opțiuni)?',a:'În <b>cuvinte de 32 biți</b> (4 octeți). Minim = <b>5</b> → 5×4 = <b>20 octeți</b> (header fără opțiuni). Maxim 15 → 60 octeți.',k:['cuvinte','20']}],
+  'ip-len':[{q:'Ce include „Lungime totală" și care e maximul teoretic?',a:'Header IP + date, în octeți. Pe 16 biți → maxim <b>65535</b> octeți.',k:['65535','header','antet']}],
+  'ip-flags':[{q:'Ce semnifică biții DF și MF din câmpul Flags?',a:'<b>DF</b> (Don\'t Fragment) = pachetul nu poate fi fragmentat. <b>MF</b> (More Fragments) = mai urmează fragmente (0 la ultimul). Primul bit e rezervat (0).',k:['dontfragment','morefragments','fragment']}],
+  'ip-frag':[{q:'În ce unități se exprimă Fragment Offset?',a:'În unități de <b>8 octeți</b> (de aceea fragmentele, exceptând ultimul, au lungimea multiplu de 8).',k:['8octeti','8octet','8']}],
+  'ip-ttl':[{q:'Ce se întâmplă cu TTL la fiecare router și ce înseamnă TTL=0?',a:'Scade cu <b>1</b> la fiecare hop. La <b>0</b> pachetul e aruncat și se trimite înapoi un mesaj ICMP „Time Exceeded".',k:['scade','arunca','timeexceeded']}],
+  'ip-proto':[{q:'Ce valori are câmpul Protocol pentru TCP, UDP și ICMP?',a:'<b>6</b> = TCP, <b>17</b> = UDP, <b>1</b> = ICMP.',k:['6','17']}],
+  'ip-cksum':[{q:'Suma de control din IPv4 acoperă tot pachetul?',a:'Nu — <b>doar headerul IP</b>. Se recalculează la fiecare hop (fiindcă TTL scade).',k:['header','antet','doar']}],
+  'tcp-dport':[{q:'Ce porturi standard au HTTP, HTTPS, DNS, Telnet, FTP?',a:'HTTP <b>80</b>, HTTPS <b>443</b>, DNS <b>53</b>, Telnet <b>23</b>, FTP <b>21</b> (control).',k:['80','443','53','23','21']}],
+  'tcp-seq':[{q:'Ce numără câmpul Sequence Number?',a:'Numărul primului <b>octet</b> de date din segment (TCP numără octeți, nu segmente).',k:['octet','octeti','byte']}],
+  'tcp-off':[{q:'În ce unitate e „Header Length" (Data Offset) la TCP?',a:'În <b>cuvinte de 32 biți</b>. Minim 5 = 20 octeți (fără opțiuni).',k:['cuvinte','20','32']}],
+  'tcp-flags':[{q:'Ce flaguri TCP deschid și închid o conexiune?',a:'Deschidere: <b>SYN</b> (3-way: SYN → SYN+ACK → ACK). Închidere: <b>FIN</b> (sau <b>RST</b> pentru reset brusc).',k:['syn','fin','rst']}],
+  'tcp-win':[{q:'La ce folosește Window Size?',a:'Control de flux: câți octeți mai poate primi receptorul fără confirmare.',k:['flux','control']}],
+  'udp-cksum':[{q:'Suma de control e obligatorie la UDP?',a:'În <b>IPv4 e opțională</b> (0 = neutilizată); în <b>IPv6 e obligatorie</b>.',k:['optional','obligatorie','ipv6']}],
+  'udp-len':[{q:'Care e lungimea minimă a câmpului Length la UDP?',a:'<b>8 octeți</b> — adică doar headerul UDP, fără date.',k:['8']}],
+  'icmp-type':[{q:'Ce valori Type au Echo Request și Echo Reply (ping)?',a:'Echo Request = <b>8</b>, Echo Reply = <b>0</b>. Destination Unreachable = 3, Time Exceeded = 11.',k:['8','echo']}],
+  'arp-op':[{q:'Ce valori are Operation Code la ARP?',a:'<b>1</b> = Request (cerere), <b>2</b> = Reply (răspuns).',k:['1','2','request','reply']}],
+  'arp-tha':[{q:'Cu ce e completat „Target HW Address" într-un ARP Request?',a:'Cu <b>00:00:00:00:00:00</b> — exact adresa MAC pe care o cerem (încă necunoscută).',k:['000000000000','zero','necunoscut']}],
+  'dh-op':[{q:'Ce valori are OpCode la DHCP/BOOTP?',a:'<b>1</b> = BOOTREQUEST (client), <b>2</b> = BOOTREPLY (server).',k:['1','2','bootrequest','bootreply']}],
+  'dh-flags':[{q:'Ce bit e folosit în câmpul Flags la DHCP?',a:'Doar bitul <b>B (Broadcast)</b>: 1 = serverul răspunde prin broadcast.',k:['broadcast']}]
+};
+
+/* normalizează un text pentru comparație (fără diacritice, spații, semne) */
+function thNorm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,''); }
+function thUnitSize(f){ if(f.var) return TH.byteMode?8:32; return TH.byteMode ? f.bits/8 : f.bits; }
+function thNameMatch(name,f){
+  const n=thNorm(name); if(!n) return false;
+  const cands=[f.n].concat(f.alt||[]); cands.push(f.k.split('-').pop());
+  return cands.some(c=>thNorm(c)===n);
+}
+
+/* încarcă un header: calculează aranjarea corectă + resetează zona de lucru */
+function thLoad(k){
+  const H=HEADERS[k]; TH.hkey=k; TH.byteMode = H.unit==='byte';
+  const fields=H.fields.slice();   // includem și payload/opțiuni (variabile)
+  let expRows=[];
+  if(TH.byteMode){
+    expRows=[fields];   // o singură bandă, în octeți
+    TH.stripWidth=fields.reduce((a,f)=>a+thUnitSize(f),0);
+  } else {
+    let cur=[],acc=0;
+    fields.forEach(f=>{
+      if(f.var){ if(cur.length){ expRows.push(cur); cur=[]; acc=0; } expRows.push([f]); return; }
+      cur.push(f); acc+=f.bits; if(acc>=32){ expRows.push(cur); cur=[]; acc=0; }
+    });
+    if(cur.length) expRows.push(cur);
+    TH.stripWidth=0;
+  }
+  TH.expRows=expRows;
+  document.getElementById('thAddRow').style.display = TH.byteMode ? 'none' : '';
+  document.getElementById('thHintOut').innerHTML='';
+  document.getElementById('thScore').className='scorebar';
+  thReset();
+  thRenderLearn(k);
+}
+
+function thReset(){
+  if(TH.byteMode) TH.rows=[{width:TH.stripWidth, cells:[{size:TH.stripWidth,name:'',status:null}]}];
+  else            TH.rows=[{width:32, cells:[{size:32,name:'',status:null}]}];
+  document.getElementById('thScore').className='scorebar';
+  document.getElementById('thHintOut').innerHTML='';
+  thRender();
+}
+function thAddRow(){ TH.rows.push({width:32, cells:[{size:32,name:'',status:null}]}); thRender(); }
+function thDelRow(r){ if(TH.rows.length>1){ TH.rows.splice(r,1); thRender(); } }
+
+/* ---- desenare zonă de lucru ---- */
+function thRender(){
+  const wrap=document.getElementById('thBuild'); if(!wrap) return;
+  const unitLbl = TH.byteMode ? 'octeți' : 'biți';
+  const unitShort = TH.byteMode ? 'oct' : 'b';
+  const cap='<div class="th-cap"><b>✂ click pe riglă</b> ca să tai · <b>trage de mâner</b> ca să muți · <b>✕</b> ca să ștergi · sau scrie biții direct în casetă</div>';
+  wrap.innerHTML = cap + TH.rows.map((row,r)=>{
+    const W=row.width;
+    const step = !TH.byteMode ? 4 : (W<=20?2:(W<=64?4:16));
+    let ruler='';
+    for(let p=0;p<=W;p+=step){ ruler+='<span class="tk" style="left:'+(p/W*100)+'%">'+p+'</span>'; }
+    let cum=0, cells='', handles='';
+    row.cells.forEach((c,ci)=>{
+      const pct=c.size/W*100;
+      const hue=TH_HUES[ci % TH_HUES.length];
+      const st=c.status==='ok'?' ok':(c.status==='no'?' no':'');
+      const vc=c.var?' varcell':'';
+      const nm=(c.name||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+      const bitsHtml = c.var
+        ? '<div class="th-cbits"><span class="th-varlbl">variabil</span></div>'
+        : '<div class="th-cbits"><input class="th-bits" type="number" min="1" value="'+c.size+'" onchange="thSetBits('+r+','+ci+',this.value)"><span>'+unitShort+'</span></div>';
+      cells+='<div class="th-cell'+st+vc+'" style="flex:0 0 '+pct+'%;--h:'+hue+'">'
+        +'<input class="th-name" placeholder="câmp…" value="'+nm+'" oninput="thSetName('+r+','+ci+',this.value)">'
+        +bitsHtml+'</div>';
+      cum+=c.size;
+      if(ci<row.cells.length-1){
+        handles+='<div class="th-handle" style="left:'+(cum/W*100)+'%" onmousedown="thDragStart(event,'+r+','+ci+')" title="trage stânga–dreapta ca să muți tăietura">'
+          +'<span class="th-x" title="șterge tăietura" onclick="thRemoveBoundary(event,'+r+','+ci+')">✕</span></div>';
+      }
+    });
+    const delBtn = (!TH.byteMode && TH.rows.length>1) ? '<button class="th-del" onclick="thDelRow('+r+')" title="șterge linia">🗑</button>' : '';
+    return '<div class="th-row">'
+      +'<div class="th-rownum">Linia '+(r+1)+' · '+W+' '+unitLbl+'</div>'
+      +'<div class="th-wrap">'
+      +'<div class="th-ruler" onclick="thCutClick(event,'+r+')">'+ruler+'</div>'
+      +'<div class="th-cells">'+cells+handles+'</div>'
+      +'</div>'+delBtn+'</div>';
+  }).join('');
+}
+
+/* ---- interacțiune: tăiere / mutare / ștergere / redimensionare ---- */
+function thCutClick(e,r){
+  const row=TH.rows[r], W=row.width, cells=row.cells;
+  const rect=e.currentTarget.getBoundingClientRect();
+  let pos=Math.round((e.clientX-rect.left)/rect.width*W);
+  pos=Math.max(1,Math.min(W-1,pos));
+  let start=0,idx=-1,local=0;
+  for(let i=0;i<cells.length;i++){ if(pos>start && pos<start+cells[i].size){ idx=i; local=pos-start; break; } start+=cells[i].size; }
+  if(idx<0) return;
+  const old=cells[idx];
+  cells.splice(idx,1,{size:local,name:'',status:null},{size:old.size-local,name:old.name,status:null});
+  thRender();
+}
+function thDragStart(e,r,bi){
+  e.preventDefault();
+  const cellsEl=e.currentTarget.parentElement; const rect=cellsEl.getBoundingClientRect();
+  const row=TH.rows[r], W=row.width, cells=row.cells;
+  const a=cells[bi], b=cells[bi+1], a0=a.size, b0=b.size, startX=e.clientX;
+  function mv(ev){
+    let d=Math.round((ev.clientX-startX)/rect.width*W);
+    d=Math.max(-(a0-1), Math.min(b0-1, d));
+    a.size=a0+d; b.size=b0-d; a.status=null; b.status=null; thRender();
+  }
+  function up(){ document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up); }
+  document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up);
+}
+function thRemoveBoundary(e,r,bi){
+  e.stopPropagation();
+  const cells=TH.rows[r].cells, a=cells[bi], b=cells[bi+1];
+  cells.splice(bi,2,{size:a.size+b.size,name:a.name||b.name,status:null});
+  thRender();
+}
+function thSetName(r,ci,v){ TH.rows[r].cells[ci].name=v; TH.rows[r].cells[ci].status=null; }
+function thSetBits(r,ci,v){
+  let val=parseInt(v,10); if(isNaN(val)||val<1){ thRender(); return; }
+  const row=TH.rows[r], cells=row.cells, W=row.width, cur=cells[ci].size;
+  if(ci<cells.length-1){
+    let delta=val-cur; if(cells[ci+1].size-delta<1) delta=cells[ci+1].size-1;
+    cells[ci].size=cur+delta; cells[ci+1].size=cells[ci+1].size-delta;
+  } else {
+    const before=cells.slice(0,ci).reduce((a,c)=>a+c.size,0);
+    const maxLast=W-before; val=Math.min(val,maxLast);
+    cells[ci].size=val; const rem=W-before-val;
+    if(rem>0) cells.push({size:rem,name:'',status:null});
+  }
+  cells.forEach(c=>c.status=null);
+  thRender();
+}
+
+/* ---- verificare ---- */
+function thVerify(){
+  let correct=0,total=0;
+  TH.rows.forEach(row=>row.cells.forEach(c=>c.status='no'));
+  TH.expRows.forEach((erow,ri)=>{
+    erow.forEach((ef,ci)=>{
+      total++;
+      const urow=TH.rows[ri], uc=urow&&urow.cells[ci];
+      if(uc && thNameMatch(uc.name,ef) && (ef.var || uc.size===thUnitSize(ef))){ uc.status='ok'; correct++; }
+    });
+  });
+  thRender();
+  const used=TH.rows.reduce((a,row)=>a+row.cells.length,0);
+  const perfect = correct===total && used===total;
+  const sb=document.getElementById('thScore');
+  sb.className='scorebar show '+(perfect?'good':'bad');
+  sb.textContent=(perfect?'🎉 Perfect! Ai reconstruit headerul corect. ':'')+'Corecte: '+correct+' / '+total
+    +(perfect?'':' — verde = nume + dimensiune corecte; roșu = de corectat (nume, biți sau poziție/linie).');
+}
+
+/* ---- hints ---- */
+function thHintNames(){
+  const names=[]; TH.expRows.forEach(r=>r.forEach(f=>names.push(f.n)));
+  document.getElementById('thHintOut').innerHTML='<b>Câmpuri (în ordine):</b> '+names.map(n=>'<span class="pill">'+n+'</span>').join(' ');
+}
+function thHintNamesBits(){
+  const unitLbl=TH.byteMode?'oct':'b';
+  const items=[]; TH.expRows.forEach(r=>r.forEach(f=>items.push(f.n+' = '+thUnitSize(f)+unitLbl)));
+  document.getElementById('thHintOut').innerHTML='<b>Câmpuri + dimensiune:</b> '+items.map(n=>'<span class="pill">'+n+'</span>').join(' ');
+}
+function thRowWidth(erow){ return TH.byteMode ? TH.stripWidth : erow.reduce((a,f)=>a+thUnitSize(f),0); }
+function thHintCut(){
+  TH.rows = TH.expRows.map(erow=>({width: thRowWidth(erow), cells: erow.map(f=>({size:thUnitSize(f),name:'',status:null,var:f.var}))}));
+  document.getElementById('thHintOut').innerHTML='<b>Liniile sunt tăiate corect.</b> Acum scrie doar numele câmpurilor.';
+  document.getElementById('thScore').className='scorebar';
+  thRender();
+}
+function thSol(){
+  TH.rows = TH.expRows.map(erow=>({width: thRowWidth(erow), cells: erow.map(f=>({size:thUnitSize(f),name:f.n,status:'ok',var:f.var}))}));
+  document.getElementById('thHintOut').innerHTML='<b>👁 Soluția completă</b> — așa arată headerul corect.';
+  const sb=document.getElementById('thScore'); sb.className='scorebar show good'; sb.textContent='Soluție afișată. Apasă „Resetează" ca să încerci singur.';
+  thRender();
+}
+
+/* ---- panou „întrebări pe câmpuri" ---- */
+function thRevQ(btn){ const q=btn.closest('.th-q'); const open=q.classList.toggle('show'); btn.textContent=open?'Ascunde răspunsul':'Arată răspunsul'; }
+/* verificare tolerantă: orice cheie nimerită (substring sau, pt. numere, un grup
+   de cifre exact) marchează răspunsul corect — nu trebuie scris fix ca în barem */
+function thKeyHit(norm, raw, key){
+  const nk=thNorm(key);
+  if(/^[0-9]+$/.test(nk)){ return (raw.match(/\d+/g)||[]).indexOf(nk)>=0; }
+  return nk.length>0 && norm.indexOf(nk)>=0;
+}
+function thCheckQ(btn){
+  const q=btn.closest('.th-q'), inp=q.querySelector('.th-qa-inp'), fb=q.querySelector('.th-qa-fb');
+  const keys=(btn.dataset.keys||'').split('|').filter(Boolean);
+  const raw=inp.value, norm=thNorm(raw);
+  if(!norm){ fb.className='th-qa-fb'; fb.textContent='Scrie un răspuns întâi.'; inp.classList.remove('okin','noin'); return; }
+  const ok=keys.some(key=>thKeyHit(norm,raw,key));
+  if(ok){ fb.className='th-qa-fb good'; fb.textContent='✅ Corect!'; inp.classList.add('okin'); inp.classList.remove('noin'); }
+  else { fb.className='th-qa-fb bad'; fb.textContent='❌ Nu chiar — mai încearcă sau apasă „Arată răspunsul".'; inp.classList.add('noin'); inp.classList.remove('okin'); }
+}
+function thRenderLearn(k){
+  const H=HEADERS[k], el=document.getElementById('thLearn');
+  el.innerHTML='<h2 style="margin-bottom:6px">📚 Întrebări pe câmpuri — '+H.name+'</h2>'
+    +'<p class="lead" style="margin-bottom:14px">Pentru fiecare câmp: ce înseamnă + întrebări de fixare. <b>Scrie răspunsul tău</b> și apasă „Verifică" (acceptă și formulări apropiate), sau „Arată răspunsul".</p>'
+    + H.fields.map(f=>{
+      const desc=FIELD_DESC[f.k]||'';
+      const qs=(TH_FIELD_Q[f.k]||[]).slice();
+      const isByte=H.unit==='byte';
+      let bitsAns, bitsKeys;
+      if(f.var){ bitsAns='Variabil ('+(f.vtxt||'lungime variabilă')+').'; bitsKeys=['variabil','var']; }
+      else if(isByte){ bitsAns='<b>'+(f.bits/8)+'</b> octeți ('+f.bits+' biți).'; bitsKeys=[String(f.bits/8),String(f.bits)]; }
+      else { bitsAns='<b>'+f.bits+'</b> biți'+(f.bits>=8&&Number.isInteger(f.bits/8)?' ('+(f.bits/8)+' octeți)':'')+'.'; bitsKeys=[String(f.bits)]; }
+      qs.push({q:'Câți '+(isByte?'octeți':'biți')+' ocupă câmpul „'+f.n+'"?', a:bitsAns, k:bitsKeys});
+      return '<div class="th-fq"><h4>'+f.n+(f.var?' <span class="pill">variabil</span>':'')+'</h4>'
+        +(desc?'<div class="desc">'+desc+'</div>':'')
+        + qs.map(o=>{
+          const keys=(o.k||[]).join('|').replace(/"/g,'&quot;');
+          const verify=keys?'<button class="th-qa-btn" data-keys="'+keys+'" onclick="thCheckQ(this)">✓ Verifică</button>':'';
+          const input=keys?'<input class="th-qa-inp" placeholder="răspunsul tău…">':'';
+          return '<div class="th-q"><div class="qq">❓ '+o.q+'</div>'
+            +'<div class="th-qa-row">'+input+verify+'<button class="revbtn" onclick="thRevQ(this)">Arată răspunsul</button></div>'
+            +(keys?'<div class="th-qa-fb"></div>':'')
+            +'<div class="qa">'+o.a+'</div></div>';
+        }).join('')
+        +'</div>';
+    }).join('');
+}
+
+/* ---- pornire ---- */
+(function thInit(){
+  const thSel=document.getElementById('thSel'); if(!thSel) return;
+  thSel.innerHTML=headerKeys.map(k=>'<option value="'+k+'">'+HEADERS[k].name+'</option>').join('');
+  thSel.value='ip';
+  thSel.onchange=()=>thLoad(thSel.value);
+  document.getElementById('thCheck').onclick=thVerify;
+  document.getElementById('thReset').onclick=thReset;
+  document.getElementById('thAddRow').onclick=thAddRow;
+  document.getElementById('thHN').onclick=thHintNames;
+  document.getElementById('thHNB').onclick=thHintNamesBits;
+  document.getElementById('thHC').onclick=thHintCut;
+  document.getElementById('thSol').onclick=thSol;
+  try{ thLoad('ip'); }catch(e){ console.error('tryhard',e); }
+})();
 
 /* ---------- BYTES (fill bits) ---------- */
 const bytesSel=document.getElementById('bytesSel'); fillSel(bytesSel);

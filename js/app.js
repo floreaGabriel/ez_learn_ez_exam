@@ -65,6 +65,7 @@ const MATERII = [
     sectiuni:[
       {id:"ref",   nume:"Învață",          icon:"📘"},
       {id:"drag",  nume:"Trage câmpul",    icon:"🧲"},
+      {id:"tryhard", nume:"Trage câmpul TRYHARD", icon:"🛠️"},
       {id:"bytes", nume:"Octeți",          icon:"🔢"},
       {id:"write", nume:"Scrie câmpurile", icon:"✍️"},
       {id:"quiz",  nume:"Quiz",            icon:"❓"},
