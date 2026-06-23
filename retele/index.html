@@ -279,6 +279,7 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
 .topoSub{display:grid;grid-template-columns:repeat(4,148px);grid-template-rows:76px 26px 78px 26px 70px;gap:0 14px;min-width:646px}
 .topoTtl{display:grid;grid-template-columns:172px 116px 172px;grid-template-rows:84px 32px 98px;min-width:484px}
 .topoR1{display:grid;grid-template-columns:160px 40px 184px 40px 184px;grid-template-rows:110px;min-width:620px}
+.topoR2{display:grid;grid-template-columns:140px 30px 120px 30px 178px 30px 120px 30px 140px;grid-template-rows:96px 26px 86px;min-width:840px}
 
 /* ===== Responsive (mobil) — adăugat fără a modifica regulile existente ===== */
 @media (max-width: 760px){
@@ -1469,20 +1470,139 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 26: pachet TCP/HTTP din hexdump -->
+    <!-- EX 26: clasa adresei + broadcast pentru eth0 (2019) -->
     <div class="ex">
       <div class="ex-head">
         <span class="ex-num">26</span>
+        <div class="ex-q"><span class="src">Examen 2019</span><br>
+          Un calculator are interfața eth0 configurată cu adresa IP <code>107.85.20.3</code> și masca de subrețea <code>255.255.255.240</code>. a) Din ce clasă face parte adresa calculatorului (A, B, C, D, E)? b) Care este adresa de broadcast folosită pentru transmiterea de pachete către toate stațiile aflate în aceeași subrețea cu calculatorul?</div>
+      </div>
+      <div class="ex-answer" style="padding-left:64px">
+        <table class="reftable" style="max-width:420px">
+          <tr><th>Întrebare</th><th>Răspuns</th></tr>
+          <tr><td>a) Clasa adresei</td><td><input class="inp" id="p71-class" style="max-width:80px"></td></tr>
+          <tr><td>b) Adresa de broadcast</td><td><input class="inp" id="p71-bcast" style="text-align:left"></td></tr>
+        </table>
+      </div>
+      <div class="ex-actions">
+        <button class="ex-btn" onclick="checkP71()">✓ Verifică</button>
+        <button class="ex-btn alt" data-label="explicația" onclick="toggleEx(this)">👁 Arată explicația</button>
+        <span class="ex-score" id="p71Score"></span>
+      </div>
+      <div class="ex-sol">
+        <div class="ex-sol-title">📖 Rezolvare model</div>
+        <p><b>a)</b> Primul octet este <b>107</b>, în intervalul 1–126 → clasă <b>A</b>.</p>
+        <p><b>b)</b> Masca <code>255.255.255.240</code> = <b>/28</b> (4 biți de host) → blocuri de 16 adrese pe ultimul octet. <code>3</code> se află în blocul 0–15, deci subrețeaua este <code>107.85.20.0/28</code>, iar adresa de broadcast (ultima adresă din bloc) este <b>107.85.20.15</b>.</p>
+      </div>
+    </div>
+
+    <!-- EX 27: tabela de rutare - longest prefix match (2019) -->
+    <div class="ex">
+      <div class="ex-head">
+        <span class="ex-num">27</span>
+        <div class="ex-q"><span class="src">Examen 2019</span><br>
+          Un router are următoarele intrări în tabela de routare. Pentru fiecare din adresele destinație de mai jos, specificați interfața de ieșire către care va forwarda routerul pachetul respectiv.</div>
+      </div>
+      <div class="ex-answer" style="padding-left:64px">
+        <div class="ex-info">
+          <b>Tabela de rutare</b>
+          <table class="reftable" style="margin-top:8px">
+            <tr><th>Destinație</th><th>Interfața de ieșire</th></tr>
+            <tr><td>196.80.0.0/12</td><td>1</td></tr>
+            <tr><td>196.94.16.0/20</td><td>2</td></tr>
+            <tr><td>196.96.0.0/12</td><td>3</td></tr>
+            <tr><td>196.104.0.0/14</td><td>4</td></tr>
+            <tr><td>128.0.0.0/1</td><td>5</td></tr>
+            <tr><td>64.0.0.0/2</td><td>6</td></tr>
+          </table>
+        </div>
+        <label class="ex-label">✍️ Specifică interfața de ieșire pentru fiecare pachet</label>
+        <table class="reftable" style="max-width:420px">
+          <tr><th>Adresă destinație</th><th>Interfața</th></tr>
+          <tr><td>a) 176.94.16.0</td><td><input class="inp" id="p72-a"></td></tr>
+          <tr><td>b) 96.94.19.135</td><td><input class="inp" id="p72-b"></td></tr>
+          <tr><td>c) 196.94.32.128</td><td><input class="inp" id="p72-c"></td></tr>
+          <tr><td>d) 196.100.100.100</td><td><input class="inp" id="p72-d"></td></tr>
+        </table>
+      </div>
+      <div class="ex-actions">
+        <button class="ex-btn" onclick="checkP72()">✓ Verifică</button>
+        <button class="ex-btn alt" data-label="explicația" onclick="toggleEx(this)">👁 Arată explicația</button>
+        <span class="ex-score" id="p72Score"></span>
+      </div>
+      <div class="ex-sol">
+        <div class="ex-sol-title">📖 Rezolvare model</div>
+        <p>Regula e <b>longest prefix match</b>: routerul alege, dintre toate intrările care se potrivesc cu adresa destinație, pe cea cu prefixul cel mai lung (cel mai specific).</p>
+        <table class="reftable">
+          <tr><th>Destinație</th><th>Intrări care se potrivesc</th><th>Câștigă</th><th>Interfață</th></tr>
+          <tr><td>176.94.16.0</td><td>doar 128.0.0.0/1 (176 ≥ 128)</td><td>/1</td><td><b>5</b></td></tr>
+          <tr><td>96.94.19.135</td><td>doar 64.0.0.0/2 (64 ≤ 96 ≤ 127)</td><td>/2</td><td><b>6</b></td></tr>
+          <tr><td>196.94.32.128</td><td>196.80.0.0/12 (94 ∈ 80–95) și 128.0.0.0/1</td><td>/12</td><td><b>1</b></td></tr>
+          <tr><td>196.100.100.100</td><td>196.96.0.0/12 (100 ∈ 96–111) și 128.0.0.0/1</td><td>/12</td><td><b>3</b></td></tr>
+        </table>
+        <p class="hint">196.94.32.128 NU se potrivește cu 196.94.16.0/20 — acea intrare fixează al treilea octet în 16–31, iar aici al treilea octet este 32.</p>
+      </div>
+    </div>
+
+    <!-- EX 28: tcpdump - identificare sesiune + octeti transmisi (2019) -->
+    <div class="ex">
+      <div class="ex-head">
+        <span class="ex-num">28</span>
+        <div class="ex-q"><span class="src">Examen 2019</span><br>
+          Folosind tcpdump, un administrator de rețea captează următoarea secvență de pachete. a) Ce fel de comunicație are loc în rețea? b) Câți octeți a transmis în total calculatorul client către server?</div>
+      </div>
+      <div class="ex-answer" style="padding-left:64px">
+        <div class="ex-info">
+<pre style="margin:0;border:none;background:transparent;padding:0;white-space:pre-wrap">1. 172.20.1.21.1303 &gt; 172.20.0.81.23: S 2668246764:2668246764(0) win 65535 &lt;mss 1460,nop,nop,sackOK&gt;
+2. 172.20.0.81.23 &gt; 172.20.1.21.1303: S 1722058968:1722058968(0) ack 2668246765 win 61320 &lt;mss 1460&gt;
+3. 172.20.1.21.1303 &gt; 172.20.0.81.23: . ack 1 win 65535
+4. 172.20.1.21.1303 &gt; 172.20.0.81.23: P 1:22(21) ack 1 win 65535
+5. 172.20.0.81.23 &gt; 172.20.1.21.1303: P 1:13(12) ack 22 win 61299
+6. 172.20.1.21.1303 &gt; 172.20.0.81.23: P 22:25(3) ack 13 win 65523
+7. 172.20.1.21.1303 &gt; 172.20.0.81.23: P 25:28(3) ack 13 win 65523
+8. 172.20.1.21.1303 &gt; 172.20.0.81.23: P 28:31(3) ack 13 win 65523</pre>
+        </div>
+        <table class="reftable" style="max-width:420px">
+          <tr><th>Întrebare</th><th>Răspuns</th></tr>
+          <tr><td>a) Tipul comunicației</td><td><input class="inp" id="p73-type" style="text-align:left"></td></tr>
+          <tr><td>b) Octeți transmiși client → server</td><td><input class="inp" id="p73-bytes"></td></tr>
+        </table>
+      </div>
+      <div class="ex-actions">
+        <button class="ex-btn" onclick="checkP73()">✓ Verifică</button>
+        <button class="ex-btn alt" data-label="explicația" onclick="toggleEx(this)">👁 Arată explicația</button>
+        <span class="ex-score" id="p73Score"></span>
+      </div>
+      <div class="ex-sol">
+        <div class="ex-sol-title">📖 Rezolvare model</div>
+        <p><b>a)</b> Clientul (172.20.1.21, port efemer 1303) inițiază o conexiune TCP către portul <b>23 = Telnet</b> al serverului (172.20.0.81). Pachetele 1–2–3 sunt exact three-way handshake-ul (SYN, SYN+ACK, ACK), iar restul sunt segmente mici de date — tipic pentru Telnet, care trimite caracter cu caracter → este o <b>sesiune Telnet</b>.</p>
+        <p><b>b)</b> Octeții de date se citesc din notația <code>P start:end(N)</code>, unde N = octeți de date din acel segment. Doar pachetele trimise de client (172.20.1.21 → 172.20.0.81) cu date sunt #4, #6, #7, #8:</p>
+        <pre>Pachet 4: 1:22(21)  → 21 octeți
+Pachet 6: 22:25(3)  →  3 octeți
+Pachet 7: 25:28(3)  →  3 octeți
+Pachet 8: 28:31(3)  →  3 octeți
+─────────────────────────────
+Total client → server = 21+3+3+3 = <b>30 octeți</b></pre>
+        <p class="hint">Pachetele 1 și 3 (SYN, respectiv ACK gol) nu transportă date (0 octeți); pachetul 5 e trimis de <b>server</b>, deci nu se numără la „client către server".</p>
+      </div>
+    </div>
+
+    <!-- EX 29: pachet TCP/HTTP din hexdump -->
+    <div class="ex">
+      <div class="ex-head">
+        <span class="ex-num">29</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Pentru pachetul TCP din figura următoare, determinați: a) adresa MAC destinație și adresa MAC sursă (hexazecimal); b) adresa IP sursă și adresa IP destinație (zecimal cu punct); c) portul TCP sursă și portul TCP destinație; d) modul în care sunt setate flag-urile TCP; e) tipul de mesaj de nivel aplicație transportat în pachet.</div>
       </div>
       <div class="ex-answer" style="padding-left:64px">
         <div class="ex-info">
-<pre style="margin:0;border:none;background:transparent;padding:0">0000  c8 cb b8 d4 4b 1f 00 1b 38 e2 2f 08 08 00 45 00   ....K8./...E.
-0010  ...                                                (antet IP)
-0020  ...                                                (antet TCP)
-0030  47 45 54 20 2f 20 48 54 54 50 2f 31 2e 31         GET / HTTP/1.1
-0040  48 6f 73 74 3a 20 77 77 77 2e 6d 74 61 2e 72 6f   Host: www.mta.ro</pre>
+<pre style="margin:0;border:none;background:transparent;padding:0">0000  c8 cb b8 d4 4b 1f 00 1b 38 e2 2f 08 08 00 45 00   ....K..8./...E.
+0010  01 9f 33 77 00 00 80 06 37 72 ac 1c 0b 0a c1 e7   ..3w....7r......
+0020  15 0a 08 00 00 50 60 bb 78 c0 22 fa c0 80 80 18   .....P`.x.".....
+0030  01 02 7f 6e 00 00 01 01 08 0a 25 de 7b 90 59 ff   ...n......%.{.Y.
+0040  00 00 47 45 54 20 2f 20 48 54 54 50 2f 31 2e 31   ..GET / HTTP/1.1
+0050  0d 0a 48 6f 73 74 3a 20 77 77 77 2e 6d 74 61 2e   ..Host: www.mta.
+0060  72 6f 0d 0a 0d 0a                                 ro....</pre>
         </div>
         <table class="reftable" style="max-width:480px">
           <tr><th>Câmp</th><th>Valoare</th></tr>
@@ -1519,10 +1639,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 27: rezoluție DNS recursivă -->
+    <!-- EX 30: rezoluție DNS recursivă -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">27</span>
+        <span class="ex-num">30</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Referitor la serviciul DNS, prezentați cum se face rezoluția de nume folosind interogări recursive. Exemplificați acest lucru pentru adresa www.mta.ro.</div>
       </div>
@@ -1546,22 +1666,30 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 28: IP/MAC/TTL printr-un router -->
+    <!-- EX 31: IP/MAC/TTL printr-un router -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">28</span>
+        <span class="ex-num">31</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Se consideră o arhitectură de rețea cu un router care interconectează subrețeaua calculatorului A (IP 111.111.111.111) cu subrețeaua calculatorului B (IP 222.222.222.222). Calculatorul A transmite un pachet IP către B, cu TTL inițial = 128. Răspundeți: a) Care este adresa IP destinație a pachetului când părăsește calculatorul sursă? b) Care este adresa MAC destinație a cadrului când părăsește calculatorul sursă? c) Care este adresa MAC destinație a cadrului când părăsește routerul (pe ultimul hop, către B)? d) Care va fi valoarea câmpului TTL când pachetul ajunge la B?</div>
       </div>
       <div class="ex-answer" style="padding-left:64px">
-        <div class="topo-cap"><b>Topologie</b> — un singur router interconectează subrețeaua lui A cu subrețeaua lui B:</div>
+        <div class="topo-cap"><b>Topologie</b> — un singur router (cu câte un switch pe fiecare LAN) interconectează subrețeaua lui A cu subrețeaua lui B; pe fiecare LAN mai există și un al doilea calculator, nefolosit la acest subpunct:</div>
         <div class="topo-wrap">
-          <div class="topo topoR1">
+          <div class="topo topoR2">
             <div class="topo-box" style="grid-column:1;grid-row:1"><b>💻 A</b><span>IP 111.111.111.111<br>(sursă, TTL=128)</span></div>
             <div class="wire-h" style="grid-column:2;grid-row:1"></div>
-            <div class="topo-box center" style="grid-column:3;grid-row:1"><b>📡 Router</b><span>interfața dinspre A:<br>MAC E6-E9-00-17-BB-4B</span></div>
+            <div class="topo-box center" style="grid-column:3;grid-row:1"><b>🔀 Switch A</b></div>
             <div class="wire-h" style="grid-column:4;grid-row:1"></div>
-            <div class="topo-box" style="grid-column:5;grid-row:1"><b>💻 B</b><span>IP 222.222.222.222<br>MAC 49-BD-D2-C7-56-2A</span></div>
+            <div class="topo-box center" style="grid-column:5;grid-row:1"><b>📡 Router</b><span>if. spre A: MAC E6-E9-00-17-BB-4B<br>if. spre B: MAC CC-49-DE-D0-AB-7D</span></div>
+            <div class="wire-h" style="grid-column:6;grid-row:1"></div>
+            <div class="topo-box center" style="grid-column:7;grid-row:1"><b>🔀 Switch B</b></div>
+            <div class="wire-h" style="grid-column:8;grid-row:1"></div>
+            <div class="topo-box" style="grid-column:9;grid-row:1"><b>💻 B</b><span>IP 222.222.222.222<br>MAC 49-BD-D2-C7-56-2A</span></div>
+            <div class="wire-v" style="grid-column:3;grid-row:2"></div>
+            <div class="wire-v" style="grid-column:7;grid-row:2"></div>
+            <div class="topo-box" style="grid-column:3;grid-row:3"><b>💻 A2</b><span>IP 111.111.111.110<br>MAC 74-29-9C-E8-FF-55</span></div>
+            <div class="topo-box" style="grid-column:7;grid-row:3"><b>💻 B2</b><span>IP 222.222.222.221<br>MAC 88-B2-2F-54-1A-0F</span></div>
           </div>
         </div>
         <table class="reftable" style="max-width:420px">
@@ -1586,10 +1714,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 29: modelul OSI -->
+    <!-- EX 32: modelul OSI -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">29</span>
+        <span class="ex-num">32</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Prezentați modelul arhitectural ISO/OSI. Pentru fiecare nivel precizați rolul acestuia.</div>
       </div>
@@ -1616,10 +1744,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 30: formatul cadrelor Ethernet -->
+    <!-- EX 33: formatul cadrelor Ethernet -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">30</span>
+        <span class="ex-num">33</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Prezentați formatul cadrelor Ethernet și semnificația câmpurilor acestora (Preambul, SFD, MAC Destinație, MAC Sursă, Tip, Payload, FCS). Care este lungimea minimă și maximă a unui cadru Ethernet? Justificați.</div>
       </div>
@@ -1656,10 +1784,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 31: VLSM 193.231.21.0 in 4 departamente -->
+    <!-- EX 34: VLSM 193.231.21.0 in 4 departamente -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">31</span>
+        <span class="ex-num">34</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Se consideră o rețea cu adresa <code>193.231.21.0/24</code> ce trebuie împărțită în 4 subrețele, pentru departamentele: <b>Inginerie</b> (cel mai mare, ~120 hosturi), <b>Administrație</b> (~60 hosturi), <b>Finanțe</b> și <b>Suport</b> (câte ~25-30 hosturi fiecare). Proiectați schema de adresare. Pentru fiecare subrețea specificați: adresa rețelei și masca, prima adresă utilizabilă, ultima adresă utilizabilă și adresa de broadcast.</div>
       </div>
@@ -1692,10 +1820,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 32: transfer fisier UDP cu pierderi -->
+    <!-- EX 35: transfer fisier UDP cu pierderi -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">32</span>
+        <span class="ex-num">35</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Un fișier de 500.000 octeți este transferat prin UDP cu MTU = 1472 octeți. Rata de pierderi a rețelei este de 5%. a) Câte datagrame UDP sunt necesare pentru transferul fișierului? b) Câte datagrame se pierd și câți octeți se pierd?</div>
       </div>
@@ -1719,10 +1847,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 33: VLSM 192.168.10.0 - A/B/C/D -->
+    <!-- EX 36: VLSM 192.168.10.0 - A/B/C/D -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">33</span>
+        <span class="ex-num">36</span>
         <div class="ex-q"><span class="src">Examen 2023</span><br>
           Se consideră adresa de rețea <code>192.168.10.0/24</code> ce trebuie împărțită în 4 subrețele: <b>A</b> (cea mai mare, ~120 hosturi), <b>B</b> (~60 hosturi), <b>C</b> (~30 hosturi) și <b>D</b> — o legătură punct-la-punct (doar 2 adrese). Proiectați schema de adresare VLSM, specificând pentru fiecare subrețea adresa și masca.</div>
       </div>
@@ -1753,10 +1881,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 34: ACK cumulativ TCP -->
+    <!-- EX 37: ACK cumulativ TCP -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">34</span>
+        <span class="ex-num">37</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Host-ul A transmite către host-ul B șase segmente succesive, cu numerele de secvență 10, 20, 30, 40, 50, 60 (câte 10 octeți de date fiecare). Host-ul B confirmă primirea prin segmente cu numerele de confirmare (ACK) 30, 50 și 70. Explicați ce înseamnă fiecare ACK, și de ce pierderea celei de-a doua confirmări (ACK=50) nu are niciun efect asupra transferului.</div>
       </div>
@@ -1786,10 +1914,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 35: matching niveluri OSI -->
+    <!-- EX 38: matching niveluri OSI -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">35</span>
+        <span class="ex-num">38</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Asociați fiecare protocol/concept cu nivelul corect din modelul ISO/OSI (1–7): TCP, IP, HTTP, Ethernet (cadru), SSL/TLS, MAC address, DNS, Comutare de pachete, Compresia datelor, Controlul dialogului (sesiune).</div>
       </div>
@@ -1830,10 +1958,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 36: fazele unei conexiuni TCP (stabilire + terminare) -->
+    <!-- EX 39: fazele unei conexiuni TCP (stabilire + terminare) -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">36</span>
+        <span class="ex-num">39</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Referitor la protocolul TCP: ce faze are o conexiune, de la stabilire până la terminare? (Stabilirea conexiunii — three-way handshake — e deja detaliată la un alt exercițiu de mai sus.) Concentrați-vă aici pe <b>terminarea</b> conexiunii: ce flag-uri și ce schimb de mesaje are loc?</div>
       </div>
@@ -1857,10 +1985,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 37: clasificare rapida 4 adrese IP -->
+    <!-- EX 40: clasificare rapida 4 adrese IP -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">37</span>
+        <span class="ex-num">40</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Pentru fiecare din adresele IP de mai jos, specificați clasa din care fac parte: 200.58.20.165, 191.10.70.130, 128.167.23.20, 16.196.128.50.</div>
       </div>
@@ -1891,10 +2019,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 38: format complet IPv4 + adresare -->
+    <!-- EX 41: format complet IPv4 + adresare -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">38</span>
+        <span class="ex-num">41</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Referitor la protocolul IPv4, prezentați formatul pachetelor, semnificația câmpurilor și descrieți modul de adresare (clase de adrese, adrese rezervate, adrese private, măști de subrețea).</div>
       </div>
@@ -1945,10 +2073,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 39: secventa telnet pc33.mta.ro -->
+    <!-- EX 42: secventa telnet pc33.mta.ro -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">39</span>
+        <span class="ex-num">42</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Se consideră rețeaua din figura de mai jos — un switch interconectează toate calculatoarele, toate în aceeași subrețea (mască 255.255.255.0). Cache-urile ARP sunt inițial goale. Utilizatorul de pe <code>pc33.mta.ro</code> execută comanda <code>telnet lms.mta.ro</code>. Pentru fiecare tip de pachet care trece prin punctul de observare (legătura pc33 ↔ switch), specificați: MAC sursă, MAC destinație, IP sursă, IP destinație, protocolul.</div>
       </div>
@@ -2003,10 +2131,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 40: fragmentare IPv4 - 4020 octeti / MTU 1500 -->
+    <!-- EX 43: fragmentare IPv4 - 4020 octeti / MTU 1500 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">40</span>
+        <span class="ex-num">43</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Un pachet IP are dimensiunea totală de 4.020 octeți (20 octeți antet + 4.000 octeți date) și trebuie transmis pe o legătură cu MTU = 1.500 octeți. Calculați: a) câte fragmente se produc? b) dimensiunea fiecărui fragment (antet + date); c) valoarea câmpului Fragment Offset pentru fiecare fragment; d) valoarea flagului MF pentru fiecare fragment.</div>
       </div>
@@ -2036,10 +2164,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 41: adresa de retea si broadcast pentru 172.16.45.200/20 -->
+    <!-- EX 44: adresa de retea si broadcast pentru 172.16.45.200/20 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">41</span>
+        <span class="ex-num">44</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Pentru adresa IP <code>172.16.45.200/20</code>, calculați: a) adresa de rețea; b) adresa de broadcast; c) prima și ultima adresă utilizabilă; d) numărul de hosturi utilizabile.</div>
       </div>
@@ -2072,10 +2200,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 42: tipuri de mesaje ICMP -->
+    <!-- EX 45: tipuri de mesaje ICMP -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">42</span>
+        <span class="ex-num">45</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Asociați fiecare valoare a câmpului Type ICMP cu semnificația sa: Type 0, Type 3, Type 5, Type 8, Type 11.</div>
       </div>
@@ -2107,10 +2235,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 43: TCP/IP vs ISO/OSI -->
+    <!-- EX 46: TCP/IP vs ISO/OSI -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">43</span>
+        <span class="ex-num">46</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Realizați o corespondență completă între nivelurile modelului TCP/IP și cele ale modelului ISO/OSI. Pentru fiecare nivel TCP/IP precizați protocoalele reprezentative.</div>
       </div>
@@ -2134,10 +2262,10 @@ Host ──broadcast──► "192.168.1.50 este acum la BB:BB:BB:BB:BB:BB"</pre
       </div>
     </div>
 
-    <!-- EX 44: analiza hexdump Ethernet+IP -->
+    <!-- EX 47: analiza hexdump Ethernet+IP -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">44</span>
+        <span class="ex-num">47</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Se dă următorul dump hex al unui cadru (primii 34 octeți). Identificați: MAC destinație, MAC sursă, EtherType, versiunea IP, TTL, protocolul de transport, IP sursă, IP destinație.</div>
       </div>
@@ -2181,10 +2309,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 45: TTL prin 4 routere + low-TTL -->
+    <!-- EX 48: TTL prin 4 routere + low-TTL -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">45</span>
+        <span class="ex-num">48</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Calculatorul A trimite un pachet cu TTL=64 către serverul S aflat la 4 routere distanță (A → R1 → R2 → R3 → R4 → S). a) Care este TTL-ul când pachetul ajunge la S? b) Ce se întâmplă dacă același pachet e trimis cu TTL=3? c) Ce mesaj ICMP primește A în cazul b) și de la cine?</div>
       </div>
@@ -2209,10 +2337,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 46: apartenenta la subretea, /25 -->
+    <!-- EX 49: apartenenta la subretea, /25 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">46</span>
+        <span class="ex-num">49</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Se dau adresele IP: 192.168.10.50, 192.168.10.130, 192.168.10.190, 192.168.10.220, cu masca de subrețea 255.255.255.128 (/25). a) Câte subrețele rezultă și care sunt? b) În ce subrețea se află fiecare adresă? c) Care adrese pot comunica direct (fără router)?</div>
       </div>
@@ -2246,10 +2374,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 47: CSMA/CD backoff - calcul numeric -->
+    <!-- EX 50: CSMA/CD backoff - calcul numeric -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">47</span>
+        <span class="ex-num">50</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Descrieți algoritmul Binary Exponential Backoff folosit în CSMA/CD după detectarea unei coliziuni, și calculați intervalul maxim de așteptare posibil după prima, a doua și a treia coliziune consecutivă (slot time = 51,2 µs).</div>
       </div>
@@ -2278,10 +2406,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 48: clasificare completa adrese IP -->
+    <!-- EX 51: clasificare completa adrese IP -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">48</span>
+        <span class="ex-num">51</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Clasificați următoarele adrese IP și precizați pentru fiecare: clasa (A/B/C/D/E), dacă e publică sau privată/specială, și dacă e utilizabilă ca adresă de host: 10.5.200.1, 172.31.255.254, 192.168.0.0, 8.8.8.8, 127.0.0.1, 224.0.0.5, 172.32.0.1, 169.254.10.5.</div>
       </div>
@@ -2321,10 +2449,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 49: ping extins (RTT + ICMP type/code) -->
+    <!-- EX 52: ping extins (RTT + ICMP type/code) -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">49</span>
+        <span class="ex-num">52</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Se rulează <code>ping 10.0.0.1</code> de pe un host și se obțin 5 pachete trimise, din care se primesc 4 răspunsuri cu RTT-urile: 2ms, 4ms, pierdut, 3ms, 2ms. a) Care este procentul de pierdere? b) Care este RTT minim, mediu și maxim? c) Ce tip și cod ICMP are cererea ping și ce tip are răspunsul? d) Ce câmpuri din antetul ICMP identifică perechea cerere-răspuns?</div>
       </div>
@@ -2355,10 +2483,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 50: rutare statica - next-hop -->
+    <!-- EX 53: rutare statica - next-hop -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">50</span>
+        <span class="ex-num">53</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Un router R are 3 interfețe: eth0: 192.168.1.1/24 (LAN A); eth1: 192.168.2.1/24 (LAN B); eth2: 10.0.0.2/30 (legătură WAN către ISP, next-hop 10.0.0.1, rută default). Pentru fiecare pachet de mai jos, precizați pe ce interfață iese și care e next-hop-ul: a) destinație 8.8.8.8; b) destinație 192.168.2.50; c) destinație 192.168.3.10.</div>
       </div>
@@ -2388,10 +2516,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 51 -->
+    <!-- EX 54 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">51</span>
+        <span class="ex-num">54</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Ce înseamnă CAM în contextul unui switch Ethernet?</div>
       </div>
@@ -2416,10 +2544,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 52 -->
+    <!-- EX 55 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">52</span>
+        <span class="ex-num">55</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Un switch primește un cadru cu MAC destinație necunoscută în tabela CAM. Ce face?</div>
       </div>
@@ -2444,10 +2572,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 53 -->
+    <!-- EX 56 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">53</span>
+        <span class="ex-num">56</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Cum își construiește un switch tabela CAM?</div>
       </div>
@@ -2472,10 +2600,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 54 -->
+    <!-- EX 57 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">54</span>
+        <span class="ex-num">57</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Ce este „aging" în contextul tabelei CAM?</div>
       </div>
@@ -2500,10 +2628,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 55 -->
+    <!-- EX 58 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">55</span>
+        <span class="ex-num">58</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Ce se întâmplă dacă tabela CAM a unui switch se umple complet (CAM table overflow)?</div>
       </div>
@@ -2528,10 +2656,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 56 -->
+    <!-- EX 59 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">56</span>
+        <span class="ex-num">59</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Care tip de trafic provoacă ÎNTOTDEAUNA flooding pe un switch, indiferent de CAM?</div>
       </div>
@@ -2556,10 +2684,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 57 -->
+    <!-- EX 60 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">57</span>
+        <span class="ex-num">60</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           CAM: {AA→port1, BB→port2, CC→port3}. Sosește un cadru cu MAC Src=DD, MAC Dst=AA, pe port 4. Ce face switch-ul?</div>
       </div>
@@ -2584,10 +2712,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 58 -->
+    <!-- EX 61 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">58</span>
+        <span class="ex-num">61</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Ce tip de flooding trimite switch-ul pentru un cadru cu MAC destinație 01:00:5E:00:00:05?</div>
       </div>
@@ -2612,10 +2740,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 59 -->
+    <!-- EX 62 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">59</span>
+        <span class="ex-num">62</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Care e diferența dintre flooding și broadcasting?</div>
       </div>
@@ -2640,10 +2768,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 60 -->
+    <!-- EX 63 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">60</span>
+        <span class="ex-num">63</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Cadru pe port 2 cu MAC Src=AA:BB:CC:DD:EE:FF. CAM are deja AA:BB:CC:DD:EE:FF → port 5. Ce face switch-ul?</div>
       </div>
@@ -2668,10 +2796,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 61 -->
+    <!-- EX 64 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">61</span>
+        <span class="ex-num">64</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Ce tip de adresă MAC e FF:FF:FF:FF:FF:FF și ce face switch-ul cu un cadru care o are ca destinație?</div>
       </div>
@@ -2696,10 +2824,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 62 -->
+    <!-- EX 65 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">62</span>
+        <span class="ex-num">65</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Care e ordinea corectă a operațiunilor unui switch când primește un cadru?</div>
       </div>
@@ -2724,10 +2852,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 63 -->
+    <!-- EX 66 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">63</span>
+        <span class="ex-num">66</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Ce folosește un router pentru a decide pe ce interfață să trimită un pachet?</div>
       </div>
@@ -2752,10 +2880,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 64 -->
+    <!-- EX 67 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">64</span>
+        <span class="ex-num">67</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Ce este „longest prefix match" în rutare?</div>
       </div>
@@ -2780,10 +2908,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 65 -->
+    <!-- EX 68 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">65</span>
+        <span class="ex-num">68</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Ce se întâmplă cu adresele MAC când un pachet traversează un router?</div>
       </div>
@@ -2808,10 +2936,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 66 -->
+    <!-- EX 69 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">66</span>
+        <span class="ex-num">69</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Ce conține o intrare tipică în tabela de rutare a unui router?</div>
       </div>
@@ -2836,10 +2964,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 67 -->
+    <!-- EX 70 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">67</span>
+        <span class="ex-num">70</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Ce este NAT și ce tabelă folosește routerul pentru a-l implementa?</div>
       </div>
@@ -2864,10 +2992,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 68 -->
+    <!-- EX 71 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">68</span>
+        <span class="ex-num">71</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           De ce are nevoie un router de cache ARP și cum îl folosește?</div>
       </div>
@@ -2892,10 +3020,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 69 -->
+    <!-- EX 72 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">69</span>
+        <span class="ex-num">72</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Ce se întâmplă când routerul primește un pachet cu TTL=1?</div>
       </div>
@@ -2920,10 +3048,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
 
-    <!-- EX 70 -->
+    <!-- EX 73 -->
     <div class="ex">
       <div class="ex-head">
-        <span class="ex-num">70</span>
+        <span class="ex-num">73</span>
         <div class="ex-q"><span class="src">Examen</span><br>
           Ce diferență există între rutarea statică și cea dinamică?</div>
       </div>
@@ -4340,6 +4468,18 @@ function checkRt50(){
     nhEl.classList.remove('ok','no'); nhEl.classList.add(nhOk?'ok':'no');
   }
   setScore('rt50Score', r1.ok+(nhOk?1:0), r1.total+1);
+}
+function checkP71(){
+  const r=gradeInputs([['p71-class','A','text'],['p71-bcast','107.85.20.15','text']]);
+  setScore('p71Score', r.ok, r.total);
+}
+function checkP72(){
+  const r=gradeInputs([['p72-a','5','num'],['p72-b','6','num'],['p72-c','1','num'],['p72-d','3','num']]);
+  setScore('p72Score', r.ok, r.total);
+}
+function checkP73(){
+  const r=gradeInputs([['p73-type','telnet','text'],['p73-bytes','30','num']]);
+  setScore('p73Score', r.ok, r.total);
 }
 function selectMcq(el){
   const mcq=el.closest('.mcq');
