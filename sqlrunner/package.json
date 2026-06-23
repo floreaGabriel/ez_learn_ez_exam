@@ -1,0 +1,13 @@
+{
+  "name": "sqlrunner",
+  "version": "1.0.0",
+  "description": "Backend read-only pentru sectiunea Interogare Live (SQL Trainer) — Azure SQL Edge / T-SQL",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "mssql": "^11.0.1"
+  }
+}

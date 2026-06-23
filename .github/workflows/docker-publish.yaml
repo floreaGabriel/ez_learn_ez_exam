@@ -53,3 +53,14 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_counter:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_counter:${{ github.sha }}
+
+      - name: Build and push image (sqlrunner — backend Interogare Live)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./sqlrunner
+          file: ./sqlrunner/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_sqlrunner:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_sqlrunner:${{ github.sha }}

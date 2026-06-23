@@ -151,7 +151,7 @@ details.anexa pre{margin-top:12px}
 .clause.correct{border-color:var(--green); background:rgba(184,187,38,.12)}
 .clause.wrong{border-color:var(--red); background:rgba(251,73,52,.12)}
 
-/* joc: potrivește Access ↔ ANSI */
+/* joc: potrivește sarcina cu funcția T-SQL */
 .match-grid{display:flex; flex-direction:column; gap:8px; margin:12px 0}
 .match-row{display:flex; gap:12px; align-items:center; background:var(--panel); border:1px solid var(--line2); border-radius:10px; padding:8px 12px; flex-wrap:wrap}
 .match-access{font-family:var(--mono); font-size:13px; color:var(--accent); min-width:130px; font-weight:600}
@@ -232,6 +232,40 @@ details.anexa pre{margin-top:12px}
   .row{gap:8px}
   .btn-row{gap:8px}
 }
+
+/* ============================ INTEROGARE LIVE ============================ */
+.live-status{font-size:12.5px; padding:7px 12px; border-radius:9px; border:1px solid var(--line2); display:inline-flex; align-items:center; gap:7px; margin:4px 0}
+.live-status.ok{color:var(--green,#3fb950); border-color:var(--green,#3fb950)}
+.live-status.err{color:var(--red,#f85149); border-color:var(--red,#f85149)}
+.live-dot{width:8px; height:8px; border-radius:50%; background:currentColor; flex:0 0 auto}
+.live-tables{display:flex; flex-wrap:wrap; gap:14px; margin:14px 0}
+.live-tcard{flex:1; min-width:280px; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden}
+.live-tcard h4{margin:0; padding:9px 13px; background:var(--panel2); border-bottom:1px solid var(--line); font-family:var(--mono); color:var(--accent); font-size:13.5px; display:flex; justify-content:space-between; align-items:center; gap:8px}
+.live-tcard h4 .cnt{font-family:var(--sans); font-size:11px; font-weight:600; color:var(--muted)}
+.live-tcard .scroll{overflow-x:auto; -webkit-overflow-scrolling:touch}
+.res-tbl{border-collapse:collapse; width:100%; font-size:12.5px; font-family:var(--mono)}
+.res-tbl th,.res-tbl td{border:1px solid var(--line2); padding:5px 9px; text-align:left; white-space:nowrap}
+.res-tbl th{background:var(--panel2); color:var(--accent); position:sticky; top:0; font-size:11px; text-transform:uppercase; letter-spacing:.3px}
+.res-tbl td .nullv{color:var(--muted); font-style:italic; opacity:.7}
+.res-tbl tr:nth-child(even) td{background:rgba(127,127,127,.045)}
+.live-editor-wrap{margin:8px 0}
+.live-editor{width:100%; min-height:150px; resize:vertical; background:var(--code-bg,var(--panel2)); color:var(--code-ink,var(--ink)); border:1px solid var(--line2); border-radius:10px; padding:13px 15px; font-family:var(--mono); font-size:14px; line-height:1.55; tab-size:2}
+.live-editor:focus{outline:none; border-color:var(--accent)}
+.live-bar{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:10px 0}
+.live-bar .spacer{flex:1}
+.live-hint{font-size:12px; color:var(--muted)}
+.live-examples{display:flex; flex-wrap:wrap; gap:7px; margin:8px 0 2px}
+.live-ex{background:var(--panel2); border:1px solid var(--line2); border-radius:8px; padding:5px 10px; font-family:var(--mono); font-size:11.8px; color:var(--ink); cursor:pointer; transition:.12s}
+.live-ex:hover{border-color:var(--accent); color:var(--accent)}
+.live-result{margin-top:14px}
+.live-meta{font-size:12px; color:var(--muted); margin-bottom:7px}
+.live-error{background:rgba(248,81,73,.08); border:1px solid var(--red,#f85149); color:var(--red,#f85149); border-radius:10px; padding:12px 15px; font-family:var(--mono); font-size:12.8px; white-space:pre-wrap}
+.live-empty{color:var(--muted); padding:14px; border:1px dashed var(--line2); border-radius:10px; text-align:center}
+.res-box{max-height:460px; overflow:auto; border:1px solid var(--line); border-radius:12px}
+@media (max-width:760px){
+  .live-tcard{min-width:0; width:100%}
+  .live-editor{font-size:13px}
+}
 </style>
 </head>
 <body>
@@ -240,28 +274,29 @@ details.anexa pre{margin-top:12px}
 <!-- ============================ ÎNVAȚĂ ============================ -->
 <section class="page active" id="page-ref">
   <h1>📘 Învață — SQL pentru Subiectul III</h1>
-  <p class="lead">Tehnicile fundamentale testate la examen (stil ATM 2021): <code>SELECT</code>/<code>JOIN</code> în lanț, semantica <code>NULL</code>, <code>LIKE</code> cu clase de caractere, <code>GROUP BY</code>/<code>HAVING</code>. Mai jos găsești dialectul Access/Jet vs ANSI, cele 3 capcane clasice și harta de tehnici a–i. Apoi treci la <b>Scenarii rezolvate</b>, <b>Exerciții</b> și cele 4 jocuri.</p>
+  <p class="lead">Tehnicile fundamentale testate la examen (stil ATM 2021): <code>SELECT</code>/<code>JOIN</code> în lanț, semantica <code>NULL</code>, <code>LIKE</code> cu clase de caractere, <code>GROUP BY</code>/<code>HAVING</code>. Mai jos găsești reperele de sintaxă SQL Server, cele 3 capcane clasice și harta de tehnici a–i. Apoi treci la <b>Scenarii rezolvate</b>, <b>Exerciții</b> și cele 4 jocuri.</p>
 
   <h2>Ce testează Subiectul III</h2>
   <p>Trei tabele legate în lanț <code>1—N—N</code> (părinte → cerere → obiect emis) și <b>două câmpuri care acceptă <code>null</code></b> cu semantică specială (ex. <code>Stare</code>, <code>Pierdut</code>). Cele 9 cerințe (a–i) reiau mereu aceleași „mușchi” SQL — de aceea, dacă stăpânești un scenariu, le rezolvi pe toate.</p>
 
-  <h2>Dialectul SQL: Access/Jet vs ANSI</h2>
-  <p>Baremul ATM este scris în <b>MS Access / Jet SQL</b>. La examen scrii varianta Access (cea din barem); mai jos, în fiecare rezolvare, dai și echivalentul ANSI, ca să fii acoperit indiferent de motor.</p>
+  <h2>Repere de sintaxă SQL Server (T-SQL)</h2>
+  <p>Toate rezolvările sunt în <b>SQL Server / T-SQL</b> — dialectul din laboratoare (baza Northwind). Reperele folosite cel mai des:</p>
   <table>
-    <tr><th>Concept</th><th>Access / Jet (barem)</th><th>ANSI / SQL Server / MySQL</th></tr>
-    <tr><td>„orice șir” în <code>LIKE</code></td><td><code>*</code></td><td><code>%</code></td></tr>
-    <tr><td>„un singur caracter” în <code>LIKE</code></td><td><code>?</code></td><td><code>_</code></td></tr>
-    <tr><td>clasă de caractere</td><td><code>[1-9]</code>, <code>[A-M]</code></td><td><code>[1-9]</code> (SQL Server), <code>REGEXP</code> / <code>SIMILAR TO</code> (MySQL/Postgres)</td></tr>
-    <tr><td>literal de dată</td><td><code>#2021-01-31#</code></td><td><code>'2021-01-31'</code> / <code>DATE '2021-01-31'</code></td></tr>
-    <tr><td>„primele n rânduri”</td><td><code>TOP n</code></td><td><code>TOP n</code> (SQL Server) / <code>LIMIT n</code> (MySQL/Postgres)</td></tr>
-    <tr><td>anul dintr-o dată</td><td><code>Year(Data)</code></td><td><code>YEAR(Data)</code> / <code>EXTRACT(YEAR FROM Data)</code></td></tr>
-    <tr><td>al n-lea caracter</td><td><code>Mid(s, n, 1)</code></td><td><code>SUBSTRING(s, n, 1)</code></td></tr>
-    <tr><td>concatenare</td><td><code>&amp;</code></td><td><code>+</code> (SQL Server) / <code>CONCAT()</code> (MySQL)</td></tr>
+    <tr><th>Sarcină</th><th>SQL Server (T-SQL)</th></tr>
+    <tr><td>„orice șir” în <code>LIKE</code></td><td><code>%</code></td></tr>
+    <tr><td>„un singur caracter” în <code>LIKE</code></td><td><code>_</code></td></tr>
+    <tr><td>clasă de caractere în <code>LIKE</code></td><td><code>[1-9]</code>, <code>[A-M]</code>, <code>[^0-9]</code> (nu e în listă)</td></tr>
+    <tr><td>literal de dată</td><td><code>'2021-01-31'</code> (ISO neambiguu: <code>'20210131'</code>)</td></tr>
+    <tr><td>„primele n rânduri”</td><td><code>SELECT TOP (n) ... ORDER BY ...</code></td></tr>
+    <tr><td>an / lună / zi dintr-o dată</td><td><code>YEAR(d)</code>, <code>MONTH(d)</code>, <code>DAY(d)</code></td></tr>
+    <tr><td>al n-lea caracter / poziție</td><td><code>SUBSTRING(s, n, 1)</code>, <code>CHARINDEX(c, s)</code></td></tr>
+    <tr><td>concatenare</td><td><code>+</code> sau <code>CONCAT(a, b)</code></td></tr>
+    <tr><td>trunchiere la zi (fără oră)</td><td><code>CAST(d AS date)</code></td></tr>
   </table>
 
   <h2>⚠️ Cele 3 capcane care apar (aproape) mereu</h2>
   <div class="warn"><b>1. <code>NULL</code> nu se compară cu <code>=</code>.</b> <code>WHERE Blocata &lt;&gt; null</code> întoarce mereu <code>UNKNOWN</code> → 0 rânduri. Se scrie obligatoriu <code>IS NULL</code> / <code>IS NOT NULL</code>.</div>
-  <div class="warn"><b>2. <code>BETWEEN</code> pe <code>datetime</code> „pierde” ziua finală.</b> <code>Data BETWEEN #2021-10-01# AND #2021-10-31#</code> ratează orele de pe 31 oct. de după <code>00:00:00</code> (fiindcă <code>#...10-31#</code> = miezul nopții). Robust: <code>Data &gt;= #2021-10-01# AND Data &lt; #2021-11-01#</code>.</div>
+  <div class="warn"><b>2. <code>BETWEEN</code> pe <code>datetime</code> „pierde” ziua finală.</b> <code>Data BETWEEN '2021-10-01' AND '2021-10-31'</code> ratează orele de pe 31 oct. de după <code>00:00:00</code> (fiindcă <code>'2021-10-31'</code> = miezul nopții). Robust: <code>Data &gt;= '2021-10-01' AND Data &lt; '2021-11-01'</code>.</div>
   <div class="warn"><b>3. <code>NOT IN (subinterogare)</code> se „strică” la <code>NULL</code>.</b> Dacă subinterogarea poate întoarce un <code>NULL</code>, <code>NOT IN</code> dă rezultat vid. Variantă sigură: <code>NOT EXISTS</code> sau <code>LEFT JOIN ... WHERE ... IS NULL</code>.</div>
 
   <h2>Clauzele fundamentale, cu exemple</h2>
@@ -272,29 +307,29 @@ SELECT Cod_Bare FROM Volume WHERE Pierdut <> null;   -- 0 randuri (capcana!)
 -- corect:
 SELECT Cod_Bare FROM Volume WHERE Pierdut IS NOT NULL;</pre>
 
-  <h3><code>LIKE</code> — cele 4 forme de potrivire (dialect Access)</h3>
-  <pre class="sql">WHERE Nume LIKE 'Pop*'      -- incepe cu "Pop"
-WHERE Nume LIKE '*escu'     -- se termina in "escu"
-WHERE Nume LIKE '*ana*'     -- contine "ana" oriunde
-WHERE Nume LIKE '????u'     -- exact 5 caractere, ultimul "u" (? = un caracter)
-WHERE Cod_Bare LIKE '[1-9]*'   -- prima cifra nenula (clasa de caractere)</pre>
+  <h3><code>LIKE</code> — cele 4 forme de potrivire (SQL Server)</h3>
+  <pre class="sql">WHERE Nume LIKE 'Pop%'      -- incepe cu "Pop"
+WHERE Nume LIKE '%escu'     -- se termina in "escu"
+WHERE Nume LIKE '%ana%'     -- contine "ana" oriunde
+WHERE Nume LIKE '____u'     -- exact 5 caractere, ultimul "u" (_ = un caracter)
+WHERE Cod_Bare LIKE '[1-9]%'   -- prima cifra nenula (clasa de caractere)</pre>
 
   <h3><code>INNER JOIN</code> în lanț <code>1—N—N</code></h3>
   <pre class="sql">SELECT Nume, Prenume, Cod_Bare
-FROM (Cititori
-     INNER JOIN Imprumuturi ON Cititori.Id_Cititor = Imprumuturi.Id_Cititor)
-     INNER JOIN Volume      ON Imprumuturi.Id_Imprumut = Volume.Id_Imprumut
+FROM Cititori
+INNER JOIN Imprumuturi ON Cititori.Id_Cititor = Imprumuturi.Id_Cititor
+INNER JOIN Volume      ON Imprumuturi.Id_Imprumut = Volume.Id_Imprumut
 WHERE Volume.Pierdut IS NULL;
--- Access cere PARANTEZE la 2+ join-uri; SQL Server/MySQL nu le cer.</pre>
+-- in SQL Server inlantuiesti direct mai multe JOIN-uri, fara paranteze.</pre>
 
   <h3><code>GROUP BY</code> / <code>HAVING</code> — rețeta canonică</h3>
-  <pre class="sql">SELECT Nume, Prenume, Count(*) AS Nr
+  <pre class="sql">SELECT Nume, Prenume, COUNT(*) AS Nr
 FROM Clienti
 INNER JOIN Comenzi_Service ON Clienti.Id_Client = Comenzi_Service.Id_Client
 WHERE Comenzi_Service.Stare = 'F'          -- filtreaza RANDURI (inainte de grupare)
 GROUP BY Comenzi_Service.Id_Client, Nume, Prenume
-HAVING Count(*) >= 2                        -- filtreaza GRUPE (dupa agregare)
-ORDER BY Count(*) DESC;</pre>
+HAVING COUNT(*) >= 2                        -- filtreaza GRUPE (dupa agregare)
+ORDER BY COUNT(*) DESC;</pre>
 
   <h3>Subinterogări: orfani și „niciuna” (<code>NOT EXISTS</code>)</h3>
   <pre class="sql">-- inregistrari "orfane" (robust, fara capcana NOT IN):
@@ -316,7 +351,7 @@ WHERE NOT EXISTS (SELECT 1 FROM Rezervari R
     <tr><td><b>d</b></td><td><code>INNER JOIN</code> + filtre multiple</td></tr>
     <tr><td><b>e</b></td><td><code>GROUP BY</code> + <code>COUNT</code>/<code>SUM</code> + <code>ORDER BY</code></td></tr>
     <tr><td><b>f</b></td><td><code>COUNT</code> + interval de date sigur + funcție pe șir (poziția unei cifre)</td></tr>
-    <tr><td><b>g</b></td><td><code>GROUP BY ... HAVING</code> + funcții pe dată (<code>Year/Month/Day</code>) + <code>DISTINCT</code></td></tr>
+    <tr><td><b>g</b></td><td><code>GROUP BY ... HAVING</code> + funcții pe dată (<code>YEAR/MONTH/DAY</code>) + <code>DISTINCT</code></td></tr>
     <tr><td><b>h</b></td><td>dublu <code>JOIN</code> în lanț + <code>IS NULL</code> + comparație de date</td></tr>
     <tr><td><b>i</b></td><td>integritate referențială: orfani (<code>NOT IN</code> / <code>NOT EXISTS</code> / <code>LEFT JOIN</code>)</td></tr>
   </table>
@@ -325,7 +360,7 @@ WHERE NOT EXISTS (SELECT 1 FROM Rezervari R
   <table>
     <tr><th>#</th><th>Scenariu</th><th>Ce adaugă</th></tr>
     <tr><td>1</td><td>📚 Bibliotecă universitară</td><td>calibrare 1:1 pe examen (prefix <code>LIKE</code>, grupare pe lună)</td></tr>
-    <tr><td>2</td><td>🩺 Clinică medicală</td><td><code>LIKE '*...*'</code> (conține), grupare pe <b>zi</b> (<code>CAST AS date</code>), clase de cifre pare</td></tr>
+    <tr><td>2</td><td>🩺 Clinică medicală</td><td><code>LIKE '%...%'</code> (conține), grupare pe <b>zi</b> (<code>CAST AS date</code>), clase de cifre pare</td></tr>
     <tr><td>3</td><td>🛒 Magazin online</td><td>agregare numerică <code>SUM</code>/<code>AVG</code> cu expresii, <code>BETWEEN</code> numeric, <code>OR</code> de <code>LIKE</code></td></tr>
     <tr><td>4</td><td>✈️ Companie aeriană</td><td><code>COUNT</code> filtrat, egalități la maxim, subinterogări corelate</td></tr>
     <tr><td>5</td><td>🔧 Service auto (capstone)</td><td><code>EXISTS</code>/<code>NOT EXISTS</code>, dublă negație („doar / niciodată”), comparații între coloane</td></tr>
@@ -336,9 +371,37 @@ WHERE NOT EXISTS (SELECT 1 FROM Rezervari R
 <!-- ============================ SCENARII REZOLVATE ============================ -->
 <section class="page" id="page-scenarii">
   <h1>📚 Scenarii rezolvate</h1>
-  <p class="lead">Cinci subiecte complete în stilul Subiectului III (ATM 2021). Fiecare are scenariul, cele 3 tabele, „Observațiile” despre câmpurile <code>NULL</code>, cele 9 cerințe (a–i) cu rezolvarea pliabilă (model Access + echivalent ANSI + capcane) și o anexă rulabilă. Alege un scenariu:</p>
+  <p class="lead">Cinci subiecte complete în stilul Subiectului III (ATM 2021). Fiecare are scenariul, cele 3 tabele, „Observațiile” despre câmpurile <code>NULL</code>, cele 9 cerințe (a–i) cu rezolvarea pliabilă (soluție SQL Server / T-SQL + capcane) și o anexă rulabilă. Alege un scenariu:</p>
   <div class="row"><label>Scenariu: <select id="scenPick"></select></label></div>
   <div id="scenBody"></div>
+</section>
+
+<!-- ============================ INTEROGARE LIVE ============================ -->
+<section class="page" id="page-live">
+  <h1>⚡ Interogare Live</h1>
+  <p class="lead">Scrie <b>SELECT</b>-uri reale și rulează-le pe o bază de date <b>SQL Server (T-SQL)</b> cu datele celor 5 scenarii. Te joci în voie: conexiunea e <b>doar de citire</b> — nu poți strica nimic (<code>INSERT</code>/<code>UPDATE</code>/<code>DELETE</code> sunt blocate de motor). Alege un scenariu, uită-te la tabele și execută interogarea când vrei.</p>
+
+  <div class="row">
+    <label>Scenariu: <select id="liveScen"></select></label>
+    <span id="liveStatus" class="live-status"><span class="live-dot"></span><span class="t">verific conexiunea…</span></span>
+  </div>
+
+  <h2 style="margin-top:18px">Tabelele scenariului</h2>
+  <div id="liveTables" class="live-tables"></div>
+
+  <h2 style="margin-top:22px">Zona de cod</h2>
+  <div class="live-examples" id="liveExamples"></div>
+  <div class="live-editor-wrap">
+    <textarea id="liveSQL" class="live-editor" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="SELECT * FROM Cititori;"></textarea>
+  </div>
+  <div class="live-bar">
+    <button class="btn primary" id="liveRun">▶ Rulează (Ctrl+Enter)</button>
+    <button class="btn" id="liveClear">✕ Golește</button>
+    <span class="spacer"></span>
+    <span class="live-hint">Doar <code>SELECT</code> • un singur statement</span>
+  </div>
+
+  <div class="live-result" id="liveResult"></div>
 </section>
 
 <!-- ============================ EXERCIȚII ============================ -->
@@ -352,7 +415,7 @@ WHERE NOT EXISTS (SELECT 1 FROM Rezervari R
 <!-- ============================ QUIZ ============================ -->
 <section class="page" id="page-quiz">
   <h1>❓ Quiz</h1>
-  <p class="lead">Întrebări grilă despre concepte și capcane (semantica <code>NULL</code>, <code>LIKE</code> Access vs ANSI, <code>JOIN</code>, <code>GROUP BY</code>/<code>HAVING</code>, <code>NOT IN</code>+<code>NULL</code>). Bifează, apasă „Verifică”, citește explicația. Scorul se actualizează jos.</p>
+  <p class="lead">Întrebări grilă despre concepte și capcane (semantica <code>NULL</code>, <code>LIKE</code> cu <code>%</code>/<code>_</code>/clase, <code>JOIN</code>, <code>GROUP BY</code>/<code>HAVING</code>, <code>NOT IN</code>+<code>NULL</code>). Bifează, apasă „Verifică”, citește explicația. Scorul se actualizează jos.</p>
   <div class="row"><button class="btn" id="quizReset">↺ Reamestecă întrebările</button></div>
   <div id="quizBody"></div>
   <div class="scorebar" id="quizScore"></div>
@@ -380,13 +443,13 @@ WHERE NOT EXISTS (SELECT 1 FROM Rezervari R
   <div class="scorebar" id="capScore"></div>
 </section>
 
-<!-- ============================ ACCESS ↔ ANSI ============================ -->
+<!-- ============================ FUNCȚII T-SQL ============================ -->
 <section class="page" id="page-match">
-  <h1>🔁 Access ↔ ANSI</h1>
-  <p class="lead">Potrivește fiecare sintaxă <b>Access/Jet</b> cu echivalentul <b>ANSI/SQL Server</b>. <b>Click</b> pe un echivalent din bancă, apoi pe slotul rândului potrivit (sau <b>trage</b> echivalentul în slot). Apoi „Verifică”.</p>
+  <h1>🔁 Funcții T-SQL</h1>
+  <p class="lead">Potrivește fiecare <b>sarcină</b> cu <b>funcția/construcția SQL Server</b> corectă (din laboratoare). <b>Click</b> pe o funcție din bancă, apoi pe slotul sarcinii potrivite (sau <b>trage</b> funcția în slot). Apoi „Verifică”.</p>
   <div class="row"><button class="btn" id="matchReset">↺ Resetează</button> <button class="btn primary" id="matchCheck">✓ Verifică</button></div>
   <div class="match-grid" id="matchGrid"></div>
-  <h4 style="margin-top:14px; color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.4px">Echivalente ANSI (trage / dă click)</h4>
+  <h4 style="margin-top:14px; color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.4px">Funcții T-SQL (trage / dă click)</h4>
   <div class="match-bank" id="matchBank"></div>
   <div class="scorebar" id="matchScore"></div>
 </section>
@@ -408,14 +471,14 @@ function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random
 
 /* ---------- highlighter SQL pentru pre.sql ---------- */
 var SQL_KW = ["SELECT","FROM","WHERE","INNER","LEFT","RIGHT","OUTER","FULL","CROSS","JOIN","ON","GROUP","BY","HAVING","ORDER","ASC","DESC","AND","OR","NOT","NULL","IS","IN","EXISTS","LIKE","BETWEEN","AS","DISTINCT","TOP","WITH","TIES","UNION","ALL","CASE","WHEN","THEN","ELSE","END","CREATE","TABLE","PRIMARY","KEY","FOREIGN","REFERENCES","INSERT","INTO","VALUES","INT","VARCHAR","CHAR","DATETIME","DECIMAL","DATE"];
-var SQL_FN = ["COUNT","SUM","AVG","MAX","MIN","YEAR","MONTH","DAY","CAST","SUBSTRING","RIGHT","LEFT","LEN","MID","EXTRACT","CONCAT","ROUND"];
+var SQL_FN = ["COUNT","SUM","AVG","MAX","MIN","YEAR","MONTH","DAY","CAST","SUBSTRING","RIGHT","LEFT","LEN","DATALENGTH","CHARINDEX","DATEPART","DATEDIFF","DATEADD","GETDATE","CONCAT","UPPER","LOWER","LTRIM","RTRIM","ROUND"];
 function highlightSQL(text){
   var store=[];
   function hold(cls,val){ store.push('<span class="'+cls+'">'+escSQL(val)+'</span>'); return String.fromCharCode(0xE000+store.length-1); }
   var s=text;
   s=s.replace(/--[^\n]*/g, function(m){ return hold('sql-com',m); });           // -- comentariu
+  s=s.replace(/'\d{4}-\d{2}-\d{2}[^']*'/g, function(m){ return hold('sql-dt',m); });  // 'data' (literal de dată, albastru)
   s=s.replace(/'(?:[^'\\]|\\.)*'/g, function(m){ return hold('sql-str',m); });   // 'string'
-  s=s.replace(/#[^#\n]*#/g, function(m){ return hold('sql-dt',m); });            // #data# (Access)
   s=escSQL(s);
   s=s.replace(/([A-Za-z_]\w*)|\d+(?:\.\d+)?/g, function(m, ident){
     if(ident===undefined) return '<span class="sql-num">'+m+'</span>';
@@ -439,6 +502,7 @@ function activateTab(tab){
   var p=document.getElementById('page-'+tab); if(!p) return;
   document.querySelectorAll('.page').forEach(function(x){ x.classList.remove('active'); });
   p.classList.add('active');
+  if(tab==='live' && typeof ensureLiveLoaded==='function') ensureLiveLoaded();
   window.scrollTo({top:0, behavior:'smooth'});
 }
 function tabFromHash(){ var t=location.hash.replace('#',''); if(t) activateTab(t); }
@@ -467,8 +531,8 @@ function toggleEx(btn){
    SCENARII REZOLVATE
    ============================================================ */
 function renderSolBody(c){
-  var h='<h4>Model (Access / Jet)</h4><pre class="sql">'+escSQL(c.sql)+'</pre>';
-  if(c.ansi) h+='<h4>Echivalent ANSI / SQL Server</h4><pre class="sql">'+escSQL(c.ansi)+'</pre>';
+  var h='<h4>Soluție (SQL Server / T-SQL)</h4><pre class="sql">'+escSQL(c.sql)+'</pre>';
+  if(c.ansi) h+='<h4>Variantă alternativă</h4><pre class="sql">'+escSQL(c.ansi)+'</pre>';
   h+='<div class="sol-note">'+c.note+'</div>';
   return h;
 }
@@ -694,7 +758,7 @@ function checkBuild(){
 }
 
 /* ============================================================
-   POTRIVEȘTE Access ↔ ANSI
+   POTRIVEȘTE sarcina cu funcția T-SQL
    ============================================================ */
 var matchState={};
 function initMatch(){
@@ -757,6 +821,152 @@ function checkMatch(){
 }
 
 /* ============================================================
+   INTEROGARE LIVE — rulează SELECT-uri reale pe SQL Server (T-SQL)
+   prin backendul read-only `sqlrunner` (proxy nginx la /sqlapi/).
+   ============================================================ */
+var SQLAPI = '/sqlapi';
+var liveLoaded = false;          // încărcăm scenariile/tabelele o singură dată
+var liveScenarios = [];          // [{id,nume,icon,tables}]
+var liveTablesCache = {};        // scenario -> [{name,columns,rows}]
+
+/* exemple de pornire per scenariu (sugestii „dă click și rulează”) */
+var LIVE_EXAMPLES = {
+  biblioteca:[
+    "SELECT * FROM Cititori;",
+    "SELECT Prenume FROM Cititori WHERE Nume LIKE 'Pop%';",
+    "SELECT TOP (1) Facultate FROM Cititori GROUP BY Facultate ORDER BY COUNT(*) DESC;"
+  ],
+  clinica:[
+    "SELECT * FROM Pacienti;",
+    "SELECT Cod_Reteta FROM Retete WHERE Onorata IS NOT NULL;",
+    "SELECT Prenume FROM Pacienti WHERE Nume LIKE '%ana%';"
+  ],
+  magazin:[
+    "SELECT * FROM Comenzi;",
+    "SELECT Cod_Produs, Pret_Unitar FROM Produse_Comandate WHERE Pret_Unitar BETWEEN 100 AND 500;"
+  ],
+  aeriana:[
+    "SELECT * FROM Pasageri;",
+    "SELECT Nume, Prenume FROM Pasageri WHERE Nume LIKE '____u';"
+  ],
+  service:[
+    "SELECT * FROM Comenzi_Service;",
+    "SELECT Nume, Prenume FROM Clienti WHERE Nume LIKE '[A-M]%';"
+  ]
+};
+
+function liveSetStatus(kind, text){
+  var el=document.getElementById('liveStatus'); if(!el) return;
+  el.className='live-status '+(kind||'');
+  el.querySelector('.t').textContent=text;
+}
+function liveCell(v){
+  if(v===null || v===undefined) return '<td><span class="nullv">NULL</span></td>';
+  return '<td>'+escSQL(v)+'</td>';
+}
+function renderResTable(columns, rows){
+  if(!columns.length) return '<div class="live-empty">Interogarea nu a întors coloane.</div>';
+  var h='<div class="res-box"><table class="res-tbl"><thead><tr>';
+  columns.forEach(function(c){ h+='<th>'+escSQL(c)+'</th>'; });
+  h+='</tr></thead><tbody>';
+  if(!rows.length){ h+='<tr><td colspan="'+columns.length+'" style="text-align:center;color:var(--muted)">0 rânduri</td></tr>'; }
+  rows.forEach(function(r){ h+='<tr>'+r.map(liveCell).join('')+'</tr>'; });
+  h+='</tbody></table></div>';
+  return h;
+}
+
+function renderLiveTables(scenario){
+  var box=document.getElementById('liveTables');
+  var tables=liveTablesCache[scenario];
+  if(!tables){ box.innerHTML='<div class="live-empty">Se încarcă tabelele…</div>'; return; }
+  box.innerHTML=tables.map(function(t){
+    var head='<h4>'+escSQL(t.name)+' <span class="cnt">'+t.rows.length+' rânduri</span></h4>';
+    return '<div class="live-tcard">'+head+'<div class="scroll">'+renderResTable(t.columns.map(function(c){return c.name;}), t.rows)+'</div></div>';
+  }).join('');
+}
+
+function renderLiveExamples(scenario){
+  var box=document.getElementById('liveExamples');
+  var ex=LIVE_EXAMPLES[scenario]||[];
+  box.innerHTML=ex.map(function(q){ return '<span class="live-ex">'+escSQL(q)+'</span>'; }).join('');
+  box.querySelectorAll('.live-ex').forEach(function(el){
+    el.onclick=function(){ document.getElementById('liveSQL').value=el.textContent; runLiveQuery(); };
+  });
+}
+
+function loadLiveTables(scenario){
+  var box=document.getElementById('liveTables');
+  if(liveTablesCache[scenario]){ renderLiveTables(scenario); return; }
+  box.innerHTML='<div class="live-empty">Se încarcă tabelele…</div>';
+  fetch(SQLAPI+'/tables?scenario='+encodeURIComponent(scenario))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.error){ box.innerHTML='<div class="live-error">'+escSQL(d.error)+'</div>'; return; }
+      liveTablesCache[scenario]=d.tables||[];
+      renderLiveTables(scenario);
+    })
+    .catch(function(){ box.innerHTML='<div class="live-error">Nu pot încărca tabelele (backend indisponibil).</div>'; });
+}
+
+function onLiveScenChange(){
+  var scen=document.getElementById('liveScen').value;
+  document.getElementById('liveResult').innerHTML='';
+  renderLiveExamples(scen);
+  loadLiveTables(scen);
+}
+
+function runLiveQuery(){
+  var scen=document.getElementById('liveScen').value;
+  var sqlText=document.getElementById('liveSQL').value;
+  var out=document.getElementById('liveResult');
+  if(!sqlText.trim()){ out.innerHTML='<div class="live-empty">Scrie o interogare mai întâi.</div>'; return; }
+  out.innerHTML='<div class="live-meta">Se execută…</div>';
+  fetch(SQLAPI+'/query', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ scenario:scen, sql:sqlText })
+  })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.error){ out.innerHTML='<div class="live-error">⚠ '+escSQL(d.error)+'</div>'; return; }
+      var meta='<div class="live-meta">'+d.rowCount+' rânduri • '+d.elapsedMs+' ms'+
+               (d.truncated?' • <b>trunchiat</b> (primele '+d.rowCount+')':'')+'</div>';
+      out.innerHTML=meta+renderResTable(d.columns, d.rows);
+    })
+    .catch(function(){ out.innerHTML='<div class="live-error">Nu pot rula interogarea (backend indisponibil).</div>'; });
+}
+
+function ensureLiveLoaded(){
+  if(liveLoaded) return; liveLoaded=true;
+  liveSetStatus('', 'verific conexiunea…');
+  fetch(SQLAPI+'/scenarios')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      liveScenarios=d.scenarios||[];
+      var sel=document.getElementById('liveScen');
+      sel.innerHTML=liveScenarios.map(function(s){ return '<option value="'+s.id+'">'+s.icon+' '+s.nume+'</option>'; }).join('');
+      sel.onchange=onLiveScenChange;
+      liveSetStatus('ok', 'conectat • baza de date e activă (doar citire)');
+      onLiveScenChange();
+    })
+    .catch(function(){
+      liveLoaded=false;   // permite reîncercarea la următoarea intrare în tab
+      liveSetStatus('err', 'backend indisponibil — pornește containerele sqlrunner + bază de date');
+      document.getElementById('liveTables').innerHTML='<div class="live-error">Serviciul „Interogare Live” nu răspunde. Verifică serviciile <code>sqlrunner</code> și <code>sqltrainer-db</code>.</div>';
+    });
+}
+
+function initLive(){
+  document.getElementById('liveRun').onclick=runLiveQuery;
+  document.getElementById('liveClear').onclick=function(){
+    document.getElementById('liveSQL').value='';
+    document.getElementById('liveResult').innerHTML='';
+  };
+  document.getElementById('liveSQL').addEventListener('keydown', function(e){
+    if((e.ctrlKey||e.metaKey) && e.key==='Enter'){ e.preventDefault(); runLiveQuery(); }
+  });
+}
+
+/* ============================================================
    INIT
    ============================================================ */
 window.addEventListener('DOMContentLoaded', function(){
@@ -767,6 +977,7 @@ window.addEventListener('DOMContentLoaded', function(){
   initBuild();
   renderCapcana();
   initMatch();
+  initLive();
   document.getElementById('quizReset').onclick=renderQuiz;
   document.getElementById('capReset').onclick=renderCapcana;
   tabFromHash();

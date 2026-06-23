@@ -93,16 +93,17 @@ const MATERII = [
   {
     id:"sql", nume:"SQL", icon:"🗄️",
     sub:"Baze de date — interogări",
-    descriere:"Interogări SQL în stilul Subiectului III (ATM 2021): SELECT/JOIN în lanț, semantica NULL, LIKE cu clase de caractere, GROUP BY/HAVING, dialectul Access/Jet vs ANSI — 5 scenarii rezolvate complet (a–i), exerciții de antrenament și 4 jocuri (quiz, construiește interogarea, găsește capcana, Access↔ANSI).",
+    descriere:"Interogări SQL în SQL Server / T-SQL (ca în laboratoare, baza Northwind): SELECT/JOIN în lanț, semantica NULL, LIKE cu clase de caractere, GROUP BY/HAVING, TOP/agregări — 5 scenarii rezolvate complet (a–i), exerciții de antrenament și 4 jocuri (quiz, construiește interogarea, găsește capcana, funcții T-SQL).",
     tip:"embed", src:"sql/index.html",
     sectiuni:[
       {id:"ref",       nume:"Învață",                  icon:"📘"},
       {id:"scenarii",  nume:"Scenarii rezolvate",      icon:"📚"},
+      {id:"live",      nume:"Interogare Live",         icon:"⚡"},
       {id:"exercitii", nume:"Exerciții",               icon:"📝"},
       {id:"quiz",      nume:"Quiz",                     icon:"❓"},
       {id:"build",     nume:"Construiește interogarea", icon:"🧩"},
       {id:"capcana",   nume:"Găsește capcana",          icon:"🪤"},
-      {id:"match",     nume:"Access ↔ ANSI",            icon:"🔁"}
+      {id:"match",     nume:"Funcții T-SQL",            icon:"🔁"}
     ]
   },
   {
