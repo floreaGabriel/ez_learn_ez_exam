@@ -3473,6 +3473,18 @@ const HEADERS = {
       {n:'Adresa Destinație',k:'ip-dst',bits:32,alt:['destination address','ip destinatie','adresa destinatie']},
       {n:'Opțiuni',k:'ip-opt',bits:0,var:true,vtxt:'variabil',alt:['options','optiuni']},
     ]},
+  ipv6:{ name:'IPv6', mode:'word32', unit:'bit',
+    note:'Header IPv6 fix de 40 de octeți — fără IHL și fără checksum (le elimină față de IPv4). Primul cuvânt: Versiune (4) + Traffic Class (8) + Flow Label (20) = 32 biți. Adresele sunt pe 128 de biți fiecare.',
+    fields:[
+      {n:'Versiune',k:'ip6-ver',bits:4,alt:['version','versiune']},
+      {n:'Traffic Class',k:'ip6-tc',bits:8,alt:['traffic class','clasa de trafic','clasa trafic','tos','dscp']},
+      {n:'Flow Label',k:'ip6-flow',bits:20,alt:['flow label','eticheta de flux','eticheta flux']},
+      {n:'Payload Length',k:'ip6-len',bits:16,alt:['payload length','lungime payload','lungimea payload','lungime utila']},
+      {n:'Next Header',k:'ip6-next',bits:8,alt:['next header','antet urmator','header urmator','protocol']},
+      {n:'Hop Limit',k:'ip6-hop',bits:8,alt:['hop limit','limita salturi','ttl','time to live']},
+      {n:'Adresa Sursă',k:'ip6-src',bits:128,alt:['source address','ip sursa','adresa sursa','adresa ipv6 sursa']},
+      {n:'Adresa Destinație',k:'ip6-dst',bits:128,alt:['destination address','ip destinatie','adresa destinatie','adresa ipv6 destinatie']},
+    ]},
   tcp:{ name:'TCP', mode:'word32', unit:'bit',
     fields:[
       {n:'Port Sursă',k:'tcp-sport',bits:16,alt:['source port','port sursa']},
