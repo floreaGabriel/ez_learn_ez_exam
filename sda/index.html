@@ -121,37 +121,13 @@ td code{font-size:12.5px}
   th,td{padding:6px 8px}
 }
 
-/* ============ VIZUALIZATOR AVL INTERACTIV ============ */
-.avl-viz{padding:0; overflow:hidden}
-.avl-toolbar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:13px 16px; border-bottom:1px solid var(--line); background:var(--panel2)}
-.avl-viz input#avlInput{width:96px; padding:8px 10px; border:1px solid var(--line2); border-radius:8px; background:var(--bg); color:var(--ink); font-family:var(--mono); font-size:14px}
-.avl-viz input#avlInput:focus{outline:none; border-color:var(--accent)}
-.avl-btn{background:var(--panel); color:var(--ink); border:1px solid var(--line2); padding:8px 13px; border-radius:8px; font:600 13px var(--sans); cursor:pointer; transition:.12s}
-.avl-btn:hover{filter:brightness(1.08); border-color:var(--accent)}
-.avl-btn:active{transform:translateY(1px)}
-.avl-btn.primary{background:var(--accent); color:var(--on-accent,#1a1714); border-color:var(--accent)}
-.avl-btn.ghost{color:var(--muted)}
-.avl-sep{flex:1 1 12px}
-.avl-chk,.avl-speed{font-size:12.5px; color:var(--muted); display:flex; align-items:center; gap:6px; user-select:none}
-.avl-chk input{accent-color:var(--accent)}
-.avl-speed select{background:var(--bg); color:var(--ink); border:1px solid var(--line2); border-radius:7px; padding:4px 7px; font-family:var(--sans); font-size:12.5px}
-.avl-stage{position:relative; height:380px; background:var(--code-bg)}
-#avlSvg{width:100%; height:100%; display:block}
-.avl-empty{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:14px; pointer-events:none; padding:0 20px; text-align:center}
-.avl-status{padding:10px 16px; border-top:1px solid var(--line); font-family:var(--mono); font-size:13px; color:var(--ink-soft); min-height:38px; display:flex; align-items:center}
-.avl-trav{padding:0 16px 12px; font-family:var(--mono); font-size:12px; color:var(--muted)}
-.avl-node circle{fill:var(--panel2); stroke:var(--accent); stroke-width:2.5; transition:stroke .25s, fill .25s}
-.avl-node text.val{fill:var(--ink); font:600 14px var(--mono); text-anchor:middle; dominant-baseline:central; pointer-events:none}
-.avl-node text.bf{fill:var(--muted); font:600 10px var(--mono); text-anchor:middle}
-#avlEdges line{stroke:var(--line2); stroke-width:2}
-.avl-node.hl-insert circle{stroke:var(--green); fill:rgba(184,187,38,.20)}
-.avl-node.hl-find   circle{stroke:var(--green); fill:rgba(184,187,38,.30)}
-.avl-node.hl-path   circle{stroke:var(--blue);  fill:rgba(131,165,152,.20)}
-.avl-node.hl-bad    circle{stroke:var(--red);   fill:rgba(251,73,52,.22)}
-@media (max-width:760px){
-  .avl-stage{height:320px}
-  .avl-toolbar{padding:11px 12px}
-}
+/* ============ IFRAME VIZUALIZATOR AVL (USFCA) ============ */
+.avl-embed{padding:0; overflow:hidden; background:#fff}
+.avl-embed iframe{display:block; width:100%; height:600px; border:0; background:#fff}
+.avl-embed-bar{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 16px; border-top:1px solid var(--line); background:var(--panel2); font-size:12.5px; color:var(--muted)}
+.avl-embed-bar a{color:var(--accent); font-weight:600; text-decoration:none}
+.avl-embed-bar a:hover{text-decoration:underline}
+@media (max-width:760px){ .avl-embed iframe{height:460px} }
 </style>
 </head>
 <body>
@@ -366,34 +342,14 @@ td code{font-size:12.5px}
   <p class="lead">Un BST care se <b>auto-echilibrează</b>: pentru orice nod, factorul de echilibru (înălțime stânga − înălțime dreapta) este în <code>{−1, 0, +1}</code>. Astfel înălțimea rămâne O(log n) garantat.</p>
 
   <h2>Vizualizator interactiv</h2>
-  <p>Adaugă, șterge sau caută valori și urmărește cum arborele se reechilibrează prin rotații — pas cu pas, exact ca în animația clasică USFCA. Bifează <b>factori echilibru</b> ca să vezi BF-ul fiecărui nod.</p>
-  <div class="avl-viz card" id="avlViz">
-    <div class="avl-toolbar">
-      <input id="avlInput" type="text" inputmode="numeric" autocomplete="off" placeholder="valoare" maxlength="4">
-      <button class="avl-btn primary" data-act="insert">Inserează</button>
-      <button class="avl-btn" data-act="delete">Șterge</button>
-      <button class="avl-btn" data-act="find">Caută</button>
-      <button class="avl-btn" data-act="random">Aleator</button>
-      <button class="avl-btn ghost" data-act="clear">Golește</button>
-      <span class="avl-sep"></span>
-      <label class="avl-chk"><input type="checkbox" id="avlShowBF"> factori echilibru</label>
-      <label class="avl-speed">viteză
-        <select id="avlSpeed">
-          <option value="950">lentă</option>
-          <option value="600" selected>normală</option>
-          <option value="300">rapidă</option>
-        </select>
-      </label>
+  <p>Adaugă, șterge sau caută valori și urmărește cum arborele se reechilibrează prin rotații, pas cu pas. Folosește butonul <b>Insert</b>, <b>Delete</b>, <b>Find</b> și controlul de viteză din animație.</p>
+  <div class="avl-embed card">
+    <iframe src="https://www.cs.usfca.edu/~galles/visualization/AVLtree.html"
+      title="Vizualizator AVL — USFCA" loading="lazy"></iframe>
+    <div class="avl-embed-bar">
+      <span>Sursă: David Galles, University of San Francisco</span>
+      <a href="https://www.cs.usfca.edu/~galles/visualization/AVLtree.html" target="_blank" rel="noopener">Deschide în filă nouă ↗</a>
     </div>
-    <div class="avl-stage">
-      <svg id="avlSvg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-        <g id="avlEdges"></g>
-        <g id="avlNodes"></g>
-      </svg>
-      <div class="avl-empty" id="avlEmpty">Arbore gol — inserează o valoare ca să începi.</div>
-    </div>
-    <div class="avl-status" id="avlStatus">Gata.</div>
-    <div class="avl-trav" id="avlTrav"></div>
   </div>
 
   <h2>Factorul de echilibru și rotațiile</h2>
@@ -834,182 +790,6 @@ window.addEventListener('message', function(e){
   if(d.type === 'theme' && d.theme){ setTheme(d.theme); applyThemeVars(d.vars); }
   else if(d.type === 'tab' && d.tab) activateTab(d.tab);
 });
-</script>
-
-<script>
-/* ============ VIZUALIZATOR AVL (auto-echilibrare animată) ============ */
-(function(){
-  var NS='http://www.w3.org/2000/svg';
-  var svg=document.getElementById('avlSvg'), gEdges=document.getElementById('avlEdges'), gNodes=document.getElementById('avlNodes');
-  var elInput=document.getElementById('avlInput'), elStatus=document.getElementById('avlStatus'),
-      elEmpty=document.getElementById('avlEmpty'), elBF=document.getElementById('avlShowBF'),
-      elSpeed=document.getElementById('avlSpeed'), elTrav=document.getElementById('avlTrav');
-  if(!svg) return;
-
-  var root=null, idSeq=1, busy=false, frames=[], lastFrame=null, raf=0;
-  var HG=48, VG=70, R=18;
-
-  /* ---- AVL core (pointeri către părinte) ---- */
-  function nn(v){ return {val:v,left:null,right:null,parent:null,height:1,id:idSeq++}; }
-  function h(n){ return n?n.height:0; }
-  function upd(n){ n.height=1+Math.max(h(n.left),h(n.right)); }
-  function bf(n){ return h(n.left)-h(n.right); }
-  function rotL(n){ var r=n.right; n.right=r.left; if(r.left)r.left.parent=n; r.parent=n.parent;
-    if(!n.parent)root=r; else if(n.parent.left===n)n.parent.left=r; else n.parent.right=r;
-    r.left=n; n.parent=r; upd(n); upd(r); return r; }
-  function rotR(n){ var l=n.left; n.left=l.right; if(l.right)l.right.parent=n; l.parent=n.parent;
-    if(!n.parent)root=l; else if(n.parent.left===n)n.parent.left=l; else n.parent.right=l;
-    l.right=n; n.parent=l; upd(n); upd(l); return l; }
-  function transplant(u,v){ if(!u.parent)root=v; else if(u.parent.left===u)u.parent.left=v; else u.parent.right=v; if(v)v.parent=u.parent; }
-
-  /* ---- snapshot: îngheață starea curentă într-un cadru pentru animație ---- */
-  function snapshot(msg, hl){
-    hl=hl||{}; var order=[], idx=0, maxd=0;
-    (function rec(n,d){ if(!n)return; rec(n.left,d+1); n._x=idx++; n._d=d; if(d>maxd)maxd=d; order.push(n); rec(n.right,d+1); })(root,0);
-    var nodes=order.map(function(n){ return {id:n.id,val:n.val,x:n._x*HG,y:n._d*VG,bf:bf(n),hl:hl[n.id]||null}; });
-    var edges=order.filter(function(n){return n.parent;}).map(function(n){
-      return {id:n.id, x1:n.parent._x*HG, y1:n.parent._d*VG, x2:n._x*HG, y2:n._d*VG}; });
-    frames.push({nodes:nodes, edges:edges, msg:msg, vb:{w:order.length?(idx-1)*HG:0, h:maxd*VG}});
-  }
-
-  /* ---- operații ---- */
-  function doInsert(val){
-    if(!root){ root=nn(val); snapshot('Inserat '+val+' ca rădăcină.', kv(root.id,'insert')); return; }
-    var cur=root, par=null;
-    while(cur){ par=cur; if(val<cur.val)cur=cur.left; else if(val>cur.val)cur=cur.right;
-      else { snapshot('Valoarea '+val+' există deja — ignorată.', kv(cur.id,'find')); return; } }
-    var node=nn(val); node.parent=par; if(val<par.val)par.left=node; else par.right=node;
-    snapshot('Inserat '+val+'. Verific echilibrul pe drumul spre rădăcină…', kv(node.id,'insert'));
-    var n=node.parent;
-    while(n){
-      upd(n); var b=bf(n);
-      if(b>1){
-        if(bf(n.left)<0){ var cv=n.left.val; rotL(n.left); snapshot('Caz Stânga-Dreapta la '+n.val+': rotație stânga pe '+cv+'.', kv(n.left.id,'bad')); }
-        var nv=n.val, s=rotR(n); snapshot('Caz Stânga-Stânga: rotație dreapta pe '+nv+'. Reechilibrat.', kv(s.id,'insert')); break;
-      } else if(b<-1){
-        if(bf(n.right)>0){ var cv2=n.right.val; rotR(n.right); snapshot('Caz Dreapta-Stânga la '+n.val+': rotație dreapta pe '+cv2+'.', kv(n.right.id,'bad')); }
-        var nv2=n.val, s2=rotL(n); snapshot('Caz Dreapta-Dreapta: rotație stânga pe '+nv2+'. Reechilibrat.', kv(s2.id,'insert')); break;
-      }
-      n=n.parent;
-    }
-  }
-  function doDelete(val){
-    var z=root; while(z && z.val!==val){ z = val<z.val? z.left : z.right; }
-    if(!z){ snapshot('Valoarea '+val+' nu există în arbore.'); return; }
-    var start;
-    if(!z.left){ start=z.parent; transplant(z,z.right); }
-    else if(!z.right){ start=z.parent; transplant(z,z.left); }
-    else { var y=z.right; while(y.left)y=y.left; start=(y.parent===z)?y:y.parent;
-      if(y.parent!==z){ transplant(y,y.right); y.right=z.right; y.right.parent=y; }
-      transplant(z,y); y.left=z.left; y.left.parent=y; y.height=z.height; }
-    snapshot('Șters '+val+'. Reechilibrez în sus dacă e nevoie…');
-    var n=start;
-    while(n){
-      upd(n); var b=bf(n);
-      if(b>1){
-        if(bf(n.left)<0){ var cv=n.left.val; rotL(n.left); snapshot('Caz Stânga-Dreapta la '+n.val+': rotație stânga pe '+cv+'.', kv(n.left.id,'bad')); }
-        var nv=n.val, s=rotR(n); snapshot('Rotație dreapta pe '+nv+'.', kv(s.id,'insert')); n=s.parent;
-      } else if(b<-1){
-        if(bf(n.right)>0){ var cv2=n.right.val; rotR(n.right); snapshot('Caz Dreapta-Stânga la '+n.val+': rotație dreapta pe '+cv2+'.', kv(n.right.id,'bad')); }
-        var nv2=n.val, s2=rotL(n); snapshot('Rotație stânga pe '+nv2+'.', kv(s2.id,'insert')); n=s2.parent;
-      } else { n=n.parent; }
-    }
-  }
-  function doFind(val){
-    var cur=root;
-    if(!cur){ snapshot('Arbore gol.'); return; }
-    while(cur){
-      if(val===cur.val){ snapshot('Găsit '+val+'! ✓', kv(cur.id,'find')); return; }
-      snapshot(val+(val<cur.val?' < ':' > ')+cur.val+' → merg spre '+(val<cur.val?'stânga':'dreapta')+'.', kv(cur.id,'path'));
-      cur = val<cur.val? cur.left : cur.right;
-    }
-    snapshot('Valoarea '+val+' nu a fost găsită.');
-  }
-  function kv(k,v){ var o={}; o[k]=v; return o; }
-
-  /* ---- redare + animație manuală (consistentă cross-browser) ---- */
-  function lerp(a,b,t){ return a+(b-a)*t; }
-  function ease(t){ return t<.5? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
-  function setLine(l){ l.setAttribute('x1',l._x1); l.setAttribute('y1',l._y1); l.setAttribute('x2',l._x2); l.setAttribute('y2',l._y2); }
-  function mkNode(){ var g=document.createElementNS(NS,'g'); g.setAttribute('class','avl-node');
-    var c=document.createElementNS(NS,'circle'); c.setAttribute('r',R);
-    var t=document.createElementNS(NS,'text'); t.setAttribute('class','val');
-    var b=document.createElementNS(NS,'text'); b.setAttribute('class','bf'); b.setAttribute('x',0); b.setAttribute('y',-26);
-    g.appendChild(c); g.appendChild(t); g.appendChild(b); return g; }
-
-  function render(f, dur){
-    lastFrame=f;
-    elStatus.textContent=f.msg||'';
-    elEmpty.style.display=f.nodes.length?'none':'flex';
-    elTrav.textContent=f.nodes.length? 'Inordine (sortat): '+f.nodes.map(function(n){return n.val;}).join(', ') : '';
-    var pad=34, vbw=f.vb.w+pad*2, vbh=f.vb.h+pad*2, minW=Math.max(vbw,360), offX=(minW-vbw)/2;
-    svg.setAttribute('viewBox', (-pad-offX)+' '+(-pad)+' '+minW+' '+Math.max(vbh,170));
-
-    var items=[];
-    var seenE={};
-    f.edges.forEach(function(e){
-      seenE[e.id]=1;
-      var ln=gEdges.querySelector('line[data-id="'+e.id+'"]');
-      if(!ln){ ln=document.createElementNS(NS,'line'); ln.setAttribute('data-id',e.id); ln._x1=e.x1; ln._y1=e.y1; ln._x2=e.x2; ln._y2=e.y2; setLine(ln); gEdges.appendChild(ln); }
-      var a={x1:ln._x1,y1:ln._y1,x2:ln._x2,y2:ln._y2};
-      items.push(function(t){ ln._x1=lerp(a.x1,e.x1,t); ln._y1=lerp(a.y1,e.y1,t); ln._x2=lerp(a.x2,e.x2,t); ln._y2=lerp(a.y2,e.y2,t); setLine(ln); });
-    });
-    Array.prototype.slice.call(gEdges.children).forEach(function(l){ if(!seenE[l.getAttribute('data-id')]) l.remove(); });
-
-    var seenN={};
-    f.nodes.forEach(function(nd){
-      seenN[nd.id]=1;
-      var g=gNodes.querySelector('g[data-id="'+nd.id+'"]'), fresh=false;
-      if(!g){ fresh=true; g=mkNode(); g.setAttribute('data-id',nd.id); g._cx=nd.x; g._cy=nd.y; g.style.opacity=0; gNodes.appendChild(g); }
-      g.querySelector('text.val').textContent=nd.val;
-      g.querySelector('text.bf').textContent=elBF.checked? (nd.bf>0?'+'+nd.bf:''+nd.bf):'';
-      g.setAttribute('class','avl-node'+(nd.hl?' hl-'+nd.hl:''));
-      if(fresh){ g.setAttribute('transform','translate('+nd.x+','+nd.y+')'); items.push(function(t){ g.style.opacity=t; }); }
-      else { var ax=g._cx, ay=g._cy; items.push(function(t){ var x=lerp(ax,nd.x,t), y=lerp(ay,nd.y,t); g.setAttribute('transform','translate('+x+','+y+')'); g._cx=x; g._cy=y; }); }
-    });
-    Array.prototype.slice.call(gNodes.children).forEach(function(g){
-      if(!seenN[g.getAttribute('data-id')]){ items.push(function(t){ g.style.opacity=1-t; }); setTimeout(function(){ if(g.parentNode)g.remove(); }, dur+40); }
-    });
-
-    cancelAnimationFrame(raf);
-    if(dur<=0){ items.forEach(function(fn){ fn(1); }); return; }
-    var start=null;
-    function frame(now){ if(start===null)start=now; var t=Math.min(1,(now-start)/dur), e=ease(t);
-      items.forEach(function(fn){ fn(e); }); if(t<1) raf=requestAnimationFrame(frame); }
-    raf=requestAnimationFrame(frame);
-  }
-
-  function run(fn){
-    if(busy) return;
-    frames=[]; fn();
-    if(!frames.length) return;
-    busy=true;
-    var delay=+elSpeed.value, dur=Math.max(170, delay*0.6), i=0;
-    (function step(){ render(frames[i], dur); i++; if(i<frames.length) setTimeout(step, delay); else busy=false; })();
-  }
-
-  /* ---- control UI ---- */
-  function getVal(){ var v=parseInt(elInput.value,10); return Number.isFinite(v)? v : null; }
-  document.querySelectorAll('#avlViz .avl-btn').forEach(function(b){
-    b.addEventListener('click', function(){
-      var act=b.getAttribute('data-act');
-      if(act==='clear'){ if(busy)return; root=null; gNodes.innerHTML=''; gEdges.innerHTML=''; frames=[]; render({nodes:[],edges:[],msg:'Arbore golit.',vb:{w:0,h:0}}, 0); elInput.focus(); return; }
-      if(act==='random'){ var rv=Math.floor(Math.random()*99)+1; elInput.value=rv; run(function(){ doInsert(rv); }); return; }
-      var v=getVal();
-      if(v===null){ elStatus.textContent='Introdu un număr întâi.'; elInput.focus(); return; }
-      if(act==='insert') run(function(){ doInsert(v); });
-      else if(act==='delete') run(function(){ doDelete(v); });
-      else if(act==='find') run(function(){ doFind(v); });
-      elInput.value=''; elInput.focus();
-    });
-  });
-  elInput.addEventListener('keydown', function(e){ if(e.key==='Enter'){ var v=getVal(); if(v!==null) run(function(){ doInsert(v); }); elInput.value=''; } });
-  elBF.addEventListener('change', function(){ if(lastFrame) render(lastFrame, 0); });
-
-  /* ---- arbore exemplu inițial ---- */
-  [33,20,50,12,25,40,60,8].forEach(function(v){ frames=[]; doInsert(v); });
-  frames=[]; snapshot('Exemplu inițial — adaugă sau șterge noduri.'); render(frames[0], 0); frames=[];
-})();
 </script>
 </body>
 </html>
