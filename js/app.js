@@ -95,6 +95,17 @@ const MATERII = [
     ]
   },
   {
+    id:"arhitecturi", nume:"Arhitecturi", icon:"🖥️",
+    sub:"Arhitectura sistemelor de calcul",
+    descriere:"Cursurile 3–5: moduri de operare IA-32 (real/protejat), gestionarea memoriei (segmentare, paginare, swapping), ierarhia memoriei și memoria cache (mapare directă / asociativă / pe seturi), CPU, codificarea instrucțiunilor x86 (8086) și pipelining cu predicția salturilor — concepte explicate cu diagrame SVG și toate problemele din cursuri, rezolvate pas cu pas.",
+    tip:"embed", src:"arhitecturi/index.html",
+    sectiuni:[
+      {id:"c3",     nume:"C3 · Moduri & Memorie",   icon:"🧠"},
+      {id:"c4",     nume:"C4 · Memoria & Cache",     icon:"💾"},
+      {id:"c5",     nume:"C5 · CPU & Pipelining",    icon:"⚙️"}
+    ]
+  },
+  {
     id:"sql", nume:"SQL", icon:"🗄️",
     sub:"Baze de date — interogări",
     descriere:"Interogări SQL în SQL Server / T-SQL (ca în laboratoare, baza Northwind): SELECT/JOIN în lanț, semantica NULL, LIKE cu clase de caractere, GROUP BY/HAVING, TOP/agregări — 5 scenarii rezolvate complet (a–i), exerciții de antrenament și 4 jocuri (quiz, construiește interogarea, găsește capcana, funcții T-SQL).",

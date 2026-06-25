@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arhitecturi — Arhitectura sistemelor de calcul</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1a1714; --panel:#221e1a; --panel2:#2a2521; --topbar:#1d1916;
+  --ink:#ece3d2; --ink-soft:#d6cbb6; --muted:#a8997f; --line:#352f28; --line2:#403930;
+  --accent:#e9b143; --accent-2:#d8843f; --blue:#83a598; --green:#b8bb26; --red:#fb4934;
+  --purple:#d3869b; --aqua:#8ec07c; --code-bg:#14110d;
+  --mono:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+html[data-theme="light"]{
+  --bg:#f3ecdd; --panel:#fbf6ea; --panel2:#f1e8d6; --topbar:#f7f1e3;
+  --ink:#2a2118; --ink-soft:#4a3f30; --muted:#8a7a5f; --line:#ddd0b8; --line2:#cdbf9f;
+  --accent:#bf8b1d; --accent-2:#c46a2a; --blue:#076678; --green:#79740e; --red:#c23a2e;
+  --purple:#8f3f71; --aqua:#427b58; --code-bg:#efe6d2;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans); color:var(--ink); background:var(--bg); line-height:1.65; font-size:15px; -webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px; margin:0 auto; padding:28px 36px 100px}
+
+.page{display:none; animation:fade .3s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:0; transform:translateY(6px)}to{opacity:1; transform:none}}
+
+h1{font-size:27px; color:var(--accent); margin-bottom:6px; letter-spacing:.2px}
+.lead{color:var(--ink-soft); max-width:820px; margin-bottom:8px}
+h2{font-size:20px; margin:32px 0 12px; display:flex; align-items:center; gap:10px}
+h2::before{content:""; width:5px; height:.95em; border-radius:3px; background:linear-gradient(var(--accent),var(--accent-2))}
+h3{font-size:16px; margin:20px 0 8px; color:var(--ink)}
+p{margin:9px 0}
+b{color:var(--ink)}
+ul,ol{margin:8px 0 8px 22px}
+li{margin:4px 0}
+code{background:var(--panel2); color:var(--accent); padding:1.5px 6px; border-radius:5px; font-size:13px; font-family:var(--mono)}
+
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:16px 0; box-shadow:0 6px 22px rgba(0,0,0,.18)}
+
+pre{background:var(--code-bg); color:var(--ink); border:1px solid var(--line2); border-radius:11px; padding:15px 17px; overflow-x:auto; font-family:var(--mono); font-size:12.8px; line-height:1.6; margin:12px 0; tab-size:3}
+pre.tree{color:var(--aqua); line-height:1.4}
+.kw{color:var(--accent)} .ty{color:var(--blue)} .fn{color:var(--aqua)} .cm{color:var(--muted); font-style:italic} .st{color:var(--green)} .nm{color:var(--purple)}
+
+table{width:100%; border-collapse:collapse; margin:14px 0; font-size:13.5px}
+th,td{border:1px solid var(--line2); padding:8px 11px; text-align:left; vertical-align:top}
+th{background:var(--panel2); color:var(--accent); font-size:12px; text-transform:uppercase; letter-spacing:.4px}
+td code{font-size:12.5px}
+.center td,.center th{text-align:center}
+
+.tip{background:rgba(184,187,38,.10); border-left:4px solid var(--green); padding:13px 16px; border-radius:9px; margin:14px 0; color:var(--ink-soft); font-size:14px}
+.note{background:rgba(131,165,152,.10); border-left:4px solid var(--blue); padding:13px 16px; border-radius:9px; margin:14px 0; color:var(--ink-soft); font-size:14px}
+.warn{background:rgba(251,73,52,.10); border-left:4px solid var(--red); padding:13px 16px; border-radius:9px; margin:14px 0; color:var(--ink-soft); font-size:14px}
+.tip b,.note b,.warn b{color:var(--ink)}
+.formula{background:var(--code-bg); border:1px solid var(--line2); border-radius:10px; padding:12px 16px; margin:12px 0; font-family:var(--mono); font-size:13.5px; color:var(--aqua); overflow-x:auto}
+
+.pill{display:inline-block; font-size:11px; font-weight:700; letter-spacing:.4px; padding:3px 10px; border-radius:20px; background:var(--panel2); border:1px solid var(--line2); color:var(--muted)}
+.pill.g{color:var(--green); border-color:var(--green)}
+.pill.r{color:var(--red); border-color:var(--red)}
+.pill.y{color:var(--accent); border-color:var(--accent)}
+
+/* SVG diagrame */
+.dia{margin:14px 0; padding:14px; background:var(--code-bg); border:1px solid var(--line2); border-radius:12px; overflow-x:auto}
+.dia svg{width:100%; height:auto; display:block; min-width:0}
+.dia .cap{color:var(--muted); font-size:12px; text-align:center; margin-top:8px}
+svg .s-box{fill:var(--panel); stroke:var(--line2); stroke-width:1}
+svg .s-txt{fill:var(--ink); font-family:var(--mono); font-weight:600}
+svg .s-lbl{fill:var(--muted); font-family:var(--sans)}
+svg .s-acc{fill:var(--accent)}
+svg .s-stroke{stroke:var(--muted); stroke-width:1.5; fill:none}
+
+/* Exerciții — reveal */
+.ex{border:1px solid var(--line2); border-radius:12px; margin:16px 0; overflow:hidden; background:var(--panel)}
+.ex-head{padding:14px 18px; display:flex; gap:12px; align-items:flex-start; justify-content:space-between}
+.ex-q{font-weight:600}
+.ex-q .src{display:block; font-size:11px; font-weight:700; color:var(--accent); letter-spacing:.4px; text-transform:uppercase; margin-bottom:5px}
+.ex-btn{flex-shrink:0; background:var(--accent); color:var(--on-accent,#1a1714); border:none; padding:8px 15px; border-radius:9px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--sans); transition:.12s}
+.ex-btn:hover{filter:brightness(1.07)}
+.ex-sol{display:none; padding:0 18px 18px; border-top:1px solid var(--line)}
+.ex.open .ex-sol{display:block}
+.ex-sol h4{margin:16px 0 6px; color:var(--accent); font-size:14px}
+.badge{font-size:12px; color:var(--muted)}
+.ans{color:var(--green); font-weight:700}
+
+@media (max-width:760px){
+  .wrap{padding:18px 14px 70px}
+  h1{font-size:22px} h2{font-size:18px}
+  table{display:block; overflow-x:auto; white-space:nowrap}
+  .card{padding:16px 15px}
+  .ex-head{flex-direction:column; align-items:stretch; gap:10px}
+  .ex-btn{align-self:flex-start}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============================================================
+     CURS 3 — MODURI DE OPERARE & GESTIONAREA MEMORIEI
+     ============================================================ -->
+<section class="page active" id="page-c3">
+  <h1>Curs 3 — Moduri de operare și gestionarea memoriei</h1>
+  <p class="lead">Cum operează un procesor IA-32 / Intel 64, cum se transformă o adresă logică într-o adresă fizică (modul real vs. protejat) și cum gestionează sistemul de operare memoria prin segmentare, paginare și swapping.</p>
+
+  <h2>Moduri de operare</h2>
+  <p>Modul de operare determină <b>ce instrucțiuni</b> și <b>ce caracteristici arhitecturale</b> sunt disponibile. Există 3 moduri de bază în <b>IA-32</b> și un mod extins în <b>Intel 64</b>.</p>
+  <table>
+    <tr><th>Mod</th><th>Biți / Adresare</th><th>Caracteristici</th></tr>
+    <tr><td><b>Real</b></td><td>16 biți · până la 1 MB</td><td>Mediu 8086, un singur program (MS-DOS), suport pentru segmentare. Toate procesoarele intră aici imediat după power-up/reset.</td></tr>
+    <tr><td><b>Protejat</b></td><td>32 biți · până la 4 GB</td><td>Toate instrucțiunile disponibile, zone de memorie separate per program, <b>multitasking</b>, detectează accesele în afara segmentelor, suport pentru paginare. Poate rula programe 8086 (virtual-8086).</td></tr>
+    <tr><td><b>Management</b></td><td>—</td><td>Mecanisme pentru <b>power management</b> și <b>system security</b>.</td></tr>
+    <tr><td><b>IA-32e</b> (Intel 64)</td><td>—</td><td>Mod extins cu 2 submoduri: <b>compatibilitate</b> (rulează cod 16/32 biți, ex. „Program Files (x86)") și <b>modul pe 64 biți</b>.</td></tr>
+  </table>
+  <div class="note"><b>Modul pe 64 biți:</b> spațiu liniar de adrese (flat memory model), adrese pe 64 biți / operanzi pe 32 biți (default). Introduce prefixul <code>REX</code> pentru a accesa extensiile registrilor (ex. <code>RAX</code>) și extinde numărul de registri de uz general de la 8 la 16 (x86-64 folosește 4 biți de adresare a registrului, față de 3 la IA-32).</div>
+
+  <h2>Modul real — formarea adresei fizice</h2>
+  <p>O locație este identificată printr-o pereche <b>Segment:Offset</b> (adresă logică). Offset-ul pe 16 biți acoperă <code>65536 (64K)</code> locații, deci un segment este o secvență contiguă de <b>64 KB</b>. Adresa de început a unui segment este mereu <b>multiplu de 10H</b> (00000H, 00010H, …, FFFF0H).</p>
+  <div class="formula">Adresă fizică (20 biți) = Registru_Segment × 10H + Offset = (Segment &lt;&lt; 4) + Offset</div>
+
+  <div class="dia">
+    <svg viewBox="0 0 640 230" role="img" aria-label="Generarea adresei fizice în modul real">
+      <!-- segment register -->
+      <text class="s-lbl" x="6" y="26" font-size="12">Registru segment (16b)</text>
+      <rect class="s-box" x="6" y="34" width="360" height="34"/>
+      <text class="s-txt s-acc" x="186" y="56" font-size="14" text-anchor="middle">Segment</text>
+      <rect class="s-box" x="366" y="34" width="120" height="34" style="fill:var(--panel2)"/>
+      <text class="s-txt" x="426" y="56" font-size="14" text-anchor="middle">0000</text>
+      <text class="s-lbl" x="500" y="56" font-size="11">← decalat 4 biți (×10H)</text>
+      <!-- offset -->
+      <text class="s-lbl" x="6" y="104" font-size="12">Offset (16b)</text>
+      <rect class="s-box" x="6" y="112" width="120" height="34" style="fill:var(--panel2)"/>
+      <text class="s-txt" x="66" y="134" font-size="14" text-anchor="middle">0000</text>
+      <rect class="s-box" x="126" y="112" width="360" height="34"/>
+      <text class="s-txt s-acc" x="306" y="134" font-size="14" text-anchor="middle">Offset</text>
+      <!-- plus -->
+      <circle cx="540" cy="129" r="14" style="fill:none;stroke:var(--green);stroke-width:2"/>
+      <text x="540" y="135" font-size="18" text-anchor="middle" style="fill:var(--green)">+</text>
+      <line class="s-stroke" x1="6" y1="160" x2="486" y2="160" style="stroke:var(--accent)"/>
+      <!-- result -->
+      <text class="s-lbl" x="6" y="190" font-size="12">Adresă fizică (20b)</text>
+      <rect class="s-box" x="6" y="196" width="480" height="30" style="stroke:var(--accent);stroke-width:1.5"/>
+      <text class="s-txt s-acc" x="246" y="216" font-size="13" text-anchor="middle">Adresă fizică</text>
+    </svg>
+    <div class="cap">Segmentul se decalează cu 4 biți (se înmulțește cu 10H) și se adună cu offset-ul.</div>
+  </div>
+  <p><b>Exemplu:</b> adresa logică <code>1100:450</code> → fizică = <code>1100H × 10H + 450H = 11000H + 450H = 11450H</code>.</p>
+  <div class="tip"><b>Many-to-one:</b> mai multe adrese logice pot indica aceeași adresă fizică. <code>1000:20A9</code> și <code>1200:0A9</code> dau ambele <code>120A9H</code> (10000+20A9 = 12000+0A9). Invers nu e adevărat: unei adrese logice îi corespunde o singură adresă fizică.</div>
+
+  <h2>Modul protejat — descriptori de segment</h2>
+  <p>În modul protejat <b>toate accesările trec printr-un tabel cu descriptori de segment</b>. Un <b>registru selector</b> (registru segment) indexează un descriptor din tabel; descriptorul conține:</p>
+  <ul>
+    <li><b>Adresa de bază</b> a segmentului (32 biți)</li>
+    <li><b>Dimensiunea</b> segmentului (20 biți) — cu granularitate <code>G</code>: G=0 → unitate 1 B (1B…1MB), G=1 → unitate 4 KB (4KB…4GB)</li>
+    <li><b>Drepturi de acces</b> (12 biți) — tip, prezent, nivel privilegiu (DPL), cod/date etc.</li>
+  </ul>
+  <p>Adresa liniară/fizică = <b>Adresa de bază a segmentului + Offset</b>. Dacă offset-ul depășește dimensiunea segmentului → <b>excepție</b>.</p>
+  <h3>Niveluri de privilegii (rings) și tabele</h3>
+  <ul>
+    <li><b>Ring 0</b> (kernel) — acces nelimitat la hardware; <b>Ring 3</b> — aplicațiile utilizatorului; <b>Ring 1, 2</b> — drivere/aplicații privilegiate. Trecerea ring 3 → ring 0 se face prin <b>apeluri de sistem</b>. (2 biți pentru stocarea nivelului.)</li>
+    <li><b>GDT</b> (Global Descriptor Table) — unic în sistem, descriptori pentru SO. <b>LDT</b> (Local) — per program (accesat prin GDT). <b>IDT</b> (Interrupt) — unic per procesor. Registri asociați: <code>GDTR</code>, <code>LDTR</code>, <code>IDTR</code>. Un tabel poate avea maxim <code>2¹³</code> intrări × 8 B.</li>
+  </ul>
+
+  <h2>MMU — segmentare și paginare</h2>
+  <p>Unitatea de gestionare a memoriei (MMU) traduce adresele virtuale în adrese fizice. Folosește două mecanisme:</p>
+  <table>
+    <tr><th>Mecanism</th><th>Ce face</th></tr>
+    <tr><td><b>Segmentarea</b></td><td>Translatează adrese logice → adrese liniare. Izolează segmentele unui program (cod, date, stivă).</td></tr>
+    <tr><td><b>Paginarea</b></td><td>Translatează adrese liniare → adrese fizice. Fiecare segment e împărțit în <b>pagini</b> aflate în RAM sau pe disc. Activă prin bitul <code>PG</code> din registrul <code>CR0</code>.</td></tr>
+  </table>
+  <p>Paginarea folosește o <b>structură ierarhică</b>: adresa primei structuri (directorul de paginare) este în registrul <code>CR3</code>. Adresa liniară e împărțită în porțiuni: cea mai semnificativă selectează o intrare în director, iar ultima porțiune e indexul în pagină. Biți de control per intrare: <code>Present</code>, <code>Read/write</code>, <code>User/supervisor</code>, <code>Accessed</code>, <code>Dirty</code>. Pagini uzuale: <b>4KB</b> (de obicei), 2MB, 4MB, 1GB. Sunt 4 moduri: <code>32-bit</code>, <code>PAE</code>, <code>4-level</code>, <code>5-level</code>. Traducerile recente se păstrează în <b>TLB</b> (Translation Lookaside Buffer).</p>
+
+  <h2>Mecanismul de swapping</h2>
+  <p>Permite gestionarea mai multor pagini decât încap în RAM:</p>
+  <ul>
+    <li><b>Swap-out:</b> când cererea depășește oferta, paginile cel mai puțin utilizate sunt mutate în memoria secundară (HDD/SSD).</li>
+    <li><b>Swap-in:</b> dacă o pagină cerută nu e în RAM, CPU generează o <b>excepție page-fault</b>, iar pagina e adusă în RAM.</li>
+  </ul>
+  <p>Algoritmi de înlocuire: <b>FIFO</b> (cea mai veche încărcată), <b>LRU</b> (cea mai demult folosită), <b>MRU</b> (cea mai recent folosită). Nucleul Linux folosește o variantă de LRU.</p>
+
+  <!-- ===================== PROBLEME C3 ===================== -->
+  <h2>Probleme rezolvate</h2>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 3 · Modul real</span>
+        În modul real, poate un segment să înceapă la următoarele adrese fizice? <code>1235AH</code>, <code>53535H</code>, <code>21700H</code>, <code>ABCD0H</code></div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <h4>Concept-cheie</h4>
+      <p>Adresa de început a unui segment este obținută din <code>Segment × 10H</code>, deci este mereu <b>multiplu de 10H</b>. În hexazecimal asta înseamnă că <b>ultima cifră trebuie să fie 0</b>.</p>
+      <h4>Verificare</h4>
+      <table>
+        <tr><th>Adresă</th><th>Ultima cifră</th><th>Valid?</th></tr>
+        <tr><td><code>1235AH</code></td><td>A</td><td><span class="pill r">NU</span></td></tr>
+        <tr><td><code>53535H</code></td><td>5</td><td><span class="pill r">NU</span></td></tr>
+        <tr><td><code>21700H</code></td><td>0</td><td><span class="pill g">DA</span> (= 2170H × 10H)</td></tr>
+        <tr><td><code>ABCD0H</code></td><td>0</td><td><span class="pill g">DA</span> (= ABCDH × 10H)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 3 · Modul real</span>
+        Convertiți următoarele adrese logice în adrese fizice: <code>1A2B:019A</code>, <code>3911:200</code>, <code>2591:10B5</code>, <code>1100:ABCD</code></div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <h4>Formula</h4>
+      <p>Adresă fizică = <code>Segment × 10H + Offset</code> — practic se adaugă un <code>0</code> la sfârșitul segmentului și se adună offset-ul.</p>
+      <h4>Calcule (adunare hexazecimală)</h4>
+      <pre>1A2B:019A → 1A2B0 + 019A = <span class="st">1A44A</span>H
+3911:200  → 39110 + 0200 = <span class="st">39310</span>H
+2591:10B5 → 25910 + 10B5 = <span class="st">269C5</span>H
+1100:ABCD → 11000 + ABCD = <span class="st">1BBCD</span>H</pre>
+      <p class="badge">Verificare 2591:10B5 → 9+B=14H (scrii 4, ții 1), 1+1+B=D, 9+0=9, 5+1=6, 2 → 269C5. ✓</p>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 3 · Swapping</span>
+        Procesorul cere secvența de pagini <code>5, 0, 1, 2, 0, 3, 0, 3, 2, 4, 0, 3, 2, 3</code>. Memoria primară stochează <b>4 pagini</b>. Determinați numărul total de excepții page-fault pentru <b>FIFO</b>, <b>LRU</b> și <b>MRU</b>.</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <h4>FIFO — se evacuează cea mai veche pagină <i>încărcată</i></h4>
+      <p><b>F</b> = fault, <b>H</b> = hit. Coada (vechi→nou):</p>
+      <pre>ref:  5  0  1  2  0  3  0  3  2  4  0  3  2  3
+      F  F  F  F  H  F  H  H  H  F  F  H  H  H
+evac:           -  -  5  -  -  -  0  1  -  -  -</pre>
+      <p>Fault-uri la: 5,0,1,2,3,4,0 → <span class="ans">7 page-fault-uri</span>.</p>
+
+      <h4>LRU — se evacuează pagina cel mai demult folosită</h4>
+      <pre>ref:  5  0  1  2  0  3  0  3  2  4  0  3  2  3
+      F  F  F  F  H  F  H  H  H  F  H  H  H  H
+evac:           -  -  5  -  -  -  1  -  -  -  -</pre>
+      <p>La pasul „3" (poz. 6) cea mai demult folosită e 5 → iese. La „4" (poz.10) cea mai demult folosită e 1 → iese. Restul sunt hit-uri. <span class="ans">6 page-fault-uri</span>.</p>
+
+      <h4>MRU — se evacuează pagina cel mai <i>recent</i> folosită</h4>
+      <pre>ref:  5  0  1  2  0  3  0  3  2  4  0  3  2  3
+      F  F  F  F  H  F  F  F  H  F  F  H  F  F
+evac:           -  -  0  3  0  -  2  4  -  3  2</pre>
+      <p>După ce cele 4 cadre se umplu (5,0,1,2), fiecare miss evacuează ultima pagină accesată. Hit-uri doar la pozițiile 5 (0), 9 (2) și 12 (3). <span class="ans">11 page-fault-uri</span>.</p>
+
+      <div class="tip"><b>Concluzie:</b> FIFO = 7, LRU = 6, MRU = 11. Pentru acest tipar de accesări <b>LRU</b> e cel mai bun (exploatează localitatea temporală), iar <b>MRU</b> cel mai slab.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CURS 4 — MEMORIA & CACHE
+     ============================================================ -->
+<section class="page" id="page-c4">
+  <h1>Curs 4 — Memoria și memoria cache</h1>
+  <p class="lead">Ierarhia memoriei, modurile de interconectare (paralel/secvențial) și cum se „mapează" memoria principală în memoria cache: directă, asociativă și asociativă pe seturi — cu împărțirea adresei fizice pe biți.</p>
+
+  <h2>Ierarhia memoriei</h2>
+  <p>Rapiditatea de acces și costul sunt <b>direct proporționale</b>. Datele dintr-un nivel inferior (rapid) sunt un subset al nivelului superior — <b>proprietatea de incluziune</b>.</p>
+  <div class="dia">
+    <svg viewBox="0 0 640 140" role="img" aria-label="Ierarhia memoriei">
+      <g font-size="12">
+        <rect class="s-box" x="6"   y="40" width="96"  height="56" style="stroke:var(--accent);stroke-width:1.5"/>
+        <text class="s-txt" x="54"  y="64" text-anchor="middle">Registri</text>
+        <text class="s-lbl" x="54"  y="82" text-anchor="middle" font-size="10">CPU</text>
+        <rect class="s-box" x="118" y="34" width="110" height="68"/>
+        <text class="s-txt" x="173" y="62" text-anchor="middle">Cache</text>
+        <text class="s-lbl" x="173" y="80" text-anchor="middle" font-size="10">L1·L2·L3</text>
+        <rect class="s-box" x="244" y="26" width="140" height="84"/>
+        <text class="s-txt" x="314" y="58" text-anchor="middle">Memorie</text>
+        <text class="s-txt" x="314" y="76" text-anchor="middle">principală (RAM)</text>
+        <rect class="s-box" x="400" y="16" width="170" height="104"/>
+        <text class="s-txt" x="485" y="60" text-anchor="middle">Memorie</text>
+        <text class="s-txt" x="485" y="78" text-anchor="middle">secundară (disk)</text>
+      </g>
+      <text class="s-lbl s-acc" x="6" y="22" font-size="11">◀ mai rapid, mai scump, mai mic</text>
+      <text class="s-lbl" x="430" y="138" font-size="11">mai lent, mai ieftin, mai mare ▶</text>
+    </svg>
+    <div class="cap">Volatile: registri, cache, RAM · Non-volatile: memoria secundară.</div>
+  </div>
+  <p><b>Hit</b> = datele/instrucțiunile sunt la nivelul curent <code>n</code>. <b>Miss</b> = trebuie căutate la nivelul următor.</p>
+
+  <h2>Moduri de interconectare</h2>
+  <p>Timpul mediu de acces <code>T<sub>avg</sub></code> depinde de ratele de succes (<code>H</code>) și timpii de acces (<code>T</code>) ai fiecărui nivel. Pentru 3 niveluri:</p>
+  <h3>Paralel — nivelurile sunt accesate „în paralel"</h3>
+  <div class="formula">T_avg = H₁·T₁ + (1−H₁)·H₂·T₂ + (1−H₁)·(1−H₂)·T₃</div>
+  <h3>Secvențial — accesul la un nivel include și timpii nivelurilor inferioare</h3>
+  <div class="formula">T_avg = H₁·T₁ + (1−H₁)·H₂·(T₁+T₂) + (1−H₁)·(1−H₂)·(T₁+T₂+T₃)</div>
+  <div class="note">Modul <b>secvențial</b> este folosit preponderent în sistemele reale: ca să ajungi la RAM treci întâi (și pierzi timp) prin cache. De aici termenii <code>(T₁+T₂)</code>.</div>
+
+  <h2>Localizare și memoria cache</h2>
+  <ul>
+    <li><b>Localizare spațială:</b> locațiile din apropierea celor accesate recent vor fi accesate curând (ex. parcurgerea unui vector). De aceea o intrare cache (<b>cache line</b>) ține mai multe cuvinte consecutive.</li>
+    <li><b>Localizare temporală:</b> locațiile accesate recent vor fi accesate din nou curând (ex. o buclă).</li>
+  </ul>
+  <p>Eficiența (variația timpului) dintre două scenarii se exprimă cu:</p>
+  <div class="formula">P = ( (Final − Start) / |Start| ) × 100   [%]</div>
+  <p>O valoare negativă înseamnă o <b>scădere</b> a timpului (îmbunătățire). <b>Write policy:</b> <code>Write-Through</code> (scrie simultan în toate nivelurile) vs <code>Write-Back</code> (scrie doar în cache, propagă la înlocuire — folosește <code>dirty bit</code>).</p>
+
+  <h2>Mapare directă</h2>
+  <p>Fiecare bloc din memoria principală are <b>o singură linie</b> posibilă în cache: <code>linie = bloc mod (nr. linii)</code>. Adresa fizică se împarte în 3 câmpuri:</p>
+  <div class="dia">
+    <svg viewBox="0 0 600 120" role="img" aria-label="Împărțirea adresei fizice - mapare directă">
+      <rect class="s-box" x="20"  y="30" width="200" height="40" style="stroke:var(--accent);stroke-width:1.5"/>
+      <text class="s-txt s-acc" x="120" y="55" text-anchor="middle" font-size="13">TAG</text>
+      <rect class="s-box" x="220" y="30" width="200" height="40"/>
+      <text class="s-txt" x="320" y="55" text-anchor="middle" font-size="13">Index linie</text>
+      <rect class="s-box" x="420" y="30" width="160" height="40" style="fill:var(--panel2)"/>
+      <text class="s-txt" x="500" y="55" text-anchor="middle" font-size="13">Offset</text>
+      <text class="s-lbl" x="120" y="92" text-anchor="middle" font-size="11">care bloc e în linie</text>
+      <text class="s-lbl" x="320" y="92" text-anchor="middle" font-size="11">ce linie din cache</text>
+      <text class="s-lbl" x="500" y="92" text-anchor="middle" font-size="11">cuvântul în linie</text>
+      <text class="s-lbl" x="300" y="20" text-anchor="middle" font-size="11">Adresă fizică</text>
+    </svg>
+    <div class="cap">offset = log₂(dimensiune_linie / dimensiune_cuvânt) · index_linie = log₂(nr. linii) · tag = restul.</div>
+  </div>
+  <div class="tip"><b>Reguli de calcul:</b> <code>nr. linii = dim. cache / dim. linie</code> · <code>offset = log₂(cuvinte per linie)</code> · <code>index_linie = log₂(nr. linii)</code> · <code>tag = biți_adresă − index_linie − offset</code>. Dimensiunea tag directory = <code>nr. linii × biți_tag</code>.</p></div>
+  <div class="warn"><b>Limitare (conflict miss):</b> blocurile <code>3, 7, 11, 15, 19</code> cu 4 linii se mapează toate în linia <code>x mod 4 = 3</code> → 5 miss-uri pe aceeași linie, în timp ce liniile 0,1,2 rămân goale.</div>
+
+  <h2>Mapare asociativă (fully associative)</h2>
+  <p>Orice bloc poate fi pus în <b>orice</b> linie → <b>nu există biți pentru index linie</b>. Adresa = <code>[TAG | Offset]</code>. Avantaj: fără conflict miss; dezavantaj: necesită <code>2<sup>L</sup></code> comparatoare (câte unul pe fiecare linie). Înlocuirea folosește LRU. Practică doar pentru cache-uri mici.</p>
+
+  <h2>Mapare asociativă pe seturi (k-way)</h2>
+  <p>Compromis: liniile sunt grupate în <b>seturi</b> egale; un bloc poate merge în <b>orice linie dintr-un set</b> dat. <code>k</code> = gradul de asociativitate (linii per set). Adresa = <code>[TAG | Index set | Offset]</code>.</p>
+  <div class="dia">
+    <svg viewBox="0 0 600 120" role="img" aria-label="Împărțirea adresei fizice - mapare pe seturi">
+      <rect class="s-box" x="20"  y="30" width="220" height="40" style="stroke:var(--accent);stroke-width:1.5"/>
+      <text class="s-txt s-acc" x="130" y="55" text-anchor="middle" font-size="13">TAG</text>
+      <rect class="s-box" x="240" y="30" width="180" height="40"/>
+      <text class="s-txt" x="330" y="55" text-anchor="middle" font-size="13">Index set</text>
+      <rect class="s-box" x="420" y="30" width="160" height="40" style="fill:var(--panel2)"/>
+      <text class="s-txt" x="500" y="55" text-anchor="middle" font-size="13">Offset</text>
+      <text class="s-lbl" x="300" y="20" text-anchor="middle" font-size="11">Adresă fizică</text>
+    </svg>
+    <div class="cap">nr. seturi = nr. linii / k · index_set = log₂(nr. seturi) · k = 1 → mapare directă · k = nr. total linii → mapare asociativă.</div>
+  </div>
+  <p>Sunt necesare <code>k</code> comparatoare (câte unul per linie din set). Dimensiunea cache = <code>nr. seturi × k × dim. linie</code>.</p>
+
+  <!-- ===================== PROBLEME C4 ===================== -->
+  <h2>Probleme rezolvate — interconectare</h2>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 4 · Interconectare</span>
+        Timpii de acces în cache și în memoria principală sunt <code>100 ns</code>, respectiv <code>1 µs</code>. Care este <code>T<sub>avg</sub></code> pentru o rată de succes de <b>90%</b>? Tratați ambele moduri.</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <p><code>T₁ = 100 ns</code>, <code>T₂ = 1 µs = 1000 ns</code>, <code>H₁ = 0.9</code>. (RAM are mereu datele → <code>H₂ = 1</code>.)</p>
+      <h4>Paralel</h4>
+      <pre>T_avg = H₁·T₁ + (1−H₁)·T₂
+      = 0.9·100 + 0.1·1000
+      = 90 + 100 = <span class="st">190 ns</span></pre>
+      <h4>Secvențial</h4>
+      <pre>T_avg = H₁·T₁ + (1−H₁)·(T₁+T₂)
+      = 0.9·100 + 0.1·(100+1000)
+      = 90 + 110 = <span class="st">200 ns</span></pre>
+      <p class="badge">Secvențialul e mai mare cu 10 ns: la miss „plătești" și timpul de cache (100 ns) înainte de a ajunge la RAM.</p>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 4 · Interconectare</span>
+        Sistem cu interconectare <b>secvențială</b> pe 2 niveluri: transferul unui cuvânt ia <code>200 ns</code> dacă datele sunt absente, respectiv <code>20 ns</code> dacă sunt prezente în primul nivel. Rata de prezență în primul nivel este <b>80%</b>. Care este <code>T<sub>avg</sub></code>?</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <p>Aici timpii sunt deja „totali": <code>20 ns</code> la hit în nivelul 1, <code>200 ns</code> la miss (care include drumul complet). <code>H₁ = 0.8</code>.</p>
+      <pre>T_avg = H₁·20 + (1−H₁)·200
+      = 0.8·20 + 0.2·200
+      = 16 + 40 = <span class="st">56 ns</span></pre>
+    </div>
+  </div>
+
+  <h2>Probleme rezolvate — mapare directă</h2>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 4 · Mapare directă</span>
+        Memorie principală <code>4 GB (2³⁰·4 = 2³²)</code>, cache <code>1 MB</code>, bloc/linie <code>4 KB</code>, cuvânt <code>1 B</code>. Câți biți pentru tag, index linie, index cuvânt? Ce dimensiune are tag directory?</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <pre>biți adresă = log₂(4 GB)  = 32
+offset      = log₂(4 KB)  = 12   (4 KB / 1 B cuvinte)
+nr. linii   = 1 MB / 4 KB = 2²⁰/2¹² = 2⁸ = 256
+index linie = log₂(256)   = 8
+tag         = 32 − 12 − 8 = <span class="st">12 biți</span></pre>
+      <p><b>Distribuție:</b> <code>[ tag 12 | linie 8 | offset 12 ]</code>.</p>
+      <pre>Tag directory = nr. linii × biți_tag
+              = 256 × 12 = 3072 biți = <span class="st">384 octeți</span></pre>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 4 · Mapare directă</span>
+        Memorie principală <code>16 GB</code>, bloc/linie <code>16 KB</code>, numărul de biți pentru tag = <b>10</b>. Care este dimensiunea memoriei cache?</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <pre>biți adresă = log₂(16 GB) = 34
+offset      = log₂(16 KB) = 14
+index linie = 34 − 14 − 10(tag) = 10  → nr. linii = 2¹⁰
+cache = nr. linii × dim. linie
+      = 2¹⁰ × 16 KB = 2¹⁰ × 2¹⁴ = 2²⁴ = <span class="st">16 MB</span></pre>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 4 · Mapare directă</span>
+        Cache <code>16 MB</code>, linie <code>64 B</code>, acces cache <code>5 ns</code>, rată succes <b>80%</b>, interconectare <b>secvențială</b>. După un miss, transferul din RAM ia <code>30 ns</code> pentru <b>primul cuvânt</b> și <code>20%</code> din acest timp pentru fiecare cuvânt rămas. Cuvânt <code>8 B</code>. Care este <code>T<sub>avg</sub></code> pentru un bloc de cuvinte?</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <pre>cuvinte / linie = 64 B / 8 B = 8 cuvinte
+transfer bloc (miss) = 30 + 7 × (20% · 30)
+                     = 30 + 7 × 6 = 72 ns</pre>
+      <p>Secvențial, cu <code>T_cache = 5 ns</code> și <code>T_transfer = 72 ns</code>:</p>
+      <pre>T_avg = H·T_cache + (1−H)·(T_cache + T_transfer)
+      = 0.8·5 + 0.2·(5 + 72)
+      = 4 + 15.4 = <span class="st">19.4 ns</span></pre>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 4 · Mapare directă</span>
+        Memorie <code>4 GB</code> adresabilă pe octet, bloc <code>32 KB</code>, cache cu <code>1024</code> linii. Pentru adresa fizică <code>0xDEF2024</code>, dați în hexazecimal: biții de tag, indexul de linie și offset-ul (cache offset).</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <pre>biți adresă = 32
+offset      = log₂(32 KB) = 15
+index linie = log₂(1024)  = 10
+tag         = 32 − 15 − 10 = 7</pre>
+      <p>Distribuție: <code>[ tag 7 | linie 10 | offset 15 ]</code>. Scriem adresa pe 32 biți: <code>0x0DEF2024</code>:</p>
+      <pre>0000 1101 1110 1111 0010 0000 0010 0100
+└tag─┘└── index linie ──┘└─── offset (15) ───┘
+ b31            b24..b15        b14..b0</pre>
+      <pre>offset (15b) = lower 15 biți   = 010 0000 0010 0100 = <span class="st">0x2024</span>
+index linie (10b) = 11 1101 1110            = <span class="st">0x3DE</span>
+tag (7b)     = 000 0110                     = <span class="st">0x06</span></pre>
+      <p class="badge">Verificare: tag 0x06 (7b) + linie 0x3DE (10b) + offset 0x2024 (15b) reconstituie 0x0DEF2024. ✓</p>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 4 · Mapare directă</span>
+        Cache <code>16 KB</code> în linii de <code>64 B</code>, adrese pe <code>32 biți</code>. Tag directory ține <code>n+2</code> biți per linie (n = biți tag, +2 biți pentru modified și valid). Care este dimensiunea totală a tag directory?</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <pre>offset      = log₂(64)        = 6
+nr. linii   = 16 KB / 64 B    = 2¹⁴/2⁶ = 2⁸ = 256
+index linie = log₂(256)       = 8
+n (tag)     = 32 − 6 − 8      = 18
+metadata/linie = n + 2        = 20 biți
+total = 256 × 20 = 5120 biți = <span class="st">640 octeți</span></pre>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 4 · Mapare directă</span>
+        Cache <code>32 KB</code> mapată direct, linie <code>128 B</code>. Vector <code>A</code> de <code>512×512</code> elemente, fiecare <code>8 B</code>. Două surse: <b>S1</b> parcurge <code>A[i][j]</code>, <b>S2</b> parcurge <code>A[j][i]</code>. Câte cache miss-uri generează fiecare? (A nu e în cache la început.)</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <pre>elemente / linie = 128 B / 8 B = 16
+total elemente   = 512 × 512 = 262144</pre>
+      <h4>S1 — <code>A[i][j]</code> (parcurgere pe linii, contiguu în memorie)</h4>
+      <p>Matricea e stocată row-major. Accesând <code>A[i][j]</code> consecutiv, fiecare miss aduce o linie cu 16 elemente; următoarele 15 sunt hit-uri (localizare spațială):</p>
+      <pre>miss-uri S1 = 262144 / 16 = <span class="st">16384</span></pre>
+      <h4>S2 — <code>A[j][i]</code> (parcurgere pe coloane, salt mare)</h4>
+      <p>Elemente consecutive în acces sunt la <code>512 × 8 = 4096 B</code> distanță → linii diferite. Cache-ul (256 linii) nu reține o linie destul de mult ca s-o refolosească → <b>fiecare acces e miss</b>:</p>
+      <pre>miss-uri S2 = 262144 / 1 = <span class="st">262144</span></pre>
+      <div class="tip"><b>Morala:</b> ordinea de parcurgere contează enorm — S1 e de <b>16×</b> mai eficientă decât S2 doar fiindcă respectă layout-ul row-major (localizare spațială).</div>
+    </div>
+  </div>
+
+  <h2>Probleme rezolvate — asociativă / pe seturi</h2>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 4 · Pe seturi</span>
+        Memorie principală <code>512 MB</code>, cache <code>1 MB</code>, bloc/linie <code>128 B</code>, seturi de câte <b>2 linii</b>. (a) distribuția adresei fizice; (b) dimensiunea metadatelor; (c) câte comparatoare și de ce tip?</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <pre>biți adresă = log₂(512 MB) = 29
+offset      = log₂(128 B)  = 7
+nr. linii   = 1 MB / 128 B = 2²⁰/2⁷ = 2¹³ = 8192
+nr. seturi  = nr. linii / 2 = 2¹³/2 = 2¹² = 4096
+index set   = log₂(4096)   = 12
+tag         = 29 − 7 − 12  = 10</pre>
+      <p>(a) <code>[ tag 10 | set 12 | offset 7 ]</code></p>
+      <pre>(b) metadate = nr. linii × biți_tag = 2¹³ × 10
+           = 81920 biți = <span class="st">10 KB</span></pre>
+      <p>(c) <b>2 comparatoare</b> (câte unul per linie din set, lucrează în paralel), fiecare de <b>10 biți</b> (dimensiunea tag-ului).</p>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 4 · Pe seturi</span>
+        Memorie principală <code>4 MB</code>, cache organizată în seturi de câte <b>4 linii</b>, bloc <code>64 B</code>, biți de tag = <b>10</b>. (a) distribuția adresei fizice; (b) dimensiunea memoriei cache.</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <pre>biți adresă = log₂(4 MB) = 22
+offset      = log₂(64 B) = 6
+index set   = 22 − 6 − 10(tag) = 6  → nr. seturi = 2⁶ = 64
+nr. linii   = nr. seturi × 4 = 256
+cache = nr. linii × dim. linie = 256 × 64 B = <span class="st">16 KB</span></pre>
+      <p>(a) <code>[ tag 10 | set 6 | offset 6 ]</code></p>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 4 · Pe seturi</span>
+        Cache organizată în seturi de câte <b>8 linii</b>, dimensiune totală <code>512 KB</code>. Din adresa fizică, <b>5 biți</b> sunt folosiți pentru tag. Care este dimensiunea memoriei principale?</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <p>Trucul: nu ne trebuie dimensiunea liniei. Memoria principală =<br><code>2<sup>(tag + set + offset)</sup></code>, iar <code>set + offset</code> = log₂(nr. seturi × dim. linie) = log₂(cache / k).</p>
+      <pre>cache / k = 512 KB / 8 = 2¹⁹ / 2³ = 2¹⁶
+=> set + offset = 16 biți
+main = 2^(tag + set + offset) = 2^(5 + 16) = 2²¹ = <span class="st">2 MB</span></pre>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 4 · Pe seturi</span>
+        Cache <code>16 KB</code> în seturi de câte <code>n</code> linii, memorie principală <code>128 KB</code>, blocuri <code>256 B</code>, cuvânt <code>1 B</code>. Distribuția adresei pentru <code>n ∈ {2, 4, 8, 16}</code>.</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <pre>biți adresă = log₂(128 KB) = 17
+offset      = log₂(256 B)  = 8
+nr. linii   = 16 KB / 256 B = 2¹⁴/2⁸ = 2⁶ = 64
+index set   = log₂(64 / n)
+tag         = 17 − 8 − index_set</pre>
+      <table class="center">
+        <tr><th>n (k)</th><th>nr. seturi</th><th>index set</th><th>tag</th><th>offset</th></tr>
+        <tr><td>2</td><td>32</td><td>5</td><td><b>4</b></td><td>8</td></tr>
+        <tr><td>4</td><td>16</td><td>4</td><td><b>5</b></td><td>8</td></tr>
+        <tr><td>8</td><td>8</td><td>3</td><td><b>6</b></td><td>8</td></tr>
+        <tr><td>16</td><td>4</td><td>2</td><td><b>7</b></td><td>8</td></tr>
+      </table>
+      <p class="badge">Pe măsură ce crește asociativitatea (n), scad biții de set și cresc cei de tag — suma rămâne 17.</p>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 4 · Pe seturi (general)</span>
+        Adresele fizice au <code>2<sup>P</sup> B</code>. Adresarea e la nivel de cuvânt, cuvântul are <code>2<sup>W</sup> B</code>. Cache <code>2<sup>N</sup> B</code>, bloc <code>2<sup>M</sup></code> cuvinte, asociere pe seturi de câte <code>K</code> linii. Câți biți de tag are o adresă fizică?</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <pre>adresă la nivel de cuvânt = P − W biți   (2^P B / 2^W B per cuvânt)
+offset (în cuvinte)       = M             (blocul are 2^M cuvinte)
+dim. bloc în octeți       = 2^(M+W)
+nr. linii = cache / bloc  = 2^N / 2^(M+W) = 2^(N−M−W)
+nr. seturi = nr. linii / K → index_set = (N−M−W) − log₂K
+tag = (P−W) − M − index_set
+    = (P−W) − M − (N−M−W) + log₂K</pre>
+      <div class="formula">tag = P − N + log₂(K)</div>
+      <p class="badge">Surprinzător de simplu — depinde doar de P, N și gradul de asociativitate K.</p>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 4 · Studiu comparativ</span>
+        Memorie principală <code>8 GB</code>, bloc <code>2 KB</code>, cache <code>4 MB</code>. Dați distribuția adresei fizice pentru: mapare directă, asociativă și asociativă pe seturi de 4 linii.</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <pre>biți adresă = log₂(8 GB) = 33
+offset      = log₂(2 KB) = 11
+nr. linii   = 4 MB / 2 KB = 2²²/2¹¹ = 2¹¹ = 2048</pre>
+      <table class="center">
+        <tr><th>Mapare</th><th>tag</th><th>index linie/set</th><th>offset</th></tr>
+        <tr><td><b>Directă</b></td><td>11</td><td>linie = 11</td><td>11</td></tr>
+        <tr><td><b>Asociativă</b></td><td>22</td><td>— (fără index)</td><td>11</td></tr>
+        <tr><td><b>4-way pe seturi</b></td><td>13</td><td>set = 9</td><td>11</td></tr>
+      </table>
+      <pre>Directă:   index linie = log₂(2048) = 11 → tag = 33−11−11 = 11
+Asociativă: fără index               → tag = 33−11    = 22
+4-way:     nr. seturi = 2048/4 = 512 → set = 9, tag = 33−11−9 = 13</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CURS 5 — CPU, CODIFICAREA INSTRUCȚIUNILOR & PIPELINING
+     ============================================================ -->
+<section class="page" id="page-c5">
+  <h1>Curs 5 — CPU, codificarea instrucțiunilor și pipelining</h1>
+  <p class="lead">Cum funcționează unitatea centrală (ciclul fetch-decode-execute), cum se codifică în binar o instrucțiune x86 (8086) și cum suprapune procesorul execuția instrucțiunilor (pipelining) cu predicția salturilor.</p>
+
+  <h2>CPU și ciclul de execuție</h2>
+  <p>CPU este format din 4 elemente de bază: <b>ALU</b> (unitate logică aritmetică), <b>FPU</b> (virgulă mobilă), <b>memorii cache</b> și <b>registri</b>. Execută la infinit ciclul <b>fetch → decode → execute</b>:</p>
+  <ul>
+    <li><b>Fetch:</b> pune adresa pe magistrala de adrese, activează semnalul de citire; controllerul memoriei pune instrucțiunea pe magistrala de date; CPU așteaptă până e disponibilă în cache.</li>
+    <li><b>Decode:</b> un decodificator transformă instrucțiunea într-o serie de semnale (codul mașină urmează o schemă de codificare specifică procesorului).</li>
+    <li><b>Execute:</b> unitatea de control temporizează componentele; ALU efectuează operații aritmetice/logice.</li>
+  </ul>
+  <h3>Funcții specifice CPU</h3>
+  <ul>
+    <li><b>Preluare speculativă:</b> CPU detectează un tipar în secvența de MISS-uri și preia în avans liniile următoare.</li>
+    <li><b>μoperații (uOps):</b> instrucțiunile x86 sunt sparte în micro-operații simple, planificabile independent.</li>
+    <li><b>Reordering (out-of-order):</b> blocuri de instrucțiuni independente pot fi executate în altă ordine (ex. în timp ce o instrucțiune așteaptă date din memorie).</li>
+    <li><b>Predicția fluxului de execuție:</b> la un salt condiționat, CPU prezice ramura; execuția speculativă greșită e anulată.</li>
+  </ul>
+
+  <h2>Codificarea instrucțiunilor x86 (8086)</h2>
+  <p>O instrucțiune Intel 64 / IA-32 are până la 6 porțiuni: <b>prefix</b> (opțional), <b>opcode</b> (max 3B), <b>ModR/M</b> + <b>SIB</b> (forma de adresare), <b>deplasament</b>, <b>valoare imediată</b>. La 8086, instrucțiunea are 1–6 octeți.</p>
+  <div class="dia">
+    <svg viewBox="0 0 600 150" role="img" aria-label="Formatul instrucțiunii 8086">
+      <rect class="s-box" x="10" y="20" width="580" height="30" style="stroke:var(--accent);stroke-width:1.5"/>
+      <line class="s-stroke" x1="430" y1="20" x2="430" y2="50" style="stroke:var(--accent)"/>
+      <line class="s-stroke" x1="510" y1="20" x2="510" y2="50" style="stroke:var(--accent)"/>
+      <text class="s-txt s-acc" x="220" y="40" text-anchor="middle" font-size="13">opcode (6b)</text>
+      <text class="s-txt" x="470" y="40" text-anchor="middle" font-size="13">d</text>
+      <text class="s-txt" x="550" y="40" text-anchor="middle" font-size="13">w</text>
+      <text class="s-lbl" x="300" y="14" text-anchor="middle" font-size="11">Octet 1</text>
+
+      <rect class="s-box" x="10" y="70" width="160" height="30"/>
+      <rect class="s-box" x="170" y="70" width="220" height="30"/>
+      <rect class="s-box" x="390" y="70" width="200" height="30"/>
+      <text class="s-txt" x="90"  y="90" text-anchor="middle" font-size="13">mod (2b)</text>
+      <text class="s-txt" x="280" y="90" text-anchor="middle" font-size="13">reg (3b)</text>
+      <text class="s-txt" x="490" y="90" text-anchor="middle" font-size="13">r/m (3b)</text>
+      <text class="s-lbl" x="300" y="64" text-anchor="middle" font-size="11">Octet 2 (ModR/M)</text>
+
+      <rect class="s-box" x="10" y="115" width="285" height="28" style="fill:var(--panel2)"/>
+      <rect class="s-box" x="295" y="115" width="295" height="28" style="fill:var(--panel2)"/>
+      <text class="s-lbl" x="152" y="133" text-anchor="middle" font-size="11">deplasament/adresă (opțional)</text>
+      <text class="s-lbl" x="442" y="133" text-anchor="middle" font-size="11">valoare imediată (opțional)</text>
+    </svg>
+    <div class="cap">Octeții opcode + ModR/M NU respectă regula little-endian; deplasamentul/datele DA.</div>
+  </div>
+  <table>
+    <tr><th>Bit</th><th>Rol</th></tr>
+    <tr><td><code>d</code> (direction)</td><td>d=1 → <code>reg</code> e <b>destinația</b> (r/m e sursa); d=0 → <code>reg</code> e <b>sursa</b> (r/m e destinația). Sens doar la instrucțiuni cu 2 operanzi.</td></tr>
+    <tr><td><code>w</code> (word/byte)</td><td>w=1 → operanzi pe 2 octeți (16b); w=0 → pe 1 octet (8b).</td></tr>
+    <tr><td><code>mod</code></td><td>00 → fără deplasament (excepție: r/m=110 = adresare directă, 2 octeți); 01 → deplasament 8 biți cu semn; 10 → deplasament 16 biți; 11 → ambii operanzi sunt registri.</td></tr>
+  </table>
+  <h3>Codificarea câmpurilor <code>reg</code> și <code>r/m</code></h3>
+  <table class="center">
+    <tr><th>cod</th><th>reg (w=1)</th><th>reg (w=0)</th><th>r/m (mod=00)</th></tr>
+    <tr><td>000</td><td>AX</td><td>AL</td><td>[BX+SI]</td></tr>
+    <tr><td>001</td><td>CX</td><td>CL</td><td>[BX+DI]</td></tr>
+    <tr><td>010</td><td>DX</td><td>DL</td><td>[BP+SI]</td></tr>
+    <tr><td>011</td><td>BX</td><td>BL</td><td>[BP+DI]</td></tr>
+    <tr><td>100</td><td>SP</td><td>AH</td><td>[SI]</td></tr>
+    <tr><td>101</td><td>BP</td><td>CH</td><td>[DI]</td></tr>
+    <tr><td>110</td><td>SI</td><td>DH</td><td>direct (disp16)</td></tr>
+    <tr><td>111</td><td>DI</td><td>BH</td><td>[BX]</td></tr>
+  </table>
+  <p>Pentru <code>mod=01/10</code>, codul <code>110</code> devine <code>[BP]</code> + deplasament. Opcode-ul pentru <code>MOV reg↔reg/mem</code> este <code>100010</code>.</p>
+
+  <h2>Pipelining</h2>
+  <p>O instrucțiune mașină e consumată în <b>5 etape</b> (μoperații): <b>IF</b> (Instruction Fetch), <b>ID</b> (Decode), <b>EX</b> (Execute), <b>MEM</b> (Memory access), <b>WB</b> (Write back). Suprapunerea acestor etape (ca pe o linie de asamblare) crește <b>throughput-ul</b>.</p>
+  <div class="dia">
+    <svg viewBox="0 0 660 170" role="img" aria-label="Secvențial vs suprapus (pipelining)">
+      <text class="s-lbl s-acc" x="6" y="16" font-size="12">Secvențial</text>
+      <g font-size="10">
+        <rect class="s-box" x="6"   y="24" width="34" height="20"/><text class="s-txt" x="23"  y="38" text-anchor="middle">IF</text>
+        <rect class="s-box" x="40"  y="24" width="34" height="20"/><text class="s-txt" x="57"  y="38" text-anchor="middle">ID</text>
+        <rect class="s-box" x="74"  y="24" width="34" height="20"/><text class="s-txt" x="91"  y="38" text-anchor="middle">EX</text>
+        <rect class="s-box" x="108" y="24" width="40" height="20"/><text class="s-txt" x="128" y="38" text-anchor="middle">MEM</text>
+        <rect class="s-box" x="148" y="24" width="34" height="20"/><text class="s-txt" x="165" y="38" text-anchor="middle">WB</text>
+        <rect class="s-box" x="182" y="24" width="34" height="20" style="fill:var(--panel2)"/><text class="s-txt" x="199" y="38" text-anchor="middle">IF</text>
+        <rect class="s-box" x="216" y="24" width="34" height="20" style="fill:var(--panel2)"/><text class="s-txt" x="233" y="38" text-anchor="middle">ID</text>
+      </g>
+      <text class="s-lbl" x="260" y="38" font-size="10">instrucțiunea 2 abia după ce termină prima…</text>
+
+      <text class="s-lbl s-acc" x="6" y="74" font-size="12">Suprapus (pipelining)</text>
+      <g font-size="10">
+        <rect class="s-box" x="6"   y="82"  width="34" height="20" style="stroke:var(--accent)"/><text class="s-txt" x="23"  y="96" text-anchor="middle">IF</text>
+        <rect class="s-box" x="40"  y="82"  width="34" height="20"/><text class="s-txt" x="57"  y="96" text-anchor="middle">ID</text>
+        <rect class="s-box" x="74"  y="82"  width="34" height="20"/><text class="s-txt" x="91"  y="96" text-anchor="middle">EX</text>
+        <rect class="s-box" x="108" y="82"  width="40" height="20"/><text class="s-txt" x="128" y="96" text-anchor="middle">MEM</text>
+        <rect class="s-box" x="148" y="82"  width="34" height="20"/><text class="s-txt" x="165" y="96" text-anchor="middle">WB</text>
+
+        <rect class="s-box" x="40"  y="106" width="34" height="20" style="stroke:var(--accent)"/><text class="s-txt" x="57"  y="120" text-anchor="middle">IF</text>
+        <rect class="s-box" x="74"  y="106" width="34" height="20"/><text class="s-txt" x="91"  y="120" text-anchor="middle">ID</text>
+        <rect class="s-box" x="108" y="106" width="34" height="20"/><text class="s-txt" x="125" y="120" text-anchor="middle">EX</text>
+        <rect class="s-box" x="142" y="106" width="40" height="20"/><text class="s-txt" x="162" y="120" text-anchor="middle">MEM</text>
+        <rect class="s-box" x="182" y="106" width="34" height="20"/><text class="s-txt" x="199" y="120" text-anchor="middle">WB</text>
+
+        <rect class="s-box" x="74"  y="130" width="34" height="20" style="stroke:var(--accent)"/><text class="s-txt" x="91"  y="144" text-anchor="middle">IF</text>
+        <rect class="s-box" x="108" y="130" width="34" height="20"/><text class="s-txt" x="125" y="144" text-anchor="middle">ID</text>
+        <rect class="s-box" x="142" y="130" width="34" height="20"/><text class="s-txt" x="159" y="144" text-anchor="middle">EX</text>
+        <rect class="s-box" x="176" y="130" width="40" height="20"/><text class="s-txt" x="196" y="144" text-anchor="middle">MEM</text>
+        <rect class="s-box" x="216" y="130" width="34" height="20"/><text class="s-txt" x="233" y="144" text-anchor="middle">WB</text>
+      </g>
+      <text class="s-lbl" x="300" y="120" font-size="10">3 instrucțiuni „în zbor" simultan ▶</text>
+    </svg>
+    <div class="cap">Secvențial: ALU stă idle în timpul fetch-ului. Suprapus: instrucțiunea n+1 e preluată în timp ce n se execută.</div>
+  </div>
+  <h3>Probleme posibile (hazards)</h3>
+  <ul>
+    <li><b>Dependența datelor:</b> o instrucțiune depinde de rezultatul încă indisponibil al alteia → <b>pipeline stall</b> (bubbles).</li>
+    <li><b>Variații de sincronizare</b> și <b>instrucțiuni de ramificare (branching):</b> CPU nu știe următoarea instrucțiune la un salt condiționat → nevoie de <b>predicție</b>.</li>
+  </ul>
+
+  <h2>Predicția salturilor</h2>
+  <table>
+    <tr><th>Tip</th><th>Cum funcționează</th></tr>
+    <tr><td><b>Statică</b></td><td>Fără istoric. Presupuneri: salturile „înapoi" (bucle <code>for</code>) <b>se fac</b> (Taken); salturile „în față" (<code>if-else</code>) <b>nu se fac</b>. Decizii la compilare.</td></tr>
+    <tr><td><b>Dinamică 1-bit</b></td><td>BHT (Branch History Table) ține 1 bit (Taken/Not Taken) per branch. La fiecare predicție greșită, bitul se inversează. Acuratețe modestă (ex. bucla for cu 9 iterații → 2 greșeli → 80%).</td></tr>
+    <tr><td><b>Dinamică 2-bit</b></td><td>Counter saturat pe 2 biți; schimbă predicția doar după <b>două</b> greșeli succesive. Stări: 00/01 (NT), 10/11 (T).</td></tr>
+    <tr><td><b>Correlating</b></td><td>Corelează cu comportamentul ultimelor M branch-uri (registru cu deplasare), indexează BHT prin concatenare cu biți din adresă.</td></tr>
+  </table>
+  <div class="dia">
+    <svg viewBox="0 0 620 130" role="img" aria-label="Automat 2-bit predicție salturi">
+      <g font-size="11">
+        <rect class="s-box" x="20"  y="40" width="120" height="44"/><text class="s-txt" x="80"  y="60" text-anchor="middle">00</text><text class="s-lbl" x="80"  y="76" text-anchor="middle" font-size="10">Strong NT</text>
+        <rect class="s-box" x="180" y="40" width="120" height="44"/><text class="s-txt" x="240" y="60" text-anchor="middle">01</text><text class="s-lbl" x="240" y="76" text-anchor="middle" font-size="10">Weak NT</text>
+        <rect class="s-box" x="340" y="40" width="120" height="44"/><text class="s-txt" x="400" y="60" text-anchor="middle">10</text><text class="s-lbl" x="400" y="76" text-anchor="middle" font-size="10">Weak T</text>
+        <rect class="s-box" x="500" y="40" width="110" height="44" style="stroke:var(--accent)"/><text class="s-txt" x="555" y="60" text-anchor="middle">11</text><text class="s-lbl" x="555" y="76" text-anchor="middle" font-size="10">Strong T</text>
+      </g>
+      <g style="stroke:var(--green);stroke-width:1.5;fill:none">
+        <path d="M140 50 L180 50" marker-end="url(#ar)"/>
+        <path d="M300 50 L340 50" marker-end="url(#ar)"/>
+        <path d="M460 50 L500 50" marker-end="url(#ar)"/>
+      </g>
+      <g style="stroke:var(--red);stroke-width:1.5;fill:none">
+        <path d="M180 74 L140 74" marker-end="url(#ar2)"/>
+        <path d="M340 74 L300 74" marker-end="url(#ar2)"/>
+        <path d="M500 74 L460 74" marker-end="url(#ar2)"/>
+      </g>
+      <defs>
+        <marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--green)"/></marker>
+        <marker id="ar2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--red)"/></marker>
+      </defs>
+      <text class="s-lbl" x="310" y="20" text-anchor="middle" font-size="11">verde = Taken (→) · roșu = Not Taken (←)</text>
+      <text class="s-lbl" x="310" y="108" text-anchor="middle" font-size="11">Predicție: 00/01 → NT, 10/11 → T</text>
+    </svg>
+    <div class="cap">Counter saturat pe 2 biți: T incrementează, NT decrementează (fără under/overflow).</div>
+  </div>
+
+  <!-- ===================== PROBLEME C5 ===================== -->
+  <h2>Probleme rezolvate — codificarea instrucțiunilor</h2>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 5 · Codificare</span>
+        Codificați în binar și hexazecimal instrucțiunea <code>MOV BX, [DI]</code> (opcode MOV = 100010).</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <pre>opcode = 100010
+d = 1   (reg = BX e destinația, r/m e sursa)
+w = 1   (registri pe 16 biți)
+mod = 00   (r/m = [DI], fără deplasament)
+reg = 011  (BX, w=1)
+r/m = 101  ([DI])
+
+Octet 1: 100010 1 1 = 1000 1011 = <span class="st">0x8B</span>
+Octet 2: 00 011 101 = 0001 1101 = <span class="st">0x1D</span>
+=> MOV BX, [DI] = <span class="st">8B1D</span>h</pre>
+      <p class="badge">Dacă era <code>MOV [DI], BX</code> (d=0): octet 1 = 1000 1001 = 0x89 → 891Dh.</p>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 5 · Codificare</span>
+        Codificați <code>MOV DX, [BP+6]</code> și <code>MOV AX, [BX-4]</code> (deplasament pe 8 biți cu semn, mod=01).</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <h4>MOV DX, [BP+6]</h4>
+      <pre>opcode=100010, d=1, w=1, mod=01 (disp8)
+reg=010 (DX),  r/m=110 ([BP]+disp8)
+Octet1 = 1000 1011 = 0x8B
+Octet2 = 01 010 110 = 0101 0110 = 0x56
+Octet3 = disp = 06
+=> <span class="st">8B 56 06</span>h</pre>
+      <h4>MOV AX, [BX-4]</h4>
+      <pre>reg=000 (AX), r/m=111 ([BX]), mod=01
+disp = −4 pe 8 biți cu semn = 1111 1100 = 0xFC
+Octet1 = 1000 1011 = 0x8B
+Octet2 = 01 000 111 = 0100 0111 = 0x47
+Octet3 = FC
+=> <span class="st">8B 47 FC</span>h</pre>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 5 · Codificare</span>
+        Codificați <code>MOV AX, [BX+500]</code> (mod=10, deplasament pe 16 biți) și <code>MOV DX, BX</code> (mod=11, registru-registru).</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <h4>MOV AX, [BX+500]</h4>
+      <pre>mod=10 (disp16), reg=000 (AX), r/m=111 ([BX])
+500 = 0x01F4 → little-endian: F4 01
+Octet1 = 1000 1011 = 0x8B
+Octet2 = 10 000 111 = 1000 0111 = 0x87
+Octet3,4 = F4 01
+=> <span class="st">8B 87 F4 01</span>h</pre>
+      <h4>MOV DX, BX</h4>
+      <pre>mod=11 (ambii registri), reg=010 (DX), r/m=011 (BX)
+Octet1 = 1000 1011 = 0x8B
+Octet2 = 11 010 011 = 1101 0011 = 0xD3
+=> <span class="st">8B D3</span>h</pre>
+      <div class="tip"><b>Recapitulare mod:</b> 00 = fără deplasament · 01 = +disp8 · 10 = +disp16 · 11 = registru↔registru. <code>d</code> alege cine e destinația, <code>w</code> alege 8/16 biți.</div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 5 · Decodare</span>
+        Ce instrucțiune reprezintă codul <code>8ADE</code>h? (decodare inversă)</div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <pre>8ADE = 1000 1010 1101 1110
+Octet1 = 1000 1010 → opcode=100010 (MOV), d=1, w=0 (8 biți)
+Octet2 = 1101 1110 → mod=11, reg=011, r/m=110
+w=0 → registri pe 8 biți: reg=011 → BL, r/m=110 → DH
+d=1 → reg (BL) e destinația
+=> <span class="st">MOV BL, DH</span></pre>
+    </div>
+  </div>
+
+  <h2>Probleme rezolvate — predicția salturilor</h2>
+
+  <div class="ex">
+    <div class="ex-head">
+      <div class="ex-q"><span class="src">Curs 5 · Predicție</span>
+        Determinați acuratețea predicției pentru instrucțiunea de branch echivalentă blocului <code>if</code> din codul de mai jos, pentru predictor static [T/NT] și dinamic 1-bit / 2-bit (toate stările de start).
+        <pre style="margin-top:8px"><span class="ty">int</span> a=0, counter=0;
+<span class="kw">while</span>(a&lt;5){
+  <span class="kw">if</span>(a%2==0) counter++;
+  a++;
+}</pre></div>
+      <button class="ex-btn" onclick="toggleEx(this)">Arată rezolvarea</button>
+    </div>
+    <div class="ex-sol">
+      <h4>Comportamentul branch-ului</h4>
+      <p>Bucla rulează pentru <code>a = 0,1,2,3,4</code>. Saltul (de tip <code>jne</code> — sare peste <code>counter++</code> când <code>a</code> e impar) este <b>Taken</b> când <code>a</code> e impar, <b>Not Taken</b> când <code>a</code> e par:</p>
+      <pre>a:        0    1    2    3    4
+a%2==0:  da   nu   da   nu   da
+branch:  NT    T   NT    T   NT</pre>
+      <p>Secvența de rezultate: <code>NT, T, NT, T, NT</code> (tipar alternant).</p>
+
+      <h4>Predicție statică</h4>
+      <table class="center">
+        <tr><th>Strategie</th><th>Predicții</th><th>Corecte</th><th>Acuratețe</th></tr>
+        <tr><td>Always <b>T</b></td><td>T T T T T</td><td>2 (poz. 2,4)</td><td><b>40%</b></td></tr>
+        <tr><td>Always <b>NT</b></td><td>NT NT NT NT NT</td><td>3 (poz. 1,3,5)</td><td><b>60%</b></td></tr>
+      </table>
+
+      <h4>Predicție dinamică 1-bit</h4>
+      <p>Bitul de stare prezice, apoi devine egal cu rezultatul real.</p>
+      <pre>Start NT:  pred NT T NT T NT vs real NT T NT T NT?
+  pas1 pred NT, real NT ✓        (apoi bit→NT)
+  pas2 pred NT, real T  ✗        (bit→T)
+  pas3 pred T,  real NT ✗        (bit→NT)
+  pas4 pred NT, real T  ✗        (bit→T)
+  pas5 pred T,  real NT ✗        → 1/5 = <b>20%</b>
+Start T:   toate greșite        → 0/5 = <b>0%</b></pre>
+      <p>Tiparul alternant <code>NTNTNT</code> este cazul cel mai defavorabil pentru predictorul pe 1 bit.</p>
+
+      <h4>Predicție dinamică 2-bit</h4>
+      <p>Stări: 00 Strong NT, 01 Weak NT, 10 Weak T, 11 Strong T. T → +1, NT → −1 (saturat).</p>
+      <table class="center">
+        <tr><th>Stare start</th><th>Corecte</th><th>Acuratețe</th></tr>
+        <tr><td>00 (Strong NT)</td><td>3 (poz. 1,3,5)</td><td><b>60%</b></td></tr>
+        <tr><td>01 (Weak NT)</td><td>3 (poz. 1,3,5)</td><td><b>60%</b></td></tr>
+        <tr><td>10 (Weak T)</td><td>0</td><td><b>0%</b></td></tr>
+        <tr><td>11 (Strong T)</td><td>2 (poz. 2,4)</td><td><b>40%</b></td></tr>
+      </table>
+      <pre><span class="cm">// exemplu start 00:</span>
+00 →NT real NT ✓ → 00
+00 →NT real T  ✗ → 01
+01 →NT real NT ✓ → 00
+00 →NT real T  ✗ → 01
+01 →NT real NT ✓ → 00     => 3/5 = 60%</pre>
+      <div class="tip"><b>Concluzie:</b> pentru acest tipar alternant, cea mai bună alegere e o predicție <b>NT</b> (statică NT = 60%, sau 2-bit pornit din stările NT = 60%). Predictorii porniți din starea „T" se descurcă prost, fiindcă secvența începe și se termină cu NT.</div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* ============ TABS (controlate de aplicația gazdă) + EXERCIȚII + TEMĂ ============ */
+function activateTab(tab){
+  var page = document.getElementById('page-' + tab);
+  if(!page) return;
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  page.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function tabFromHash(){ var t = location.hash.replace('#',''); if(t) activateTab(t); }
+window.addEventListener('hashchange', tabFromHash);
+tabFromHash();
+
+function toggleEx(btn){
+  var ex = btn.closest('.ex');
+  var open = ex.classList.toggle('open');
+  btn.textContent = open ? 'Ascunde rezolvarea' : 'Arată rezolvarea';
+}
+
+function setTheme(t){ document.documentElement.dataset.theme = t; try{ localStorage.setItem('arh-theme', t); }catch(e){} }
+try{ setTheme(localStorage.getItem('arh-theme') || 'dark'); }catch(e){}
+
+function applyThemeVars(v){
+  var ds=document.documentElement.style, K=['--bg','--bg2','--bg3','--sidebar','--panel','--panel2','--topbar','--ink','--ink-soft','--txt','--muted','--line','--line2','--border','--accent','--accent-2','--accent2','--green','--good','--red','--bad','--blue','--purple','--aqua','--warn','--code-bg','--code-ink','--on-accent'];
+  K.forEach(function(k){ ds.removeProperty(k); });
+  if(v){ for(var k in v){ ds.setProperty(k, v[k]); } }
+}
+window.addEventListener('message', function(e){
+  var d = e.data || {};
+  if(d.type === 'theme' && d.theme){ setTheme(d.theme); applyThemeVars(d.vars); }
+  else if(d.type === 'tab' && d.tab) activateTab(d.tab);
+});
+</script>
+</body>
+</html>
