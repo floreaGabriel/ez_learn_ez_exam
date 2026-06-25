@@ -88,6 +88,47 @@ svg .s-stroke{stroke:var(--muted); stroke-width:1.5; fill:none}
 .badge{font-size:12px; color:var(--muted)}
 .ans{color:var(--green); font-weight:700}
 
+/* ====== widget-uri interactive ====== */
+.iact-ttl{font-weight:700; color:var(--accent); margin-bottom:6px; font-size:15px}
+.iact-row{display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; margin:10px 0}
+.iact-row label{display:flex; flex-direction:column; gap:4px; font-size:12px; color:var(--muted)}
+.iact-in{background:var(--code-bg); border:1px solid var(--line2); border-radius:8px; padding:7px 10px; color:var(--ink); font-family:var(--mono); font-size:14px; width:92px; text-transform:uppercase}
+.iact-in.wide{width:300px; text-transform:none}
+.iact-in.sm{width:58px}
+.iact-in:focus{outline:none; border-color:var(--accent)}
+.iact-card select{background:var(--code-bg); color:var(--ink); border:1px solid var(--line2); border-radius:8px; padding:7px 9px; font-family:var(--sans); font-size:13px}
+.iact-op{font-size:22px; color:var(--accent); font-weight:700; padding-bottom:6px}
+.iact-hex{font-size:12px; color:var(--muted); padding-bottom:9px}
+.iact-calc{background:var(--code-bg); border:1px solid var(--line2); border-radius:10px; padding:12px 15px; font-family:var(--mono); font-size:13px; color:var(--ink); margin:12px 0; line-height:1.85; overflow-x:auto}
+.iact-calc .hl{color:var(--accent); font-weight:700}
+.iact-calc .res{color:var(--green); font-weight:700}
+.iact-calc .bad{color:var(--red); font-weight:700}
+.iact-msg{font-size:13px; color:var(--ink-soft); margin-top:8px; min-height:18px}
+.iact-msg .ok{color:var(--green); font-weight:600} .iact-msg .er{color:var(--red); font-weight:600}
+.iact-btn{background:var(--panel2); color:var(--ink); border:1px solid var(--line2); padding:8px 14px; border-radius:8px; font:600 13px var(--sans); cursor:pointer; transition:.12s}
+.iact-btn:hover{filter:brightness(1.1); border-color:var(--accent)}
+.iact-btn.primary{background:var(--accent); color:var(--on-accent,#1a1714); border-color:var(--accent)}
+.iact-btn.ghost{color:var(--muted)}
+.iact-stat{font-size:13px; color:var(--ink-soft); font-family:var(--mono); align-self:center}
+.membar{position:relative; height:44px; background:var(--code-bg); border:1px solid var(--line2); border-radius:8px; margin:14px 0 4px; overflow:hidden}
+.membar-seg{position:absolute; top:0; bottom:0; background:rgba(233,177,67,.20); border-left:2px solid var(--accent); border-right:2px solid var(--accent); transition:.25s}
+.membar-off{position:absolute; top:0; bottom:0; width:3px; background:var(--green); box-shadow:0 0 7px var(--green); transition:.25s}
+.membar-lbls{display:flex; justify-content:space-between; font-size:11px; color:var(--muted); font-family:var(--mono)}
+.pgtab{width:auto; font-size:12.5px; margin:6px 0}
+.pgtab td,.pgtab th{padding:5px 10px; text-align:center}
+.pgtab .pgrow.active td{background:rgba(233,177,67,.18); outline:1px solid var(--accent)}
+.pgtab .pgrow.fault td{background:rgba(251,73,52,.16); outline:1px solid var(--red)}
+.pgtab input{width:48px; background:var(--code-bg); border:1px solid var(--line2); border-radius:6px; color:var(--ink); font-family:var(--mono); text-align:center; padding:3px}
+.pr-stage{overflow-x:auto; margin-top:12px}
+.prtab{border-collapse:collapse; font-family:var(--mono); font-size:13px}
+.prtab td,.prtab th{border:1px solid var(--line2); min-width:32px; height:31px; text-align:center; padding:0 3px}
+.prtab .lbl{color:var(--muted); padding:0 10px 0 2px; text-align:right; border:none; font-family:var(--sans); font-size:12px; white-space:nowrap}
+.prtab .ref{font-weight:700; color:var(--ink)}
+.prtab .ref.cur{background:var(--accent); color:var(--on-accent,#1a1714)}
+.prtab .cell.new{background:rgba(184,187,38,.22); color:var(--ink); font-weight:700}
+.prtab .ff{color:var(--red); font-weight:700}
+.prtab .hh{color:var(--green); font-weight:700}
+
 @media (max-width:760px){
   .wrap{padding:18px 14px 70px}
   h1{font-size:22px} h2{font-size:18px}
@@ -152,6 +193,21 @@ svg .s-stroke{stroke:var(--muted); stroke-width:1.5; fill:none}
   <p><b>Exemplu:</b> adresa logică <code>1100:450</code> → fizică = <code>1100H × 10H + 450H = 11000H + 450H = 11450H</code>.</p>
   <div class="tip"><b>Many-to-one:</b> mai multe adrese logice pot indica aceeași adresă fizică. <code>1000:20A9</code> și <code>1200:0A9</code> dau ambele <code>120A9H</code> (10000+20A9 = 12000+0A9). Invers nu e adevărat: unei adrese logice îi corespunde o singură adresă fizică.</div>
 
+  <div class="card iact-card" id="rmw">
+    <div class="iact-ttl">🎮 Încearcă: traducere adresă în modul real</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 6px">Modifică segmentul și offset-ul (în hexazecimal) și vezi cum se formează adresa fizică pe 20 de biți și unde „cade" segmentul în memoria de 1 MB.</p>
+    <div class="iact-row">
+      <label>Segment (16b)<input id="rmSeg" class="iact-in" value="1100" maxlength="4" spellcheck="false"></label>
+      <span class="iact-op">:</span>
+      <label>Offset (16b)<input id="rmOff" class="iact-in" value="0450" maxlength="4" spellcheck="false"></label>
+      <span class="iact-hex">valori hexazecimale</span>
+    </div>
+    <div class="iact-calc" id="rmCalc"></div>
+    <div class="membar"><div class="membar-seg" id="rmSegEl"></div><div class="membar-off" id="rmOffEl"></div></div>
+    <div class="membar-lbls"><span>00000H</span><span>memoria fizică (1 MB)</span><span>FFFFFH</span></div>
+    <div class="iact-msg" id="rmMsg"></div>
+  </div>
+
   <h2>Modul protejat — descriptori de segment</h2>
   <p>În modul protejat <b>toate accesările trec printr-un tabel cu descriptori de segment</b>. Un <b>registru selector</b> (registru segment) indexează un descriptor din tabel; descriptorul conține:</p>
   <ul>
@@ -175,6 +231,24 @@ svg .s-stroke{stroke:var(--muted); stroke-width:1.5; fill:none}
   </table>
   <p>Paginarea folosește o <b>structură ierarhică</b>: adresa primei structuri (directorul de paginare) este în registrul <code>CR3</code>. Adresa liniară e împărțită în porțiuni: cea mai semnificativă selectează o intrare în director, iar ultima porțiune e indexul în pagină. Biți de control per intrare: <code>Present</code>, <code>Read/write</code>, <code>User/supervisor</code>, <code>Accessed</code>, <code>Dirty</code>. Pagini uzuale: <b>4KB</b> (de obicei), 2MB, 4MB, 1GB. Sunt 4 moduri: <code>32-bit</code>, <code>PAE</code>, <code>4-level</code>, <code>5-level</code>. Traducerile recente se păstrează în <b>TLB</b> (Translation Lookaside Buffer).</p>
 
+  <div class="card iact-card" id="pgw">
+    <div class="iact-ttl">🎮 Încearcă: traducere adresă prin paginare</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 6px">Adresa virtuală se împarte în <b>număr de pagină</b> (biții de sus) și <b>offset</b> (biții de jos). Numărul de pagină indexează tabelul de pagini → obținem cadrul fizic. Editează tabelul (un cadru, sau „—" = pagină absentă → <b>page fault</b>).</p>
+    <div class="iact-row">
+      <label>Dimensiune pagină
+        <select id="pgSize">
+          <option value="8">256 B · offset 8 biți</option>
+          <option value="12" selected>4 KB · offset 12 biți</option>
+        </select>
+      </label>
+      <label>Adresă virtuală<input id="pgVA" class="iact-in" value="2ABC" maxlength="5" spellcheck="false"></label>
+      <span class="iact-hex">hexazecimal</span>
+    </div>
+    <div class="iact-calc" id="pgCalc"></div>
+    <table class="pgtab" id="pgTab"></table>
+    <div class="iact-msg" id="pgMsg"></div>
+  </div>
+
   <h2>Mecanismul de swapping</h2>
   <p>Permite gestionarea mai multor pagini decât încap în RAM:</p>
   <ul>
@@ -182,6 +256,26 @@ svg .s-stroke{stroke:var(--muted); stroke-width:1.5; fill:none}
     <li><b>Swap-in:</b> dacă o pagină cerută nu e în RAM, CPU generează o <b>excepție page-fault</b>, iar pagina e adusă în RAM.</li>
   </ul>
   <p>Algoritmi de înlocuire: <b>FIFO</b> (cea mai veche încărcată), <b>LRU</b> (cea mai demult folosită), <b>MRU</b> (cea mai recent folosită). Nucleul Linux folosește o variantă de LRU.</p>
+
+  <div class="card iact-card" id="prw">
+    <div class="iact-ttl">🎮 Încearcă: simulator de înlocuire a paginilor (swapping)</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 6px">Introdu o secvență de pagini cerute de procesor și numărul de cadre din RAM. Apasă <b>Rulează</b> (animat) sau <b>Pas</b> și vezi ce pagină intră, ce pagină e evacuată și unde apare <b>page fault</b> (coloană roșie) vs <b>hit</b> (verde).</p>
+    <div class="iact-row">
+      <label>Secvență de pagini<input id="prSeq" class="iact-in wide" value="5,0,1,2,0,3,0,3,2,4,0,3,2,3" spellcheck="false"></label>
+      <label>Cadre RAM<input id="prFrames" class="iact-in sm" value="4"></label>
+      <label>Algoritm
+        <select id="prAlg"><option>FIFO</option><option>LRU</option><option>MRU</option></select>
+      </label>
+    </div>
+    <div class="iact-row">
+      <button class="iact-btn primary" id="prRun">▶ Rulează</button>
+      <button class="iact-btn" id="prStep">⏭ Pas</button>
+      <button class="iact-btn ghost" id="prReset">↺ Reset</button>
+      <span class="iact-stat" id="prStat"></span>
+    </div>
+    <div class="pr-stage" id="prStage"></div>
+    <div class="iact-msg" id="prMsg"></div>
+  </div>
 
   <!-- ===================== PROBLEME C3 ===================== -->
   <h2>Probleme rezolvate</h2>
@@ -937,6 +1031,165 @@ window.addEventListener('message', function(e){
   if(d.type === 'theme' && d.theme){ setTheme(d.theme); applyThemeVars(d.vars); }
   else if(d.type === 'tab' && d.tab) activateTab(d.tab);
 });
+</script>
+
+<script>
+/* ============ WIDGET-URI INTERACTIVE (Curs 3) ============ */
+(function(){
+  function $(id){ return document.getElementById(id); }
+  function hex(v){ return v.toString(16).toUpperCase(); }
+  function parseHex(s){ s=(s||'').trim(); if(!/^[0-9a-fA-F]+$/.test(s)) return null; return parseInt(s,16); }
+
+  /* ---- 1. Modul real: Segment:Offset -> adresă fizică ---- */
+  (function(){
+    var seg=$('rmSeg'), off=$('rmOff'), calc=$('rmCalc'), msg=$('rmMsg'), segEl=$('rmSegEl'), offEl=$('rmOffEl');
+    if(!seg) return;
+    var TOTAL=0x100000, SEGSPAN=0x10000;
+    function upd(){
+      var s=parseHex(seg.value), o=parseHex(off.value);
+      if(s===null||o===null){ calc.innerHTML='<span class="bad">Introdu valori hexazecimale valide (0-9, A-F).</span>'; msg.innerHTML=''; return; }
+      s&=0xFFFF; o&=0xFFFF;
+      var base=s*0x10, phys=(base+o)&0xFFFFF, physFull=base+o;
+      calc.innerHTML =
+        'Segment <span class="hl">'+hex(s)+'H</span> × 10H = <span class="hl">'+hex(base)+'H</span>  <span style="color:var(--muted)">(decalat 4 biți)</span><br>'+
+        '+ Offset&nbsp; <span class="hl">'+hex(o)+'H</span><br>'+
+        '= Adresă fizică = <span class="res">'+hex(physFull>0xFFFFF?physFull:phys).padStart(5,'0')+'H</span>';
+      segEl.style.left=(base/TOTAL*100)+'%'; segEl.style.width=(SEGSPAN/TOTAL*100)+'%';
+      offEl.style.left=(phys/TOTAL*100)+'%';
+      var m='Offset-ul <b>'+hex(o)+'H</b> se află la '+o+' octeți de la baza segmentului (<b>'+hex(base)+'H</b>). ';
+      if(physFull>0xFFFFF) m+='<span class="er">Depășește 1 MB — în modul real adresa se „înfășoară" (wrap-around).</span>';
+      else m+='<span class="ok">Segmentul acoperă 64 KB începând de la bază.</span>';
+      msg.innerHTML=m;
+    }
+    seg.addEventListener('input',upd); off.addEventListener('input',upd); upd();
+  })();
+
+  /* ---- 2. Paginare: adresă virtuală -> cadru ---- */
+  (function(){
+    var sizeSel=$('pgSize'), va=$('pgVA'), calc=$('pgCalc'), tab=$('pgTab'), msg=$('pgMsg');
+    if(!sizeSel) return;
+    var NPAGES=8;
+    var frames=[3,7,1,null,2,null,5,0]; // pagină -> cadru (null = absentă)
+    function buildTab(){
+      var h='<tr><th>Pagină</th>'; for(var p=0;p<NPAGES;p++) h+='<th>'+p+'</th>'; h+='</tr>';
+      h+='<tr class="pgrow" id="pgFrRow"><td class="lbl" style="color:var(--accent)">Cadru</td>';
+      for(var p2=0;p2<NPAGES;p2++) h+='<td><input data-p="'+p2+'" value="'+(frames[p2]===null?'—':frames[p2])+'"></td>';
+      h+='</tr>';
+      tab.innerHTML=h;
+      tab.querySelectorAll('input').forEach(function(inp){
+        inp.addEventListener('input',function(){
+          var p=+inp.dataset.p, v=inp.value.trim();
+          frames[p]=(v===''||v==='—'||v==='-')?null:(isNaN(+v)?frames[p]:+v);
+          upd();
+        });
+      });
+    }
+    function upd(){
+      var bits=+sizeSel.value, v=parseHex(va.value);
+      // reset row highlight
+      tab.querySelectorAll('td').forEach(function(td){ td.parentElement.classList.remove('active','fault'); });
+      if(v===null){ calc.innerHTML='<span class="bad">Adresă virtuală invalidă.</span>'; msg.innerHTML=''; return; }
+      var mask=(1<<bits)-1, vpn=v>>>bits, off=v&mask, pageSz=1<<bits;
+      var offHex=hex(off).padStart(Math.ceil(bits/4),'0');
+      if(vpn>=NPAGES){ calc.innerHTML='Adresă <span class="hl">'+hex(v)+'H</span> → pagina <span class="bad">'+vpn+'</span> nu există în tabel (max '+(NPAGES-1)+').'; msg.innerHTML='<span class="er">Pagină în afara intervalului.</span>'; return; }
+      var fr=frames[vpn];
+      var head='Adresă virtuală <span class="hl">'+hex(v)+'H</span> = [ pagina <span class="hl">'+vpn+'</span> | offset <span class="hl">'+offHex+'H</span> ]  <span style="color:var(--muted)">(offset '+bits+'b)</span><br>';
+      $('pgFrRow').classList.add('active');
+      if(fr===null){
+        calc.innerHTML=head+'Pagina <span class="hl">'+vpn+'</span> → <span class="bad">absentă în RAM</span><br>⇒ <span class="bad">PAGE FAULT</span> — sistemul trebuie să facă swap-in.';
+        $('pgFrRow').classList.remove('active'); $('pgFrRow').classList.add('fault');
+        msg.innerHTML='<span class="er">Page fault:</span> pagina nu e în memoria primară; CPU generează excepția, pagina e adusă de pe disc.';
+      } else {
+        var phys=(fr<<bits)|off;
+        calc.innerHTML=head+'Pagina <span class="hl">'+vpn+'</span> → cadrul <span class="hl">'+fr+'</span> (din tabel)<br>'+
+          'Adresă fizică = cadru × '+pageSz+' + offset = <span class="res">'+hex(phys).padStart(Math.ceil((bits+3)/4),'0')+'H</span>';
+        msg.innerHTML='<span class="ok">Hit:</span> pagina e în cadrul '+fr+'. Offset-ul rămâne neschimbat la traducere.';
+      }
+    }
+    buildTab(); sizeSel.addEventListener('change',upd); va.addEventListener('input',upd); upd();
+  })();
+
+  /* ---- 3. Simulator înlocuire pagini FIFO/LRU/MRU ---- */
+  (function(){
+    var seqI=$('prSeq'), frI=$('prFrames'), algS=$('prAlg'), stage=$('prStage'), stat=$('prStat'), msg=$('prMsg');
+    if(!seqI) return;
+    var st={steps:[],cur:-1,timer:0};
+
+    function simulate(seq,cap,alg){
+      var frames=new Array(cap).fill(null), order=[], usage=[], steps=[];
+      seq.forEach(function(p){
+        var hit=frames.indexOf(p)!==-1, evicted=null, slot=-1;
+        if(hit){ usage=usage.filter(function(x){return x!==p;}); usage.push(p); slot=frames.indexOf(p); }
+        else {
+          var empty=frames.indexOf(null);
+          if(empty!==-1){ slot=empty; frames[slot]=p; order.push(p); usage.push(p); }
+          else {
+            var victim = alg==='FIFO'?order[0] : alg==='LRU'?usage[0] : usage[usage.length-1];
+            slot=frames.indexOf(victim); frames[slot]=p; evicted=victim;
+            order=order.filter(function(x){return x!==victim;}); order.push(p);
+            usage=usage.filter(function(x){return x!==victim;}); usage.push(p);
+          }
+        }
+        steps.push({ref:p,frames:frames.slice(),fault:!hit,slot:slot,evicted:evicted});
+      });
+      return steps;
+    }
+
+    function build(){
+      stop();
+      var seq=(seqI.value||'').split(/[^0-9]+/).filter(function(x){return x!=='';}).map(Number);
+      var cap=Math.max(1,Math.min(8,parseInt(frI.value,10)||4));
+      frI.value=cap;
+      st.steps=simulate(seq,cap,algS.value); st.cur=-1;
+      render();
+    }
+    function render(){
+      var steps=st.steps, cap=steps.length?steps[0].frames.length:0, cur=st.cur;
+      if(!steps.length){ stage.innerHTML='<span style="color:var(--muted)">Introdu o secvență validă.</span>'; stat.textContent=''; return; }
+      var h='<table class="prtab"><tr><td class="lbl">Referință</td>';
+      steps.forEach(function(s,i){ h+='<td class="ref'+(i===cur?' cur':'')+'">'+(i<=cur?s.ref:'')+'</td>'; });
+      h+='</tr>';
+      for(var r=0;r<cap;r++){
+        h+='<tr><td class="lbl">Cadru '+(r+1)+'</td>';
+        steps.forEach(function(s,i){
+          var val = i<=cur && s.frames[r]!==null ? s.frames[r] : '';
+          var isNew = i<=cur && s.fault && s.slot===r;
+          h+='<td class="cell'+(isNew?' new':'')+'">'+val+'</td>';
+        });
+        h+='</tr>';
+      }
+      h+='<tr><td class="lbl">Rezultat</td>';
+      steps.forEach(function(s,i){ h+='<td>'+(i<=cur?(s.fault?'<span class="ff">F</span>':'<span class="hh">H</span>'):'')+'</td>'; });
+      h+='</tr></table>';
+      stage.innerHTML=h;
+      var faultsSoFar=steps.slice(0,cur+1).filter(function(s){return s.fault;}).length;
+      var total=steps.filter(function(s){return s.fault;}).length;
+      stat.innerHTML='Fault-uri: <b>'+faultsSoFar+'</b> · Total final: <b>'+total+'</b> / '+steps.length+' referințe';
+      if(cur>=0 && cur<steps.length){
+        var s=steps[cur];
+        msg.innerHTML = s.fault
+          ? (s.evicted!==null ? '<span class="er">Page fault</span> la pagina '+s.ref+' → evacuează pagina <b>'+s.evicted+'</b> ('+algS.value+').'
+                              : '<span class="er">Page fault</span> la pagina '+s.ref+' → încărcată într-un cadru liber.')
+          : '<span class="ok">Hit</span> — pagina '+s.ref+' e deja în RAM.';
+      } else if(cur>=steps.length-1 && steps.length){ msg.innerHTML='Gata. Total: <b>'+total+'</b> page-fault-uri.'; }
+      else msg.innerHTML='';
+    }
+    function step(){ if(st.cur<st.steps.length-1){ st.cur++; render(); return true; } return false; }
+    function stop(){ if(st.timer){ clearInterval(st.timer); st.timer=0; } $('prRun').textContent='▶ Rulează'; }
+    function run(){
+      if(st.timer){ stop(); return; }
+      if(st.cur>=st.steps.length-1) st.cur=-1;
+      $('prRun').textContent='⏸ Pauză';
+      st.timer=setInterval(function(){ if(!step()) stop(); }, 750);
+    }
+    $('prRun').addEventListener('click',run);
+    $('prStep').addEventListener('click',function(){ stop(); step(); });
+    $('prReset').addEventListener('click',function(){ stop(); st.cur=-1; render(); });
+    [seqI,frI].forEach(function(el){ el.addEventListener('input',build); });
+    algS.addEventListener('change',build);
+    build();
+  })();
+})();
 </script>
 </body>
 </html>
