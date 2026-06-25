@@ -217,6 +217,21 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
 .flagbit small{color:var(--muted)}
 .hint{font-size:.82rem;color:var(--muted);margin:6px 0 0}
 .kbd{font-family:"JetBrains Mono",monospace;background:var(--bg3);border:1px solid var(--border);padding:1px 6px;border-radius:5px}
+
+/* ---- Diagrame OSI / TCP-IP (SVG generat) ---- */
+.osvg-wrap{padding:14px}
+.osvg svg{width:100%;height:auto;display:block;overflow:visible}
+.osvg .card{fill:var(--panel);stroke:var(--border);stroke-width:1}
+.osvg .nm{fill:var(--txt);font-family:"Inter",sans-serif;font-weight:700}
+.osvg .ro{fill:var(--muted);font-family:"Inter",sans-serif;font-weight:400}
+.osvg .hd{fill:var(--muted);font-family:"Inter",sans-serif;font-weight:700;letter-spacing:.6px}
+.osvg .pr{fill:var(--accent);font-family:"JetBrains Mono",monospace;font-weight:600}
+.osvg .meta{fill:var(--muted);font-family:"Inter",sans-serif;font-weight:500}
+.osvg .title{fill:var(--txt);font-family:"Inter",sans-serif;font-weight:700}
+.osvg .bnm{font-family:"Inter",sans-serif;font-weight:700}
+.osvg .badge-t{fill:#fff;font-family:"Inter",sans-serif;font-weight:800}
+.osvg g.lay{transition:opacity .15s}
+@media (max-width:760px){ .osvg-wrap{padding:8px;overflow-x:auto;-webkit-overflow-scrolling:touch} .osvg{min-width:680px} }
 .footer{color:var(--muted);font-size:.82rem;text-align:center;margin-top:40px}
 
 /* ===== Exerciții examen (rezolvate, accordion) ===== */
@@ -589,6 +604,31 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
     </div>
     <div class="card" id="refCard"></div>
     <div class="card" id="refFlows"></div>
+  </section>
+
+  <!-- ============ OSI / TCP-IP ============ -->
+  <section class="page" id="page-osi">
+    <h1>Modelele OSI și TCP/IP</h1>
+    <p class="lead">Cele două „stive" pe niveluri prin care călătoresc datele. <b>OSI</b> este modelul teoretic de referință, cu 7 niveluri; <b>TCP/IP</b> este modelul practic al Internetului, cu 4 niveluri. Fiecare nivel are un <b>rol</b> bine definit și <b>protocoale</b> care operează la el.</p>
+
+    <h2>Stiva OSI — 7 niveluri</h2>
+    <p class="hint">De sus în jos: de la aplicația utilizatorului până la biți pe mediul fizic. Fiecare bandă arată rolul nivelului, protocoalele tipice, unitatea de date (PDU) și echipamentul caracteristic. Coloana din dreapta mapează nivelul pe modelul TCP/IP.</p>
+    <div class="card osvg-wrap"><div id="osiDia" class="osvg"></div></div>
+
+    <h2>Modelul TCP/IP — 4 niveluri</h2>
+    <p class="hint">Modelul folosit în Internetul real. Comasează nivelurile OSI 7-6-5 într-un singur nivel <b>Aplicație</b> și nivelurile 2-1 în <b>Acces la rețea</b>.</p>
+    <div class="card osvg-wrap"><div id="tcpipDia" class="osvg"></div></div>
+
+    <h2>Corespondența pe scurt</h2>
+    <table class="reftable">
+      <tr><th>TCP/IP</th><th>OSI</th><th>PDU</th><th>Protocoale reprezentative</th><th>Echipament</th></tr>
+      <tr><td><b>Aplicație</b></td><td>7 Application · 6 Presentation · 5 Session</td><td>Date</td><td>HTTP, HTTPS, DNS, SMTP, FTP, SSH, DHCP</td><td>Gateway</td></tr>
+      <tr><td><b>Transport</b></td><td>4 Transport</td><td>Segment / Datagramă</td><td>TCP, UDP</td><td>—</td></tr>
+      <tr><td><b>Internet</b></td><td>3 Network</td><td>Pachet</td><td>IP, ICMP, IGMP, IPsec</td><td>Router</td></tr>
+      <tr><td><b>Acces la rețea</b></td><td>2 Data Link · 1 Physical</td><td>Cadru / Bit</td><td>Ethernet, Wi-Fi (802.11), PPP, ARP</td><td>Switch, Hub</td></tr>
+    </table>
+    <div class="note">💡 <b>Încapsulare:</b> la trimitere, fiecare nivel adaugă propriul header peste datele de la nivelul superior — <span class="kbd">Date → Segment → Pachet → Cadru → Biți</span>. La recepție, fiecare nivel își citește și înlătură headerul (de-încapsulare), în ordine inversă.</div>
+    <p class="hint" style="margin-top:10px">Mnemonic OSI (de jos în sus): <b>P</b>hysical · <b>D</b>ata Link · <b>N</b>etwork · <b>T</b>ransport · <b>S</b>ession · <b>P</b>resentation · <b>A</b>pplication → „<i>Please Do Not Throw Sausage Pizza Away</i>".</p>
   </section>
 
   <!-- ============ DRAG ============ -->
@@ -5192,6 +5232,98 @@ function subnetReset(idx){
 try{ renderRefFlows(); }catch(e){ console.error('refflows',e); }
 try{ renderSubnet(); }catch(e){ console.error('subnet',e); }
 try{ drawRef(); }catch(e){}   /* re-randare ca să apară și exemplele per câmp (FIELD_LAB e definit acum) */
+
+/* ============================================================
+   DIAGRAME OSI / TCP-IP  (SVG generat din date)
+   ============================================================ */
+(function(){
+  var XGAP = 10;                       // padding stânga/dreapta
+  function stripe(hue){ return 'hsl('+hue+',62%,48%)'; }
+  function tint(hue){ return 'hsla('+hue+',60%,48%,.13)'; }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // o bandă-nivel; întoarce string SVG. x,w = geometria cardului
+  function layer(L, y, h, x, w, opts){
+    opts = opts||{};
+    var cy = y + h/2;
+    var nameX = x + 78, txtX = x + 78;
+    var protoX = x + Math.round(w*0.50);   // coloana protocoale
+    var s = '<g class="lay">';
+    s += '<rect class="card" x="'+x+'" y="'+y+'" width="'+w+'" height="'+(h-12)+'" rx="12" fill="'+tint(L.hue)+'"/>';
+    s += '<rect x="'+x+'" y="'+y+'" width="8" height="'+(h-12)+'" rx="4" fill="'+stripe(L.hue)+'"/>';
+    // badge număr
+    s += '<circle cx="'+(x+44)+'" cy="'+(cy-6)+'" r="21" fill="'+stripe(L.hue)+'"/>';
+    s += '<text class="badge-t" x="'+(x+44)+'" y="'+(cy-6)+'" font-size="19" text-anchor="middle" dominant-baseline="central">'+L.n+'</text>';
+    // nume + rol
+    s += '<text class="nm" x="'+nameX+'" y="'+(y+34)+'" font-size="20">'+esc(L.name)+'</text>';
+    s += '<text class="ro" x="'+txtX+'" y="'+(y+56)+'" font-size="12.5">'+esc(L.ro[0])+'</text>';
+    if(L.ro[1]) s += '<text class="ro" x="'+txtX+'" y="'+(y+73)+'" font-size="12.5">'+esc(L.ro[1])+'</text>';
+    // protocoale + meta
+    s += '<text class="hd" x="'+protoX+'" y="'+(y+30)+'" font-size="10.5">PROTOCOALE</text>';
+    s += '<text class="pr" x="'+protoX+'" y="'+(y+52)+'" font-size="12.5">'+esc(L.proto)+'</text>';
+    var meta = opts.tcpip ? ('≈ '+L.osi+'  ·  PDU: '+L.pdu)
+                          : ('PDU: '+L.pdu+'   ·   Echipament: '+L.dev);
+    s += '<text class="meta" x="'+protoX+'" y="'+(y+72)+'" font-size="11">'+esc(meta)+'</text>';
+    s += '</g>';
+    return s;
+  }
+
+  // ---------------- OSI (7 niveluri) cu coloană de mapare TCP/IP ----------------
+  var OSI = [
+    {n:7,name:'Application', ro:['Fereastra utilizatorului către rețea:','acces la servicii și schimb de date.'], proto:'HTTP · HTTPS · FTP · SMTP · DNS · SSH', pdu:'Date', dev:'Gateway', hue:130, grp:'app'},
+    {n:6,name:'Presentation',ro:['Traducere format, criptare și','compresie — „translatorul" rețelei.'], proto:'TLS/SSL · JPEG · ASCII · MIME · GIF', pdu:'Date', dev:'Gateway', hue:142, grp:'app'},
+    {n:5,name:'Session',     ro:['Deschide, menține și închide','sesiunile dintre aplicații.'], proto:'RPC · NetBIOS · SQL · sockets · PPTP', pdu:'Date', dev:'Gateway', hue:156, grp:'app'},
+    {n:4,name:'Transport',   ro:['Livrare capăt-la-capăt: porturi,','fiabilitate, segmentare, control flux.'], proto:'TCP · UDP · SCTP', pdu:'Segment', dev:'—', hue:74, grp:'transport'},
+    {n:3,name:'Network',     ro:['Adresare logică (IP) și rutarea','pachetelor între rețele.'], proto:'IP · ICMP · IGMP · IPsec · OSPF', pdu:'Pachet', dev:'Router', hue:40, grp:'internet'},
+    {n:2,name:'Data Link',   ro:['Cadre cu adrese MAC pe legătura','locală; detecție de erori.'], proto:'Ethernet · Wi-Fi 802.11 · PPP · ARP', pdu:'Cadru', dev:'Switch', hue:26, grp:'link'},
+    {n:1,name:'Physical',    ro:['Biți pe mediul fizic: tensiuni,','semnale, cabluri, radio.'], proto:'Ethernet PHY · USB · RS-232 · fibră', pdu:'Bit', dev:'Hub', hue:12, grp:'link'}
+  ];
+  var GRP = { app:{l:'Aplicație',hue:150}, transport:{l:'Transport',hue:74}, internet:{l:'Internet',hue:40}, link:{l:'Acces la rețea',hue:20} };
+
+  function renderOSI(){
+    var host = document.getElementById('osiDia'); if(!host) return;
+    var W=1060, rowH=104, headH=42, cardX=XGAP, cardW=880, brX=900, brW=1060-900-XGAP;
+    var totalH = headH + OSI.length*rowH + 6;
+    var s = '<svg viewBox="0 0 '+W+' '+totalH+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stiva OSI cu 7 niveluri">';
+    s += '<text class="title" x="'+(cardX+8)+'" y="26" font-size="15">▸ Modelul OSI — 7 niveluri</text>';
+    s += '<text class="hd" x="'+brX+'" y="26" font-size="11">≈ MODEL TCP/IP</text>';
+    OSI.forEach(function(L,i){ s += layer(L, headH + i*rowH, rowH, cardX, cardW, {tcpip:false}); });
+    // coloana grupurilor TCP/IP (bracket-uri pe niveluri contigue)
+    var i=0;
+    while(i<OSI.length){
+      var g=OSI[i].grp, j=i; while(j+1<OSI.length && OSI[j+1].grp===g) j++;
+      var yTop=headH + i*rowH, yBot=headH + j*rowH + (rowH-12);
+      var G=GRP[g], cy=(yTop+yBot)/2;
+      s += '<rect class="card" x="'+brX+'" y="'+yTop+'" width="'+brW+'" height="'+(yBot-yTop)+'" rx="12" fill="'+tint(G.hue)+'"/>';
+      s += '<rect x="'+brX+'" y="'+yTop+'" width="8" height="'+(yBot-yTop)+'" rx="4" fill="'+stripe(G.hue)+'"/>';
+      s += '<text class="bnm" x="'+(brX+brW/2+4)+'" y="'+cy+'" font-size="14.5" fill="'+stripe(G.hue)+'" text-anchor="middle" dominant-baseline="central">'+esc(G.l)+'</text>';
+      i=j+1;
+    }
+    s += '</svg>';
+    host.innerHTML = s;
+  }
+
+  // ---------------- TCP/IP (4 niveluri) ----------------
+  var TCPIP = [
+    {n:4,name:'Aplicație',      ro:['Date pentru utilizator; combină','nivelurile OSI 7 · 6 · 5.'], proto:'HTTP · DNS · SMTP · FTP · SSH · DHCP', pdu:'Date', osi:'OSI 5–7', hue:150},
+    {n:3,name:'Transport',      ro:['Comunicație capăt-la-capăt prin porturi:','fiabil (TCP) sau rapid (UDP).'], proto:'TCP · UDP', pdu:'Segment', osi:'OSI 4', hue:74},
+    {n:2,name:'Internet',       ro:['Adresare IP și rutarea pachetelor','între rețele diferite.'], proto:'IP · ICMP · ARP · IGMP · IPsec', pdu:'Pachet', osi:'OSI 3', hue:40},
+    {n:1,name:'Acces la rețea', ro:['Trimiterea cadrelor pe legătura','fizică locală (link + fizic).'], proto:'Ethernet · Wi-Fi · PPP · ARP', pdu:'Cadru / Bit', osi:'OSI 1–2', hue:20}
+  ];
+  function renderTCPIP(){
+    var host = document.getElementById('tcpipDia'); if(!host) return;
+    var W=1060, rowH=110, headH=42, cardX=XGAP, cardW=1060-2*XGAP;
+    var totalH = headH + TCPIP.length*rowH + 6;
+    var s = '<svg viewBox="0 0 '+W+' '+totalH+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Modelul TCP/IP cu 4 niveluri">';
+    s += '<text class="title" x="'+(cardX+8)+'" y="26" font-size="15">▸ Modelul TCP/IP — 4 niveluri</text>';
+    TCPIP.forEach(function(L,i){ s += layer(L, headH + i*rowH, rowH, cardX, cardW, {tcpip:true}); });
+    s += '</svg>';
+    host.innerHTML = s;
+  }
+
+  try{ renderOSI(); }catch(e){ console.error('osi',e); }
+  try{ renderTCPIP(); }catch(e){ console.error('tcpip',e); }
+})();
 
 /* ============================================================
    TABS + THEME

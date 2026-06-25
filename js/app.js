@@ -64,6 +64,7 @@ const MATERII = [
     tip:"embed", src:"retele/index.html",
     sectiuni:[
       {id:"ref",     nume:"Învață",                  icon:"📘"},
+      {id:"osi",     nume:"OSI & TCP/IP",            icon:"📚"},
       {id:"anatomy", nume:"Anatomie pe biți",        icon:"🧬"},
       {id:"journey", nume:"Călătoria pachetului",    icon:"🎬"},
       {id:"subnet",  nume:"Subnetizare",             icon:"🧮"},
