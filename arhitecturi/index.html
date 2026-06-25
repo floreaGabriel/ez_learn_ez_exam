@@ -128,6 +128,13 @@ svg .s-stroke{stroke:var(--muted); stroke-width:1.5; fill:none}
 .prtab .cell.new{background:rgba(184,187,38,.22); color:var(--ink); font-weight:700}
 .prtab .ff{color:var(--red); font-weight:700}
 .prtab .hh{color:var(--green); font-weight:700}
+.bitstrip{display:flex; border:1px solid var(--line2); border-radius:9px; overflow:hidden; margin:14px 0; font-family:var(--mono); font-size:12.5px; min-height:54px}
+.bitstrip > div{padding:9px 6px; text-align:center; font-weight:700; color:var(--ink); display:flex; flex-direction:column; justify-content:center; gap:3px; border-right:1px solid var(--line2)}
+.bitstrip > div:last-child{border-right:none}
+.bitstrip small{font-weight:500; font-size:10px; color:var(--muted)}
+.bs-tag{background:rgba(233,177,67,.26)} .bs-idx{background:rgba(131,165,152,.26)} .bs-off{background:rgba(142,192,124,.22)}
+.encbits .o{color:var(--accent)} .encbits .d{color:var(--purple)} .encbits .w{color:var(--red)}
+.encbits .m{color:var(--blue)} .encbits .r{color:var(--green)} .encbits .rm{color:var(--aqua)} .encbits .dp{color:var(--muted)}
 
 @media (max-width:760px){
   .wrap{padding:18px 14px 70px}
@@ -436,6 +443,31 @@ evac:           -  -  0  3  0  -  2  4  -  3  2</pre>
     <div class="cap">nr. seturi = nr. linii / k · index_set = log₂(nr. seturi) · k = 1 → mapare directă · k = nr. total linii → mapare asociativă.</div>
   </div>
   <p>Sunt necesare <code>k</code> comparatoare (câte unul per linie din set). Dimensiunea cache = <code>nr. seturi × k × dim. linie</code>.</p>
+
+  <div class="card iact-card" id="caw">
+    <div class="iact-ttl">🎮 Încearcă: împărțirea adresei fizice (tag | index | offset)</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 6px">Alege dimensiunile și tipul de mapare; widget-ul calculează câți biți merg pe <b>tag</b>, <b>index</b> și <b>offset</b>, dimensiunea tag directory și — dacă dai o adresă — în ce linie/set se mapează. Acceptă unități: <code>B</code>, <code>KB</code>, <code>MB</code>, <code>GB</code>.</p>
+    <div class="iact-row">
+      <label>Memorie principală<input id="caMem" class="iact-in" value="4GB" spellcheck="false"></label>
+      <label>Cache<input id="caCache" class="iact-in" value="1MB" spellcheck="false"></label>
+      <label>Bloc / linie<input id="caBlock" class="iact-in" value="4KB" spellcheck="false"></label>
+      <label>Cuvânt<input id="caWord" class="iact-in sm" value="1B" spellcheck="false"></label>
+    </div>
+    <div class="iact-row">
+      <label>Mapare
+        <select id="caMap">
+          <option value="direct">Directă</option>
+          <option value="assoc">Asociativă (fully)</option>
+          <option value="set">Pe seturi (k-way)</option>
+        </select>
+      </label>
+      <label id="caKwrap">k (linii / set)<input id="caK" class="iact-in sm" value="4"></label>
+      <label>Adresă fizică — opțional<input id="caAddr" class="iact-in" value="" spellcheck="false" placeholder="ex. DEF2024"></label>
+    </div>
+    <div class="bitstrip" id="caStrip"></div>
+    <div class="iact-calc" id="caCalc"></div>
+    <div class="iact-msg" id="caMsg"></div>
+  </div>
 
   <!-- ===================== PROBLEME C4 ===================== -->
   <h2>Probleme rezolvate — interconectare</h2>
@@ -768,6 +800,38 @@ Asociativă: fără index               → tag = 33−11    = 22
     <tr><td>111</td><td>DI</td><td>BH</td><td>[BX]</td></tr>
   </table>
   <p>Pentru <code>mod=01/10</code>, codul <code>110</code> devine <code>[BP]</code> + deplasament. Opcode-ul pentru <code>MOV reg↔reg/mem</code> este <code>100010</code>.</p>
+
+  <div class="card iact-card" id="enw">
+    <div class="iact-ttl">🎮 Încearcă: codificator de instrucțiuni MOV (8086)</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 6px">Construiește o instrucțiune <code>MOV</code> și vezi codificarea binară (<span style="color:var(--accent)">opcode</span>·<span style="color:var(--purple)">d</span>·<span style="color:var(--red)">w</span>·<span style="color:var(--blue)">mod</span>·<span style="color:var(--green)">reg</span>·<span style="color:var(--aqua)">r/m</span>) și valoarea hexazecimală. Deplasamentul se scrie în zecimal (ex. <code>6</code>, <code>-4</code>, <code>500</code>).</p>
+    <div class="iact-row">
+      <label>Dimensiune
+        <select id="enW"><option value="1">16 biți (w=1)</option><option value="0">8 biți (w=0)</option></select>
+      </label>
+      <label>Direcție
+        <select id="enD"><option value="1">reg ← r/m (d=1)</option><option value="0">r/m ← reg (d=0)</option></select>
+      </label>
+      <label>Câmp reg<select id="enReg"></select></label>
+    </div>
+    <div class="iact-row">
+      <label>Câmp r/m<select id="enRm">
+        <option value="reg">Registru (mod 11)</option>
+        <option value="000">[BX+SI]</option>
+        <option value="001">[BX+DI]</option>
+        <option value="010">[BP+SI]</option>
+        <option value="011">[BP+DI]</option>
+        <option value="100">[SI]</option>
+        <option value="101" selected>[DI]</option>
+        <option value="111">[BX]</option>
+        <option value="bp">[BP] (necesită deplasament)</option>
+        <option value="direct">Adresare directă [adresă]</option>
+      </select></label>
+      <label id="enRmRegWrap" style="display:none">registru r/m<select id="enRmReg"></select></label>
+      <label id="enDispWrap">deplasament (zecimal)<input id="enDisp" class="iact-in sm" value="" spellcheck="false" placeholder="0"></label>
+    </div>
+    <div class="iact-calc encbits" id="enCalc"></div>
+    <div class="iact-msg" id="enMsg"></div>
+  </div>
 
   <h2>Pipelining</h2>
   <p>O instrucțiune mașină e consumată în <b>5 etape</b> (μoperații): <b>IF</b> (Instruction Fetch), <b>ID</b> (Decode), <b>EX</b> (Execute), <b>MEM</b> (Memory access), <b>WB</b> (Write back). Suprapunerea acestor etape (ca pe o linie de asamblare) crește <b>throughput-ul</b>.</p>
@@ -1189,6 +1253,125 @@ window.addEventListener('message', function(e){
     algS.addEventListener('change',build);
     build();
   })();
+})();
+</script>
+
+<script>
+/* ============ WIDGET C4: splitter de adresă cache ============ */
+(function(){
+  function $(id){ return document.getElementById(id); }
+  function isPow2(n){ return n>0 && (n & (n-1))===0; }
+  function log2(n){ return Math.round(Math.log2(n)); }
+  function parseSize(s){
+    s=(s||'').trim().toUpperCase().replace(/\s+/g,'');
+    var m=s.match(/^(\d+(?:\.\d+)?)(B|KB|MB|GB|TB)?$/);
+    if(!m) return null;
+    var n=parseFloat(m[1]), u={B:1,KB:1024,MB:1048576,GB:1073741824,TB:1099511627776}[m[2]||'B'];
+    return n*u;
+  }
+  var mem=$('caMem'); if(!mem) return;
+  var cache=$('caCache'), block=$('caBlock'), word=$('caWord'), map=$('caMap'), k=$('caK'),
+      kwrap=$('caKwrap'), addr=$('caAddr'), strip=$('caStrip'), calc=$('caCalc'), msg=$('caMsg');
+
+  function seg(cls,bits,name){ if(bits<=0) return ''; return '<div class="'+cls+'" style="flex:'+bits+'">'+bits+' b<small>'+name+'</small></div>'; }
+
+  function upd(){
+    kwrap.style.display = map.value==='set' ? '' : 'none';
+    var M=parseSize(mem.value), C=parseSize(cache.value), B=parseSize(block.value), W=parseSize(word.value);
+    if([M,C,B,W].some(function(x){return x===null;})){ calc.innerHTML='<span class="bad">Verifică valorile (ex. 4GB, 1MB, 64B).</span>'; strip.innerHTML=''; msg.innerHTML=''; return; }
+    if(![M,C,B,W].every(isPow2)){ calc.innerHTML='<span class="bad">Toate dimensiunile trebuie să fie puteri ale lui 2.</span>'; strip.innerHTML=''; msg.innerHTML=''; return; }
+    if(B<W||C<B||M<C){ calc.innerHTML='<span class="bad">Relația cerută: cuvânt ≤ bloc ≤ cache ≤ memorie.</span>'; strip.innerHTML=''; msg.innerHTML=''; return; }
+    var addrBits=log2(M), offBits=log2(B/W), nLines=C/B, idxBits, tagBits, idxName, extra='';
+    if(map.value==='direct'){ idxBits=log2(nLines); idxName='index linie'; }
+    else if(map.value==='assoc'){ idxBits=0; idxName='—'; }
+    else {
+      var kk=Math.max(1,Math.min(nLines,parseInt(k.value,10)||1));
+      if(!isPow2(kk)){ calc.innerHTML='<span class="bad">k trebuie să fie putere a lui 2.</span>'; strip.innerHTML=''; return; }
+      k.value=kk; var nSets=nLines/kk; idxBits=log2(nSets); idxName='index set ('+nSets+' seturi)';
+    }
+    tagBits=addrBits-idxBits-offBits;
+    strip.innerHTML = seg('bs-tag',tagBits,'tag') + seg('bs-idx',idxBits,idxName.split(' ')[0]==='—'?'index':'index') + seg('bs-off',offBits,'offset');
+    var tagDir=nLines*tagBits;
+    calc.innerHTML =
+      'Biți adresă = log₂('+mem.value.toUpperCase()+') = <span class="hl">'+addrBits+'</span><br>'+
+      'offset = log₂(bloc/cuvânt) = <span class="hl">'+offBits+'</span> · nr. linii = cache/bloc = <span class="hl">'+nLines+'</span><br>'+
+      'index = <span class="hl">'+idxBits+'</span> ('+idxName+') · tag = '+addrBits+'−'+idxBits+'−'+offBits+' = <span class="res">'+tagBits+'</span><br>'+
+      'Distribuție: [ tag '+tagBits+' | index '+idxBits+' | offset '+offBits+' ] · tag directory = '+nLines+'×'+tagBits+' = <span class="hl">'+tagDir+' biți ('+(tagDir/8)+' B)</span>';
+    // mapare adresă opțională
+    var a=(addr.value||'').trim();
+    if(a){
+      if(!/^[0-9a-fA-F]+$/.test(a)){ msg.innerHTML='<span class="er">Adresă invalidă (hex).</span>'; return; }
+      var v=parseInt(a,16);
+      var off=v & ((Math.pow(2,offBits))-1);
+      var idx=idxBits>0 ? Math.floor(v/Math.pow(2,offBits)) % Math.pow(2,idxBits) : 0;
+      var tag=Math.floor(v/Math.pow(2,offBits+idxBits));
+      var loc = map.value==='direct' ? ('linia '+idx) : map.value==='set' ? ('setul '+idx) : ('orice linie liberă');
+      msg.innerHTML='Adresa <b>'+a.toUpperCase()+'H</b> → tag <b>0x'+tag.toString(16).toUpperCase()+'</b>, index <b>0x'+idx.toString(16).toUpperCase()+'</b>, offset <b>0x'+off.toString(16).toUpperCase()+'</b> → se mapează în <span class="ok">'+loc+'</span>.';
+    } else msg.innerHTML='';
+  }
+  [mem,cache,block,word,k,addr].forEach(function(e){ e.addEventListener('input',upd); });
+  map.addEventListener('change',upd); upd();
+})();
+
+/* ============ WIDGET C5: codificator MOV (8086) ============ */
+(function(){
+  function $(id){ return document.getElementById(id); }
+  var R16=['AX','CX','DX','BX','SP','BP','SI','DI'], R8=['AL','CL','DL','BL','AH','CH','DH','BH'];
+  var enW=$('enW'); if(!enW) return;
+  var enD=$('enD'), enReg=$('enReg'), enRm=$('enRm'), enRmReg=$('enRmReg'),
+      rmRegWrap=$('enRmRegWrap'), dispWrap=$('enDispWrap'), enDisp=$('enDisp'), calc=$('enCalc'), msg=$('enMsg');
+  var MEM={'000':'BX+SI','001':'BX+DI','010':'BP+SI','011':'BP+DI','100':'SI','101':'DI','111':'BX'};
+
+  function fillRegs(){
+    var list = enW.value==='1'?R16:R8, prevR=enReg.value, prevRm=enRmReg.value;
+    var opts=list.map(function(r,i){ return '<option value="'+i+'">'+r+'</option>'; }).join('');
+    enReg.innerHTML=opts; enRmReg.innerHTML=opts;
+    if(prevR!=='') enReg.value=prevR; if(prevRm!=='') enRmReg.value=prevRm;
+  }
+  function bin(n,len){ var s=(n>>>0).toString(2); while(s.length<len)s='0'+s; return s.slice(-len); }
+  function hex2(n){ return (n&0xFF).toString(16).toUpperCase().padStart(2,'0'); }
+  function regName(code){ return (enW.value==='1'?R16:R8)[code]; }
+
+  function upd(){
+    var w=+enW.value, d=+enD.value, reg=+enReg.value, rmSel=enRm.value;
+    var isReg = rmSel==='reg';
+    rmRegWrap.style.display = isReg ? '' : 'none';
+    dispWrap.style.display = isReg ? 'none' : '';
+    var mod, rmCode, dispBytes=[], rmText, dispNote='';
+    if(isReg){ mod=3; rmCode=+enRmReg.value; rmText=regName(rmCode); }
+    else {
+      var disp = parseInt(enDisp.value,10); if(isNaN(disp)) disp=0;
+      if(rmSel==='direct'){ mod=0; rmCode=6; dispBytes=[disp&0xFF,(disp>>8)&0xFF]; rmText='['+(disp>>>0).toString(16).toUpperCase()+'H]'; }
+      else if(rmSel==='bp'){
+        rmCode=6;
+        if(disp>=-128 && disp<=127){ mod=1; dispBytes=[disp&0xFF]; } else { mod=2; dispBytes=[disp&0xFF,(disp>>8)&0xFF]; }
+        rmText='[BP'+(disp<0?'':'+')+disp+']';
+      } else {
+        rmCode=parseInt(rmSel,2);
+        if(disp===0){ mod=0; rmText='['+MEM[rmSel]+']'; }
+        else if(disp>=-128 && disp<=127){ mod=1; dispBytes=[disp&0xFF]; rmText='['+MEM[rmSel]+(disp<0?'':'+')+disp+']'; }
+        else { mod=2; dispBytes=[disp&0xFF,(disp>>8)&0xFF]; rmText='['+MEM[rmSel]+(disp<0?'':'+')+disp+']'; }
+      }
+    }
+    var byte1 = parseInt('100010'+d+w,2);
+    var byte2 = (mod<<6)|(reg<<3)|rmCode;
+    var rN=regName(reg);
+    var instr = d ? ('MOV '+rN+', '+rmText) : ('MOV '+rmText+', '+rN);
+    var hexStr = hex2(byte1)+' '+hex2(byte2)+(dispBytes.length?' '+dispBytes.map(hex2).join(' '):'');
+    var modTxt={0:'00 (fără deplasament)',1:'01 (deplasament 8b)',2:'10 (deplasament 16b)',3:'11 (registru↔registru)'}[mod];
+    calc.innerHTML =
+      '<b style="color:var(--ink)">'+instr+'</b><br><br>'+
+      'Octet 1 = <span class="o">100010</span> <span class="d">'+d+'</span> <span class="w">'+w+'</span> = '+bin(byte1,8)+' = <span class="res">0x'+hex2(byte1)+'</span><br>'+
+      'Octet 2 = <span class="m">'+bin(mod,2)+'</span> <span class="r">'+bin(reg,3)+'</span> <span class="rm">'+bin(rmCode,3)+'</span> = '+bin(byte2,8)+' = <span class="res">0x'+hex2(byte2)+'</span>'+
+      (dispBytes.length?'<br>Deplasament = <span class="dp">'+dispBytes.map(hex2).join(' ')+'</span> (little-endian)':'')+
+      '<br><br>mod = '+modTxt+' · reg = <span class="r">'+bin(reg,3)+'</span> ('+rN+') · r/m = <span class="rm">'+bin(rmCode,3)+'</span><br>'+
+      '⇒ <span class="res" style="font-size:15px">'+hexStr.replace(/ /g,'')+'h</span>';
+    msg.innerHTML = d ? '<span class="ok">d=1</span>: câmpul reg ('+rN+') este destinația.' : '<span class="ok">d=0</span>: câmpul reg ('+rN+') este sursa; r/m este destinația.';
+  }
+  enW.addEventListener('change',function(){ fillRegs(); upd(); });
+  [enD,enReg,enRm,enRmReg].forEach(function(e){ e.addEventListener('change',upd); });
+  enDisp.addEventListener('input',upd);
+  fillRegs(); enReg.value=3; upd();
 })();
 </script>
 </body>
