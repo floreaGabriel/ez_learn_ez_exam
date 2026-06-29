@@ -1,0 +1,285 @@
+# ============================================================
+#  Banca de întrebări — ARHITECTURA SISTEMELOR DE CALCUL
+#  Nivel: examen de licență. Trei tipuri:
+#    - grila          : 4 variante, "corect" = indexul (de la 0)
+#    - numeric_exact  : răspuns STRICT
+#    - numeric_aprox  : estimare, câștigă cine se apropie cel mai mult
+#  Câmpul "explicatie" se arată DUPĂ răspuns (rol educativ).
+# ============================================================
+topic: arhitecturi
+nume: "Arhitectura sistemelor de calcul"
+intrebari:
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce registru din procesor conține adresa de memorie a următoarei instrucțiuni care urmează să fie executată?"
+    variante: ["Acumulatorul (EAX)", "Program counter (EIP)", "Stack pointer (ESP)", "Registrul EFLAGS"]
+    corect: 1
+    explicatie: "Registrul program counter (EIP în IA-32) conține offset-ul în segmentul de cod al următoarei instrucțiuni de executat."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care componentă a procesorului este un circuit digital combinațional ce efectuează operații aritmetice și pe biți asupra numerelor întregi?"
+    variante: ["Unitatea de control", "ALU (unitatea logică și aritmetică)", "FPU", "Registrul de stare"]
+    corect: 1
+    explicatie: "ALU este circuitul combinațional care efectuează operații aritmetice și de tip bitwise asupra numerelor întregi; FPU se ocupă de virgula mobilă."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În taxonomia lui Flynn, cum este clasificat modelul Von Neumann clasic cu o singură componentă ALU care execută o instrucțiune asupra unui singur flux de date?"
+    variante: ["SISD", "SIMD", "MISD", "MIMD"]
+    corect: 0
+    explicatie: "Modelul Von Neumann cu o singură ALU ce execută o instrucțiune la un moment dat asupra unui singur flux de date corespunde SISD (Single Instruction, Single Data)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce arhitectură folosește memorii separate pentru instrucțiuni și pentru date, eliminând concurența pentru o singură magistrală?"
+    variante: ["Von Neumann", "Harvard", "Arhitectura stack", "Arhitectura accumulator"]
+    corect: 1
+    explicatie: "Arhitectura Harvard are memorii și magistrale separate pentru instrucțiuni și date, astfel încât procesorul poate prelua instrucțiuni și accesa datele simultan."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care afirmație descrie corect diferența ISA vs microarhitectură (HSA)?"
+    variante:
+      - "ISA definește modul în care componentele hardware sunt controlate software, iar HSA modul în care componentele fizice sunt organizate"
+      - "ISA descrie organizarea fizică, iar HSA setul de instrucțiuni"
+      - "Ambele descriu doar implementarea fizică a procesorului"
+      - "ISA și HSA sunt termeni identici"
+    corect: 0
+    explicatie: "ISA (Instruction Set Architecture) definește interfața software-hardware, iar HSA (Hardware System Architecture / microarhitectura) specifică organizarea fizică a componentelor."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Arhitectura RISC este de tip load/store, iar arhitectura CISC este de tip register-memory. Care exemplu este CISC?"
+    variante: ["ARM", "MIPS", "x86", "SPARC"]
+    corect: 2
+    explicatie: "x86 (și VAX) sunt arhitecturi CISC de tip register-memory; ARM, MIPS, SPARC, PowerPC sunt RISC de tip load/store."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În IA-32, ce caracterizează modul real de operare?"
+    variante:
+      - "Mod pe 32 de biți cu adresare până la 4 GB"
+      - "Mod pe 16 biți cu adresare până la 1 MB, care implementează mediul procesorului 8086"
+      - "Mod pe 64 de biți cu spațiu liniar de adrese"
+      - "Mod care oferă paginare și multitasking complet"
+    corect: 1
+    explicatie: "Modul real este pe 16 biți cu adresare până la 1 MB, implementează mediul 8086 și este modul în care intră toate procesoarele Intel imediat după reset/power-up."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În modul protejat IA-32, adresa fizică pe 20 de biți a modului real este înlocuită cu un mecanism în care adresa de bază a segmentului este preluată din:"
+    variante:
+      - "Direct din registrul segment înmulțit cu 10H"
+      - "Un descriptor de segment dintr-un tabel, indexat de selectorul de segment"
+      - "Registrul EFLAGS"
+      - "Registrul program counter"
+    corect: 1
+    explicatie: "În modul protejat, selectorul (registrul segment) indexează un descriptor de segment dintr-un tabel (GDT/LDT) care conține adresa de bază pe 32 de biți, dimensiunea și drepturile de acces."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În mecanismele de protecție IA-32, în care nivel de privilegii (ring) rulează kernelul cu acces nelimitat la resursele hardware?"
+    variante: ["Ring 0", "Ring 1", "Ring 2", "Ring 3"]
+    corect: 0
+    explicatie: "În ring 0 este rezident kernelul, cu acces nelimitat la hardware; aplicațiile utilizatorului rulează în ring 3, iar trecerea în ring 0 se face prin apeluri de sistem."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce reprezintă paginarea ca mecanism de gestiune a memoriei în IA-32?"
+    variante:
+      - "Translatarea adreselor logice în adrese liniare"
+      - "Translatarea adreselor liniare în adrese fizice, fiecare segment fiind împărțit în pagini"
+      - "Înmulțirea registrului segment cu 10H"
+      - "Verificarea drepturilor de acces ale segmentelor"
+    corect: 1
+    explicatie: "Paginarea translatează adresele liniare în adrese fizice; fiecare segment este împărțit în pagini aflate în memoria fizică sau pe disc, mecanism activat prin bitul PG din registrul CR0."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce se întâmplă în mecanismul de swapping atunci când o pagină cerută nu există în memoria primară (RAM)?"
+    variante:
+      - "Procesorul ignoră cererea"
+      - "CPU generează o excepție de tip page-fault, iar pagina este transferată în memoria primară (swap-in)"
+      - "Pagina este ștearsă definitiv"
+      - "Procesorul intră în modul real"
+    corect: 1
+    explicatie: "La swap-in, dacă pagina cerută nu e în RAM, CPU generează o page-fault exception, iar pagina este adusă din memoria secundară în memoria primară."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce algoritm de înlocuire a paginilor utilizează în principal nucleul Linux pentru swapping?"
+    variante: ["FIFO (First-In First-Out)", "O variantă LRU (Least Recently Used)", "MRU (Most Recently Used)", "Round-robin"]
+    corect: 1
+    explicatie: "Nucleul Linux folosește o variantă de LRU (Least Recently Used), care transferă în memoria secundară cele mai vechi utilizate pagini."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În ierarhia memoriei, ce înseamnă un hit la nivelul n?"
+    variante:
+      - "Datele sau instrucțiunile căutate se află la nivelul n"
+      - "Datele nu se află la nivelul n și trebuie căutate la nivelul următor"
+      - "Memoria de la nivelul n este plină"
+      - "Apare o eroare de paritate"
+    corect: 0
+    explicatie: "Un hit înseamnă că datele/instrucțiunile sunt prezente la nivelul n; un miss înseamnă că lipsesc și trebuie căutate la nivelul superior."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care proprietate explică de ce buclele dintr-un cod beneficiază de memoria cache, deoarece locațiile accesate recent vor fi probabil accesate din nou?"
+    variante: ["Localizare spațială", "Localizare temporală", "Proprietatea de incluziune", "Granularitate"]
+    corect: 1
+    explicatie: "Localizarea temporală: locațiile accesate recent sunt susceptibile de a fi accesate din nou în viitorul apropiat (de exemplu, codul unei bucle reexecutat)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În maparea directă a memoriei cache, un bloc x din memoria principală este transferat în linia cache calculată prin care relație (L = nr. biți index linie)?"
+    variante: ["x mod 2^L", "x * 2^L", "x + 2^L", "2^L mod x"]
+    corect: 0
+    explicatie: "În maparea directă, blocul x este mapat strict în linia x mod 2^L, ceea ce poate genera conflict miss când mai multe blocuri concurează pentru aceeași linie."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care tip de mapare a memoriei cache permite ca orice bloc din memoria principală să fie asignat oricărei linii, fără biți alocați pentru indexul liniei?"
+    variante: ["Mapare directă", "Mapare complet asociativă", "Mapare asociativă pe seturi de 2 linii", "Mapare asociativă pe seturi de 4 linii"]
+    corect: 1
+    explicatie: "Maparea complet asociativă (fully associative) nu impune restricții de mapare; orice bloc poate merge în orice linie, deci nu există biți pentru indexul liniei, ci doar tag și offset."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În maparea asociativă pe seturi, ce reprezintă gradul de asociativitate k?"
+    variante:
+      - "Numărul total de blocuri din memoria principală"
+      - "Numărul de linii cache dintr-un set"
+      - "Dimensiunea în octeți a unei linii cache"
+      - "Numărul de biți pentru tag"
+    corect: 1
+    explicatie: "k este gradul de asociativitate, adică numărul de linii cache dintr-un set; k=1 înseamnă mapare directă, iar k=L_max înseamnă mapare complet asociativă."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care politică de scriere a memoriei cache actualizează datele doar la nivelul cache și propagă modificarea în memoria principală abia când linia trebuie înlocuită?"
+    variante: ["Write Through", "Write Back", "Write Allocate", "Write Combining"]
+    corect: 1
+    explicatie: "Write Back actualizează doar nivelul cache (marcat prin dirty bit) și propagă modificarea în memoria principală doar la înlocuirea liniei; Write Through actualizează simultan toate nivelurile."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ciclul fundamental executat la infinit de CPU este:"
+    variante: ["read-modify-write", "fetch-decode-execute", "load-store-branch", "push-pop-call"]
+    corect: 1
+    explicatie: "CPU execută la infinit ciclul fetch (preluare instrucțiune), decode (decodificare) și execute (execuție prin acțiune specifică)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este rolul unității de control în CPU?"
+    variante:
+      - "Efectuează operații aritmetice pe numere întregi"
+      - "Organizează secvențierea etapelor execuției instrucțiunilor și coordonează ALU și FPU prin semnale de control"
+      - "Stochează permanent datele"
+      - "Mapează adresele virtuale în adrese fizice"
+    corect: 1
+    explicatie: "Unitatea de control organizează secvențierea etapelor execuției, coordonează ALU și FPU și generează semnale pe magistrala de control."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În codificarea unei instrucțiuni 8086, ce semnificație are bitul w (word/byte) din primul octet?"
+    variante:
+      - "Specifică direcția de transfer a datelor"
+      - "Identifică dimensiunea operanzilor (w=1 pe 2 octeți, w=0 pe 1 octet)"
+      - "Specifică modul de adresare"
+      - "Extinde o valoare imediată"
+    corect: 1
+    explicatie: "Bitul w identifică dimensiunea operanzilor: w=1 înseamnă date pe 2 octeți, w=0 înseamnă date pe 1 octet; bitul d specifică direcția transferului."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În codificarea instrucțiunilor 8086, ce determină biții mod (din al doilea octet) împreună cu câmpul r/m?"
+    variante:
+      - "Tipul instrucțiunii (mov, add)"
+      - "Interpretarea câmpului r/m, adică modul de adresare și prezența unui deplasament"
+      - "Dimensiunea opcode-ului"
+      - "Numărul de privilegii"
+    corect: 1
+    explicatie: "Biții mod determină interpretarea câmpului r/m: mod=00 fără deplasament, mod=01/10 cu deplasament pe 8/16 biți, mod=11 ambii operanzi sunt registri."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În pipelining, ce reprezintă o dependență a datelor (data hazard)?"
+    variante:
+      - "O instrucțiune depinde de rezultatul încă indisponibil al unei instrucțiuni anterioare, forțând blocarea execuției (pipeline stall)"
+      - "Două instrucțiuni au același opcode"
+      - "Memoria cache este plină"
+      - "Procesorul rulează în modul real"
+    corect: 0
+    explicatie: "Data hazard apare când o instrucțiune depinde de rezultatul indisponibil al uneia anterioare; instrucțiunea trebuie să aștepte, introducând stall-uri și bubbles în pipeline."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce caracterizează predicția statică a salturilor?"
+    variante:
+      - "Ține cont de un istoric dinamic colectat la runtime"
+      - "Folosește presupuneri fixe (saltul înapoi se face, saltul în față nu), deciziile fiind luate la compilare"
+      - "Folosește un Branch History Table pe 2 biți"
+      - "Necesită modele neuronale hardware"
+    corect: 1
+    explicatie: "Predicția statică nu ține cont de istoricul dinamic; presupune că salturile înapoi (bucle for) se efectuează și cele în față nu, deciziile fiind luate la compilare."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Față de un predictor pe 1 bit, ce avantaj aduce Branch-Prediction Buffer-ul pe 2 biți (counter cu saturație)?"
+    variante:
+      - "Nu mai folosește deloc memorie pentru istoric"
+      - "Schimbă predicția doar după două predicții succesive greșite, fiind mai robust la excepții izolate"
+      - "Garantează predicție 100% corectă"
+      - "Elimină complet pipeline-ul"
+    corect: 1
+    explicatie: "Predictorul pe 2 biți (counter cu saturație) schimbă predicția doar după două greșeli succesive, fiind mai tolerant la o singură basculare izolată decât cel pe 1 bit."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Câți registri de uz general pe 32 de biți sunt disponibili în IA-32 (EAX, EBX, ...)?"
+    corect: 8
+    explicatie: "IA-32 oferă 8 registri de uz general pe 32 de biți (EAX, EBX, ECX, EDX, ESI, EDI, ESP, EBP); în modul pe 64 de biți numărul crește la 16."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Câți registri segment sunt utilizați în IA-32 pentru selecția segmentelor de memorie (CS, DS, SS, ES, FS, GS)?"
+    corect: 6
+    explicatie: "Există 6 registri segment: CS, DS, SS, ES, FS și GS; FS și GS au fost introduși începând cu procesorul Intel 386."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Câte etape secvențiale are pipeline-ul clasic de execuție al unei instrucțiuni mașină (IF, ID, Ex, MEM, WB)?"
+    corect: 5
+    explicatie: "Pipeline-ul clasic are 5 etape: Instruction Fetch, Instruction Decode, Execute, Memory access și Register write back."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "În modul real IA-32, dacă adresa de bază a segmentului (CS) este 1100H și offset-ul (IP) este 450H, care este adresa fizică pe 20 de biți (în zecimal, calculată ca CS*10H + IP)?"
+    corect: 70736
+    explicatie: "Adresa fizică = 1100H*10H + 450H = 11000H + 450H = 11450H, care în zecimal este 70736."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Pentru o memorie principală de 64 de cuvinte cu dimensiunea blocului de 4 cuvinte, câte blocuri rezultă?"
+    corect: 16
+    explicatie: "Numărul de blocuri = 64/4 = 16 blocuri; adresarea întregului spațiu la nivel de bloc necesită log2(16)=4 biți."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Aproximativ ce raport reprezintă dimensiunea uzuală a memoriei cache față de memoria principală (exprimă numitorul: 1/N din memoria principală)?"
+    corect: 1000
+    explicatie: "Memoria cache este cu câteva ordine de mărime mai mică decât memoria principală, de obicei aproximativ 1/1000 din dimensiunea acesteia."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Aproximativ câți tranzistori sunt necesari pentru a proiecta un flip-flop standard de tip D folosit la construirea registrilor?"
+    corect: 16
+    explicatie: "Conform cursului, un flip-flop standard de tip D este proiectat folosind aproximativ 16 tranzistori; un registru menține un vector de astfel de flip-flops."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Peste ce grad de asociativitate al memoriei cache, creșterea nu mai aduce beneficii practice pentru un sistem cu procesor single-core?"
+    corect: 8
+    explicatie: "Pentru un procesor single-core, creșterea gradului de asociativitate peste 8 nu mai aduce beneficii practice semnificative."

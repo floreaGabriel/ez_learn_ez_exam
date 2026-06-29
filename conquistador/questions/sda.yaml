@@ -1,0 +1,389 @@
+# ============================================================
+#  Banca de întrebări — STRUCTURI DE DATE ȘI ALGORITMI (SDA)
+#  Nivel: examen de licență. Trei tipuri:
+#    - grila          : 4 variante, "corect" = indexul (de la 0)
+#    - numeric_exact  : răspuns STRICT
+#    - numeric_aprox  : estimare, câștigă cine se apropie cel mai mult
+#  Câmpul "explicatie" se arată DUPĂ răspuns (rol educativ).
+# ============================================================
+topic: sda
+nume: "Structuri de Date și Algoritmi"
+intrebari:
+  # ---------- Complexitate ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este complexitatea în cazul cel mai defavorabil a căutării liniare a unui element într-un vector neordonat cu n elemente?"
+    variante: ["O(1)", "O(log n)", "O(n)", "O(n log n)"]
+    corect: 2
+    explicatie: "În cel mai rău caz elementul este pe ultima poziție sau lipsește, deci se parcurg toate cele n elemente, rezultând O(n)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este complexitatea căutării binare într-un vector sortat cu n elemente?"
+    variante: ["O(n)", "O(log n)", "O(n log n)", "O(1)"]
+    corect: 1
+    explicatie: "La fiecare pas spațiul de căutare se înjumătățește, deci numărul de pași este de ordinul log n, adică O(log n)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Despre ce notație asimptotică vorbim atunci când o funcție este încadrată simultan de o limită inferioară și una superioară de același ordin?"
+    variante: ["Notația O", "Notația Omega", "Notația Theta", "Notația o (litera mică)"]
+    corect: 2
+    explicatie: "Notația Theta oferă o încadrare strânsă: c1*g(n) <= f(n) <= c2*g(n), deci limită inferioară și superioară de același ordin."
+
+  # ---------- Liste, stive, cozi ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "O stivă (stack) funcționează după principiul:"
+    variante: ["FIFO (First In, First Out)", "LIFO (Last In, First Out)", "Acces aleator", "Prioritate"]
+    corect: 1
+    explicatie: "Stiva este o structură LIFO: ultimul element introdus este primul extras (ex. transferul parametrilor la apeluri de funcții)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "O coadă (queue) funcționează după principiul:"
+    variante: ["LIFO", "FIFO", "Acces direct prin index", "Cel mai mare prioritar"]
+    corect: 1
+    explicatie: "Coada este o structură FIFO: primul element introdus este primul extras (ex. pachete în Internet)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este complexitatea accesului la elementul de pe poziția k într-o listă simplu înlănțuită cu n noduri?"
+    variante: ["O(1)", "O(log n)", "O(n)", "O(n log n)"]
+    corect: 2
+    explicatie: "Într-o listă înlănțuită nu există acces direct prin index; trebuie parcurse nodurile de la cap, deci O(n). La vector accesul este O(1)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este complexitatea inserării unui nou element la începutul (în capul) unei liste simplu înlănțuite?"
+    variante: ["O(1)", "O(log n)", "O(n)", "O(n log n)"]
+    corect: 0
+    explicatie: "Inserarea la cap presupune doar legarea noului nod la head și actualizarea head-ului, operații în timp constant O(1)."
+
+  # ---------- Arbori binari de căutare ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Într-un arbore binar de căutare (BST), proprietatea fundamentală spune că pentru fiecare nod:"
+    variante:
+      - "Cheia este mai mare decât toate cheile din subarborele drept"
+      - "Cheia este superioară oricărei chei din subarborele stâng și inferioară oricărei chei din subarborele drept"
+      - "Subarborele stâng și drept au același număr de noduri"
+      - "Toate frunzele sunt pe același nivel"
+    corect: 1
+    explicatie: "În BST, cheia unui nod este mai mare decât toate cheile din subarborele stâng și mai mică decât toate cheile din subarborele drept."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce parcurgere a unui arbore binar de căutare produce cheile în ordine crescătoare (sortate)?"
+    variante: ["Preordine (RSD)", "Inordine (SRD)", "Postordine (SDR)", "Parcurgerea în lățime"]
+    corect: 1
+    explicatie: "Parcurgerea inordine (Stânga-Rădăcină-Dreapta) a unui BST vizitează cheile în ordine sortată crescătoare."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este complexitatea operațiilor de căutare, inserare și ștergere într-un arbore binar de căutare, în funcție de înălțimea h?"
+    variante: ["O(1)", "O(h)", "O(n log n)", "O(n^2)"]
+    corect: 1
+    explicatie: "Aceste operații coboară pe o ramură a arborelui, deci costul este proporțional cu înălțimea h: O(h). Pentru un arbore echilibrat h = O(log n)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Un arbore binar de căutare degenerat (fiecare nod are cel mult un fiu) are înălțimea:"
+    variante: ["O(log n)", "O(n)", "O(sqrt(n))", "O(1)"]
+    corect: 1
+    explicatie: "Un arbore degenerat se comportă ca o listă înlănțuită, deci înălțimea este O(n), iar operațiile devin O(n)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Un arbore AVL este un arbore binar de căutare în care, pentru fiecare nod, factorul de echilibru (diferența de înălțime între subarborele stâng și cel drept) este:"
+    variante:
+      - "Exact 0"
+      - "Cel mult 1 în valoare absolută (-1, 0 sau 1)"
+      - "Cel puțin 2"
+      - "Egal cu numărul de noduri"
+    corect: 1
+    explicatie: "În arborele AVL factorul de echilibru al fiecărui nod este -1, 0 sau 1; la depășire se aplică rotații pentru a menține echilibrul și înălțimea O(log n)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce operație folosesc arborii AVL pentru a se reechilibra după o inserare sau ștergere care strică echilibrul?"
+    variante: ["Interclasarea", "Rotațiile", "Heapify", "Partiționarea"]
+    corect: 1
+    explicatie: "Arborii AVL folosesc rotații (simple sau duble, stânga/dreapta) pentru a reface factorul de echilibru și a menține înălțimea logaritmică."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Care este înălțimea minimă (numărul de muchii pe cea mai lungă ramură) a unui arbore binar perfect echilibrat care conține 7 noduri?"
+    corect: 2
+    explicatie: "Un arbore binar complet cu 7 noduri are 3 niveluri (1+2+4 noduri); înălțimea măsurată în muchii este 2 (nivelurile 0, 1, 2)."
+
+  # ---------- Trie ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Un Trie (arbore prefix) este folosit în special pentru:"
+    variante:
+      - "Sortarea numerelor întregi"
+      - "Căutarea și stocarea eficientă a șirurilor de caractere (ex. autocomplete)"
+      - "Calculul drumurilor minime în grafuri"
+      - "Gestiunea cozilor de priorități"
+    corect: 1
+    explicatie: "Trie-ul (arbore prefix) este folosit pentru operații cu șiruri: autocomplete, corectare cuvinte, rutare IP — fiecare nod conține legături către alte noduri."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este complexitatea căutării unui cuvânt de lungime M într-un Trie?"
+    variante: ["O(N) unde N e numărul de cuvinte", "O(M)", "O(M log N)", "O(N*M)"]
+    corect: 1
+    explicatie: "Căutarea într-un Trie depinde doar de lungimea M a cuvântului, nu de numărul de cuvinte stocate, deci este Theta(M)."
+
+  # ---------- Bloom Filters ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Despre filtrele Bloom, ce afirmație este corectă?"
+    variante:
+      - "Pot da false negative, dar niciodată false pozitive"
+      - "Pot da false pozitive, dar niciodată false negative"
+      - "Nu dau nici false pozitive, nici false negative"
+      - "Stochează efectiv elementele introduse"
+    corect: 1
+    explicatie: "Filtrul Bloom este o structură probabilistică: dacă spune că un element NU există, e sigur corect (fără false negative), dar poate semnala greșit prezența (false pozitiv)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Într-un filtru Bloom, cum se verifică dacă un element ar putea fi în mulțime?"
+    variante:
+      - "Se compară elementul cu fiecare element stocat"
+      - "Se aplică funcțiile de dispersie și se verifică dacă toți biții corespunzători sunt 1"
+      - "Se parcurge o listă înlănțuită de coliziuni"
+      - "Se face o căutare binară în vectorul de biți"
+    corect: 1
+    explicatie: "Elementul trece prin toate funcțiile de dispersie; dacă toți biții indicați sunt 1 elementul e posibil prezent, dacă măcar unul e 0 sigur lipsește."
+
+  # ---------- Tabele hash ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Într-o tabelă de dispersie, o coliziune apare atunci când:"
+    variante:
+      - "Tabela este plină"
+      - "Două chei diferite produc aceeași valoare de hash"
+      - "Funcția de hash returnează zero"
+      - "O cheie este ștearsă de două ori"
+    corect: 1
+    explicatie: "O coliziune este situația în care două chei diferite A și B au hash(A) = hash(B), deci ar trebui plasate în același slot."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Dispersia deschisă (chaining) rezolvă coliziunile prin:"
+    variante:
+      - "Verificare liniară a sloturilor următoare"
+      - "Gruparea coliziunilor într-o structură externă (ex. listă înlănțuită)"
+      - "Redimensionarea automată a tabelei"
+      - "Folosirea unei a doua funcții de hash în interiorul tabelei"
+    corect: 1
+    explicatie: "La dispersia deschisă (chaining), fiecare slot pointează către o listă (sau arbore) ce conține elementele care duc la același hash."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este complexitatea în cazul cel mai defavorabil a căutării într-o tabelă hash cu dispersie deschisă?"
+    variante: ["O(1)", "O(log n)", "O(n)", "O(n log n)"]
+    corect: 2
+    explicatie: "În cel mai rău caz toate cheile au același hash și ajung în aceeași listă, deci căutarea devine O(n)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Factorul de încărcare (load factor) al unei tabele hash cu N chei și M sloturi este definit ca:"
+    variante: ["M / N", "N / M", "N * M", "N + M"]
+    corect: 1
+    explicatie: "Factorul de încărcare este alfa = N/M; când N este proporțional cu M, complexitatea medie a operațiilor rămâne O(1)."
+
+  # ---------- Grafuri ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Parcurgerea în lățime (BFS) a unui graf folosește ca structură auxiliară:"
+    variante: ["O stivă", "O coadă", "Un heap", "Un arbore binar de căutare"]
+    corect: 1
+    explicatie: "BFS folosește o coadă: se extrage nodul curent, se afișează și se adaugă în coadă vecinii nevizitați."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Pentru un graf rar (cu puține muchii), ce reprezentare este mai eficientă din punct de vedere al spațiului?"
+    variante:
+      - "Matricea de adiacență"
+      - "Listele de adiacență"
+      - "Ambele consumă același spațiu"
+      - "Matricea de costuri"
+    corect: 1
+    explicatie: "Listele de adiacență stochează doar muchiile existente, fiind eficiente pentru grafuri rare; matricea de adiacență ocupă mereu N*N indiferent de muchii."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Câte muchii are un graf neorientat complet cu 5 noduri?"
+    corect: 10
+    explicatie: "Un graf complet cu n noduri are n*(n-1)/2 muchii; pentru n=5 rezultă 5*4/2 = 10 muchii."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Algoritmul lui Dijkstra pentru drumuri de cost minim are o cerință obligatorie:"
+    variante:
+      - "Graful trebuie să fie neorientat"
+      - "Toate muchiile trebuie să aibă cost pozitiv"
+      - "Graful trebuie să fie complet"
+      - "Graful trebuie să fie aciclic"
+    corect: 1
+    explicatie: "Dijkstra funcționează corect doar dacă muchiile au cost pozitiv; cu muchii negative nu poate detecta drumul minim real."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Operația de relaxare a unei muchii (u, v) în algoritmii de drum minim constă în:"
+    variante:
+      - "Ștergerea muchiei din graf"
+      - "Actualizarea estimării d[v] dacă d[u] + w(u,v) este mai mic decât d[v]"
+      - "Inversarea sensului muchiei"
+      - "Adăugarea unei noi muchii între u și v"
+    corect: 1
+    explicatie: "Relaxarea verifică dacă drumul prin u îmbunătățește estimarea către v: dacă d[u] + w(u,v) < d[v], atunci d[v] se actualizează."
+
+  # ---------- Heap-uri ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Într-un max-heap, condiția de heap impune că pentru orice nod părinte P și fiu C:"
+    variante:
+      - "value(P) <= value(C)"
+      - "value(P) >= value(C)"
+      - "value(P) = value(C)"
+      - "Frunzele au cea mai mare valoare"
+    corect: 1
+    explicatie: "Într-un max-heap valoarea părintelui este mai mare sau egală cu valoarea fiilor, deci maximul se află în rădăcină."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este complexitatea operației de extragere a minimului/maximului (extract) dintr-un heap binar cu n elemente?"
+    variante: ["O(1)", "O(log n)", "O(n)", "O(n log n)"]
+    corect: 1
+    explicatie: "Extragerea rădăcinii necesită mutarea ultimului element în vârf și un heapify_down, operație de cost O(log n)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este complexitatea operației de a citi (find) elementul minim/maxim dintr-un heap binar, fără a-l extrage?"
+    variante: ["O(1)", "O(log n)", "O(n)", "O(n log n)"]
+    corect: 0
+    explicatie: "Minimul/maximul se află mereu în rădăcină (v[0]), deci citirea lui este O(1), similar cu peek."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Într-un heap binar reprezentat ca vector indexat de la 0, care este indexul fiului din stânga al nodului de pe poziția 3? (left = 2*i+1)"
+    corect: 7
+    explicatie: "Fiul din stânga al nodului i este 2*i+1; pentru i=3 rezultă 2*3+1 = 7."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este complexitatea algoritmului Heap Sort în cazul cel mai defavorabil?"
+    variante: ["O(n)", "O(n log n)", "O(n^2)", "O(log n)"]
+    corect: 1
+    explicatie: "Heap Sort are complexitate O(n log n) în toate cazurile (favorabil, mediu, defavorabil), dar nu este stabil."
+
+  # ---------- Sortări ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este complexitatea în cazul cel mai favorabil a algoritmului Insertion Sort (vector deja sortat)?"
+    variante: ["O(n)", "O(n log n)", "O(n^2)", "O(log n)"]
+    corect: 0
+    explicatie: "Pe un vector deja sortat Insertion Sort nu face nicio deplasare, doar o comparație per element, deci Theta(n)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este complexitatea în cazul cel mai defavorabil a algoritmului Quick Sort (alegere proastă a pivotului)?"
+    variante: ["O(n log n)", "O(n)", "O(n^2)", "O(log n)"]
+    corect: 2
+    explicatie: "Dacă pivotul ales este mereu minimul sau maximul, partițiile sunt dezechilibrate și se ajunge la O(n^2). În cazul mediu și favorabil este O(n log n)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Algoritmul Merge Sort are complexitatea în cazul cel mai defavorabil:"
+    variante: ["O(n^2)", "O(n log n)", "O(n)", "O(log n)"]
+    corect: 1
+    explicatie: "Merge Sort împarte recursiv vectorul în două și interclasează în timp liniar; prin teorema Master rezultă Theta(n log n) în toate cazurile."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care dintre următorii algoritmi de sortare are complexitatea Theta(n^2) în cazul mediu?"
+    variante: ["Merge Sort", "Quick Sort", "Bubble Sort", "Heap Sort"]
+    corect: 2
+    explicatie: "Bubble Sort, Selection Sort și Insertion Sort au complexitate Theta(n^2) în cazul mediu; Merge, Quick (mediu) și Heap Sort sunt O(n log n)."
+
+  # ---------- Tehnici de programare ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Metoda Greedy (lacomă) se caracterizează prin:"
+    variante:
+      - "Explorarea tuturor soluțiilor posibile prin revenire (backtracking)"
+      - "Luarea unei decizii optime local la fiecare pas, fără a reveni asupra ei"
+      - "Împărțirea problemei în subprobleme independente"
+      - "Memorarea soluțiilor subproblemelor"
+    corect: 1
+    explicatie: "Greedy ia la fiecare pas decizia optimă local (cel mai bun candidat curent), fără a privi în perspectivă și fără revenire."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Tehnica Backtracking este potrivită pentru probleme precum problema reginelor sau rezolvarea unui labirint deoarece:"
+    variante:
+      - "Garantează mereu complexitate polinomială"
+      - "Explorează sistematic spațiul soluțiilor și revine când o cale nu duce la soluție"
+      - "Nu necesită recursivitate"
+      - "Folosește optimizarea locală fără revenire"
+    corect: 1
+    explicatie: "Backtracking construiește soluția incremental, iar când o decizie nu poate duce la o soluție validă, revine (backtrack) și încearcă altă variantă."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Tehnica Divide et Impera (Divide and Conquer), folosită de exemplu în Merge Sort, presupune:"
+    variante:
+      - "Alegerea celui mai bun candidat la fiecare pas"
+      - "Împărțirea problemei în subprobleme, rezolvarea lor și combinarea rezultatelor"
+      - "Verificarea apartenenței probabilistice la o mulțime"
+      - "Parcurgerea în lățime a unui graf"
+    corect: 1
+    explicatie: "Divide et Impera împarte problema în subprobleme de același tip, le rezolvă recursiv și combină soluțiile (ex. Merge Sort interclasează jumătățile sortate)."
+
+  # ---------- Estimări (numeric_aprox) ----------
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Aproximativ câte comparații face o căutare binară, în cel mai rău caz, într-un vector sortat cu 1.000.000 de elemente? (log2 de 1.000.000 este circa 20)"
+    corect: 20
+    explicatie: "Căutarea binară face circa log2(n) comparații; log2(1.000.000) este aproximativ 20, deci circa 20 de comparații."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Pentru n = 1000, aproximativ câte operații (în milioane) execută un algoritm de complexitate O(n^2)?"
+    corect: 1
+    explicatie: "Pentru un algoritm O(n^2) cu n=1000 avem aproximativ 1000^2 = 1.000.000 de operații, adică circa 1 milion."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Câte interschimbări face Bubble Sort, aproximativ, pentru un vector cu 100 de elemente în ordine inversă (complet descrescător)?"
+    corect: 4950
+    explicatie: "Pentru un vector complet inversat numărul de interschimbări este n*(n-1)/2 = 100*99/2 = 4950."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Într-un heap binar reprezentat ca vector indexat de la 0, care este indexul părintelui nodului de pe poziția 5? (parinte = (i-1)/2, împărțire întreagă)"
+    corect: 2
+    explicatie: "Indexul părintelui nodului i este (i-1)/2 cu împărțire întreagă; pentru i=5 rezultă (5-1)/2 = 2."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Câte niveluri (înălțimea + 1) are un arbore binar complet cu 15 noduri?"
+    corect: 4
+    explicatie: "Un arbore binar complet cu 15 noduri are 1+2+4+8 = 15 noduri pe 4 niveluri (înălțimea în muchii este 3)."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Aproximativ câte operații execută un algoritm de complexitate O(n log n) pentru n = 1000? (log2 de 1000 este circa 10)"
+    corect: 10000
+    explicatie: "n*log2(n) = 1000 * 10 = 10.000 de operații."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Pentru o tabelă hash cu factor de încărcare ideal, complexitatea medie a căutării este O(1); pentru câte operații (aproximativ) trebuie să te aștepți la o căutare reușită cu chaining și factor de încărcare mic?"
+    corect: 1
+    explicatie: "Cu un factor de încărcare mic și distribuție uniformă, fiecare slot are puține elemente, deci căutarea medie este aproximativ o operație, adică O(1)."

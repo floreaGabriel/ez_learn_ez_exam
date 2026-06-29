@@ -476,3 +476,183 @@ details.rezolvare>summary:hover{color:var(--accent-2); background:var(--panel2)}
 .tm-done{background:var(--accent); color:var(--on-accent); border:none; padding:9px 20px; border-radius:10px; font-weight:600; cursor:pointer; font-size:13px; font-family:var(--sans)}
 .tm-empty{grid-column:1/-1; text-align:center; color:var(--muted); padding:40px}
 @media(max-width:560px){ .tm-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))} }
+
+/* ============================================================
+   Conquistador — "Joacă cu prietenii" (lobby + joc)
+   Folosește variabilele de temă => compatibil cu toate temele.
+   ============================================================ */
+.conq-home{max-width:440px; margin:0 auto; display:flex; flex-direction:column; gap:12px}
+.conq-label{font-size:13px; color:var(--muted); font-weight:600}
+.conq-input{background:var(--panel2); border:1px solid var(--line); color:var(--ink);
+  padding:11px 14px; border-radius:10px; font-size:15px; font-family:var(--sans); width:100%; box-sizing:border-box}
+.conq-input:focus{outline:none; border-color:var(--accent)}
+.conq-input.code{font-family:var(--mono); font-size:22px; letter-spacing:4px; text-align:center; font-weight:700; flex:1}
+.conq-actions{display:flex; gap:10px}
+.conq-or{text-align:center; color:var(--muted); font-size:12px; margin:2px 0}
+.conq-join-row{display:flex; gap:10px}
+.conq-btn{background:var(--panel2); border:1px solid var(--line); color:var(--ink);
+  padding:11px 18px; border-radius:10px; font-weight:600; cursor:pointer; font-size:14px;
+  font-family:var(--sans); transition:transform .05s, filter .15s; white-space:nowrap}
+.conq-btn:hover:not(:disabled){filter:brightness(1.08)}
+.conq-btn:active:not(:disabled){transform:translateY(1px)}
+.conq-btn:disabled{opacity:.45; cursor:not-allowed}
+.conq-btn.primary{background:var(--accent); color:var(--on-accent); border-color:transparent}
+.conq-btn.ghost{background:transparent}
+.conq-err{background:color-mix(in srgb, var(--red) 15%, transparent); border:1px solid var(--red);
+  color:var(--ink); padding:10px 14px; border-radius:10px; font-size:13px}
+.conq-status{color:var(--muted); font-size:13px; align-self:center}
+
+/* ---- lobby ---- */
+.conq-lobby{max-width:860px; margin:0 auto; display:flex; flex-direction:column; gap:16px}
+.conq-room-head{display:flex; justify-content:space-between; align-items:center}
+.conq-room-label{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px}
+.conq-code-big{font-family:var(--mono); font-size:40px; font-weight:700; letter-spacing:8px;
+  color:var(--accent); cursor:pointer; line-height:1.1}
+.conq-code-big.copied::after{content:" ✓ copiat"; font-size:13px; letter-spacing:0; color:var(--green)}
+.conq-reconnect{font-size:11px; color:var(--red); margin-left:8px; animation:conqpulse 1s infinite}
+@keyframes conqpulse{50%{opacity:.4}}
+.conq-cols{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+.conq-card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px}
+.conq-card h3{margin:0 0 12px; font-size:15px; display:flex; align-items:center; gap:8px}
+.conq-card h3 small{color:var(--muted); font-weight:500; font-size:12px}
+.conq-players{display:flex; flex-direction:column; gap:8px}
+.conq-pl{display:flex; align-items:center; gap:10px; background:var(--panel2);
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px}
+.conq-pl.empty{opacity:.5; border-style:dashed}
+.conq-pl.off{opacity:.55}
+.conq-dot{width:14px; height:14px; border-radius:50%; flex:0 0 auto}
+.conq-dot.ghost{background:var(--line2)}
+.conq-pl-name{font-weight:600; flex:1}
+.conq-pl-name em{color:var(--muted); font-weight:400; font-style:normal}
+.conq-tag{font-size:11px; padding:2px 8px; border-radius:20px; font-weight:600}
+.conq-tag.host{background:color-mix(in srgb, var(--accent) 22%, transparent); color:var(--accent)}
+.conq-tag.ready{background:color-mix(in srgb, var(--green) 22%, transparent); color:var(--green)}
+.conq-tag.wait{background:var(--panel); color:var(--muted)}
+.conq-tag.off{background:color-mix(in srgb, var(--red) 18%, transparent); color:var(--red)}
+.conq-hint{color:var(--muted); font-size:13px; margin:12px 0 0}
+.conq-topics{display:flex; flex-direction:column; gap:8px}
+.conq-topic{display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left;
+  background:var(--panel2); border:1px solid var(--line); color:var(--ink); padding:10px 14px;
+  border-radius:10px; cursor:pointer; font-family:var(--sans)}
+.conq-topic small{color:var(--muted); font-size:11px; font-weight:500}
+.conq-topic.active{border-color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent)}
+.conq-topic:disabled{cursor:default}
+.conq-difs{display:flex; gap:8px; flex-wrap:wrap}
+.conq-dif{background:var(--panel2); border:1px solid var(--line); color:var(--ink);
+  padding:7px 14px; border-radius:20px; cursor:pointer; font-size:13px; font-family:var(--sans); text-transform:capitalize}
+.conq-dif.active{border-color:var(--accent); background:color-mix(in srgb, var(--accent) 14%, transparent); color:var(--accent); font-weight:600}
+.conq-foot{display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap}
+@media(max-width:680px){ .conq-cols{grid-template-columns:1fr} }
+
+
+/* ============================================================
+   Conquistador — jocul (hartă pe pergament + modal stil Triviador)
+   ============================================================ */
+.conq-game{max-width:1180px; margin:0 auto; display:flex; flex-direction:column; gap:14px}
+.conq-gtop{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.conq-phase{font-weight:800; font-size:13px; letter-spacing:.5px; text-transform:uppercase; padding:6px 14px;
+  border-radius:20px; background:color-mix(in srgb, var(--accent) 18%, transparent); color:var(--accent); white-space:nowrap}
+.conq-btn.sm{padding:8px 12px; font-size:14px}
+
+/* carduri jucători */
+.conq-score-strip{display:flex; gap:10px; flex:1; flex-wrap:wrap}
+.conq-pcard{position:relative; display:flex; align-items:center; gap:8px; background:var(--panel2);
+  border:1px solid var(--line); border-radius:12px; padding:7px 14px 7px 16px; font-size:14px; overflow:hidden;
+  transition:transform .15s, box-shadow .15s}
+.conq-pcard-bar{position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--pc)}
+.conq-pcard.turn{box-shadow:0 0 0 2px var(--pc), 0 6px 18px color-mix(in srgb, var(--pc) 40%, transparent); transform:translateY(-2px)}
+.conq-pcard.off{opacity:.5}
+.conq-pcard-name{font-weight:700}
+.conq-pcard-pts{font-family:var(--mono); font-weight:800; font-size:16px; color:var(--pc)}
+.conq-atk{font-size:12px; color:var(--muted); font-weight:700}
+
+/* scena + harta */
+.conq-stage{position:relative}
+.conq-mapwrap{background:#9db8c6; border:1px solid var(--line); border-radius:18px; padding:6px;
+  box-shadow:inset 0 2px 14px rgba(20,40,60,.25); overflow:hidden}
+.conq-map{width:100%; height:auto; display:block; user-select:none; border-radius:12px}
+.conq-reg{stroke:rgba(30,22,12,.85); stroke-width:2; cursor:default; transition:fill-opacity .15s, stroke .15s}
+.conq-reg.neutral{stroke:rgba(40,30,16,.55); stroke-width:1.4}
+.conq-reg.hl{cursor:pointer; stroke:#ffcf3a; stroke-width:3.5; animation:conqglow 1.1s ease-in-out infinite}
+.conq-reg.hl:hover{fill-opacity:.6 !important}
+@keyframes conqglow{50%{stroke:#fff0a0}}
+.conq-marker{cursor:pointer}
+.conq-icon{font-size:30px}
+.conq-badge{stroke:rgba(0,0,0,.35); stroke-width:1}
+.conq-badge-t{fill:#fff; font-family:var(--mono); font-weight:800; font-size:13px; paint-order:stroke; stroke:rgba(0,0,0,.35); stroke-width:.8px}
+.conq-rlabel{fill:#3a2a12; font-family:var(--sans); font-size:13px; font-weight:700; paint-order:stroke; stroke:rgba(255,245,220,.85); stroke-width:3px}
+.conq-life{fill:#ffd24a; stroke:#7a5a2e; stroke-width:.8}
+.conq-country{fill:#8a6a3a; font-size:20px; font-weight:800; letter-spacing:3px; opacity:.5; text-transform:uppercase; pointer-events:none}
+.conq-flag{font-size:22px}
+
+/* banner instrucțiuni */
+.conq-banner{position:absolute; left:50%; bottom:16px; transform:translateX(-50%); display:flex; align-items:center; gap:12px;
+  background:rgba(20,16,10,.82); color:#fff; padding:10px 20px; border-radius:30px; font-size:15px; max-width:90%;
+  box-shadow:0 8px 24px rgba(0,0,0,.35); backdrop-filter:blur(3px)}
+.conq-banner.me{background:color-mix(in srgb, var(--accent) 88%, #000); box-shadow:0 8px 28px color-mix(in srgb, var(--accent) 50%, transparent)}
+.conq-banner b{font-weight:800}
+.conq-timer{font-family:var(--mono); font-weight:800; background:rgba(255,255,255,.16); padding:3px 10px; border-radius:20px; font-size:14px}
+.conq-timer.urgent{background:var(--red); animation:conqpulse .7s infinite}
+
+/* MODAL întrebare */
+.conq-modal-back{position:fixed; inset:0; z-index:1200; display:flex; align-items:center; justify-content:center;
+  background:rgba(15,12,8,.55); backdrop-filter:blur(4px); animation:conqfade .2s ease}
+@keyframes conqfade{from{opacity:0}to{opacity:1}}
+.conq-modal{position:relative; width:min(560px,92vw); max-height:88vh; overflow:auto; background:linear-gradient(180deg,#fbf3df,#f2e6c8);
+  border:2px solid #b9923f; border-radius:18px; padding:24px 26px 26px; box-shadow:0 24px 70px rgba(0,0,0,.5);
+  color:#3a2a12; animation:conqpop .25s cubic-bezier(.2,1.3,.4,1)}
+@keyframes conqpop{from{transform:scale(.9) translateY(10px); opacity:0}to{transform:none; opacity:1}}
+.conq-modal-timer{position:absolute; top:14px; right:16px; font-family:var(--mono); font-weight:800; font-size:15px;
+  background:#b9923f; color:#fff; padding:4px 12px; border-radius:20px}
+.conq-modal-timer.urgent{background:#d6452f; animation:conqpulse .7s infinite}
+.conq-modal-tag{display:inline-block; font-weight:800; font-size:12px; letter-spacing:1px; text-transform:uppercase;
+  color:#9a6a1e; margin-bottom:10px}
+.conq-modal-tag.reveal{color:#2e7d32}
+.conq-vs{display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:14px}
+.conq-fighter{display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 16px; border-radius:12px;
+  background:#fff; border:2px solid var(--pc); min-width:96px}
+.conq-fighter.me{box-shadow:0 0 0 3px color-mix(in srgb,var(--pc) 35%,transparent)}
+.conq-fighter-dot{width:12px; height:12px; border-radius:50%; background:var(--pc)}
+.conq-fighter b{font-size:15px}
+.conq-fighter small{color:#8a7a5c; font-size:11px; text-transform:uppercase}
+.conq-vs-x{font-weight:900; color:#b9923f; font-size:18px}
+.conq-neutral-tag{color:#8a7a5c; font-style:italic}
+.conq-modal-q{font-size:21px; font-weight:800; line-height:1.4; margin:6px 0 18px; color:#2c2012}
+.conq-modal-q.small{font-size:15px; font-weight:600; color:#6a5636}
+.conq-modal-opts{display:flex; flex-direction:column; gap:10px}
+.conq-modal-opt{display:flex; align-items:center; gap:12px; text-align:left; background:#fff; border:2px solid #d8c7a0;
+  color:#2c2012; padding:14px 16px; border-radius:12px; cursor:pointer; font-size:16px; font-weight:600;
+  font-family:var(--sans); transition:transform .08s, border-color .12s, background .12s}
+.conq-modal-opt:hover{border-color:#c98a16; background:#fffdf5; transform:translateY(-1px)}
+.conq-modal-opt:active{transform:translateY(1px)}
+.conq-opt-k{display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; flex:0 0 auto;
+  background:#b9923f; color:#fff; border-radius:7px; font-weight:800; font-size:14px}
+.conq-modal-num{display:flex; gap:10px}
+.conq-modal-num .conq-input{flex:1; background:#fff; color:#2c2012; border-color:#d8c7a0; font-size:18px}
+.conq-modal-wait{text-align:center; color:#2e7d32; font-weight:700; padding:14px}
+.conq-correct{font-size:17px; margin:4px 0 10px}
+.conq-correct b{color:#2e7d32}
+.conq-expl{font-size:14.5px; background:#fff; border-left:4px solid #c98a16; border-radius:0 8px 8px 0;
+  padding:12px 15px; margin-bottom:14px; line-height:1.5; color:#4a3a20}
+.conq-rev{display:flex; flex-direction:column; gap:7px; margin-bottom:12px}
+.conq-rev-row{display:flex; justify-content:space-between; gap:12px; font-size:14px; padding:8px 12px;
+  background:#fff; border:1px solid #e6d8b6; border-radius:8px}
+.conq-rev-val{font-family:var(--mono); font-weight:700}
+.conq-rev-val.ok{color:#2e7d32}.conq-rev-val.no{color:#c0392b}
+.conq-rev-row small{color:#8a7a5c}
+.conq-gain{color:#2e7d32; font-weight:800}
+.conq-outcome{font-weight:800; font-size:16px; text-align:center; padding:12px; border-radius:10px;
+  background:#fbe6c5; border:1px solid #e3c074; color:#7a4e10}
+
+/* rezultate */
+.conq-finale h2{text-align:center}
+.conq-results{display:flex; flex-direction:column; gap:10px; max-width:440px; margin:18px auto}
+.conq-res-row{display:flex; align-items:center; gap:12px; padding:13px 18px; background:var(--panel2);
+  border:1px solid var(--line); border-left:5px solid var(--pc); border-radius:12px; font-size:16px}
+.conq-res-row.win{box-shadow:0 6px 22px color-mix(in srgb,var(--pc) 35%,transparent); transform:scale(1.02)}
+.conq-medal{font-size:22px; width:30px; text-align:center}
+.conq-res-pts{margin-left:auto; color:var(--muted); font-size:14px; font-weight:600}
+@media(max-width:680px){
+  .conq-modal-q{font-size:18px} .conq-banner{font-size:13px; padding:8px 14px; bottom:8px}
+  .conq-pcard{padding:5px 10px 5px 12px; font-size:12px}
+}

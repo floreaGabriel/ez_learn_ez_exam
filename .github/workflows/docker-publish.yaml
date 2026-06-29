@@ -64,3 +64,14 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_sqlrunner:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_sqlrunner:${{ github.sha }}
+
+      - name: Build and push image (conquistador — joc multiplayer)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./conquistador
+          file: ./conquistador/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_conquistador:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_conquistador:${{ github.sha }}

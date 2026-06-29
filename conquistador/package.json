@@ -1,0 +1,14 @@
+{
+  "name": "conquistador",
+  "version": "1.0.0",
+  "description": "Server multiplayer pentru jocul Conquistador (Triviador pe harta României) — întrebări la nivel de examen de licență",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "ws": "^8.18.0"
+  }
+}

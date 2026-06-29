@@ -198,6 +198,7 @@ function buildNav(){
     + '<div class="nav-section">'
     + '<div class="nav-item active" data-view="dashboard"><span class="ico">🏠</span> Acasă — Materii</div>'
     + '<div class="nav-item" data-view="videos"><span class="ico">🎬</span> Materiale Video</div>'
+    + '<div class="nav-item" data-view="conquistador"><span class="ico">⚔️</span> Joacă cu prietenii</div>'
     + '</div>';
   MATERII.forEach(function(m){
     html += '<div class="nav-subject" data-subject="'+m.id+'">';
@@ -259,6 +260,7 @@ function wireNav(){
       const v = it.dataset.view;
       if(v==="dashboard") showDashboard();
       else if(v==="videos") showVideos();
+      else if(v==="conquistador") showConquistador();
       else if(v==="quiz") showQuiz();
       else if(v==="concept") showConcept(it.dataset.id);
       else if(v==="exam") showExam(it.dataset.id);
@@ -316,6 +318,8 @@ function setActive(view,id,sec){
     const el = document.querySelector('.nav-item[data-view="dashboard"]'); if(el) el.classList.add("active");
   } else if(view==="videos"){
     const el = document.querySelector('.nav-item[data-view="videos"]'); if(el) el.classList.add("active");
+  } else if(view==="conquistador"){
+    const el = document.querySelector('.nav-item[data-view="conquistador"]'); if(el) el.classList.add("active");
   } else if(view==="home"){
     const el = document.querySelector('.nav-subhead[data-subject="pso"]'); if(el) el.classList.add("active");
   } else if(view==="quiz"){
@@ -333,7 +337,9 @@ function setActive(view,id,sec){
   if(view!=="quiz"){ const bar=document.getElementById("scorebar"); if(bar) bar.remove(); }
   window.scrollTo(0,0);
   const cnt = document.querySelector(".content");
-  if(cnt){ cnt.classList.toggle("embed", view==="embed"); cnt.classList.toggle("videos", view==="videos"); cnt.scrollTop = 0; }
+  if(cnt){ cnt.classList.toggle("embed", view==="embed"); cnt.classList.toggle("videos", view==="videos"); cnt.scrollTop = 0;
+    if(view!=="conquistador") delete cnt.dataset.view;   // ca mesajele WS întârziate să nu rescrie altă vedere
+  }
 }
 
 // deschide o materie din dashboard sau din bara laterală
