@@ -14,347 +14,645 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "Ce reprezintă, în modelul relațional, o relație (relation)?"
-    variante: ["Legătura dintre două tabele prin cheie străină", "O tabelă cu un antet și un conținut (rânduri)", "O constrângere de integritate", "O interogare salvată în baza de date"]
-    corect: 1
-    explicatie: "În modelul relațional o relație este transpusă ca tabelă: are un antet (set de atribute) și un conținut (set de tupluri/rânduri)."
+    variante:
+      [
+        "O interogare salvată în baza de date",
+        "O constrângere de integritate",
+        "O tabelă cu un antet și un conținut (rânduri)",
+        "Legătura dintre două tabele prin cheie străină"
+      ]
+    corect: 2
+    explicatie: "În modelul relațional o relație este transpusă ca tabelă: are un
+      antet (set de atribute) și un conținut (set de tupluri/rânduri)."
 
   - tip: grila
     dificultate: licenta
-    enunt: "În arhitectura pe trei niveluri (three-tier), nivelul responsabil cu stocarea și interogarea datelor este:"
-    variante: ["Presentation tier", "Application tier", "Data tier", "Business tier"]
-    corect: 2
-    explicatie: "Data tier reprezintă nivelul serverului de baze de date, unde este stocată și de unde este interogată informația."
+    enunt: "În arhitectura pe trei niveluri (three-tier), nivelul responsabil cu
+      stocarea și interogarea datelor este:"
+    variante: [ "Data tier", "Presentation tier", "Business tier", "Application tier" ]
+    corect: 0
+    explicatie: "Data tier reprezintă nivelul serverului de baze de date, unde este
+      stocată și de unde este interogată informația."
 
   - tip: grila
     dificultate: licenta
     enunt: "Care afirmație despre Transact-SQL (T-SQL) este corectă?"
-    variante: ["Este un standard independent de orice producător", "Este extensia Microsoft a standardului SQL", "Este un limbaj fără funcții procedurale", "Înlocuiește complet SQL standard"]
-    corect: 1
-    explicatie: "T-SQL este extensia proprietară Microsoft a standardului ANSI SQL, adăugând programare procedurală, variabile, funcții etc."
+    variante:
+      [
+        "Este un standard independent de orice producător",
+        "Înlocuiește complet SQL standard",
+        "Este un limbaj fără funcții procedurale",
+        "Este extensia Microsoft a standardului SQL"
+      ]
+    corect: 3
+    explicatie: "T-SQL este extensia proprietară Microsoft a standardului ANSI SQL,
+      adăugând programare procedurală, variabile, funcții etc."
 
   # ---------- Laborator 2: SELECT, NULL, LIKE, funcții, ORDER BY, TOP ----------
   - tip: grila
     dificultate: licenta
     enunt: "Ce clauză din SELECT elimină rândurile duplicate din rezultat?"
-    variante: ["TOP", "DISTINCT", "GROUP BY", "ORDER BY"]
+    variante: [ "GROUP BY", "DISTINCT", "ORDER BY", "TOP" ]
     corect: 1
     explicatie: "Clauza DISTINCT elimină rândurile duplicate din rezultatul interogării."
 
   - tip: grila
     dificultate: licenta
     enunt: "Conform procesării logice a interogării, care clauză este evaluată PRIMA?"
-    variante: ["SELECT", "WHERE", "FROM", "ORDER BY"]
-    corect: 2
-    explicatie: "FROM este prima clauză evaluată logic; abia apoi WHERE, GROUP BY, HAVING, SELECT și la final ORDER BY."
+    variante: [ "FROM", "WHERE", "SELECT", "ORDER BY" ]
+    corect: 0
+    explicatie: "FROM este prima clauză evaluată logic; abia apoi WHERE, GROUP BY,
+      HAVING, SELECT și la final ORDER BY."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Folosind logica trivalentă, ce întoarce predicatul 'Region <> N'WA'' pentru un rând în care Region este NULL?"
-    variante: ["true, deci rândul apare în rezultat", "false, deci rândul nu apare", "unknown, deci rândul nu apare în rezultatul WHERE", "eroare de execuție"]
-    corect: 2
-    explicatie: "Comparațiile cu NULL dau unknown; clauza WHERE întoarce doar rândurile pentru care predicatul este adevărat, deci rândul cu NULL este ignorat."
+    enunt: "Folosind logica trivalentă, ce întoarce predicatul 'Region <> N'WA''
+      pentru un rând în care Region este NULL?"
+    variante:
+      [
+        "unknown, deci rândul nu apare în rezultatul WHERE",
+        "false, deci rândul nu apare",
+        "true, deci rândul apare în rezultat",
+        "eroare de execuție"
+      ]
+    corect: 0
+    explicatie: "Comparațiile cu NULL dau unknown; clauza WHERE întoarce doar
+      rândurile pentru care predicatul este adevărat, deci rândul cu NULL este
+      ignorat."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Cum se selectează corect angajații care nu au regiune completată (Region este NULL)?"
-    variante: ["WHERE Region = NULL", "WHERE Region <> NULL", "WHERE Region IS NULL", "WHERE NULL(Region)"]
+    enunt: "Cum se selectează corect angajații care nu au regiune completată (Region
+      este NULL)?"
+    variante:
+      [
+        "WHERE Region = NULL",
+        "WHERE Region <> NULL",
+        "WHERE Region IS NULL",
+        "WHERE NULL(Region)"
+      ]
     corect: 2
-    explicatie: "Testarea valorilor NULL se face cu operatorul IS NULL (respectiv IS NOT NULL), nu cu = sau <>."
+    explicatie: "Testarea valorilor NULL se face cu operatorul IS NULL (respectiv IS
+      NOT NULL), nu cu = sau <>."
 
   - tip: grila
     dificultate: licenta
-    enunt: "În operatorul LIKE, ce semnificație are caracterul wildcard '_' (underscore)?"
-    variante: ["Orice șir de caractere, inclusiv vid", "Exact un singur caracter", "O cifră de la 0 la 9", "Un caracter care nu este în listă"]
+    enunt: "În operatorul LIKE, ce semnificație are caracterul wildcard '_'
+      (underscore)?"
+    variante:
+      [
+        "O cifră de la 0 la 9",
+        "Exact un singur caracter",
+        "Orice șir de caractere, inclusiv vid",
+        "Un caracter care nu este în listă"
+      ]
     corect: 1
-    explicatie: "În LIKE, '_' reprezintă exact un singur caracter, în timp ce '%' reprezintă orice șir (inclusiv vid)."
+    explicatie: "În LIKE, '_' reprezintă exact un singur caracter, în timp ce '%'
+      reprezintă orice șir (inclusiv vid)."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Care diferență există între concatenarea cu operatorul + și funcția CONCAT în T-SQL, când un operand este NULL?"
-    variante: ["Ambele întorc NULL", "Ambele ignoră NULL-ul", "Cu + rezultatul este NULL, iar CONCAT înlocuiește NULL cu șir vid", "Cu + se înlocuiește NULL cu șir vid, iar CONCAT întoarce NULL"]
+    enunt: "Care diferență există între concatenarea cu operatorul + și funcția
+      CONCAT în T-SQL, când un operand este NULL?"
+    variante:
+      [
+        "Ambele ignoră NULL-ul",
+        "Ambele întorc NULL",
+        "Cu + rezultatul este NULL, iar CONCAT înlocuiește NULL cu șir vid",
+        "Cu + se înlocuiește NULL cu șir vid, iar CONCAT întoarce NULL"
+      ]
     corect: 2
-    explicatie: "La operatorul +, dacă un operand este NULL rezultatul este NULL; funcția CONCAT tratează NULL ca șir gol de caractere."
+    explicatie: "La operatorul +, dacă un operand este NULL rezultatul este NULL;
+      funcția CONCAT tratează NULL ca șir gol de caractere."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce întoarce expresia SUBSTRING('abcde', 1, 3) în T-SQL?"
-    variante: ["'abc'", "'cde'", "'bcd'", "'abcde'"]
+    variante: [ "'abc'", "'cde'", "'abcde'", "'bcd'" ]
     corect: 0
-    explicatie: "SUBSTRING extrage din 'abcde' începând de la poziția 1, pe lungime 3, deci rezultatul este 'abc'."
+    explicatie: "SUBSTRING extrage din 'abcde' începând de la poziția 1, pe lungime
+      3, deci rezultatul este 'abc'."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Ce clauză din SELECT permite restrângerea rezultatului la un anumit număr de rânduri, conform ordinii date de ORDER BY?"
-    variante: ["LIMIT", "TOP", "HAVING", "ROWNUM"]
+    enunt: "Ce clauză din SELECT permite restrângerea rezultatului la un anumit
+      număr de rânduri, conform ordinii date de ORDER BY?"
+    variante: [ "HAVING", "TOP", "ROWNUM", "LIMIT" ]
     corect: 1
-    explicatie: "În T-SQL clauza TOP (de ex. TOP (3)) restrânge numărul sau procentul de rânduri întoarse, conform ordinii din ORDER BY."
+    explicatie: "În T-SQL clauza TOP (de ex. TOP (3)) restrânge numărul sau
+      procentul de rânduri întoarse, conform ordinii din ORDER BY."
 
   # ---------- Laborator 3: DDL, tipuri date, constrângeri ----------
   - tip: grila
     dificultate: licenta
-    enunt: "Ce comandă se folosește pentru a modifica structura unui tabel existent (ex. a adăuga o coloană)?"
-    variante: ["UPDATE TABLE", "MODIFY TABLE", "ALTER TABLE", "CHANGE TABLE"]
-    corect: 2
-    explicatie: "ALTER TABLE se folosește pentru a adăuga/șterge coloane, a schimba tipuri sau a adăuga/șterge constrângeri."
+    enunt: "Ce comandă se folosește pentru a modifica structura unui tabel existent
+      (ex. a adăuga o coloană)?"
+    variante: [ "CHANGE TABLE", "ALTER TABLE", "MODIFY TABLE", "UPDATE TABLE" ]
+    corect: 1
+    explicatie: "ALTER TABLE se folosește pentru a adăuga/șterge coloane, a schimba
+      tipuri sau a adăuga/șterge constrângeri."
 
   - tip: grila
     dificultate: licenta
     enunt: "Care afirmație despre constrângerea PRIMARY KEY este corectă?"
-    variante: ["Poate conține valori NULL", "Un tabel poate avea mai multe chei primare", "Conține valori unice și nu poate fi NULL", "Se aplică doar pe o singură coloană"]
-    corect: 2
-    explicatie: "Cheia primară conține valori unice, nu poate fi NULL, este unică pe tabel și poate fi aplicată uneia sau mai multor coloane."
+    variante:
+      [
+        "Un tabel poate avea mai multe chei primare",
+        "Se aplică doar pe o singură coloană",
+        "Poate conține valori NULL",
+        "Conține valori unice și nu poate fi NULL"
+      ]
+    corect: 3
+    explicatie: "Cheia primară conține valori unice, nu poate fi NULL, este unică pe
+      tabel și poate fi aplicată uneia sau mai multor coloane."
 
   - tip: grila
     dificultate: licenta
     enunt: "Prin ce se diferențiază constrângerea UNIQUE de PRIMARY KEY?"
-    variante: ["UNIQUE nu permite valori NULL", "Un tabel poate avea mai multe constrângeri UNIQUE, dar o singură cheie primară", "UNIQUE se aplică doar pe o coloană", "UNIQUE nu garantează unicitatea"]
-    corect: 1
-    explicatie: "Un tabel poate avea mai multe chei unice (UNIQUE), dar o singură cheie primară."
+    variante:
+      [
+        "Un tabel poate avea mai multe constrângeri UNIQUE, dar o singură
+          cheie primară",
+        "UNIQUE se aplică doar pe o coloană",
+        "UNIQUE nu garantează unicitatea",
+        "UNIQUE nu permite valori NULL"
+      ]
+    corect: 0
+    explicatie: "Un tabel poate avea mai multe chei unice (UNIQUE), dar o singură
+      cheie primară."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce rol are constrângerea CHECK?"
-    variante: ["Leagă două tabele între ele", "Limitează domeniul de valori permise pe o coloană", "Generează automat valori incrementale", "Asigură unicitatea valorilor"]
-    corect: 1
-    explicatie: "Constrângerea CHECK limitează domeniul de valori permise (ex. CHECK (Age>=18))."
+    variante:
+      [
+        "Asigură unicitatea valorilor",
+        "Leagă două tabele între ele",
+        "Generează automat valori incrementale",
+        "Limitează domeniul de valori permise pe o coloană"
+      ]
+    corect: 3
+    explicatie: "Constrângerea CHECK limitează domeniul de valori permise (ex. CHECK
+      (Age>=18))."
 
   - tip: grila
     dificultate: licenta
     enunt: "Cheia străină (FOREIGN KEY) într-un tabel:"
-    variante: ["Identifică în mod unic fiecare rând din tabelul propriu", "Referă cheia primară dintr-un alt tabel", "Nu poate referi alt tabel", "Este obligatoriu compusă din mai multe coloane"]
+    variante:
+      [
+        "Este obligatoriu compusă din mai multe coloane",
+        "Referă cheia primară dintr-un alt tabel",
+        "Identifică în mod unic fiecare rând din tabelul propriu",
+        "Nu poate referi alt tabel"
+      ]
     corect: 1
-    explicatie: "Cheia străină este un câmp (sau o colecție de câmpuri) într-un tabel care referă cheia primară dintr-un alt tabel, legând cele două tabele."
+    explicatie: "Cheia străină este un câmp (sau o colecție de câmpuri) într-un
+      tabel care referă cheia primară dintr-un alt tabel, legând cele două
+      tabele."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce face proprietatea IDENTITY(seed, increment) aplicată unei coloane?"
-    variante: ["Impune valori NULL", "Generează automat valori, pornind de la seed și adăugând increment", "Verifică un interval de valori", "Creează o cheie străină"]
-    corect: 1
-    explicatie: "IDENTITY generează automat valori: seed este valoarea primei linii, iar increment se adaugă la fiecare linie nouă."
+    variante:
+      [
+        "Creează o cheie străină",
+        "Verifică un interval de valori",
+        "Generează automat valori, pornind de la seed și adăugând increment",
+        "Impune valori NULL"
+      ]
+    corect: 2
+    explicatie: "IDENTITY generează automat valori: seed este valoarea primei linii,
+      iar increment se adaugă la fiecare linie nouă."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Instrucțiunile CREATE TABLE, ALTER TABLE, DROP TABLE fac parte din categoria:"
-    variante: ["DML (Data Manipulation Language)", "DDL (Data Definition Language)", "DCL (Data Control Language)", "TCL (Transaction Control Language)"]
-    corect: 1
-    explicatie: "CREATE/ALTER/DROP definesc structura obiectelor bazei de date, deci sunt instrucțiuni DDL; INSERT/UPDATE/DELETE/SELECT sunt DML."
+    enunt: "Instrucțiunile CREATE TABLE, ALTER TABLE, DROP TABLE fac parte din
+      categoria:"
+    variante:
+      [
+        "DML (Data Manipulation Language)",
+        "DCL (Data Control Language)",
+        "TCL (Transaction Control Language)",
+        "DDL (Data Definition Language)"
+      ]
+    corect: 3
+    explicatie: "CREATE/ALTER/DROP definesc structura obiectelor bazei de date, deci
+      sunt instrucțiuni DDL; INSERT/UPDATE/DELETE/SELECT sunt DML."
 
   # ---------- Laborator 4: JOIN-uri, subinterogări ----------
   - tip: grila
     dificultate: licenta
-    enunt: "Ce produce un CROSS JOIN între un tabel cu m rânduri și unul cu n rânduri?"
-    variante: ["Un tabel cu m+n rânduri", "Produsul cartezian, cu m*n rânduri", "Doar rândurile care se potrivesc", "Un tabel cu max(m,n) rânduri"]
-    corect: 1
-    explicatie: "CROSS JOIN realizează produsul cartezian al celor două tabele, deci m*n rânduri."
+    enunt: "Ce produce un CROSS JOIN între un tabel cu m rânduri și unul cu n
+      rânduri?"
+    variante:
+      [
+        "Doar rândurile care se potrivesc",
+        "Un tabel cu max(m,n) rânduri",
+        "Un tabel cu m+n rânduri",
+        "Produsul cartezian, cu m*n rânduri"
+      ]
+    corect: 3
+    explicatie: "CROSS JOIN realizează produsul cartezian al celor două tabele, deci
+      m*n rânduri."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce rânduri întoarce un INNER JOIN?"
-    variante: ["Toate rândurile din ambele tabele", "Numai rândurile pentru care predicatul de join este adevărat", "Toate rândurile din tabelul stâng", "Rândurile fără potrivire în celălalt tabel"]
-    corect: 1
-    explicatie: "INNER JOIN conține numai rândurile pentru care predicatul de potrivire a fost evaluat ca adevărat (nu fals, nu nedeterminat)."
+    variante:
+      [
+        "Toate rândurile din tabelul stâng",
+        "Toate rândurile din ambele tabele",
+        "Rândurile fără potrivire în celălalt tabel",
+        "Numai rândurile pentru care predicatul de join este adevărat"
+      ]
+    corect: 3
+    explicatie: "INNER JOIN conține numai rândurile pentru care predicatul de
+      potrivire a fost evaluat ca adevărat (nu fals, nu nedeterminat)."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Un LEFT OUTER JOIN între tabelul A (stânga) și tabelul B (dreapta) întoarce:"
-    variante: ["Doar rândurile potrivite din ambele tabele", "Toate rândurile din A și cele potrivite din B, cu NULL unde nu există potrivire", "Toate rândurile din B și cele potrivite din A", "Doar rândurile din A fără potrivire în B"]
-    corect: 1
-    explicatie: "LEFT JOIN returnează toate rândurile din tabelul stâng și rândurile potrivite din dreapta; atributele lipsă din dreapta sunt NULL."
+    enunt: "Un LEFT OUTER JOIN între tabelul A (stânga) și tabelul B (dreapta)
+      întoarce:"
+    variante:
+      [
+        "Toate rândurile din B și cele potrivite din A",
+        "Doar rândurile din A fără potrivire în B",
+        "Doar rândurile potrivite din ambele tabele",
+        "Toate rândurile din A și cele potrivite din B, cu NULL unde nu există
+          potrivire"
+      ]
+    corect: 3
+    explicatie: "LEFT JOIN returnează toate rândurile din tabelul stâng și rândurile
+      potrivite din dreapta; atributele lipsă din dreapta sunt NULL."
 
   - tip: grila
     dificultate: licenta
-    enunt: "În cazul unui OUTER JOIN, care este diferența dintre clauzele ON și WHERE?"
-    variante: ["Sunt complet interschimbabile", "ON filtrează final, WHERE potrivește rândurile", "ON potrivește rândurile (înainte de join), WHERE filtrează rezultatul (după join)", "Ambele filtrează doar partea conservată"]
-    corect: 2
-    explicatie: "La OUTER JOIN se aplică întâi joncțiunea (ON, rol de potrivire), apoi WHERE (rol final de filtrare). Spre deosebire de INNER JOIN, aici nu sunt interschimbabile."
+    enunt: "În cazul unui OUTER JOIN, care este diferența dintre clauzele ON și
+      WHERE?"
+    variante:
+      [
+        "ON filtrează final, WHERE potrivește rândurile",
+        "ON potrivește rândurile (înainte de join), WHERE filtrează rezultatul
+          (după join)",
+        "Ambele filtrează doar partea conservată",
+        "Sunt complet interschimbabile"
+      ]
+    corect: 1
+    explicatie: "La OUTER JOIN se aplică întâi joncțiunea (ON, rol de potrivire),
+      apoi WHERE (rol final de filtrare). Spre deosebire de INNER JOIN, aici nu
+      sunt interschimbabile."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Cum se numește joncțiunea unui tabel cu el însuși (ex. Employees cu Employees pentru a afla șeful direct)?"
-    variante: ["Cross join", "Auto-joncțiune (self join)", "Full join", "Anti-join"]
+    enunt: "Cum se numește joncțiunea unui tabel cu el însuși (ex. Employees cu
+      Employees pentru a afla șeful direct)?"
+    variante: [ "Anti-join", "Auto-joncțiune (self join)", "Full join", "Cross join" ]
     corect: 1
-    explicatie: "Auto-joncțiunea (self join) leagă un tabel cu el însuși folosind aliasuri diferite, de exemplu ON E.ReportsTo = M.EmployeeID."
+    explicatie: "Auto-joncțiunea (self join) leagă un tabel cu el însuși folosind
+      aliasuri diferite, de exemplu ON E.ReportsTo = M.EmployeeID."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce este o subinterogare corelată (correlated subquery)?"
-    variante: ["O subinterogare independentă de interogarea externă", "O subinterogare care referă o coloană din interogarea externă", "O subinterogare care întoarce mereu o singură valoare", "Un JOIN deghizat"]
-    corect: 1
-    explicatie: "O subinterogare corelată face referire la o coloană a unui tabel din interogarea externă, fiind reevaluată pentru fiecare rând extern."
+    variante:
+      [
+        "O subinterogare care întoarce mereu o singură valoare",
+        "O subinterogare independentă de interogarea externă",
+        "Un JOIN deghizat",
+        "O subinterogare care referă o coloană din interogarea externă"
+      ]
+    corect: 3
+    explicatie: "O subinterogare corelată face referire la o coloană a unui tabel
+      din interogarea externă, fiind reevaluată pentru fiecare rând extern."
 
   # ---------- Laborator 5: operatori pe seturi, GROUP BY, HAVING, agregate ----------
   - tip: grila
     dificultate: licenta
     enunt: "Care este diferența dintre UNION și UNION ALL?"
-    variante: ["UNION păstrează duplicatele, UNION ALL le elimină", "UNION elimină duplicatele (DISTINCT implicit), UNION ALL le păstrează", "Sunt identici", "UNION ALL ordonează automat rezultatul"]
-    corect: 1
-    explicatie: "UNION are proprietatea DISTINCT implicită (elimină duplicatele), în timp ce UNION ALL păstrează toate rândurile, inclusiv duplicatele."
+    variante:
+      [
+        "UNION elimină duplicatele (DISTINCT implicit), UNION ALL le păstrează",
+        "UNION păstrează duplicatele, UNION ALL le elimină",
+        "UNION ALL ordonează automat rezultatul",
+        "Sunt identici"
+      ]
+    corect: 0
+    explicatie: "UNION are proprietatea DISTINCT implicită (elimină duplicatele), în
+      timp ce UNION ALL păstrează toate rândurile, inclusiv duplicatele."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce returnează operatorul EXCEPT între query1 și query2?"
-    variante: ["Rândurile comune ambelor seturi", "Reuniunea celor două seturi", "Rândurile care apar în query1 dar nu și în query2", "Produsul cartezian"]
+    variante:
+      [
+        "Produsul cartezian",
+        "Reuniunea celor două seturi",
+        "Rândurile care apar în query1 dar nu și în query2",
+        "Rândurile comune ambelor seturi"
+      ]
     corect: 2
-    explicatie: "EXCEPT efectuează diferența: întoarce rândurile care apar în primul set dar nu și în al doilea (o singură dată)."
+    explicatie: "EXCEPT efectuează diferența: întoarce rândurile care apar în primul
+      set dar nu și în al doilea (o singură dată)."
 
   - tip: grila
     dificultate: licenta
     enunt: "Care este diferența esențială dintre clauzele WHERE și HAVING?"
-    variante: ["WHERE filtrează grupuri, HAVING filtrează rânduri", "WHERE filtrează la nivel de rând, HAVING filtrează la nivel de grup", "Sunt echivalente", "HAVING se evaluează înaintea lui WHERE"]
-    corect: 1
-    explicatie: "WHERE este evaluată la nivel de rând (înainte de grupare), iar HAVING evaluează predicate per grup (după GROUP BY), putând folosi funcții de agregare."
+    variante:
+      [
+        "WHERE filtrează grupuri, HAVING filtrează rânduri",
+        "Sunt echivalente",
+        "HAVING se evaluează înaintea lui WHERE",
+        "WHERE filtrează la nivel de rând, HAVING filtrează la nivel de grup"
+      ]
+    corect: 3
+    explicatie: "WHERE este evaluată la nivel de rând (înainte de grupare), iar
+      HAVING evaluează predicate per grup (după GROUP BY), putând folosi funcții
+      de agregare."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Într-o interogare cu GROUP BY, o coloană din SELECT care nu apare în GROUP BY și nu este într-o funcție de agregare:"
-    variante: ["Este permisă și ia prima valoare din grup", "Generează o eroare", "Este înlocuită automat cu NULL", "Este ignorată tacit"]
-    corect: 1
-    explicatie: "T-SQL generează eroare: coloana trebuie fie inclusă în GROUP BY, fie cuprinsă într-o funcție de agregare, pentru a garanta o singură valoare per grup."
+    enunt: "Într-o interogare cu GROUP BY, o coloană din SELECT care nu apare în
+      GROUP BY și nu este într-o funcție de agregare:"
+    variante:
+      [
+        "Generează o eroare",
+        "Este înlocuită automat cu NULL",
+        "Este permisă și ia prima valoare din grup",
+        "Este ignorată tacit"
+      ]
+    corect: 0
+    explicatie: "T-SQL generează eroare: coloana trebuie fie inclusă în GROUP BY,
+      fie cuprinsă într-o funcție de agregare, pentru a garanta o singură
+      valoare per grup."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Cum se comportă funcțiile de agregare (SUM, AVG, COUNT, MIN, MAX) față de valorile NULL?"
-    variante: ["Le tratează ca 0", "Le ignoră (cu excepția COUNT(*))", "Generează eroare la întâlnirea NULL", "Le numără ca valori distincte"]
-    corect: 1
-    explicatie: "Funcțiile de agregare ignoră valorile NULL. COUNT(*) numără toate rândurile, în timp ce COUNT(coloana) ignoră NULL-urile din acea coloană."
+    enunt: "Cum se comportă funcțiile de agregare (SUM, AVG, COUNT, MIN, MAX) față
+      de valorile NULL?"
+    variante:
+      [
+        "Le numără ca valori distincte",
+        "Generează eroare la întâlnirea NULL",
+        "Le ignoră (cu excepția COUNT(*))",
+        "Le tratează ca 0"
+      ]
+    corect: 2
+    explicatie: "Funcțiile de agregare ignoră valorile NULL. COUNT(*) numără toate
+      rândurile, în timp ce COUNT(coloana) ignoră NULL-urile din acea coloană."
 
   - tip: numeric_exact
     dificultate: licenta
-    enunt: "Tabelul Employees are 9 înregistrări, iar Customers are 91. SELECT Country,Region,City FROM Employees UNION ALL SELECT Country,Region,City FROM Customers întoarce câte rânduri?"
+    enunt: "Tabelul Employees are 9 înregistrări, iar Customers are 91. SELECT
+      Country,Region,City FROM Employees UNION ALL SELECT Country,Region,City
+      FROM Customers întoarce câte rânduri?"
     corect: 100
-    explicatie: "UNION ALL păstrează toate rândurile fără eliminarea duplicatelor: 9 + 91 = 100 de rânduri."
+    explicatie: "UNION ALL păstrează toate rândurile fără eliminarea duplicatelor: 9
+      + 91 = 100 de rânduri."
 
   - tip: grila
     dificultate: licenta
     enunt: "Care operator pe seturi are prioritate față de ceilalți (UNION, EXCEPT)?"
-    variante: ["UNION", "EXCEPT", "INTERSECT", "Toți au aceeași prioritate"]
-    corect: 2
-    explicatie: "INTERSECT are prioritate față de UNION și EXCEPT; UNION și EXCEPT au același nivel de prioritate."
+    variante: [ "EXCEPT", "Toți au aceeași prioritate", "UNION", "INTERSECT" ]
+    corect: 3
+    explicatie: "INTERSECT are prioritate față de UNION și EXCEPT; UNION și EXCEPT
+      au același nivel de prioritate."
 
   # ---------- Laborator 6: CTE, Views ----------
   - tip: grila
     dificultate: licenta
     enunt: "Care afirmație despre un view (vedere) este corectă?"
-    variante: ["Stochează fizic datele rezultate", "Este definit de o instrucțiune SELECT, datele nu sunt stocate în view", "Poate conține clauza ORDER BY în definiție fără restricții", "Nu poate referenția alte tabele"]
-    corect: 1
-    explicatie: "Un view este definit de o instrucțiune SELECT; datele NU sunt stocate în view, ci sunt calculate la interogare."
+    variante:
+      [
+        "Este definit de o instrucțiune SELECT, datele nu sunt stocate în view",
+        "Poate conține clauza ORDER BY în definiție fără restricții",
+        "Nu poate referenția alte tabele",
+        "Stochează fizic datele rezultate"
+      ]
+    corect: 0
+    explicatie: "Un view este definit de o instrucțiune SELECT; datele NU sunt
+      stocate în view, ci sunt calculate la interogare."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Ce restricție se aplică instrucțiunii SELECT din definiția unui CTE sau view?"
-    variante: ["Nu poate folosi JOIN", "Nu este permisă clauza ORDER BY (în interogarea internă)", "Nu poate folosi GROUP BY", "Nu poate avea aliasuri"]
-    corect: 1
-    explicatie: "Interogarea internă a unui CTE/view nu poate conține clauza ORDER BY, deoarece o expresie de tabel reprezintă o relație (set neordonat)."
+    enunt: "Ce restricție se aplică instrucțiunii SELECT din definiția unui CTE sau
+      view?"
+    variante:
+      [
+        "Nu poate folosi JOIN",
+        "Nu poate folosi GROUP BY",
+        "Nu este permisă clauza ORDER BY (în interogarea internă)",
+        "Nu poate avea aliasuri"
+      ]
+    corect: 2
+    explicatie: "Interogarea internă a unui CTE/view nu poate conține clauza ORDER
+      BY, deoarece o expresie de tabel reprezintă o relație (set neordonat)."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Ce operator este folosit de obicei pentru a uni membrul ancoră cu membrul recursiv într-un CTE recursiv?"
-    variante: ["UNION", "UNION ALL", "INTERSECT", "EXCEPT"]
-    corect: 1
-    explicatie: "Corpul unui CTE recursiv folosește de obicei UNION ALL între membrul ancoră și membrul recursiv (care se autoreferă)."
+    enunt: "Ce operator este folosit de obicei pentru a uni membrul ancoră cu
+      membrul recursiv într-un CTE recursiv?"
+    variante: [ "UNION ALL", "INTERSECT", "UNION", "EXCEPT" ]
+    corect: 0
+    explicatie: "Corpul unui CTE recursiv folosește de obicei UNION ALL între
+      membrul ancoră și membrul recursiv (care se autoreferă)."
 
   # ---------- Laborator 7: INSERT/UPDATE/DELETE/TRUNCATE ----------
   - tip: grila
     dificultate: licenta
     enunt: "Care este diferența principală dintre DELETE și TRUNCATE TABLE?"
-    variante: ["DELETE șterge structura, TRUNCATE doar datele", "TRUNCATE nu acceptă filtru WHERE, ștergând toate rândurile (totul sau nimic)", "TRUNCATE poate șterge rânduri selectiv cu WHERE", "Sunt complet echivalente"]
+    variante:
+      [
+        "Sunt complet echivalente",
+        "TRUNCATE nu acceptă filtru WHERE, ștergând toate rândurile (totul sau
+          nimic)",
+        "TRUNCATE poate șterge rânduri selectiv cu WHERE",
+        "DELETE șterge structura, TRUNCATE doar datele"
+      ]
     corect: 1
-    explicatie: "DELETE poate avea un filtru WHERE opțional; TRUNCATE nu are filtru și șterge toate rândurile, după modelul totul sau nimic."
+    explicatie: "DELETE poate avea un filtru WHERE opțional; TRUNCATE nu are filtru
+      și șterge toate rândurile, după modelul totul sau nimic."
 
   - tip: grila
     dificultate: licenta
     enunt: "Despre UPDATE pe bază de JOIN în T-SQL, ce afirmație este corectă?"
-    variante: ["Se pot modifica simultan mai multe tabele", "Standardul SQL îl admite, dar T-SQL nu", "Se pot face modificări asupra unei singure tabele, iar dacă mai multe rânduri sursă se potrivesc, UPDATE-ul poate fi nedeterminist", "JOIN-ul nu influențează rezultatul niciodată"]
-    corect: 2
-    explicatie: "Într-un UPDATE se modifică o singură tabelă; dacă mai multe rânduri sursă se potrivesc cu un rând țintă, SQL Server face un update nedeterminist (un rând arbitrar câștigă), fără eroare."
+    variante:
+      [
+        "Se pot face modificări asupra unei singure tabele, iar dacă mai multe
+          rânduri sursă se potrivesc, UPDATE-ul poate fi nedeterminist",
+        "Standardul SQL îl admite, dar T-SQL nu",
+        "Se pot modifica simultan mai multe tabele",
+        "JOIN-ul nu influențează rezultatul niciodată"
+      ]
+    corect: 0
+    explicatie: "Într-un UPDATE se modifică o singură tabelă; dacă mai multe rânduri
+      sursă se potrivesc cu un rând țintă, SQL Server face un update
+      nedeterminist (un rând arbitrar câștigă), fără eroare."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Expresia SELECT * INTO ExpensiveProducts FROM Products WHERE UnitPrice > 40 face:"
-    variante: ["Inserează în tabelul existent ExpensiveProducts", "Creează tabelul ExpensiveProducts și îl populează cu rezultatul interogării", "Doar selectează datele fără a crea nimic", "Modifică tabelul Products"]
+    enunt: "Expresia SELECT * INTO ExpensiveProducts FROM Products WHERE UnitPrice >
+      40 face:"
+    variante:
+      [
+        "Modifică tabelul Products",
+        "Creează tabelul ExpensiveProducts și îl populează cu rezultatul
+          interogării",
+        "Inserează în tabelul existent ExpensiveProducts",
+        "Doar selectează datele fără a crea nimic"
+      ]
     corect: 1
-    explicatie: "SELECT INTO creează un tabel nou pe baza definiției sursei și inserează în el rezultatele interogării (fără a copia indecșii/constrângerile)."
+    explicatie: "SELECT INTO creează un tabel nou pe baza definiției sursei și
+      inserează în el rezultatele interogării (fără a copia
+      indecșii/constrângerile)."
 
   # ---------- Laborator 8: proceduri stocate, triggere ----------
   - tip: grila
     dificultate: licenta
     enunt: "Cum se execută o procedură stocată în T-SQL?"
-    variante: ["CALL nume_proc", "RUN nume_proc", "EXECUTE (sau EXEC) nume_proc", "SELECT nume_proc"]
-    corect: 2
+    variante:
+      [
+        "EXECUTE (sau EXEC) nume_proc",
+        "CALL nume_proc",
+        "RUN nume_proc",
+        "SELECT nume_proc"
+      ]
+    corect: 0
     explicatie: "În T-SQL procedurile stocate se apelează cu EXECUTE sau EXEC."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce este un trigger DML?"
-    variante: ["O procedură apelată explicit cu EXEC", "Un batch de cod asociat unui tabel/view, care se execută automat la un eveniment INSERT, UPDATE sau DELETE", "O funcție care întoarce o valoare scalară", "Un index special"]
-    corect: 1
-    explicatie: "Un trigger DML este un batch de cod asociat unui tabel sau view, definit să răspundă automat la evenimente DML (INSERT/UPDATE/DELETE); nu se execută explicit."
+    variante:
+      [
+        "Un index special",
+        "O funcție care întoarce o valoare scalară",
+        "Un batch de cod asociat unui tabel/view, care se execută automat la
+          un eveniment INSERT, UPDATE sau DELETE",
+        "O procedură apelată explicit cu EXEC"
+      ]
+    corect: 2
+    explicatie: "Un trigger DML este un batch de cod asociat unui tabel sau view,
+      definit să răspundă automat la evenimente DML (INSERT/UPDATE/DELETE); nu
+      se execută explicit."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Într-un trigger, ce conțin tabelele speciale Inserted și Deleted la o operație UPDATE?"
-    variante: ["Inserted conține rândurile noi, Deleted conține rândurile vechi", "Ambele sunt goale la UPDATE", "Doar Inserted este populat", "Deleted conține rândurile noi"]
-    corect: 0
-    explicatie: "La UPDATE (tratat ca DELETE urmat de INSERT), tabela Deleted conține valorile vechi, iar tabela Inserted valorile noi ale rândurilor afectate."
+    enunt: "Într-un trigger, ce conțin tabelele speciale Inserted și Deleted la o
+      operație UPDATE?"
+    variante:
+      [
+        "Doar Inserted este populat",
+        "Inserted conține rândurile noi, Deleted conține rândurile vechi",
+        "Deleted conține rândurile noi",
+        "Ambele sunt goale la UPDATE"
+      ]
+    corect: 1
+    explicatie: "La UPDATE (tratat ca DELETE urmat de INSERT), tabela Deleted
+      conține valorile vechi, iar tabela Inserted valorile noi ale rândurilor
+      afectate."
 
   - tip: grila
     dificultate: licenta
     enunt: "Care este diferența dintre un trigger AFTER și un trigger INSTEAD OF?"
-    variante: ["AFTER se execută în locul evenimentului, INSTEAD OF după", "AFTER se execută după evenimentul DML, INSTEAD OF se execută în locul lui", "Ambele se execută înaintea evenimentului", "INSTEAD OF se poate defini doar pe tabele"]
-    corect: 1
-    explicatie: "Triggerul AFTER se execută după ce evenimentul DML și constrângerile au fost îndeplinite; triggerul INSTEAD OF se execută în locul evenimentului (util mai ales pe view-uri)."
+    variante:
+      [
+        "AFTER se execută în locul evenimentului, INSTEAD OF după",
+        "Ambele se execută înaintea evenimentului",
+        "AFTER se execută după evenimentul DML, INSTEAD OF se execută în locul
+          lui",
+        "INSTEAD OF se poate defini doar pe tabele"
+      ]
+    corect: 2
+    explicatie: "Triggerul AFTER se execută după ce evenimentul DML și
+      constrângerile au fost îndeplinite; triggerul INSTEAD OF se execută în
+      locul evenimentului (util mai ales pe view-uri)."
 
   # ---------- Laborator 9: tranzacții, ACID, tratarea erorilor ----------
   - tip: grila
     dificultate: licenta
     enunt: "Ce înseamnă o tranzacție în context de baze de date?"
-    variante: ["O singură instrucțiune SELECT", "O unitate logică de lucru: ori toate operațiile reușesc, ori niciuna nu este aplicată", "O copie de siguranță a datelor", "O conexiune la server"]
-    corect: 1
-    explicatie: "O tranzacție este o unitate logică de lucru: ori toate sarcinile se execută cu succes ca un întreg, ori niciuna nu este aplicată."
+    variante:
+      [
+        "O singură instrucțiune SELECT",
+        "O conexiune la server",
+        "O unitate logică de lucru: ori toate operațiile reușesc, ori niciuna
+          nu este aplicată",
+        "O copie de siguranță a datelor"
+      ]
+    corect: 2
+    explicatie: "O tranzacție este o unitate logică de lucru: ori toate sarcinile se
+      execută cu succes ca un întreg, ori niciuna nu este aplicată."
 
   - tip: numeric_exact
     dificultate: licenta
     enunt: "Câte proprietăți denotă acronimul ACID al tranzacțiilor?"
     corect: 4
-    explicatie: "ACID = Atomicitate, Consistență (Consistency), Izolare (Isolation), Durabilitate — 4 proprietăți."
+    explicatie: "ACID = Atomicitate, Consistență (Consistency), Izolare (Isolation),
+      Durabilitate — 4 proprietăți."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Care proprietate ACID garantează că o tranzacție este o unitate atomică: ori toate modificările se aplică, ori niciuna?"
-    variante: ["Consistența", "Atomicitatea", "Izolarea", "Durabilitatea"]
+    enunt: "Care proprietate ACID garantează că o tranzacție este o unitate atomică:
+      ori toate modificările se aplică, ori niciuna?"
+    variante: [ "Consistența", "Atomicitatea", "Izolarea", "Durabilitatea" ]
     corect: 1
-    explicatie: "Atomicitatea: fiecare tranzacție este o unitate de lucru atomică — fie toate modificările se execută cu succes, fie niciuna."
+    explicatie: "Atomicitatea: fiecare tranzacție este o unitate de lucru atomică —
+      fie toate modificările se execută cu succes, fie niciuna."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce comandă confirmă (face permanente) modificările unei tranzacții?"
-    variante: ["ROLLBACK", "COMMIT", "BEGIN TRAN", "SAVE TRAN"]
+    variante: [ "SAVE TRAN", "COMMIT", "BEGIN TRAN", "ROLLBACK" ]
     corect: 1
-    explicatie: "COMMIT (COMMIT TRAN) confirmă tranzacția, aplicând definitiv modificările; ROLLBACK le anulează."
+    explicatie: "COMMIT (COMMIT TRAN) confirmă tranzacția, aplicând definitiv
+      modificările; ROLLBACK le anulează."
 
   - tip: grila
     dificultate: licenta
-    enunt: "În tranzacții imbricate, care este efectul unei comenzi ROLLBACK, indiferent de nivelul la care e apelată?"
-    variante: ["Anulează doar tranzacția interioară", "Anulează întreaga tranzacție și resetează @@TRANCOUNT la 0", "Doar decrementează @@TRANCOUNT cu 1", "Nu are niciun efect"]
-    corect: 1
-    explicatie: "ROLLBACK anulează întreaga tranzacție (toate nivelurile) și resetează @@TRANCOUNT la 0; doar COMMIT-ul exterior comite efectiv."
+    enunt: "În tranzacții imbricate, care este efectul unei comenzi ROLLBACK,
+      indiferent de nivelul la care e apelată?"
+    variante:
+      [
+        "Doar decrementează @@TRANCOUNT cu 1",
+        "Anulează doar tranzacția interioară",
+        "Anulează întreaga tranzacție și resetează @@TRANCOUNT la 0",
+        "Nu are niciun efect"
+      ]
+    corect: 2
+    explicatie: "ROLLBACK anulează întreaga tranzacție (toate nivelurile) și
+      resetează @@TRANCOUNT la 0; doar COMMIT-ul exterior comite efectiv."
 
   - tip: grila
     dificultate: licenta
-    enunt: "În tratarea structurată a erorilor, codul care se execută când apare o eroare se plasează în blocul:"
-    variante: ["TRY", "CATCH", "FINALLY", "EXCEPT"]
-    corect: 1
-    explicatie: "Codul de testare se pune în blocul TRY; dacă apare o eroare, controlul trece în blocul CATCH, unde se tratează eroarea (ERROR_NUMBER, ERROR_MESSAGE etc.)."
+    enunt: "În tratarea structurată a erorilor, codul care se execută când apare o
+      eroare se plasează în blocul:"
+    variante: [ "FINALLY", "TRY", "EXCEPT", "CATCH" ]
+    corect: 3
+    explicatie: "Codul de testare se pune în blocul TRY; dacă apare o eroare,
+      controlul trece în blocul CATCH, unde se tratează eroarea (ERROR_NUMBER,
+      ERROR_MESSAGE etc.)."
 
   - tip: grila
     dificultate: licenta
-    enunt: "De ce nu se poate testa direct @@ERROR într-o clauză IF separată, la mai multe instrucțiuni distanță?"
-    variante: ["Pentru că @@ERROR este mereu 0", "Pentru că @@ERROR raportează starea de eroare a ultimei comenzi executate și se resetează", "Pentru că @@ERROR nu există în T-SQL", "Pentru că @@ERROR întoarce mesajul, nu numărul"]
-    corect: 1
-    explicatie: "@@ERROR raportează întotdeauna starea ultimei comenzi executate; orice instrucțiune ulterioară o resetează, deci valoarea trebuie salvată imediat într-o variabilă."
+    enunt: "De ce nu se poate testa direct @@ERROR într-o clauză IF separată, la mai
+      multe instrucțiuni distanță?"
+    variante:
+      [
+        "Pentru că @@ERROR raportează starea de eroare a ultimei comenzi
+          executate și se resetează",
+        "Pentru că @@ERROR întoarce mesajul, nu numărul",
+        "Pentru că @@ERROR este mereu 0",
+        "Pentru că @@ERROR nu există în T-SQL"
+      ]
+    corect: 0
+    explicatie: "@@ERROR raportează întotdeauna starea ultimei comenzi executate;
+      orice instrucțiune ulterioară o resetează, deci valoarea trebuie salvată
+      imediat într-o variabilă."
 
   - tip: numeric_exact
     dificultate: licenta
-    enunt: "Câte tipuri de bază de tranzacții distinge SQL Server (de sistem și de utilizator)?"
+    enunt: "Câte tipuri de bază de tranzacții distinge SQL Server (de sistem și de
+      utilizator)?"
     corect: 2
-    explicatie: "SQL Server are două tipuri de bază: tranzacții de sistem (interne, în afara controlului utilizatorului) și tranzacții utilizator."
+    explicatie: "SQL Server are două tipuri de bază: tranzacții de sistem (interne,
+      în afara controlului utilizatorului) și tranzacții utilizator."

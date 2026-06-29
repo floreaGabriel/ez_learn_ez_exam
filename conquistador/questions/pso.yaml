@@ -8,65 +8,83 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "Ce returnează apelul fork() în procesul COPIL, la succes?"
-    variante: ["PID-ul copilului", "0", "-1", "PID-ul părintelui"]
+    variante: [ "PID-ul copilului", "0", "-1", "PID-ul părintelui" ]
     corect: 1
-    explicatie: "În copil fork() returnează 0; în părinte returnează PID-ul copilului; -1 la eroare."
+    explicatie: "În copil fork() returnează 0; în părinte returnează PID-ul
+      copilului; -1 la eroare."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Un proces care s-a terminat dar al cărui părinte nu a apelat încă wait() este:"
-    variante: ["Proces orfan", "Proces zombie", "Proces daemon", "Proces suspendat"]
-    corect: 1
-    explicatie: "Procesul zombie a terminat execuția, dar intrarea lui rămâne în tabela de procese până când părintele citește codul de ieșire cu wait()."
+    enunt: "Un proces care s-a terminat dar al cărui părinte nu a apelat încă wait()
+      este:"
+    variante: [ "Proces orfan", "Proces daemon", "Proces suspendat", "Proces zombie" ]
+    corect: 3
+    explicatie: "Procesul zombie a terminat execuția, dar intrarea lui rămâne în
+      tabela de procese până când părintele citește codul de ieșire cu wait()."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Care dintre următoarele NU este partajat între firele (thread-urile) aceluiași proces?"
-    variante: ["Spațiul de adrese (heap)", "Descriptorii de fișiere", "Stiva (stack)", "Variabilele globale"]
-    corect: 2
-    explicatie: "Fiecare fir are propria stivă (și propriii regiștri/PC); heap-ul, globalele și descriptorii sunt partajate."
-
-  - tip: grila
-    dificultate: licenta
-    enunt: "Un semafor binar inițializat cu 1, folosit pentru excludere mutuală, mai este numit:"
-    variante: ["Barieră", "Mutex", "Monitor", "Pipe"]
-    corect: 1
-    explicatie: "Un semafor binar (0/1) folosit pentru secțiune critică se comportă ca un mutex (lock/unlock)."
-
-  - tip: grila
-    dificultate: licenta
-    enunt: "Care este una dintre cele patru condiții Coffman necesare pentru deadlock?"
+    enunt: "Care dintre următoarele NU este partajat între firele (thread-urile)
+      aceluiași proces?"
     variante:
-      - "Preempțiune forțată a resurselor"
+      [
+        "Stiva (stack)",
+        "Spațiul de adrese (heap)",
+        "Variabilele globale",
+        "Descriptorii de fișiere"
+      ]
+    corect: 0
+    explicatie: "Fiecare fir are propria stivă (și propriii regiștri/PC); heap-ul,
+      globalele și descriptorii sunt partajate."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Un semafor binar inițializat cu 1, folosit pentru excludere mutuală, mai
+      este numit:"
+    variante: [ "Mutex", "Barieră", "Pipe", "Monitor" ]
+    corect: 0
+    explicatie: "Un semafor binar (0/1) folosit pentru secțiune critică se comportă
+      ca un mutex (lock/unlock)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este una dintre cele patru condiții Coffman necesare pentru
+      deadlock?"
+    variante:
       - "Așteptare circulară (circular wait)"
-      - "Partajarea tuturor resurselor"
+      - "Preempțiune forțată a resurselor"
       - "Planificare round-robin"
-    corect: 1
-    explicatie: "Cele 4 condiții Coffman: excludere mutuală, hold-and-wait, fără preempțiune și așteptare circulară — toate necesare simultan."
+      - "Partajarea tuturor resurselor"
+    corect: 0
+    explicatie: "Cele 4 condiții Coffman: excludere mutuală, hold-and-wait, fără
+      preempțiune și așteptare circulară — toate necesare simultan."
 
   - tip: numeric_exact
     dificultate: licenta
     enunt: "Câte procese NOI creează în total un singur apel fork() reușit?"
     corect: 1
-    explicatie: "Un fork() creează exact un proces copil; după apel există 2 procese (părinte + copil)."
+    explicatie: "Un fork() creează exact un proces copil; după apel există 2 procese
+      (părinte + copil)."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce face apelul exec() (familia execv/execl) asupra procesului curent?"
     variante:
+      - "Suspendă procesul până la un semnal"
       - "Creează un proces copil identic"
       - "Înlocuiește imaginea procesului cu un alt program"
       - "Termină procesul și eliberează resursele"
-      - "Suspendă procesul până la un semnal"
-    corect: 1
-    explicatie: "exec() înlocuiește codul/datele procesului curent cu un program nou, păstrând PID-ul; nu creează proces nou."
+    corect: 2
+    explicatie: "exec() înlocuiește codul/datele procesului curent cu un program
+      nou, păstrând PID-ul; nu creează proces nou."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce semnal trimis unui proces NU poate fi nici prins, nici ignorat?"
-    variante: ["SIGINT", "SIGTERM", "SIGKILL", "SIGUSR1"]
-    corect: 2
-    explicatie: "SIGKILL (9) și SIGSTOP nu pot fi interceptate, blocate sau ignorate — opresc procesul necondiționat."
+    variante: [ "SIGKILL", "SIGTERM", "SIGUSR1", "SIGINT" ]
+    corect: 0
+    explicatie: "SIGKILL (9) și SIGSTOP nu pot fi interceptate, blocate sau ignorate
+      — opresc procesul necondiționat."
 
   - tip: numeric_exact
     dificultate: licenta
@@ -78,372 +96,477 @@ intrebari:
     dificultate: licenta
     enunt: "Un pipe anonim (creat cu pipe()) permite comunicarea între:"
     variante:
-      - "Orice două procese din sistem"
       - "Procese înrudite (părinte-copil)"
       - "Procese de pe mașini diferite"
       - "Doar fire ale aceluiași proces"
-    corect: 1
-    explicatie: "Pipe-ul anonim funcționează doar între procese înrudite, care moștenesc descriptorii prin fork()."
+      - "Orice două procese din sistem"
+    corect: 0
+    explicatie: "Pipe-ul anonim funcționează doar între procese înrudite, care
+      moștenesc descriptorii prin fork()."
 
   - tip: numeric_aprox
     dificultate: licenta
-    enunt: "Câte condiții Coffman trebuie îndeplinite simultan pentru a apărea un deadlock?"
+    enunt: "Câte condiții Coffman trebuie îndeplinite simultan pentru a apărea un
+      deadlock?"
     corect: 4
-    explicatie: "Toate cele 4 condiții (excludere mutuală, hold-and-wait, fără preempțiune, așteptare circulară) trebuie să fie prezente."
+    explicatie: "Toate cele 4 condiții (excludere mutuală, hold-and-wait, fără
+      preempțiune, așteptare circulară) trebuie să fie prezente."
 
   # ===================== ÎNTREBĂRI NOI =====================
 
   # ---- Cursul 1: Introducere (kernel/user mode, apeluri sistem, întreruperi) ----
   - tip: grila
     dificultate: licenta
-    enunt: "Prin ce mecanism trece procesorul din modul utilizator (user mode) în modul nucleu (kernel mode) pentru a executa un apel de sistem?"
+    enunt: "Prin ce mecanism trece procesorul din modul utilizator (user mode) în
+      modul nucleu (kernel mode) pentru a executa un apel de sistem?"
     variante:
+      - "Prin schimbarea variabilelor de mediu"
       - "Printr-un apel obișnuit de funcție în spațiul utilizator"
       - "Printr-o întrerupere software (trap), care comută în mod privilegiat"
       - "Prin repornirea procesorului"
-      - "Prin schimbarea variabilelor de mediu"
-    corect: 1
-    explicatie: "Apelul de sistem este servit printr-o întrerupere software (trap/syscall, ex. INT 0x80 pe x86) care comută CPU în modul nucleu, unde codul SO are acces privilegiat."
+    corect: 2
+    explicatie: "Apelul de sistem este servit printr-o întrerupere software
+      (trap/syscall, ex. INT 0x80 pe x86) care comută CPU în modul nucleu, unde
+      codul SO are acces privilegiat."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Care este rolul principal al modului dual de execuție (user mode / kernel mode) într-un sistem de operare?"
+    enunt: "Care este rolul principal al modului dual de execuție (user mode /
+      kernel mode) într-un sistem de operare?"
     variante:
+      - "Să reducă consumul de memorie"
+      - "Să permită rularea mai multor sisteme de operare simultan"
       - "Să accelereze accesul la disc"
       - "Să protejeze nucleul și resursele hardware de programele utilizator"
-      - "Să permită rularea mai multor sisteme de operare simultan"
-      - "Să reducă consumul de memorie"
-    corect: 1
-    explicatie: "Modul dual izolează codul utilizator de instrucțiunile privilegiate; doar nucleul (Ring 0) poate accesa direct hardware-ul, protejând sistemul."
+    corect: 3
+    explicatie: "Modul dual izolează codul utilizator de instrucțiunile
+      privilegiate; doar nucleul (Ring 0) poate accesa direct hardware-ul,
+      protejând sistemul."
 
   # ---- Cursul 2: Sistemul de fișiere (inode, descriptori, link-uri, permisiuni) ----
   - tip: grila
     dificultate: licenta
     enunt: "Ce informații conține un inode într-un sistem de fișiere de tip Unix?"
     variante:
-      - "Numele fișierului și conținutul lui"
-      - "Metadatele fișierului (permisiuni, dimensiune, timestamp-uri, pointeri la blocuri), DAR nu numele"
+      - "Metadatele fișierului (permisiuni, dimensiune, timestamp-uri, pointeri
+        la blocuri), DAR nu numele"
       - "Doar numele și calea completă"
+      - "Numele fișierului și conținutul lui"
       - "Lista proceselor care au deschis fișierul"
-    corect: 1
-    explicatie: "Inode-ul stochează metadatele (tip, permisiuni, dimensiune, timestamp-uri, pointeri la blocuri). Numele fișierului este păstrat în intrarea de director, asociat cu numărul de inode."
+    corect: 0
+    explicatie: "Inode-ul stochează metadatele (tip, permisiuni, dimensiune,
+      timestamp-uri, pointeri la blocuri). Numele fișierului este păstrat în
+      intrarea de director, asociat cu numărul de inode."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Care este diferența esențială între o legătură simbolică (symlink) și o legătură hard (hard link)?"
+    enunt: "Care este diferența esențială între o legătură simbolică (symlink) și o
+      legătură hard (hard link)?"
     variante:
-      - "Nu există nicio diferență funcțională"
-      - "Legătura hard este o intrare suplimentară către același inode; symlink-ul este un fișier separat ce conține o cale"
       - "Symlink-ul mărește contorul de legături al inode-ului, hard link-ul nu"
+      - "Legătura hard este o intrare suplimentară către același inode;
+        symlink-ul este un fișier separat ce conține o cale"
+      - "Nu există nicio diferență funcțională"
       - "Hard link-ul poate traversa sisteme de fișiere diferite, symlink-ul nu"
     corect: 1
-    explicatie: "Hard link-ul partajează același inode (crește contorul de legături); symlink-ul este un fișier distinct care conține calea țintă și poate traversa sisteme de fișiere."
+    explicatie: "Hard link-ul partajează același inode (crește contorul de
+      legături); symlink-ul este un fișier distinct care conține calea țintă și
+      poate traversa sisteme de fișiere."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce reprezintă un descriptor de fișier (file descriptor) în Unix/Linux?"
     variante:
+      - "O copie a conținutului fișierului în memorie"
       - "Numele complet al fișierului pe disc"
       - "Un întreg nenegativ, index în tabela de fișiere deschise a procesului"
-      - "O copie a conținutului fișierului în memorie"
       - "Numărul de inode al fișierului"
-    corect: 1
-    explicatie: "Descriptorul de fișier este un întreg nenegativ care indexează tabela descriptorilor deschiși ai procesului (0=stdin, 1=stdout, 2=stderr)."
+    corect: 2
+    explicatie: "Descriptorul de fișier este un întreg nenegativ care indexează
+      tabela descriptorilor deschiși ai procesului (0=stdin, 1=stdout,
+      2=stderr)."
 
   - tip: numeric_exact
     dificultate: licenta
     enunt: "Ce descriptor de fișier are, prin convenție, ieșirea standard (stdout)?"
     corect: 1
-    explicatie: "Prin convenție: 0 = stdin (intrarea standard), 1 = stdout (ieșirea standard), 2 = stderr (eroarea standard)."
+    explicatie: "Prin convenție: 0 = stdin (intrarea standard), 1 = stdout (ieșirea
+      standard), 2 = stderr (eroarea standard)."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Permisiunile unui fișier sunt rwxr-xr--. Ce drepturi are GRUPUL asupra fișierului?"
+    enunt: "Permisiunile unui fișier sunt rwxr-xr--. Ce drepturi are GRUPUL asupra
+      fișierului?"
     variante:
       - "Citire, scriere și execuție"
       - "Citire și execuție"
-      - "Doar citire"
       - "Niciun drept"
+      - "Doar citire"
     corect: 1
-    explicatie: "Cei 9 biți se citesc în 3 grupe: proprietar (rwx), grup (r-x), alții (r--). Grupul are deci citire și execuție, dar nu scriere."
+    explicatie: "Cei 9 biți se citesc în 3 grupe: proprietar (rwx), grup (r-x),
+      alții (r--). Grupul are deci citire și execuție, dar nu scriere."
 
   # ---- Cursul 3: Procese (stări, wait, PCB, COW) ----
   - tip: grila
     dificultate: licenta
     enunt: "Ce devine un proces copil al cărui părinte se termină înaintea lui?"
     variante:
-      - "Devine zombie"
-      - "Devine orfan și este adoptat de procesul init (PID 1)"
       - "Este terminat imediat de nucleu"
       - "Preia PID-ul părintelui"
-    corect: 1
-    explicatie: "Un proces al cărui părinte s-a terminat devine orfan și este adoptat de init (PID 1), care îi va apela wait() pentru a evita acumularea de zombi."
+      - "Devine orfan și este adoptat de procesul init (PID 1)"
+      - "Devine zombie"
+    corect: 2
+    explicatie: "Un proces al cărui părinte s-a terminat devine orfan și este
+      adoptat de init (PID 1), care îi va apela wait() pentru a evita acumularea
+      de zombi."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Ce structură a nucleului păstrează contextul unui proces (PID, regiștri, stare, descriptori)?"
+    enunt: "Ce structură a nucleului păstrează contextul unui proces (PID, regiștri,
+      stare, descriptori)?"
     variante:
-      - "Tabela de pagini"
-      - "Blocul de control al procesului (PCB / task_struct)"
-      - "Tabela de inode-uri"
       - "Stiva utilizator"
-    corect: 1
-    explicatie: "PCB-ul (în Linux, struct task_struct) păstrează toate informațiile despre proces: PID, starea, regiștrii salvați, descriptorii de fișiere, info de planificare etc."
+      - "Tabela de inode-uri"
+      - "Blocul de control al procesului (PCB / task_struct)"
+      - "Tabela de pagini"
+    corect: 2
+    explicatie: "PCB-ul (în Linux, struct task_struct) păstrează toate informațiile
+      despre proces: PID, starea, regiștrii salvați, descriptorii de fișiere,
+      info de planificare etc."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Ce optimizare folosește nucleul pentru ca fork() să nu copieze imediat tot spațiul de adrese al părintelui?"
+    enunt: "Ce optimizare folosește nucleul pentru ca fork() să nu copieze imediat
+      tot spațiul de adrese al părintelui?"
     variante:
-      - "Swapping"
-      - "Copy-on-Write (COW): paginile sunt partajate read-only și duplicate doar la prima scriere"
-      - "Compactarea memoriei"
+      - "Copy-on-Write (COW): paginile sunt partajate read-only și duplicate
+        doar la prima scriere"
       - "Demand paging exclusiv pentru stivă"
-    corect: 1
-    explicatie: "Prin Copy-on-Write, părintele și copilul partajează aceleași pagini marcate read-only; copierea unei pagini se face doar când unul dintre procese încearcă să o modifice (page fault)."
+      - "Compactarea memoriei"
+      - "Swapping"
+    corect: 0
+    explicatie: "Prin Copy-on-Write, părintele și copilul partajează aceleași pagini
+      marcate read-only; copierea unei pagini se face doar când unul dintre
+      procese încearcă să o modifice (page fault)."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Care apel de sistem permite părintelui să aștepte terminarea unui copil și să-i preia codul de ieșire?"
-    variante: ["exec()", "wait()", "pipe()", "nice()"]
-    corect: 1
-    explicatie: "wait() (apel blocant) suspendă părintele până când un copil se termină și îi recuperează exit status-ul; părintele este notificat prin semnalul SIGCHLD."
+    enunt: "Care apel de sistem permite părintelui să aștepte terminarea unui copil
+      și să-i preia codul de ieșire?"
+    variante: [ "wait()", "exec()", "nice()", "pipe()" ]
+    corect: 0
+    explicatie: "wait() (apel blocant) suspendă părintele până când un copil se
+      termină și îi recuperează exit status-ul; părintele este notificat prin
+      semnalul SIGCHLD."
 
   # ---- Cursul 4: Planificarea execuției ----
   - tip: grila
     dificultate: licenta
-    enunt: "Care algoritm de planificare alocă fiecărui proces o cuantă de timp fixă, ciclând prin coada de procese gata de execuție?"
+    enunt: "Care algoritm de planificare alocă fiecărui proces o cuantă de timp
+      fixă, ciclând prin coada de procese gata de execuție?"
     variante:
-      - "FCFS (First Come First Served)"
-      - "Round-Robin (RR)"
-      - "SJF (Shortest Job First)"
       - "Planificare cu priorități statice"
-    corect: 1
-    explicatie: "Round-Robin acordă fiecărui proces o cuantă (time quantum) și, la expirarea ei, mută procesul la coada cozii — algoritm preemptiv potrivit pentru time-sharing."
+      - "FCFS (First Come First Served)"
+      - "SJF (Shortest Job First)"
+      - "Round-Robin (RR)"
+    corect: 3
+    explicatie: "Round-Robin acordă fiecărui proces o cuantă (time quantum) și, la
+      expirarea ei, mută procesul la coada cozii — algoritm preemptiv potrivit
+      pentru time-sharing."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce este înfometarea (starvation) în contextul planificării proceselor?"
     variante:
-      - "Un proces care consumă toată memoria"
-      - "Un proces care nu primește niciodată CPU pentru că alte procese au prioritate mai mare"
       - "Un proces blocat în așteptarea unui semafor"
+      - "Un proces care consumă toată memoria"
       - "Un proces terminat care a devenit zombie"
-    corect: 1
-    explicatie: "Starvation apare când un proces (de regulă cu prioritate mică) este amânat indefinit; soluția uzuală este aging-ul (creșterea treptată a priorității în timp)."
+      - "Un proces care nu primește niciodată CPU pentru că alte procese au
+        prioritate mai mare"
+    corect: 3
+    explicatie: "Starvation apare când un proces (de regulă cu prioritate mică) este
+      amânat indefinit; soluția uzuală este aging-ul (creșterea treptată a
+      priorității în timp)."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Care este principalul dezavantaj al unei cuante de timp PREA MICI în Round-Robin?"
+    enunt: "Care este principalul dezavantaj al unei cuante de timp PREA MICI în
+      Round-Robin?"
     variante:
-      - "Crește timpul de răspuns al sistemului"
       - "Overhead-ul de comutare de context devine prea mare față de lucrul util"
       - "Procesele lungi sunt înfometate"
       - "Sistemul devine nepreemptiv"
-    corect: 1
-    explicatie: "O cuantă prea mică duce la prea multe comutări de context, iar timpul petrecut cu salvarea/încărcarea contextului ajunge să domine timpul de calcul util."
+      - "Crește timpul de răspuns al sistemului"
+    corect: 0
+    explicatie: "O cuantă prea mică duce la prea multe comutări de context, iar
+      timpul petrecut cu salvarea/încărcarea contextului ajunge să domine timpul
+      de calcul util."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Trei procese sosesc simultan, cu timpi de execuție de 24, 3 și 3 ms, planificate FCFS în această ordine. Cât este timpul mediu de turnaround?"
-    variante: ["10 ms", "27 ms", "24 ms", "30 ms"]
-    corect: 1
-    explicatie: "Turnaround: P1=24, P2=27, P3=30; media = (24+27+30)/3 = 27 ms. Ordinea defavorabilă (procesul lung primul) ilustrează efectul de convoi al FCFS."
+    enunt: "Trei procese sosesc simultan, cu timpi de execuție de 24, 3 și 3 ms,
+      planificate FCFS în această ordine. Cât este timpul mediu de turnaround?"
+    variante: [ "30 ms", "24 ms", "27 ms", "10 ms" ]
+    corect: 2
+    explicatie: "Turnaround: P1=24, P2=27, P3=30; media = (24+27+30)/3 = 27 ms.
+      Ordinea defavorabilă (procesul lung primul) ilustrează efectul de convoi
+      al FCFS."
 
   # ---- Cursul 5: Gestiunea memoriei ----
   - tip: grila
     dificultate: licenta
     enunt: "Ce este fragmentarea EXTERNĂ a memoriei?"
     variante:
-      - "Spațiu pierdut în interiorul unei partiții alocate, mai mare decât nevoia"
-      - "Memorie liberă totală suficientă, dar împărțită în bucăți neadiacente prea mici"
-      - "Pierderea datelor la swapping"
+      - "Spațiu pierdut în interiorul unei partiții alocate, mai mare decât
+        nevoia"
       - "Suprapunerea a două procese în aceeași zonă de memorie"
-    corect: 1
-    explicatie: "Fragmentarea externă: există suficientă memorie liberă în total, dar fiind împrăștiată în blocuri mici neadiacente nu poate satisface o cerere mare. Fragmentarea internă este spațiul nefolosit din interiorul unei alocări."
+      - "Pierderea datelor la swapping"
+      - "Memorie liberă totală suficientă, dar împărțită în bucăți neadiacente
+        prea mici"
+    corect: 3
+    explicatie: "Fragmentarea externă: există suficientă memorie liberă în total,
+      dar fiind împrăștiată în blocuri mici neadiacente nu poate satisface o
+      cerere mare. Fragmentarea internă este spațiul nefolosit din interiorul
+      unei alocări."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce reprezintă operația de swapping?"
     variante:
-      - "Schimbarea priorității unui proces"
-      - "Mutarea temporară a unui proces din memoria principală pe disc (backing store) și înapoi"
       - "Înlocuirea unei pagini în TLB"
+      - "Mutarea temporară a unui proces din memoria principală pe disc (backing
+        store) și înapoi"
+      - "Schimbarea priorității unui proces"
       - "Copierea spațiului de adrese la fork()"
     corect: 1
-    explicatie: "Swapping-ul mută un proces (sau părți din el) din RAM pe disc pentru a elibera memorie, urmând să fie readus când are nevoie de CPU; este mult mai lent decât accesul la RAM."
+    explicatie: "Swapping-ul mută un proces (sau părți din el) din RAM pe disc
+      pentru a elibera memorie, urmând să fie readus când are nevoie de CPU;
+      este mult mai lent decât accesul la RAM."
 
   - tip: grila
     dificultate: licenta
     enunt: "Comparativ cu segmentarea, paginarea memoriei:"
     variante:
-      - "Produce fragmentare externă, dar nicio fragmentare internă"
-      - "Elimină fragmentarea externă, dar introduce fragmentare internă (în medie ~1/2 pagină per proces)"
       - "Folosește segmente de dimensiune variabilă"
+      - "Elimină fragmentarea externă, dar introduce fragmentare internă (în
+        medie ~1/2 pagină per proces)"
+      - "Produce fragmentare externă, dar nicio fragmentare internă"
       - "Nu necesită tabelă de traducere a adreselor"
     corect: 1
-    explicatie: "Paginarea folosește pagini de dimensiune fixă, deci nu apare fragmentare externă; apare însă fragmentare internă, în medie jumătate de pagină per proces (ultima pagină parțial folosită)."
+    explicatie: "Paginarea folosește pagini de dimensiune fixă, deci nu apare
+      fragmentare externă; apare însă fragmentare internă, în medie jumătate de
+      pagină per proces (ultima pagină parțial folosită)."
 
   # ---- Cursul 6: Memoria virtuală ----
   - tip: grila
     dificultate: licenta
     enunt: "Ce este un page fault?"
     variante:
-      - "O eroare de scriere pe disc"
-      - "Excepția generată când se accesează o pagină care nu se află în memoria fizică"
       - "O coliziune în tabela de pagini"
       - "Terminarea anormală a unui proces"
-    corect: 1
-    explicatie: "Page fault apare când pagina referită nu este prezentă în RAM; nucleul o aduce de pe disc (demand paging) și reia instrucțiunea. Este un mecanism normal, spre deosebire de segmentation fault (acces ilegal)."
+      - "Excepția generată când se accesează o pagină care nu se află în memoria
+        fizică"
+      - "O eroare de scriere pe disc"
+    corect: 2
+    explicatie: "Page fault apare când pagina referită nu este prezentă în RAM;
+      nucleul o aduce de pe disc (demand paging) și reia instrucțiunea. Este un
+      mecanism normal, spre deosebire de segmentation fault (acces ilegal)."
 
   - tip: grila
     dificultate: licenta
     enunt: "Care este rolul memoriei TLB (Translation Lookaside Buffer)?"
     variante:
       - "Stochează blocurile recent citite de pe disc"
-      - "Este un cache hardware al traducerilor adresă virtuală -> adresă fizică"
       - "Păstrează lista paginilor libere"
+      - "Este un cache hardware al traducerilor adresă virtuală -> adresă fizică"
       - "Conține codul nucleului"
-    corect: 1
-    explicatie: "TLB este un cache hardware rapid al intrărilor din tabela de pagini, accelerând translatarea adreselor virtuale în fizice și evitând al doilea acces la memorie pentru tabela de pagini."
+    corect: 2
+    explicatie: "TLB este un cache hardware rapid al intrărilor din tabela de
+      pagini, accelerând translatarea adreselor virtuale în fizice și evitând al
+      doilea acces la memorie pentru tabela de pagini."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce descrie fenomenul de thrashing în memoria virtuală?"
     variante:
-      - "Pierderea de date din cauza unui crash"
-      - "Sistemul petrece mai mult timp cu paginarea (swap in/out) decât cu execuția utilă"
       - "Două procese care accesează aceeași pagină"
+      - "Sistemul petrece mai mult timp cu paginarea (swap in/out) decât cu
+        execuția utilă"
       - "Fragmentarea tabelei de pagini"
+      - "Pierderea de date din cauza unui crash"
     corect: 1
-    explicatie: "Thrashing apare când prea multe procese concurează pe memorie insuficientă, generând page fault-uri continue; CPU-ul stă blocat în I/O de paginare în loc să facă muncă utilă."
+    explicatie: "Thrashing apare când prea multe procese concurează pe memorie
+      insuficientă, generând page fault-uri continue; CPU-ul stă blocat în I/O
+      de paginare în loc să facă muncă utilă."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Anomalia lui Belady afirmă că, la unele șiruri de referințe, mărirea numărului de cadre (frames) poate:"
+    enunt: "Anomalia lui Belady afirmă că, la unele șiruri de referințe, mărirea
+      numărului de cadre (frames) poate:"
     variante:
       - "Reduce întotdeauna numărul de page fault-uri"
       - "Crește numărul de page fault-uri, în cazul algoritmului FIFO"
       - "Elimina complet page fault-urile"
       - "Apărea doar la algoritmul LRU"
     corect: 1
-    explicatie: "Anomalia Belady: la FIFO, creșterea numărului de cadre poate paradoxal să mărească numărul de page fault-uri. Algoritmii de tip stivă (ex. LRU, optimal) nu suferă de această anomalie."
+    explicatie: "Anomalia Belady: la FIFO, creșterea numărului de cadre poate
+      paradoxal să mărească numărul de page fault-uri. Algoritmii de tip stivă
+      (ex. LRU, optimal) nu suferă de această anomalie."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Algoritmul de înlocuire a paginilor LRU (Least Recently Used) alege ca victimă pagina:"
+    enunt: "Algoritmul de înlocuire a paginilor LRU (Least Recently Used) alege ca
+      victimă pagina:"
     variante:
       - "Care va fi folosită cel mai târziu în viitor"
       - "Care nu a mai fost folosită de cel mai mult timp"
       - "Cu cel mai mic număr de inode"
       - "Adusă cel mai recent în memorie"
     corect: 1
-    explicatie: "LRU evacuează pagina nefolosită de cel mai mult timp, pe baza localității temporale. Pagina folosită cel mai târziu în viitor ar fi aleasă de algoritmul optim (teoretic)."
+    explicatie: "LRU evacuează pagina nefolosită de cel mai mult timp, pe baza
+      localității temporale. Pagina folosită cel mai târziu în viitor ar fi
+      aleasă de algoritmul optim (teoretic)."
 
   # ---- Cursul 7: Fire de execuție ----
   - tip: grila
     dificultate: licenta
     enunt: "Care este un avantaj al firelor (thread-urilor) față de procese?"
     variante:
+      - "Costuri mai mici de creare și de comutare de context, plus partajare
+        facilă a datelor"
       - "Izolare totală a memoriei între fire"
-      - "Costuri mai mici de creare și de comutare de context, plus partajare facilă a datelor"
       - "Imposibilitatea apariției race condition-urilor"
       - "Independența completă în caz de eroare"
-    corect: 1
-    explicatie: "Firele unui proces partajează spațiul de adrese, deci crearea și comutarea sunt mai ieftine, iar partajarea datelor e directă. Dezavantajul este lipsa protecției și nevoia de sincronizare."
+    corect: 0
+    explicatie: "Firele unui proces partajează spațiul de adrese, deci crearea și
+      comutarea sunt mai ieftine, iar partajarea datelor e directă. Dezavantajul
+      este lipsa protecției și nevoia de sincronizare."
 
   - tip: grila
     dificultate: licenta
-    enunt: "În modelul de threading many-to-one (fire la nivel utilizator), ce se întâmplă când un fir face un apel de sistem BLOCANT?"
+    enunt: "În modelul de threading many-to-one (fire la nivel utilizator), ce se
+      întâmplă când un fir face un apel de sistem BLOCANT?"
     variante:
       - "Doar firul respectiv se blochează, restul continuă"
-      - "Se blochează întregul proces, deoarece nucleul nu vede firele individual"
+      - "Se blochează întregul proces, deoarece nucleul nu vede firele
+        individual"
       - "Apelul este convertit automat în neblocant"
       - "Firul este mutat pe alt procesor"
     corect: 1
-    explicatie: "La modelul many-to-one nucleul vede un singur fir; un apel blocant (sau un page fault) al unui fir blochează tot procesul, fiindcă planificarea firelor e făcută în spațiul utilizator."
+    explicatie: "La modelul many-to-one nucleul vede un singur fir; un apel blocant
+      (sau un page fault) al unui fir blochează tot procesul, fiindcă
+      planificarea firelor e făcută în spațiul utilizator."
 
   # ---- Cursul 8: Sincronizare ----
   - tip: grila
     dificultate: licenta
-    enunt: "De ce operația i++ poate produce o condiție de cursă (race condition) când e executată concurent?"
+    enunt: "De ce operația i++ poate produce o condiție de cursă (race condition)
+      când e executată concurent?"
     variante:
-      - "Pentru că modifică un fișier de pe disc"
-      - "Pentru că nu este atomică: se descompune în citire, incrementare și scriere"
       - "Pentru că folosește prea multă memorie"
       - "Pentru că apelează planificatorul"
-    corect: 1
-    explicatie: "i++ se compune din trei pași (citește valoarea, incrementează în registru, scrie înapoi); întreruperea între acești pași la fire concurente duce la pierderea unor incrementări."
+      - "Pentru că modifică un fișier de pe disc"
+      - "Pentru că nu este atomică: se descompune în citire, incrementare și
+        scriere"
+    corect: 3
+    explicatie: "i++ se compune din trei pași (citește valoarea, incrementează în
+      registru, scrie înapoi); întreruperea între acești pași la fire concurente
+      duce la pierderea unor incrementări."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Care este diferența principală între un spinlock și un mutex când lock-ul este deja ocupat?"
+    enunt: "Care este diferența principală între un spinlock și un mutex când
+      lock-ul este deja ocupat?"
     variante:
-      - "Spinlock-ul adoarme firul, mutex-ul face busy-waiting"
-      - "Spinlock-ul face busy-waiting (ocupă CPU), mutex-ul blochează firul (sleep)"
       - "Ambele fac busy-waiting identic"
+      - "Spinlock-ul adoarme firul, mutex-ul face busy-waiting"
       - "Mutex-ul nu poate fi folosit pe multi-core"
-    corect: 1
-    explicatie: "Spinlock-ul așteaptă activ (busy-waiting), consumând CPU — potrivit pentru secțiuni critice scurte. Mutex-ul pune firul în starea blocat (sleep), fiind potrivit pentru secțiuni critice mari."
+      - "Spinlock-ul face busy-waiting (ocupă CPU), mutex-ul blochează firul
+        (sleep)"
+    corect: 3
+    explicatie: "Spinlock-ul așteaptă activ (busy-waiting), consumând CPU — potrivit
+      pentru secțiuni critice scurte. Mutex-ul pune firul în starea blocat
+      (sleep), fiind potrivit pentru secțiuni critice mari."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce garantează o operație de tip Compare-and-Swap (CAS)?"
     variante:
       - "Copierea atomică a unui întreg bloc de memorie"
-      - "Verificarea și actualizarea atomică a unei valori într-un singur pas indivizibil"
-      - "Schimbarea priorității unui fir"
       - "Crearea unei bariere de sincronizare"
-    corect: 1
-    explicatie: "CAS (compare-and-swap / cmpxchg) compară o variabilă cu o valoare așteptată și, dacă se potrivește, o actualizează — totul atomic; este baza spinlock-urilor și a prevenirii TOCTOU."
+      - "Schimbarea priorității unui fir"
+      - "Verificarea și actualizarea atomică a unei valori într-un singur pas
+        indivizibil"
+    corect: 3
+    explicatie: "CAS (compare-and-swap / cmpxchg) compară o variabilă cu o valoare
+      așteptată și, dacă se potrivește, o actualizează — totul atomic; este baza
+      spinlock-urilor și a prevenirii TOCTOU."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce fac operațiile P (wait) și V (signal) asupra unui semafor?"
     variante:
       - "P incrementează, V decrementează semaforul"
-      - "P decrementează (blocant la 0), V incrementează semaforul"
       - "Ambele incrementează semaforul"
       - "P creează semaforul, V îl distruge"
-    corect: 1
-    explicatie: "P (wait) decrementează semaforul, blocând firul dacă valoarea ar deveni negativă; V (signal) incrementează semaforul, eventual deblocând un fir care aștepta. Valoarea nu scade sub 0."
+      - "P decrementează (blocant la 0), V incrementează semaforul"
+    corect: 3
+    explicatie: "P (wait) decrementează semaforul, blocând firul dacă valoarea ar
+      deveni negativă; V (signal) incrementează semaforul, eventual deblocând un
+      fir care aștepta. Valoarea nu scade sub 0."
 
   - tip: grila
     dificultate: licenta
     enunt: "Cum se sincronizează un grup de fire cu o barieră (barrier)?"
     variante:
-      - "Fiecare fir trece imediat, fără să aștepte"
-      - "Niciun fir nu trece de barieră până când TOATE firele nu ajung în acel punct"
       - "Doar primul fir poate trece"
+      - "Fiecare fir trece imediat, fără să aștepte"
+      - "Niciun fir nu trece de barieră până când TOATE firele nu ajung în acel
+        punct"
       - "Firele sunt terminate când ajung la barieră"
-    corect: 1
-    explicatie: "Bariera oprește fiecare fir ajuns în punctul de sincronizare; abia când ultimul fir ajunge, toate firele sunt eliberate simultan să continue."
+    corect: 2
+    explicatie: "Bariera oprește fiecare fir ajuns în punctul de sincronizare; abia
+      când ultimul fir ajunge, toate firele sunt eliberate simultan să
+      continue."
 
   - tip: grila
     dificultate: licenta
-    enunt: "De ce așteptarea pe o variabilă de condiție (pthread_cond_wait) se face de regulă într-o buclă while, nu într-un if?"
+    enunt: "De ce așteptarea pe o variabilă de condiție (pthread_cond_wait) se face
+      de regulă într-o buclă while, nu într-un if?"
     variante:
-      - "Pentru a apela funcția de mai multe ori, mai rapid"
-      - "Pentru a re-verifica predicatul după trezire (trezirile spurioase / starea se poate schimba)"
       - "Pentru că if-ul nu funcționează cu mutex-uri"
+      - "Pentru a re-verifica predicatul după trezire (trezirile spurioase /
+        starea se poate schimba)"
       - "Pentru a evita crearea de fire suplimentare"
+      - "Pentru a apela funcția de mai multe ori, mai rapid"
     corect: 1
-    explicatie: "După trezire, condiția poate să nu mai fie adevărată (alt fir a consumat resursa) sau pot apărea treziri spurioase; bucla while re-evaluează predicatul înainte de a continua."
+    explicatie: "După trezire, condiția poate să nu mai fie adevărată (alt fir a
+      consumat resursa) sau pot apărea treziri spurioase; bucla while
+      re-evaluează predicatul înainte de a continua."
 
   - tip: numeric_exact
     dificultate: licenta
-    enunt: "Sub ce valoare minimă NU poate scădea valoarea unui semafor (în convenția standard)?"
+    enunt: "Sub ce valoare minimă NU poate scădea valoarea unui semafor (în
+      convenția standard)?"
     corect: 0
-    explicatie: "Valoarea unui semafor nu poate scădea sub 0; la 0 operația de decrementare (P/wait) se blochează până când semaforul devine strict pozitiv."
+    explicatie: "Valoarea unui semafor nu poate scădea sub 0; la 0 operația de
+      decrementare (P/wait) se blochează până când semaforul devine strict
+      pozitiv."
 
   # ---- Întrebări numerice de estimare ----
   - tip: numeric_aprox
     dificultate: licenta
-    enunt: "În ce an a apărut prima versiune a nucleului Linux (anunțată de Linus Torvalds)?"
+    enunt: "În ce an a apărut prima versiune a nucleului Linux (anunțată de Linus
+      Torvalds)?"
     corect: 1991
-    explicatie: "Linus Torvalds a anunțat și lansat prima versiune a nucleului Linux în 1991."
+    explicatie: "Linus Torvalds a anunțat și lansat prima versiune a nucleului Linux
+      în 1991."
 
   - tip: numeric_aprox
     dificultate: licenta
-    enunt: "Care este dimensiunea tipică (uzuală) a unei pagini de memorie pe arhitecturile x86, în KiB?"
+    enunt: "Care este dimensiunea tipică (uzuală) a unei pagini de memorie pe
+      arhitecturile x86, în KiB?"
     corect: 4
-    explicatie: "Dimensiunea standard a paginii pe x86/x86-64 este 4 KiB (4096 octeți), corespunzând unui offset pe 12 biți; există și pagini mari (huge pages) de 2 MiB sau 1 GiB."
+    explicatie: "Dimensiunea standard a paginii pe x86/x86-64 este 4 KiB (4096
+      octeți), corespunzând unui offset pe 12 biți; există și pagini mari (huge
+      pages) de 2 MiB sau 1 GiB."

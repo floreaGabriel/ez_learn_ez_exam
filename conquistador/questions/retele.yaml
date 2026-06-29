@@ -12,9 +12,10 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "Ce protocol de transport folosește DNS pentru interogările uzuale?"
-    variante: ["TCP", "UDP", "ICMP", "ARP"]
-    corect: 1
-    explicatie: "DNS folosește UDP/53 pentru interogări obișnuite; trece pe TCP la transfer de zonă sau când răspunsul depășește limita UDP."
+    variante: [ "UDP", "ARP", "ICMP", "TCP" ]
+    corect: 0
+    explicatie: "DNS folosește UDP/53 pentru interogări obișnuite; trece pe TCP la
+      transfer de zonă sau când răspunsul depășește limita UDP."
 
   - tip: numeric_exact
     dificultate: licenta
@@ -31,20 +32,22 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "La ce nivel din modelul OSI operează un switch clasic (Layer 2)?"
-    variante: ["Nivel fizic", "Nivel legătură de date", "Nivel rețea", "Nivel transport"]
-    corect: 1
-    explicatie: "Switch-ul clasic comută cadre pe baza adreselor MAC — nivelul 2 (legătură de date)."
+    variante: [ "Nivel fizic", "Nivel transport", "Nivel legătură de date", "Nivel rețea" ]
+    corect: 2
+    explicatie: "Switch-ul clasic comută cadre pe baza adreselor MAC — nivelul 2
+      (legătură de date)."
 
   - tip: grila
     dificultate: licenta
     enunt: "Câmpul TTL dintr-un pachet IPv4 este folosit pentru a:"
     variante:
-      - "Cripta conținutul pachetului"
-      - "Limita numărul de hop-uri și a preveni buclele"
-      - "Indica portul destinație"
       - "Calcula suma de control a datelor"
-    corect: 1
-    explicatie: "TTL (Time To Live) scade cu 1 la fiecare router; când ajunge la 0 pachetul e aruncat — astfel se evită buclele infinite."
+      - "Cripta conținutul pachetului"
+      - "Indica portul destinație"
+      - "Limita numărul de hop-uri și a preveni buclele"
+    corect: 3
+    explicatie: "TTL (Time To Live) scade cu 1 la fiecare router; când ajunge la 0
+      pachetul e aruncat — astfel se evită buclele infinite."
 
   - tip: numeric_exact
     dificultate: licenta
@@ -56,21 +59,30 @@ intrebari:
     dificultate: licenta
     enunt: "Câte gazde utilizabile are o subrețea /24?"
     corect: 254
-    explicatie: "/24 = 256 adrese; scădem adresa de rețea și cea de broadcast => 254 gazde utilizabile."
+    explicatie: "/24 = 256 adrese; scădem adresa de rețea și cea de broadcast => 254
+      gazde utilizabile."
 
   - tip: grila
     dificultate: licenta
     enunt: "Care mecanism TCP asigură controlul fluxului (flow control)?"
-    variante: ["Three-way handshake", "Fereastra glisantă (sliding window)", "Checksum", "TTL"]
-    corect: 1
-    explicatie: "Fereastra glisantă reglează câte date poate trimite emițătorul înainte de un ACK, în funcție de capacitatea receptorului."
+    variante:
+      [
+        "TTL",
+        "Checksum",
+        "Three-way handshake",
+        "Fereastra glisantă (sliding window)"
+      ]
+    corect: 3
+    explicatie: "Fereastra glisantă reglează câte date poate trimite emițătorul
+      înainte de un ACK, în funcție de capacitatea receptorului."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce protocol mapează o adresă IP la o adresă MAC în rețeaua locală?"
-    variante: ["DHCP", "ARP", "ICMP", "NAT"]
-    corect: 1
-    explicatie: "ARP (Address Resolution Protocol) află adresa MAC asociată unei adrese IP din aceeași subrețea."
+    variante: [ "ARP", "NAT", "DHCP", "ICMP" ]
+    corect: 0
+    explicatie: "ARP (Address Resolution Protocol) află adresa MAC asociată unei
+      adrese IP din aceeași subrețea."
 
   - tip: numeric_aprox
     dificultate: licenta
@@ -80,7 +92,8 @@ intrebari:
 
   - tip: numeric_aprox
     dificultate: licenta
-    enunt: "Aproximativ câți octeți are antetul minim (fără opțiuni) al unui segment TCP?"
+    enunt: "Aproximativ câți octeți are antetul minim (fără opțiuni) al unui segment
+      TCP?"
     corect: 20
     explicatie: "Antetul TCP minim are 20 de octeți (poate crește până la 60 cu opțiuni)."
 
@@ -89,131 +102,158 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "Câte niveluri are modelul de referință OSI?"
-    variante: ["4 niveluri", "5 niveluri", "7 niveluri", "8 niveluri"]
-    corect: 2
-    explicatie: "Modelul OSI are 7 niveluri: Fizic, Legătură de date, Rețea, Transport, Sesiune, Prezentare, Aplicație."
+    variante: [ "4 niveluri", "7 niveluri", "8 niveluri", "5 niveluri" ]
+    corect: 1
+    explicatie: "Modelul OSI are 7 niveluri: Fizic, Legătură de date, Rețea,
+      Transport, Sesiune, Prezentare, Aplicație."
 
   - tip: grila
     dificultate: licenta
     enunt: "Cum se numește unitatea de date (PDU) la nivelul Rețea din modelul OSI?"
-    variante: ["Cadru (frame)", "Pachet (packet)", "Segment", "Bit"]
-    corect: 1
-    explicatie: "La nivelul Rețea PDU-ul este pachetul; la Transport segment, la Legătură de date cadru, la Fizic bit."
+    variante: [ "Segment", "Cadru (frame)", "Bit", "Pachet (packet)" ]
+    corect: 3
+    explicatie: "La nivelul Rețea PDU-ul este pachetul; la Transport segment, la
+      Legătură de date cadru, la Fizic bit."
 
   - tip: grila
     dificultate: licenta
     enunt: "Care afirmație despre UDP este corectă?"
     variante:
-      - "Este orientat conexiune și garantează livrarea"
-      - "Este neorientat conexiune și nu garantează livrarea datelor"
       - "Asigură controlul fluxului prin fereastră glisantă"
       - "Folosește three-way handshake la stabilirea conexiunii"
-    corect: 1
-    explicatie: "UDP este un protocol datagram, neorientat conexiune, cu overhead redus, care nu garantează livrarea sau ordinea datelor."
+      - "Este orientat conexiune și garantează livrarea"
+      - "Este neorientat conexiune și nu garantează livrarea datelor"
+    corect: 3
+    explicatie: "UDP este un protocol datagram, neorientat conexiune, cu overhead
+      redus, care nu garantează livrarea sau ordinea datelor."
 
   - tip: numeric_exact
     dificultate: licenta
     enunt: "Câți octeți are antetul (header-ul) unei datagrame UDP?"
     corect: 8
-    explicatie: "Antetul UDP are 8 octeți: port sursă, port destinație, lungime și sumă de control (câte 2 octeți)."
+    explicatie: "Antetul UDP are 8 octeți: port sursă, port destinație, lungime și
+      sumă de control (câte 2 octeți)."
 
   - tip: numeric_exact
     dificultate: licenta
     enunt: "Câți biți are o adresă IPv6?"
     corect: 128
-    explicatie: "IPv6 folosește adrese pe 128 de biți, scrise în notație hexazecimală (8 grupuri de câte 16 biți)."
+    explicatie: "IPv6 folosește adrese pe 128 de biți, scrise în notație
+      hexazecimală (8 grupuri de câte 16 biți)."
 
   - tip: numeric_aprox
     dificultate: licenta
     enunt: "Câți octeți (lungime fixă) are antetul de bază al unui pachet IPv6?"
     corect: 40
-    explicatie: "Antetul de bază IPv6 are lungime fixă de 40 de octeți, simplificat față de IPv4 pentru rutare eficientă."
+    explicatie: "Antetul de bază IPv6 are lungime fixă de 40 de octeți, simplificat
+      față de IPv4 pentru rutare eficientă."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Ce flag-uri TCP sunt setate în al doilea pachet al unui three-way handshake?"
-    variante: ["doar SYN", "SYN și ACK", "doar ACK", "FIN și ACK"]
+    enunt: "Ce flag-uri TCP sunt setate în al doilea pachet al unui three-way
+      handshake?"
+    variante: [ "doar ACK", "SYN și ACK", "doar SYN", "FIN și ACK" ]
     corect: 1
-    explicatie: "Serverul răspunde cu SYN+ACK (confirmă SYN-ul clientului și trimite propriul număr de secvență), apoi clientul trimite ACK."
+    explicatie: "Serverul răspunde cu SYN+ACK (confirmă SYN-ul clientului și trimite
+      propriul număr de secvență), apoi clientul trimite ACK."
 
   - tip: grila
     dificultate: licenta
     enunt: "Pe ce port TCP rulează implicit SMTP (transferul mesajelor de e-mail)?"
-    variante: ["21", "25", "110", "143"]
-    corect: 1
-    explicatie: "SMTP folosește portul 25/TCP; 110 este POP3, 143 este IMAP, iar 21 este portul de comenzi FTP."
+    variante: [ "25", "110", "143", "21" ]
+    corect: 0
+    explicatie: "SMTP folosește portul 25/TCP; 110 este POP3, 143 este IMAP, iar 21
+      este portul de comenzi FTP."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Pe ce porturi TCP ascultă implicit un server FTP (comenzi și date, mod activ)?"
+    enunt: "Pe ce porturi TCP ascultă implicit un server FTP (comenzi și date, mod
+      activ)?"
     variante:
+      - "23 (comenzi) și 24 (date)"
       - "20 (comenzi) și 21 (date)"
       - "21 (comenzi) și 20 (date)"
-      - "23 (comenzi) și 24 (date)"
       - "80 (comenzi) și 443 (date)"
-    corect: 1
-    explicatie: "FTP folosește portul 21/TCP pentru conexiunea de comenzi și portul 20 pentru conexiunea de date (mod activ)."
-
-  - tip: grila
-    dificultate: licenta
-    enunt: "Ce tip de înregistrare DNS (Resource Record) asociază un nume de domeniu cu o adresă IPv4?"
-    variante: ["MX", "CNAME", "A", "PTR"]
     corect: 2
-    explicatie: "Înregistrarea A mapează un nume de domeniu la o adresă IPv4 pe 32 de biți; AAAA face același lucru pentru IPv6."
+    explicatie: "FTP folosește portul 21/TCP pentru conexiunea de comenzi și portul
+      20 pentru conexiunea de date (mod activ)."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Ce înregistrare DNS indică serverul de e-mail responsabil pentru un domeniu?"
-    variante: ["A", "NS", "MX", "CNAME"]
+    enunt: "Ce tip de înregistrare DNS (Resource Record) asociază un nume de domeniu
+      cu o adresă IPv4?"
+    variante: [ "PTR", "CNAME", "A", "MX" ]
     corect: 2
-    explicatie: "Înregistrarea MX (Mail eXchange) specifică numele serverului de e-mail al domeniului, folosit de SMTP la livrarea mesajelor."
+    explicatie: "Înregistrarea A mapează un nume de domeniu la o adresă IPv4 pe 32
+      de biți; AAAA face același lucru pentru IPv6."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Care este metoda de control al accesului la mediu folosită în rețelele Ethernet clasice (802.3)?"
-    variante: ["Token passing", "CSMA/CD", "TDMA", "CSMA/CA"]
-    corect: 1
-    explicatie: "Ethernet clasic folosește CSMA/CD (Carrier Sense Multiple Access with Collision Detection); CSMA/CA este folosit în Wi-Fi (802.11)."
+    enunt: "Ce înregistrare DNS indică serverul de e-mail responsabil pentru un
+      domeniu?"
+    variante: [ "CNAME", "NS", "A", "MX" ]
+    corect: 3
+    explicatie: "Înregistrarea MX (Mail eXchange) specifică numele serverului de
+      e-mail al domeniului, folosit de SMTP la livrarea mesajelor."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este metoda de control al accesului la mediu folosită în rețelele
+      Ethernet clasice (802.3)?"
+    variante: [ "CSMA/CD", "Token passing", "TDMA", "CSMA/CA" ]
+    corect: 0
+    explicatie: "Ethernet clasic folosește CSMA/CD (Carrier Sense Multiple Access
+      with Collision Detection); CSMA/CA este folosit în Wi-Fi (802.11)."
 
   - tip: numeric_exact
     dificultate: licenta
     enunt: "Câți biți are o adresă MAC (Ethernet)?"
     corect: 48
-    explicatie: "Adresa MAC are 48 de biți (6 octeți): primii 3 octeți sunt OUI (producătorul), ultimii 3 identifică placa de rețea."
+    explicatie: "Adresa MAC are 48 de biți (6 octeți): primii 3 octeți sunt OUI
+      (producătorul), ultimii 3 identifică placa de rețea."
 
   - tip: numeric_aprox
     dificultate: licenta
-    enunt: "Care este dimensiunea minimă, în octeți, a unui cadru Ethernet (fără preambul și SFD)?"
+    enunt: "Care este dimensiunea minimă, în octeți, a unui cadru Ethernet (fără
+      preambul și SFD)?"
     corect: 64
-    explicatie: "Dimensiunea minimă a unui cadru Ethernet este 64 de octeți, necesară pentru funcționarea corectă a mecanismului CSMA/CD."
+    explicatie: "Dimensiunea minimă a unui cadru Ethernet este 64 de octeți,
+      necesară pentru funcționarea corectă a mecanismului CSMA/CD."
 
   - tip: numeric_exact
     dificultate: licenta
-    enunt: "Care este valoarea MTU (Maximum Transmission Unit) pentru Ethernet, în octeți?"
+    enunt: "Care este valoarea MTU (Maximum Transmission Unit) pentru Ethernet, în
+      octeți?"
     corect: 1500
-    explicatie: "MTU pentru Ethernet este de 1500 de octeți — dimensiunea maximă a câmpului de date dintr-un cadru."
+    explicatie: "MTU pentru Ethernet este de 1500 de octeți — dimensiunea maximă a
+      câmpului de date dintr-un cadru."
 
   - tip: grila
     dificultate: licenta
     enunt: "Care este diferența esențială dintre un hub și un switch?"
     variante:
-      - "Hub-ul comută pe baza adreselor IP, switch-ul pe MAC"
-      - "Hub-ul retransmite cadrul către toate stațiile, switch-ul doar către stația destinație"
       - "Switch-ul operează la nivel 3, hub-ul la nivel 4"
+      - "Hub-ul comută pe baza adreselor IP, switch-ul pe MAC"
+      - "Hub-ul retransmite cadrul către toate stațiile, switch-ul doar către
+        stația destinație"
       - "Nu există nicio diferență funcțională"
-    corect: 1
-    explicatie: "Hub-ul difuzează cadrul recepționat pe toate porturile, în timp ce switch-ul îl trimite selectiv doar pe portul către destinație, pe baza tabelei MAC."
+    corect: 2
+    explicatie: "Hub-ul difuzează cadrul recepționat pe toate porturile, în timp ce
+      switch-ul îl trimite selectiv doar pe portul către destinație, pe baza
+      tabelei MAC."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Pe baza căror adrese își construiește un switch tabela de comutare (MAC address table)?"
+    enunt: "Pe baza căror adrese își construiește un switch tabela de comutare (MAC
+      address table)?"
     variante:
+      - "Adresa IP destinație din pachete"
       - "Adresa MAC destinație din cadrele recepționate"
       - "Adresa MAC sursă din cadrele recepționate"
       - "Adresa IP sursă din pachete"
-      - "Adresa IP destinație din pachete"
-    corect: 1
-    explicatie: "Switch-ul învață (learning) asociind adresa MAC sursă din fiecare cadru cu portul pe care acesta a sosit."
+    corect: 2
+    explicatie: "Switch-ul învață (learning) asociind adresa MAC sursă din fiecare
+      cadru cu portul pe care acesta a sosit."
 
   - tip: grila
     dificultate: licenta
@@ -224,18 +264,21 @@ intrebari:
       - "Amplificarea semnalului electric"
       - "Conversia numelor în adrese IP"
     corect: 1
-    explicatie: "Router-ul operează la nivel 3 (Rețea) și dirijează pachetele între subrețele diferite folosind adresele IP și tabela de rutare."
+    explicatie: "Router-ul operează la nivel 3 (Rețea) și dirijează pachetele între
+      subrețele diferite folosind adresele IP și tabela de rutare."
 
   - tip: grila
     dificultate: licenta
-    enunt: "În notația CIDR, ce reprezintă numărul de după caracterul / (de exemplu /24)?"
+    enunt: "În notația CIDR, ce reprezintă numărul de după caracterul / (de exemplu
+      /24)?"
     variante:
-      - "Numărul de gazde din rețea"
-      - "Numărul de biți de 1 din masca de rețea (lungimea prefixului)"
       - "Numărul clasei de adrese"
+      - "Numărul de biți de 1 din masca de rețea (lungimea prefixului)"
+      - "Numărul de gazde din rețea"
       - "Numărul de subrețele posibile"
     corect: 1
-    explicatie: "Sufixul CIDR indică lungimea prefixului de rețea, adică numărul de biți de 1 din masca de rețea (ex. /24 = 255.255.255.0)."
+    explicatie: "Sufixul CIDR indică lungimea prefixului de rețea, adică numărul de
+      biți de 1 din masca de rețea (ex. /24 = 255.255.255.0)."
 
   - tip: grila
     dificultate: licenta
@@ -243,72 +286,87 @@ intrebari:
     variante:
       - "8.0.0.0 - 8.255.255.255"
       - "172.16.0.0 - 172.31.255.255"
-      - "200.0.0.0 - 200.255.255.255"
       - "127.0.0.0 - 127.255.255.255"
+      - "200.0.0.0 - 200.255.255.255"
     corect: 1
-    explicatie: "Intervalele private sunt 10.0.0.0/8, 172.16.0.0/12 (172.16-172.31) și 192.168.0.0/16; acestea nu sunt rutate în Internet."
+    explicatie: "Intervalele private sunt 10.0.0.0/8, 172.16.0.0/12 (172.16-172.31)
+      și 192.168.0.0/16; acestea nu sunt rutate în Internet."
 
   - tip: grila
     dificultate: licenta
     enunt: "La ce servește mecanismul NAT (Network Address Translation)?"
     variante:
-      - "Convertește numele de domenii în adrese IP"
       - "Translatează adresele IP private în adrese IP publice (rutabile)"
-      - "Criptează traficul dintre două host-uri"
       - "Mapează adrese IP în adrese MAC"
-    corect: 1
-    explicatie: "NAT înlocuiește adresa IP privată dintr-un pachet cu o adresă IP publică, permițând stațiilor din rețeaua internă să comunice în Internet."
+      - "Criptează traficul dintre două host-uri"
+      - "Convertește numele de domenii în adrese IP"
+    corect: 0
+    explicatie: "NAT înlocuiește adresa IP privată dintr-un pachet cu o adresă IP
+      publică, permițând stațiilor din rețeaua internă să comunice în Internet."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Care protocol asigură alocarea dinamică (automată) a adreselor IP unei stații în rețea?"
-    variante: ["DNS", "DHCP", "ARP", "ICMP"]
+    enunt: "Care protocol asigură alocarea dinamică (automată) a adreselor IP unei
+      stații în rețea?"
+    variante: [ "ICMP", "DHCP", "ARP", "DNS" ]
     corect: 1
-    explicatie: "DHCP (Dynamic Host Configuration Protocol) atribuie automat adresa IP, masca, gateway-ul și serverul DNS, prin schimbul DISCOVER/OFFER/REQUEST/ACK."
+    explicatie: "DHCP (Dynamic Host Configuration Protocol) atribuie automat adresa
+      IP, masca, gateway-ul și serverul DNS, prin schimbul
+      DISCOVER/OFFER/REQUEST/ACK."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce reprezintă încapsularea datelor în stiva de protocoale?"
     variante:
+      - "Adăugarea unui antet (și eventual trailer) la fiecare nivel pe măsură
+        ce datele coboară prin stivă"
       - "Criptarea datelor înainte de transmisie"
-      - "Adăugarea unui antet (și eventual trailer) la fiecare nivel pe măsură ce datele coboară prin stivă"
       - "Fragmentarea pachetelor mari în pachete mici"
       - "Compresia conținutului pentru a reduce dimensiunea"
-    corect: 1
-    explicatie: "La fiecare nivel datele primesc un antet propriu (HTTP -> TCP -> IP -> Ethernet), formând succesiv segment, pachet și cadru."
+    corect: 0
+    explicatie: "La fiecare nivel datele primesc un antet propriu (HTTP -> TCP -> IP
+      -> Ethernet), formând succesiv segment, pachet și cadru."
 
   - tip: grila
     dificultate: licenta
     enunt: "Cum este caracterizat protocolul HTTP din punct de vedere al stării?"
     variante:
       - "Stateful — serverul reține toate cererile anterioare"
-      - "Stateless — serverul nu menține informații despre cererile anterioare ale clientului"
-      - "Orientat conexiune permanentă obligatorie"
+      - "Stateless — serverul nu menține informații despre cererile anterioare
+        ale clientului"
       - "Bazat pe UDP fără confirmări"
+      - "Orientat conexiune permanentă obligatorie"
     corect: 1
-    explicatie: "HTTP este stateless: serverul nu reține contextul cererilor anterioare; starea se gestionează prin cookies, sesiuni server-side etc."
+    explicatie: "HTTP este stateless: serverul nu reține contextul cererilor
+      anterioare; starea se gestionează prin cookies, sesiuni server-side etc."
 
   - tip: grila
     dificultate: licenta
-    enunt: "În IPv6, care protocol înlocuiește funcția ARP din IPv4 (determinarea adreselor MAC ale vecinilor)?"
+    enunt: "În IPv6, care protocol înlocuiește funcția ARP din IPv4 (determinarea
+      adreselor MAC ale vecinilor)?"
     variante:
-      - "RARP"
-      - "Neighbor Discovery (ND)"
       - "DHCPv6"
+      - "RARP"
       - "IGMP"
-    corect: 1
-    explicatie: "Neighbor Discovery (RFC 4861), bazat pe ICMPv6, înlocuiește ARP și permite descoperirea vecinilor, autoconfigurarea adreselor și descoperirea routerelor."
+      - "Neighbor Discovery (ND)"
+    corect: 3
+    explicatie: "Neighbor Discovery (RFC 4861), bazat pe ICMPv6, înlocuiește ARP și
+      permite descoperirea vecinilor, autoconfigurarea adreselor și descoperirea
+      routerelor."
 
   - tip: grila
     dificultate: licenta
     enunt: "Cărui standard IEEE 802 îi corespunde rețeaua Wireless LAN (Wi-Fi)?"
-    variante: ["802.3", "802.11", "802.15", "802.16"]
-    corect: 1
-    explicatie: "IEEE 802.11 definește WLAN (Wi-Fi); 802.3 este Ethernet, 802.15 este WPAN (Bluetooth), 802.16 este WiMAX."
+    variante: [ "802.11", "802.15", "802.16", "802.3" ]
+    corect: 0
+    explicatie: "IEEE 802.11 definește WLAN (Wi-Fi); 802.3 este Ethernet, 802.15
+      este WPAN (Bluetooth), 802.16 este WiMAX."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Cum se clasifică o rețea care acoperă o arie redusă (clădire sau campus) cu rate mari de transfer?"
-    variante: ["WAN", "MAN", "LAN", "PAN"]
+    enunt: "Cum se clasifică o rețea care acoperă o arie redusă (clădire sau campus)
+      cu rate mari de transfer?"
+    variante: [ "PAN", "MAN", "LAN", "WAN" ]
     corect: 2
-    explicatie: "LAN (Local Area Network) acoperă o arie redusă (clădire, campus); MAN acoperă un oraș, WAN o țară/continent, PAN aria personală."
+    explicatie: "LAN (Local Area Network) acoperă o arie redusă (clădire, campus);
+      MAN acoperă un oraș, WAN o țară/continent, PAN aria personală."

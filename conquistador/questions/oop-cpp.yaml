@@ -12,87 +12,102 @@ intrebari:
   # ---------- Clase și obiecte / încapsulare ----------
   - tip: grila
     dificultate: licenta
-    enunt: "În C++, care este diferența între o declarație de tip struct și una de tip class?"
+    enunt: "În C++, care este diferența între o declarație de tip struct și una de
+      tip class?"
     variante:
-      - "struct nu poate avea metode, class poate"
-      - "La struct membrii sunt implicit public, la class sunt implicit private"
-      - "class nu permite moștenire, struct permite"
       - "Nu există nicio diferență, sunt sinonime perfecte"
-    corect: 1
-    explicatie: "Singura diferență reală: la struct membrii (date și funcții) sunt implicit public, iar la class sunt implicit private."
+      - "class nu permite moștenire, struct permite"
+      - "La struct membrii sunt implicit public, la class sunt implicit private"
+      - "struct nu poate avea metode, class poate"
+    corect: 2
+    explicatie: "Singura diferență reală: la struct membrii (date și funcții) sunt
+      implicit public, iar la class sunt implicit private."
 
   - tip: grila
     dificultate: licenta
     enunt: "Principiul de încapsulare în OOP presupune în principal că:"
     variante:
-      - "Datele membre se accesează direct din exterior pentru viteză"
-      - "Datele sunt ascunse, iar accesul se face prin metode publice de acces"
       - "Toate metodele trebuie să fie statice"
+      - "Datele membre se accesează direct din exterior pentru viteză"
       - "O clasă nu poate conține obiecte ale altei clase"
-    corect: 1
-    explicatie: "Încapsularea înseamnă ascunderea datelor (de regulă private), expunând în exterior doar funcționalitatea prin metode publice."
+      - "Datele sunt ascunse, iar accesul se face prin metode publice de acces"
+    corect: 3
+    explicatie: "Încapsularea înseamnă ascunderea datelor (de regulă private),
+      expunând în exterior doar funcționalitatea prin metode publice."
 
   # ---------- Constructori și destructori ----------
   - tip: grila
     dificultate: licenta
     enunt: "Care afirmație despre constructori în C++ este corectă?"
     variante:
-      - "Au întotdeauna tipul de return void"
-      - "Au același nume ca al clasei și nu returnează nimic (nici void)"
       - "Pot returna orice tip definit de utilizator"
       - "Trebuie obligatoriu să aibă cel puțin un parametru"
-    corect: 1
-    explicatie: "Constructorul are obligatoriu același nume ca al clasei, poate avea sau nu parametri și nu returnează nimic, nici măcar void."
+      - "Au același nume ca al clasei și nu returnează nimic (nici void)"
+      - "Au întotdeauna tipul de return void"
+    corect: 2
+    explicatie: "Constructorul are obligatoriu același nume ca al clasei, poate avea
+      sau nu parametri și nu returnează nimic, nici măcar void."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Dacă într-o clasă se declară cel puțin un constructor (cu parametri), ce se întâmplă cu constructorul implicit fără parametri?"
+    enunt: "Dacă într-o clasă se declară cel puțin un constructor (cu parametri), ce
+      se întâmplă cu constructorul implicit fără parametri?"
     variante:
-      - "Este generat oricum automat de compilator"
       - "Compilatorul nu îl mai generează automat"
       - "Devine privat automat"
+      - "Este generat oricum automat de compilator"
       - "Este moștenit din clasa std::object"
-    corect: 1
-    explicatie: "Dacă programatorul declară cel puțin un constructor, compilatorul nu mai generează automat constructorul implicit fără parametri."
+    corect: 0
+    explicatie: "Dacă programatorul declară cel puțin un constructor, compilatorul
+      nu mai generează automat constructorul implicit fără parametri."
 
   - tip: grila
     dificultate: licenta
     enunt: "Constructorul de copiere implicit (default copy constructor) realizează:"
     variante:
-      - "O copiere profundă (deep copy) a tuturor pointerilor"
-      - "O copiere bit-cu-bit (bitwise copy) a membrilor"
-      - "Nimic, obiectul rămâne neinițializat"
       - "Apelul automat al destructorului"
-    corect: 1
-    explicatie: "Constructorul de copiere implicit face o copiere bit-cu-bit; de aceea pentru membri pointeri alocați dinamic devine necesar un constructor de copiere explicit."
+      - "Nimic, obiectul rămâne neinițializat"
+      - "O copiere bit-cu-bit (bitwise copy) a membrilor"
+      - "O copiere profundă (deep copy) a tuturor pointerilor"
+    corect: 2
+    explicatie: "Constructorul de copiere implicit face o copiere bit-cu-bit; de
+      aceea pentru membri pointeri alocați dinamic devine necesar un constructor
+      de copiere explicit."
 
   - tip: grila
     dificultate: licenta
-    enunt: "În care dintre situațiile de mai jos NU se apelează constructorul de copiere?"
+    enunt: "În care dintre situațiile de mai jos NU se apelează constructorul de
+      copiere?"
     variante:
-      - "Vector V2(V1); — inițializarea unui obiect pe baza altuia"
       - "Vector V2 = V1; — inițializare la declarare"
       - "Vector &V5 = V1; — declararea unei referințe la un obiect existent"
       - "Transmiterea unui obiect ca parametru prin valoare"
-    corect: 2
-    explicatie: "O referință la un obiect existent nu creează un obiect nou, deci nu se apelează niciun constructor; în celelalte cazuri se apelează constructorul de copiere."
+      - "Vector V2(V1); — inițializarea unui obiect pe baza altuia"
+    corect: 1
+    explicatie: "O referință la un obiect existent nu creează un obiect nou, deci nu
+      se apelează niciun constructor; în celelalte cazuri se apelează
+      constructorul de copiere."
 
   - tip: grila
     dificultate: licenta
     enunt: "Care este numele și forma corectă a destructorului pentru clasa Vector?"
     variante:
-      - "void ~Vector();"
-      - "~Vector(); fără parametri și fără tip de return"
-      - "Vector ~Vector(int);"
       - "delete Vector();"
+      - "~Vector(); fără parametri și fără tip de return"
+      - "void ~Vector();"
+      - "Vector ~Vector(int);"
     corect: 1
-    explicatie: "Destructorul are forma ~Nume_Clasa(), nu primește parametri și nu returnează nimic; o clasă are un singur destructor."
+    explicatie: "Destructorul are forma ~Nume_Clasa(), nu primește parametri și nu
+      returnează nimic; o clasă are un singur destructor."
 
   - tip: numeric_exact
     dificultate: licenta
-    enunt: "O clasă Vector conține ca membri doi obiecte de tip Point (start și end). La instanțierea unui singur obiect Vector, câți constructori se apelează în total (cei doi Point plus Vector)?"
+    enunt: "O clasă Vector conține ca membri doi obiecte de tip Point (start și
+      end). La instanțierea unui singur obiect Vector, câți constructori se
+      apelează în total (cei doi Point plus Vector)?"
     corect: 3
-    explicatie: "Mai întâi se construiesc cele două obiecte Point (2 constructori), apoi obiectul Vector (1 constructor) — în total 3."
+    explicatie: "Mai întâi se construiesc cele două obiecte Point (2 constructori),
+      apoi obiectul Vector (1 constructor) — în total 3."
 
   - tip: numeric_exact
     dificultate: licenta
@@ -102,54 +117,65 @@ intrebari:
 
   - tip: numeric_exact
     dificultate: licenta
-    enunt: "Se execută secvența: Vector V1(\"V1\",1,2,3,4); Vector V2(V1); Vector V3; — în câte dintre aceste trei declarații se apelează constructorul de copiere?"
+    enunt: "Se execută secvența: Vector V1(\"V1\",1,2,3,4); Vector V2(V1); Vector
+      V3; — în câte dintre aceste trei declarații se apelează constructorul de
+      copiere?"
     corect: 1
-    explicatie: "Doar V2(V1) apelează constructorul de copiere; V1 folosește constructorul cu parametri, iar V3 constructorul fără parametri."
+    explicatie: "Doar V2(V1) apelează constructorul de copiere; V1 folosește
+      constructorul cu parametri, iar V3 constructorul fără parametri."
 
   # ---------- Metode statice / friend ----------
   - tip: grila
     dificultate: licenta
     enunt: "O variabilă membră statică a unei clase:"
     variante:
-      - "Există câte o copie separată pentru fiecare obiect"
-      - "Aparține clasei, nu unui obiect anume, și există chiar fără obiecte instanțiate"
       - "Nu poate fi accesată niciodată din exterior"
+      - "Aparține clasei, nu unui obiect anume, și există chiar fără obiecte
+        instanțiate"
+      - "Există câte o copie separată pentru fiecare obiect"
       - "Se inițializează automat în interiorul fiecărui constructor"
     corect: 1
-    explicatie: "O variabilă membră statică aparține clasei (nu unui obiect), există alocată chiar dacă nu există obiecte și trebuie definită în afara clasei."
+    explicatie: "O variabilă membră statică aparține clasei (nu unui obiect), există
+      alocată chiar dacă nu există obiecte și trebuie definită în afara clasei."
 
   - tip: grila
     dificultate: licenta
     enunt: "O metodă statică (static) a unei clase:"
     variante:
+      - "Nu poate accesa datele nestatice ale unui obiect și se apelează prin
+        numele clasei"
       - "Poate accesa direct datele membre nestatice ale obiectelor"
-      - "Nu poate accesa datele nestatice ale unui obiect și se apelează prin numele clasei"
       - "Primește implicit pointerul this"
       - "Nu poate fi declarată public"
-    corect: 1
-    explicatie: "Metoda statică aparține clasei, nu primește pointerul this și nu poate accesa date nestatice; se apelează cu Nume_Clasa::metoda()."
+    corect: 0
+    explicatie: "Metoda statică aparține clasei, nu primește pointerul this și nu
+      poate accesa date nestatice; se apelează cu Nume_Clasa::metoda()."
 
   - tip: grila
     dificultate: licenta
     enunt: "Despre relația friend în C++, care afirmație este corectă?"
     variante:
-      - "Este comutativă: dacă A e friend cu B, atunci și B e friend cu A"
       - "Nu este comutativă și încalcă principiul încapsulării"
-      - "Se moștenește automat în clasele derivate"
+      - "Este comutativă: dacă A e friend cu B, atunci și B e friend cu A"
       - "Permite accesul doar la membrii publici"
-    corect: 1
-    explicatie: "Relația friend nu este comutativă, oferă acces la membrii privați/protected și este considerată o încălcare a principiului încapsulării."
+      - "Se moștenește automat în clasele derivate"
+    corect: 0
+    explicatie: "Relația friend nu este comutativă, oferă acces la membrii
+      privați/protected și este considerată o încălcare a principiului
+      încapsulării."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Un specificator protected într-o clasă de bază înseamnă că membrul respectiv este:"
+    enunt: "Un specificator protected într-o clasă de bază înseamnă că membrul
+      respectiv este:"
     variante:
+      - "Inaccesibil din exterior, dar accesibil în clasele derivate"
       - "Accesibil de oriunde, ca public"
       - "Inaccesibil chiar și în propria clasă"
-      - "Inaccesibil din exterior, dar accesibil în clasele derivate"
       - "Accesibil doar prin funcții friend"
-    corect: 2
-    explicatie: "protected se comportă ca private față de exterior, însă permite accesul din clasele derivate (copil)."
+    corect: 0
+    explicatie: "protected se comportă ca private față de exterior, însă permite
+      accesul din clasele derivate (copil)."
 
   # ---------- Moștenire ----------
   - tip: grila
@@ -157,128 +183,162 @@ intrebari:
     enunt: "Ce NU se moștenește dintr-o clasă de bază într-o clasă derivată?"
     variante:
       - "Datele membre"
-      - "Metodele obișnuite"
       - "Metodele de tip constructor (și destructorul)"
+      - "Metodele obișnuite"
       - "Membrii protected"
-    corect: 2
-    explicatie: "Clasa derivată moștenește datele și metodele clasei de bază, mai puțin constructorii și destructorul (deși aceștia participă la inițializare/distrugere)."
+    corect: 1
+    explicatie: "Clasa derivată moștenește datele și metodele clasei de bază, mai
+      puțin constructorii și destructorul (deși aceștia participă la
+      inițializare/distrugere)."
 
   - tip: grila
     dificultate: licenta
-    enunt: "La derivarea private (class D : private B), un membru public din clasa de bază B devine în clasa derivată D:"
+    enunt: "La derivarea private (class D : private B), un membru public din clasa
+      de bază B devine în clasa derivată D:"
     variante:
-      - "public"
-      - "private"
       - "protected"
       - "inaccesibil"
-    corect: 1
-    explicatie: "La derivare private, membrii public și protected ai bazei devin private în derivată, iar membrii private ai bazei devin inaccesibili."
+      - "private"
+      - "public"
+    corect: 2
+    explicatie: "La derivare private, membrii public și protected ai bazei devin
+      private în derivată, iar membrii private ai bazei devin inaccesibili."
 
   - tip: grila
     dificultate: licenta
     enunt: "Care este diferența corectă între relațiile is-a și has-a?"
     variante:
-      - "is-a se implementează prin moștenire, has-a prin date membre (compoziție)"
+      - "Ambele se implementează doar prin funcții friend"
       - "is-a se implementează prin compoziție, has-a prin moștenire"
       - "Ambele se implementează doar prin moștenire multiplă"
-      - "Ambele se implementează doar prin funcții friend"
-    corect: 0
-    explicatie: "Relația is-a (este-un) se modelează prin moștenire, iar relația has-a (are-un) prin date membre incluse în clasă (compoziție/agregare)."
+      - "is-a se implementează prin moștenire, has-a prin date membre
+        (compoziție)"
+    corect: 3
+    explicatie: "Relația is-a (este-un) se modelează prin moștenire, iar relația
+      has-a (are-un) prin date membre incluse în clasă (compoziție/agregare)."
 
   - tip: grila
     dificultate: licenta
-    enunt: "În C++, moștenirea multiplă (o clasă derivată din mai multe clase de bază) este:"
+    enunt: "În C++, moștenirea multiplă (o clasă derivată din mai multe clase de
+      bază) este:"
     variante:
-      - "Interzisă, ca în Java"
-      - "Permisă; ambiguitățile se rezolvă cu operatorul de scop sau moștenire virtuală"
-      - "Permisă doar pentru clase abstracte"
       - "Permisă doar dacă bazele nu au date membre"
-    corect: 1
-    explicatie: "C++ permite moștenirea multiplă; ambiguitatea (ex. același membru moștenit de două ori) se rezolvă cu operatorul de scop :: sau prin moștenire virtuală."
+      - "Permisă doar pentru clase abstracte"
+      - "Interzisă, ca în Java"
+      - "Permisă; ambiguitățile se rezolvă cu operatorul de scop sau moștenire
+        virtuală"
+    corect: 3
+    explicatie: "C++ permite moștenirea multiplă; ambiguitatea (ex. același membru
+      moștenit de două ori) se rezolvă cu operatorul de scop :: sau prin
+      moștenire virtuală."
 
   - tip: numeric_exact
     dificultate: licenta
-    enunt: "Pentru lanțul de derivări class A : public B, class C : public A, class D : public C, la crearea unui obiect D se apelează automat constructorii claselor B, A, C, D. Câți constructori se apelează în total?"
+    enunt: "Pentru lanțul de derivări class A : public B, class C : public A, class
+      D : public C, la crearea unui obiect D se apelează automat constructorii
+      claselor B, A, C, D. Câți constructori se apelează în total?"
     corect: 4
-    explicatie: "Se apelează constructorii în ordinea B(), A(), C(), D() — adică 4 constructori, de la baza cea mai îndepărtată spre clasa derivată finală."
+    explicatie: "Se apelează constructorii în ordinea B(), A(), C(), D() — adică 4
+      constructori, de la baza cea mai îndepărtată spre clasa derivată finală."
 
   - tip: grila
     dificultate: licenta
-    enunt: "La distrugerea unui obiect dintr-o clasă derivată D (class D : public B), ordinea de apel a destructorilor este:"
+    enunt: "La distrugerea unui obiect dintr-o clasă derivată D (class D : public
+      B), ordinea de apel a destructorilor este:"
     variante:
       - "~B() apoi ~D()"
       - "~D() apoi ~B()"
       - "Doar ~D()"
       - "Doar ~B()"
     corect: 1
-    explicatie: "Destructorii se apelează în ordine inversă constructorilor: mai întâi ~D() (derivata), apoi ~B() (baza)."
+    explicatie: "Destructorii se apelează în ordine inversă constructorilor: mai
+      întâi ~D() (derivata), apoi ~B() (baza)."
 
   # ---------- Metode virtuale / polimorfism / clase abstracte ----------
   - tip: grila
     dificultate: licenta
-    enunt: "Diferența dintre overloading (supraîncărcare) și overriding (suprascriere) este:"
+    enunt: "Diferența dintre overloading (supraîncărcare) și overriding
+      (suprascriere) este:"
     variante:
-      - "Overloading = aceeași clasă, funcții cu liste de parametri diferite; overriding = redefinirea unei metode moștenite în clasa derivată"
-      - "Overloading = redefinirea unei metode moștenite; overriding = funcții cu nume diferite"
+      - "Overloading = aceeași clasă, funcții cu liste de parametri diferite;
+        overriding = redefinirea unei metode moștenite în clasa derivată"
       - "Sunt termeni identici"
       - "Overriding funcționează doar cu metode statice"
+      - "Overloading = redefinirea unei metode moștenite; overriding = funcții
+        cu nume diferite"
     corect: 0
-    explicatie: "Overloading înseamnă mai multe funcții cu același nume dar parametri diferiți; overriding înseamnă redefinirea (suprascrierea) în clasa derivată a unei metode moștenite."
+    explicatie: "Overloading înseamnă mai multe funcții cu același nume dar
+      parametri diferiți; overriding înseamnă redefinirea (suprascrierea) în
+      clasa derivată a unei metode moștenite."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Se apelează metoda printr-un pointer la clasa de bază către un obiect din clasa derivată. Dacă metoda este declarată virtual în baza, se execută:"
+    enunt: "Se apelează metoda printr-un pointer la clasa de bază către un obiect
+      din clasa derivată. Dacă metoda este declarată virtual în baza, se
+      execută:"
     variante:
-      - "Metoda din clasa de bază (legare statică)"
       - "Metoda suprascrisă din clasa derivată (legare dinamică)"
       - "O eroare de compilare"
+      - "Metoda din clasa de bază (legare statică)"
       - "Ambele metode, una după alta"
-    corect: 1
-    explicatie: "Pentru metode virtuale, legarea este dinamică (la runtime): se apelează metoda corespunzătoare tipului real al obiectului — cea din clasa derivată."
+    corect: 0
+    explicatie: "Pentru metode virtuale, legarea este dinamică (la runtime): se
+      apelează metoda corespunzătoare tipului real al obiectului — cea din clasa
+      derivată."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Mecanismul prin care C++ implementează apelul metodelor virtuale (legarea dinamică) se bazează pe:"
+    enunt: "Mecanismul prin care C++ implementează apelul metodelor virtuale
+      (legarea dinamică) se bazează pe:"
     variante:
-      - "Macro-uri de preprocesare"
-      - "Tabela de funcții virtuale (v-table) și un pointer __vfptr"
       - "Variabile statice globale"
+      - "Tabela de funcții virtuale (v-table) și un pointer __vfptr"
       - "Funcții friend"
+      - "Macro-uri de preprocesare"
     corect: 1
-    explicatie: "Fiecare clasă cu metode virtuale primește o tabelă de pointeri la funcții (v-table), iar obiectele conțin un pointer __vfptr către aceasta, folosit la legarea dinamică."
+    explicatie: "Fiecare clasă cu metode virtuale primește o tabelă de pointeri la
+      funcții (v-table), iar obiectele conțin un pointer __vfptr către aceasta,
+      folosit la legarea dinamică."
 
   - tip: grila
     dificultate: licenta
     enunt: "De ce este recomandat ca destructorul unei clase de bază să fie virtual?"
     variante:
-      - "Pentru a permite copierea bit-cu-bit"
-      - "Pentru ca, la delete printr-un pointer de bază către un obiect derivat, să se apeleze și destructorul derivatei (distrugere corectă)"
-      - "Pentru a accelera alocarea cu new"
       - "Pentru a interzice moștenirea"
+      - "Pentru ca, la delete printr-un pointer de bază către un obiect derivat,
+        să se apeleze și destructorul derivatei (distrugere corectă)"
+      - "Pentru a permite copierea bit-cu-bit"
+      - "Pentru a accelera alocarea cu new"
     corect: 1
-    explicatie: "Fără destructor virtual, delete pe un pointer de bază către un obiect derivat apelează doar ~Baza(), nu și ~Derivat() — rezultă o distrugere incompletă."
+    explicatie: "Fără destructor virtual, delete pe un pointer de bază către un
+      obiect derivat apelează doar ~Baza(), nu și ~Derivat() — rezultă o
+      distrugere incompletă."
 
   - tip: grila
     dificultate: licenta
     enunt: "O metodă virtuală pură este declarată astfel:"
     variante:
       - "virtual void f() = 0;"
-      - "static void f();"
       - "void f() const;"
+      - "static void f();"
       - "friend void f();"
     corect: 0
-    explicatie: "O metodă virtuală pură are forma virtual tip f() = 0; nu are implementare în clasa de bază și obligă clasele derivate concrete să o implementeze."
+    explicatie: "O metodă virtuală pură are forma virtual tip f() = 0; nu are
+      implementare în clasa de bază și obligă clasele derivate concrete să o
+      implementeze."
 
   - tip: grila
     dificultate: licenta
     enunt: "Care afirmație despre o clasă abstractă este corectă?"
     variante:
+      - "Toate metodele ei trebuie să fie statice"
       - "Poate fi instanțiată direct"
       - "Are cel puțin o metodă virtuală pură și NU poate fi instanțiată"
       - "Nu poate avea date membre"
-      - "Toate metodele ei trebuie să fie statice"
-    corect: 1
-    explicatie: "O clasă abstractă conține cel puțin o metodă virtuală pură și nu poate fi instanțiată; se lucrează cu ea prin pointeri/referințe către obiecte ale claselor concrete derivate."
+    corect: 2
+    explicatie: "O clasă abstractă conține cel puțin o metodă virtuală pură și nu
+      poate fi instanțiată; se lucrează cu ea prin pointeri/referințe către
+      obiecte ale claselor concrete derivate."
 
   # ---------- Supraîncărcarea operatorilor ----------
   - tip: grila
@@ -290,18 +350,23 @@ intrebari:
       - "Operatorul []"
       - "Operatorul <<"
     corect: 1
-    explicatie: "Operatorul de scop :: și operatorul de selecție de membru . nu pot fi supraîncărcați; majoritatea celorlalți operatori standard pot fi supraîncărcați."
+    explicatie: "Operatorul de scop :: și operatorul de selecție de membru . nu pot
+      fi supraîncărcați; majoritatea celorlalți operatori standard pot fi
+      supraîncărcați."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Pentru a permite expresia 2 + a (un întreg la stânga, un obiect la dreapta) prin supraîncărcarea operatorului +, soluția corectă este:"
+    enunt: "Pentru a permite expresia 2 + a (un întreg la stânga, un obiect la
+      dreapta) prin supraîncărcarea operatorului +, soluția corectă este:"
     variante:
-      - "O metodă membră operator+(int)"
-      - "O funcție friend operator+(int, const Complex&)"
       - "Nu se poate realiza în niciun fel"
       - "Supraîncărcarea operatorului ::"
-    corect: 1
-    explicatie: "Când operandul stâng nu este un obiect al clasei, supraîncărcarea nu se poate face ca metodă membră; soluția este o funcție standalone declarată friend."
+      - "O metodă membră operator+(int)"
+      - "O funcție friend operator+(int, const Complex&)"
+    corect: 3
+    explicatie: "Când operandul stâng nu este un obiect al clasei, supraîncărcarea
+      nu se poate face ca metodă membră; soluția este o funcție standalone
+      declarată friend."
 
   # ---------- Template-uri ----------
   - tip: grila
@@ -313,112 +378,134 @@ intrebari:
       - "generic <T>"
       - "template <virtual T>"
     corect: 0
-    explicatie: "În declararea unui template, cuvintele cheie class și typename sunt echivalente: template <class T> ≡ template <typename T>."
+    explicatie: "În declararea unui template, cuvintele cheie class și typename sunt
+      echivalente: template <class T> ≡ template <typename T>."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Când are loc generarea (instanțierea) efectivă a codului pentru o clasă template, ex. Vector<int>?"
+    enunt: "Când are loc generarea (instanțierea) efectivă a codului pentru o clasă
+      template, ex. Vector<int>?"
     variante:
-      - "Întotdeauna, chiar dacă tipul nu este folosit"
-      - "Numai când se instanțiază template-ul pentru acel tip concret (ex. Vector<int>)"
       - "Doar la runtime, prin reflexie"
+      - "Întotdeauna, chiar dacă tipul nu este folosit"
       - "Niciodată, template-urile rămân abstracte"
-    corect: 1
-    explicatie: "Codul concret al unei clase/funcții template se generează doar atunci când template-ul este instanțiat pentru un tip de date concret."
+      - "Numai când se instanțiază template-ul pentru acel tip concret (ex.
+        Vector<int>)"
+    corect: 3
+    explicatie: "Codul concret al unei clase/funcții template se generează doar
+      atunci când template-ul este instanțiat pentru un tip de date concret."
 
   # ---------- STL ----------
   - tip: grila
     dificultate: licenta
     enunt: "Ce este, în esență, un iterator în STL?"
     variante:
-      - "O variabilă statică globală"
+      - "Un tip de excepție"
       - "Un pointer care permite parcurgerea elementelor unui container"
       - "O metodă virtuală pură"
-      - "Un tip de excepție"
+      - "O variabilă statică globală"
     corect: 1
-    explicatie: "Un iterator este practic un pointer care permite parcurgerea elementelor unui container; accesul la element se face cu *it, iar avansul cu it++."
+    explicatie: "Un iterator este practic un pointer care permite parcurgerea
+      elementelor unui container; accesul la element se face cu *it, iar avansul
+      cu it++."
 
   - tip: grila
     dificultate: licenta
     enunt: "Containerul std::map din STL modelează:"
     variante:
       - "O stivă LIFO"
-      - "Un dicționar cheie-valoare, implementat de regulă pe arbori"
       - "Un tablou cu dimensiune fixă"
+      - "Un dicționar cheie-valoare, implementat de regulă pe arbori"
       - "O coadă FIFO"
-    corect: 1
-    explicatie: "std::map este echivalentul unui dicționar (key-value), cu implementare bazată de regulă pe arbori echilibrați."
+    corect: 2
+    explicatie: "std::map este echivalentul unui dicționar (key-value), cu
+      implementare bazată de regulă pe arbori echilibrați."
 
   # ---------- Excepții ----------
   - tip: grila
     dificultate: licenta
     enunt: "În mecanismul de excepții C++, instrucțiunea throw:"
     variante:
-      - "Captează excepția și o tratează"
-      - "Lansează (aruncă) o excepție furnizând valoarea acesteia"
       - "Definește blocul protejat de cod"
       - "Eliberează memoria din heap"
-    corect: 1
-    explicatie: "throw lansează o excepție; blocul try delimitează codul protejat, iar catch captează și tratează excepția în funcție de tipul ei."
+      - "Lansează (aruncă) o excepție furnizând valoarea acesteia"
+      - "Captează excepția și o tratează"
+    corect: 2
+    explicatie: "throw lansează o excepție; blocul try delimitează codul protejat,
+      iar catch captează și tratează excepția în funcție de tipul ei."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Ce se întâmplă dacă o excepție lansată nu are niciun bloc catch compatibil ca tip pe stiva de apeluri?"
+    enunt: "Ce se întâmplă dacă o excepție lansată nu are niciun bloc catch
+      compatibil ca tip pe stiva de apeluri?"
     variante:
-      - "Excepția este ignorată și programul continuă normal"
-      - "Excepția rămâne netratată și programul se încheie abrupt"
       - "Se apelează automat constructorul de copiere"
+      - "Excepția este ignorată și programul continuă normal"
       - "Se transformă automat în std::exception"
-    corect: 1
-    explicatie: "Dacă nu există un catch potrivit ca tip, excepția rămâne netratată (unhandled) și programul se încheie abrupt."
+      - "Excepția rămâne netratată și programul se încheie abrupt"
+    corect: 3
+    explicatie: "Dacă nu există un catch potrivit ca tip, excepția rămâne netratată
+      (unhandled) și programul se încheie abrupt."
 
   - tip: grila
     dificultate: licenta
     enunt: "Un bloc catch(...) (cu trei puncte) într-un try:"
     variante:
-      - "Captează doar excepțiile de tip int"
-      - "Este un handler general care captează orice tip de excepție generată în try"
+      - "Este un handler general care captează orice tip de excepție generată în
+        try"
       - "Relansează automat excepția"
+      - "Captează doar excepțiile de tip int"
       - "Nu este permis în C++"
-    corect: 1
-    explicatie: "catch(...) este un handler implicit/general care captează orice tip de excepție pentru care nu există un catch specific."
+    corect: 0
+    explicatie: "catch(...) este un handler implicit/general care captează orice tip
+      de excepție pentru care nu există un catch specific."
 
   # ---------- C++11 ----------
   - tip: grila
     dificultate: licenta
     enunt: "În C++11, cuvântul cheie auto folosit la o declarație cu inițializare:"
     variante:
+      - "Declară o variabilă statică"
       - "Are același sens ca în C (variabilă automată pe stivă)"
       - "Determină compilatorul să deducă tipul din expresia de inițializare"
       - "Forțează alocarea în heap"
-      - "Declară o variabilă statică"
-    corect: 1
-    explicatie: "În C++11, auto permite deducerea automată a tipului din expresia de inițializare (la compile-time), sens total diferit de cel din C."
+    corect: 2
+    explicatie: "În C++11, auto permite deducerea automată a tipului din expresia de
+      inițializare (la compile-time), sens total diferit de cel din C."
 
   - tip: numeric_exact
     dificultate: licenta
     enunt: "În ce an a apărut standardul C++11 (anul din numele standardului)?"
     corect: 2011
-    explicatie: "Standardul C++11 a apărut în septembrie 2011, fiind o variantă major îmbunătățită față de C++03."
+    explicatie: "Standardul C++11 a apărut în septembrie 2011, fiind o variantă
+      major îmbunătățită față de C++03."
 
   - tip: grila
     dificultate: licenta
-    enunt: "O expresie rvalue în C++ (relevantă pentru referințele rvalue și move semantics):"
+    enunt: "O expresie rvalue în C++ (relevantă pentru referințele rvalue și move
+      semantics):"
     variante:
-      - "Are întotdeauna o adresă de memorie ce poate fi luată cu &"
-      - "Nu are adresă de memorie; de regulă valori literale sau obiecte temporare"
       - "Poate apărea doar în stânga operatorului ="
       - "Este același lucru cu o referință lvalue"
-    corect: 1
-    explicatie: "O expresie rvalue (ex. literal sau obiect temporar) nu are adresă de memorie, apare doar în dreapta atribuirii și stă la baza referințelor rvalue (T&&) și a move semantics."
+      - "Are întotdeauna o adresă de memorie ce poate fi luată cu &"
+      - "Nu are adresă de memorie; de regulă valori literale sau obiecte
+        temporare"
+    corect: 3
+    explicatie: "O expresie rvalue (ex. literal sau obiect temporar) nu are adresă
+      de memorie, apare doar în dreapta atribuirii și stă la baza referințelor
+      rvalue (T&&) și a move semantics."
 
   - tip: grila
     dificultate: licenta
-    enunt: "Care este scopul principal al mecanismului move semantics și al constructorului de tip move din C++11?"
+    enunt: "Care este scopul principal al mecanismului move semantics și al
+      constructorului de tip move din C++11?"
     variante:
-      - "Să interzică copierea obiectelor"
-      - "Să optimizeze performanța transferând ownership-ul resurselor în loc de deep-copy"
-      - "Să elimine necesitatea destructorilor"
       - "Să forțeze legarea statică"
-    corect: 1
-    explicatie: "Move semantics îmbunătățește performanța prin transferul (mutarea) ownership-ului resurselor între obiecte, evitând copierea profundă costisitoare (deep-copy)."
+      - "Să interzică copierea obiectelor"
+      - "Să elimine necesitatea destructorilor"
+      - "Să optimizeze performanța transferând ownership-ul resurselor în loc de
+        deep-copy"
+    corect: 3
+    explicatie: "Move semantics îmbunătățește performanța prin transferul (mutarea)
+      ownership-ului resurselor între obiecte, evitând copierea profundă
+      costisitoare (deep-copy)."
