@@ -21,6 +21,10 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+        with:
+          # QEMU mai nou (binfmt) — repară "signal 4 Illegal instruction" la
+          # npm install / Node sub emulare arm64 pe runnerele amd64.
+          image: tonistiigi/binfmt:latest
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -39,6 +43,8 @@ jobs:
           file: ./Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
+          build-args: |
+            ASSET_VER=${{ github.sha }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}

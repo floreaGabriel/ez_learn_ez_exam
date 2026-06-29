@@ -2,6 +2,11 @@
 # Imagine mică, fără build step (nu există backend / bundler).
 FROM nginx:1.27-alpine
 
+# Versiune assets pentru cache-busting (CI o setează la git sha). Se adaugă
+# ca ?v=... pe JS/CSS în index.html => userii văd modificările la refresh
+# normal, fără hard-reload (index.html e oricum no-cache).
+ARG ASSET_VER=dev
+
 # inotify-tools = pentru hot-reload automat al configului nginx
 RUN apk add --no-cache inotify-tools
 
@@ -17,6 +22,11 @@ RUN chmod +x /docker-entrypoint-reload.sh
 COPY . /usr/share/nginx/html
 # nu servi scriptul de pornire ca fișier static
 RUN rm -f /usr/share/nginx/html/docker-entrypoint-reload.sh
+
+# Cache-busting: adaugă ?v=<ASSET_VER> pe toate referințele locale css/js din
+# index.html. La fiecare deploy versiunea se schimbă => browserul (care ia mereu
+# index.html proaspăt) cere automat JS/CSS-ul nou. Userii NU mai dau hard-reload.
+RUN sed -i -E "s|(href=\"css/[^\"]*)\"|\1?v=${ASSET_VER}\"|g; s|(src=\"js/[^\"]*)\"|\1?v=${ASSET_VER}\"|g" /usr/share/nginx/html/index.html
 
 EXPOSE 80
 
