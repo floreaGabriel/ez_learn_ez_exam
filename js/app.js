@@ -65,6 +65,7 @@ const MATERII = [
     sectiuni:[
       {id:"ref",     nume:"Învață",                  icon:"📘"},
       {id:"osi",     nume:"OSI & TCP/IP",            icon:"📚"},
+      {id:"porturi", nume:"Porturi & servicii",      icon:"🔌"},
       {id:"anatomy", nume:"Anatomie pe biți",        icon:"🧬"},
       {id:"journey", nume:"Călătoria pachetului",    icon:"🎬"},
       {id:"subnet",  nume:"Subnetizare",             icon:"🧮"},

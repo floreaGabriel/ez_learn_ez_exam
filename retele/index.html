@@ -232,6 +232,50 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
 .osvg .badge-t{fill:#fff;font-family:"Inter",sans-serif;font-weight:800}
 .osvg g.lay{transition:opacity .15s}
 @media (max-width:760px){ .osvg-wrap{padding:8px;overflow-x:auto;-webkit-overflow-scrolling:touch} .osvg{min-width:680px} }
+
+/* ---- Porturi & jocuri ---- */
+.port-tbl{width:100%;border-collapse:collapse;font-size:.86rem;margin-top:8px}
+.port-tbl th,.port-tbl td{border:1px solid var(--border);padding:7px 10px;text-align:left}
+.port-tbl th{background:var(--bg3);color:var(--muted);position:sticky;top:0}
+.port-tbl tr:hover td{background:var(--bg3)}
+.port-tbl .pnum{font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--accent)}
+.tcp-b{display:inline-block;font-size:.66rem;font-weight:700;padding:1px 7px;border-radius:20px;border:1px solid}
+.tcp-b.tcp{color:var(--good);border-color:var(--good)} .tcp-b.udp{color:var(--accent2);border-color:var(--accent2)}
+.star{color:var(--accent);font-size:.78rem}
+.game{border:1px solid var(--border);border-radius:14px;background:var(--panel);box-shadow:var(--shadow);padding:18px;margin:16px 0}
+.game-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.game-t{font-weight:700;font-size:1.02rem;color:var(--txt)}
+.game-sc{font-family:"JetBrains Mono",monospace;font-size:.85rem;color:var(--muted)}
+.game-q{font-size:1.05rem;margin:10px 0 12px;min-height:28px}
+.game-q b{color:var(--accent)}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opt{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:13px;cursor:pointer;font:600 .95rem/1 "JetBrains Mono",monospace;color:var(--txt);transition:.12s;text-align:center}
+.opt:hover{border-color:var(--accent);transform:translateY(-1px)}
+.opt.good{background:rgba(184,187,38,.18);border-color:var(--good);color:var(--good)}
+.opt.bad{background:rgba(251,73,52,.16);border-color:var(--bad);color:var(--bad)}
+.opt:disabled{cursor:default;opacity:.85;transform:none}
+.game-fb{margin-top:11px;font-size:.9rem;min-height:20px}
+.game-fb .ok{color:var(--good);font-weight:600} .game-fb .no{color:var(--bad);font-weight:600}
+.two-big{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+.bigbtn{padding:18px;border-radius:12px;border:2px solid var(--border);background:var(--bg3);color:var(--txt);font:700 1rem "Inter",sans-serif;cursor:pointer;transition:.12s}
+.bigbtn:hover{border-color:var(--accent)}
+.bigbtn.flash-good{border-color:var(--good);background:rgba(184,187,38,.2)}
+.bigbtn.flash-bad{border-color:var(--bad);background:rgba(251,73,52,.2)}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:6px}
+.match-col{display:flex;flex-direction:column;gap:9px}
+.match-col h5{margin:0 0 2px;font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.mchip{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:11px;cursor:pointer;font:600 .9rem "JetBrains Mono",monospace;text-align:center;transition:.12s}
+.mchip:hover{border-color:var(--accent)}
+.mchip.sel{border-color:var(--accent);background:rgba(233,177,67,.16)}
+.mchip.done{opacity:.45;cursor:default;border-color:var(--good);background:rgba(184,187,38,.12)}
+.mchip.miss{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.ftp-in{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.ftp-in input{background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--txt);font-family:"JetBrains Mono",monospace;padding:8px 10px;width:210px}
+.ftp-out{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-family:"JetBrains Mono",monospace;font-size:.9rem;margin-top:6px}
+.ftp-out .hl{color:var(--accent);font-weight:700}
+.game-foot{display:flex;gap:10px;margin-top:13px;flex-wrap:wrap}
+@media (max-width:600px){ .opts,.two-big,.match-grid{grid-template-columns:1fr 1fr} .match-grid{gap:14px} }
 .footer{color:var(--muted);font-size:.82rem;text-align:center;margin-top:40px}
 
 /* ===== Exerciții examen (rezolvate, accordion) ===== */
@@ -579,6 +623,7 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
     <nav class="tabs" id="tabs">
       <button data-tab="ref" class="active">📘 Învață</button>
       <button data-tab="osi">📚 OSI &amp; TCP/IP</button>
+      <button data-tab="porturi">🔌 Porturi &amp; servicii</button>
       <button data-tab="anatomy">🧬 Anatomie pe biți</button>
       <button data-tab="journey">🎬 Călătoria pachetului</button>
       <button data-tab="subnet">🧮 Subnetizare</button>
@@ -630,6 +675,80 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
     </table>
     <div class="note">💡 <b>Încapsulare:</b> la trimitere, fiecare nivel adaugă propriul header peste datele de la nivelul superior — <span class="kbd">Date → Segment → Pachet → Cadru → Biți</span>. La recepție, fiecare nivel își citește și înlătură headerul (de-încapsulare), în ordine inversă.</div>
     <p class="hint" style="margin-top:10px">Mnemonic OSI (de jos în sus): <b>P</b>hysical · <b>D</b>ata Link · <b>N</b>etwork · <b>T</b>ransport · <b>S</b>ession · <b>P</b>resentation · <b>A</b>pplication → „<i>Please Do Not Throw Sausage Pizza Away</i>".</p>
+  </section>
+
+  <!-- ============ PORTURI ============ -->
+  <section class="page" id="page-porturi">
+    <h1>Porturi și servicii</h1>
+    <p class="lead">Un <b>port</b> identifică <i>procesul</i> (aplicația) cu care comunici pe o mașină. Adresa IP te duce la calculator; portul te duce la serviciul corect de pe el. Mai jos: conceptele, tabelul de porturi de examen și <b>4 joculețe</b> ca să le memorezi.</p>
+
+    <h2>Ce este un port</h2>
+    <ul>
+      <li><b>Număr pe 16 biți</b> → valori <code>0 – 65535</code> (65536 porturi per host).</li>
+      <li>Tripletul <code>&lt;Protocol, Adresă IP, Port&gt;</code> identifică <b>unic</b> un proces în rețea. Perechea <b>IP : Port</b> se numește <b>socket</b>.</li>
+      <li>Atât <b>TCP</b> cât și <b>UDP</b> au în antet <b>Port Sursă</b> și <b>Port Destinație</b> (câte 16 biți). Portul sursă identifică procesul care trimite; portul destinație, procesul căruia îi sunt destinate datele.</li>
+    </ul>
+    <h3>Categorii de porturi</h3>
+    <table class="reftable">
+      <tr><th>Categorie</th><th>Interval</th><th>Cine le folosește</th></tr>
+      <tr><td><b>Standard / well-known</b></td><td><code>0 – 1023</code></td><td>Aplicațiile <b>server</b> standard. Asignate de <b>IANA</b>; doar procese de sistem/privilegiate. (în Linux: <code>/etc/services</code>)</td></tr>
+      <tr><td><b>Înregistrate</b></td><td><code>1024 – 49151</code></td><td>Aplicații înregistrate la IANA (ex. 3306 MySQL, 8080 HTTP-alt).</td></tr>
+      <tr><td><b>Dinamice / efemere</b></td><td><code>49152 – 65535</code></td><td>Aplicațiile <b>client</b> — portul sursă temporar, ales automat. (cursul împarte simplu: standard 0–1023, efemere 1024–65535)</td></tr>
+    </table>
+    <div class="note">La examen apare des: „un proces server <b>ascultă</b> pe un port fix (well-known), iar clientul folosește un port <b>efemer</b> ales de sistem". De aceea în capturi vezi <code>port sursă = aleator mare</code> → <code>port dest = 80</code>.</div>
+
+    <h2>Tabelul porturilor (de examen)</h2>
+    <p class="hint">Click pe capul de tabel <b>TCP/UDP</b> nu sortează — e doar referință. <span class="star">★</span> = bonus (apare la examene, nu explicit în curs).</p>
+    <div style="max-height:380px;overflow:auto;border-radius:10px">
+    <table class="port-tbl" id="portTable"></table>
+    </div>
+
+    <h2>🎮 Joculețe</h2>
+
+    <!-- GAME A: ghiceste portul -->
+    <div class="game" id="gA">
+      <div class="game-h"><span class="game-t">1 · Ghicește portul / serviciul</span><span class="game-sc" id="gaSc">0 / 0 · serie 0</span></div>
+      <div class="game-q" id="gaQ"></div>
+      <div class="opts" id="gaOpts"></div>
+      <div class="game-fb" id="gaFb"></div>
+      <div class="game-foot"><button class="btn primary" id="gaNext" style="display:none">Următoarea →</button><button class="btn ghost" id="gaReset">↺ Resetează scorul</button></div>
+    </div>
+
+    <!-- GAME B: potriveste -->
+    <div class="game" id="gB">
+      <div class="game-h"><span class="game-t">2 · Potrivește serviciul cu portul</span><span class="game-sc" id="gbSc">0 / 6</span></div>
+      <div class="match-grid">
+        <div class="match-col"><h5>Serviciu</h5><div id="gbLeft"></div></div>
+        <div class="match-col"><h5>Port</h5><div id="gbRight"></div></div>
+      </div>
+      <div class="game-fb" id="gbFb"></div>
+      <div class="game-foot"><button class="btn primary" id="gbNew">🔀 Joc nou</button></div>
+    </div>
+
+    <!-- GAME C: clasifica rapid -->
+    <div class="game" id="gC">
+      <div class="game-h"><span class="game-t">3 · Clasifică rapid</span><span class="game-sc" id="gcSc">0 corecte · record 0</span></div>
+      <div class="game-q" id="gcQ"></div>
+      <div class="two-big" id="gcBtns"></div>
+      <div class="game-fb" id="gcFb"></div>
+    </div>
+
+    <!-- GAME D: FTP PORT -->
+    <div class="game" id="gD">
+      <div class="game-h"><span class="game-t">4 · Decodează comanda FTP <code>PORT</code></span><span class="game-sc" id="gdSc">0 / 0</span></div>
+      <p class="hint" style="margin:0 0 8px">Comanda <code>PORT h1,h2,h3,h4,p1,p2</code> dă IP-ul <code>h1.h2.h3.h4</code> și portul de date <code>p1×256 + p2</code>. Calculează portul din provocare, sau folosește calculatorul liber.</p>
+      <div class="game-q" id="gdQ"></div>
+      <div class="ftp-in">
+        <input id="gdAns" placeholder="port (ex. 2312)" inputmode="numeric">
+        <button class="btn primary" id="gdCheck">Verifică</button>
+        <button class="btn ghost" id="gdNew">Altă provocare</button>
+      </div>
+      <div class="game-fb" id="gdFb"></div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:12px 0">
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:5px">🧮 Calculator liber:</div>
+      <div class="ftp-in"><input id="gdCalc" placeholder="PORT 193,231,21,10,9,8" style="width:260px"></div>
+      <div class="ftp-out" id="gdOut"></div>
+    </div>
   </section>
 
   <!-- ============ DRAG ============ -->
@@ -5324,6 +5443,184 @@ try{ drawRef(); }catch(e){}   /* re-randare ca să apară și exemplele per câm
 
   try{ renderOSI(); }catch(e){ console.error('osi',e); }
   try{ renderTCPIP(); }catch(e){ console.error('tcpip',e); }
+})();
+
+/* ============================================================
+   PORTURI & JOCULEȚE
+   ============================================================ */
+(function(){
+  var PORTS=[
+    {p:20,  s:'FTP-DATA', t:'TCP', d:'Transfer de date FTP', x:0},
+    {p:21,  s:'FTP',      t:'TCP', d:'Comenzi FTP (control)', x:0},
+    {p:22,  s:'SSH',      t:'TCP', d:'Shell securizat / SFTP', x:1},
+    {p:23,  s:'Telnet',   t:'TCP', d:'Terminal la distanță (necriptat)', x:0},
+    {p:25,  s:'SMTP',     t:'TCP', d:'Trimitere e-mail', x:0},
+    {p:53,  s:'DNS',      t:'UDP', d:'Rezolvare nume → IP', x:0},
+    {p:67,  s:'DHCP server', t:'UDP', d:'Configurare automată IP (server)', x:0},
+    {p:68,  s:'DHCP client', t:'UDP', d:'Configurare automată IP (client)', x:0},
+    {p:69,  s:'TFTP',     t:'UDP', d:'Transfer simplu de fișiere (bootare)', x:0},
+    {p:80,  s:'HTTP',     t:'TCP', d:'Web (necriptat)', x:0},
+    {p:110, s:'POP3',     t:'TCP', d:'Descărcare e-mail (offline)', x:0},
+    {p:111, s:'RPC',      t:'UDP', d:'Remote Procedure Call', x:0},
+    {p:143, s:'IMAP',     t:'TCP', d:'Acces e-mail (pe server)', x:0},
+    {p:161, s:'SNMP',     t:'UDP', d:'Management de rețea', x:0},
+    {p:443, s:'HTTPS',    t:'TCP', d:'Web criptat (TLS/SSL)', x:0},
+    {p:5004,s:'RTP',      t:'UDP', d:'Transport timp real (audio/video)', x:0}
+  ];
+  function $(id){ return document.getElementById(id); }
+  function rnd(n){ return Math.floor(Math.random()*n); }
+  function pick(arr){ return arr[rnd(arr.length)]; }
+  function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=rnd(i+1); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
+
+  /* ---- Tabel ---- */
+  (function(){
+    var t=$('portTable'); if(!t) return;
+    var h='<tr><th>Port</th><th>Serviciu</th><th>Transport</th><th>Rol</th></tr>';
+    PORTS.forEach(function(o){
+      h+='<tr><td class="pnum">'+o.p+'</td><td><b>'+o.s+'</b>'+(o.x?' <span class="star">★</span>':'')+'</td>'
+        +'<td><span class="tcp-b '+o.t.toLowerCase()+'">'+o.t+'</span></td><td>'+o.d+'</td></tr>';
+    });
+    t.innerHTML=h;
+  })();
+
+  /* ---- GAME A: ghicește portul / serviciul ---- */
+  (function(){
+    if(!$('gA')) return;
+    var sc={ok:0,n:0,streak:0}, cur=null;
+    function setSc(){ $('gaSc').textContent=sc.ok+' / '+sc.n+' · serie '+sc.streak; }
+    function ask(){
+      $('gaFb').textContent=''; $('gaNext').style.display='none';
+      var o=pick(PORTS), dir=rnd(2); // 0: serviciu->port, 1: port->serviciu
+      cur={o:o,dir:dir};
+      var opts, correct;
+      if(dir===0){
+        $('gaQ').innerHTML='Ce port folosește <b>'+o.s+'</b>?';
+        correct=String(o.p);
+        var others=shuffle(PORTS.filter(function(x){return x.p!==o.p;})).slice(0,3).map(function(x){return String(x.p);});
+        opts=shuffle([correct].concat(others));
+      } else {
+        $('gaQ').innerHTML='Ce serviciu rulează pe portul <b>'+o.p+'</b>?';
+        correct=o.s;
+        var others2=shuffle(PORTS.filter(function(x){return x.s!==o.s;})).slice(0,3).map(function(x){return x.s;});
+        opts=shuffle([correct].concat(others2));
+      }
+      cur.correct=correct;
+      $('gaOpts').innerHTML=opts.map(function(v){return '<button class="opt">'+v+'</button>';}).join('');
+      Array.prototype.forEach.call($('gaOpts').children,function(b){ b.onclick=function(){ answer(b); }; });
+    }
+    function answer(btn){
+      var val=btn.textContent, ok=val===cur.correct;
+      sc.n++; if(ok){ sc.ok++; sc.streak++; } else sc.streak=0; setSc();
+      Array.prototype.forEach.call($('gaOpts').children,function(b){
+        b.disabled=true;
+        if(b.textContent===cur.correct) b.classList.add('good');
+        else if(b===btn) b.classList.add('bad');
+      });
+      $('gaFb').innerHTML = ok ? '<span class="ok">✓ Corect!</span> '+cur.o.s+' = portul '+cur.o.p+'/'+cur.o.t+' — '+cur.o.d
+                               : '<span class="no">✗ Greșit.</span> '+cur.o.s+' = portul '+cur.o.p+'/'+cur.o.t;
+      $('gaNext').style.display='';
+    }
+    $('gaNext').onclick=ask;
+    $('gaReset').onclick=function(){ sc={ok:0,n:0,streak:0}; setSc(); ask(); };
+    setSc(); ask();
+  })();
+
+  /* ---- GAME B: potrivește ---- */
+  (function(){
+    if(!$('gB')) return;
+    var sel=null, done=0, total=6, set=[];
+    function neu(){
+      set=shuffle(PORTS).slice(0,total); done=0; sel=null;
+      $('gbFb').textContent=''; $('gbSc').textContent='0 / '+total;
+      var left=set.map(function(o){ return '<div class="mchip" data-k="'+o.p+'" data-side="L">'+o.s+'</div>'; });
+      var right=shuffle(set).map(function(o){ return '<div class="mchip" data-k="'+o.p+'" data-side="R">'+o.p+'</div>'; });
+      $('gbLeft').innerHTML=shuffle(left).join(''); $('gbRight').innerHTML=right.join('');
+      Array.prototype.forEach.call(document.querySelectorAll('#gB .mchip'),function(c){ c.onclick=function(){ tap(c); }; });
+    }
+    function tap(c){
+      if(c.classList.contains('done')) return;
+      if(!sel){ sel=c; c.classList.add('sel'); return; }
+      if(sel===c){ c.classList.remove('sel'); sel=null; return; }
+      if(sel.dataset.side===c.dataset.side){ sel.classList.remove('sel'); sel=c; c.classList.add('sel'); return; }
+      if(sel.dataset.k===c.dataset.k){
+        sel.classList.remove('sel'); sel.classList.add('done'); c.classList.add('done'); sel=null;
+        done++; $('gbSc').textContent=done+' / '+total;
+        if(done===total) $('gbFb').innerHTML='<span class="ok">✓ Toate potrivite! 🎉</span>';
+      } else {
+        var a=sel, b=c; a.classList.add('miss'); b.classList.add('miss');
+        setTimeout(function(){ a.classList.remove('miss','sel'); b.classList.remove('miss'); },360);
+        sel=null; $('gbFb').innerHTML='<span class="no">✗ Nu se potrivesc, încearcă din nou.</span>';
+      }
+    }
+    $('gbNew').onclick=neu; neu();
+  })();
+
+  /* ---- GAME C: clasifică rapid (well-known/efemer + TCP/UDP) ---- */
+  (function(){
+    if(!$('gC')) return;
+    var sc=0, best=0, cur=null;
+    function setSc(){ $('gcSc').textContent=sc+' corecte · record '+best; }
+    function ask(){
+      $('gcFb').textContent='';
+      var mode=rnd(2);
+      if(mode===0){
+        // well-known vs efemer
+        var useKnown=rnd(2), port;
+        if(useKnown) port=pick(PORTS).p; else port=49152+rnd(16000);
+        cur={ans: port<=1023?'wk':'ef', txt:port};
+        $('gcQ').innerHTML='Portul <b>'+port+'</b> este…';
+        $('gcBtns').innerHTML='<button class="bigbtn" data-v="wk">Well-known (0–1023)</button><button class="bigbtn" data-v="ef">Efemer (1024+)</button>';
+      } else {
+        var o=pick(PORTS);
+        cur={ans:o.t.toLowerCase(), txt:o.s, o:o};
+        $('gcQ').innerHTML='<b>'+o.s+'</b> rulează peste…';
+        $('gcBtns').innerHTML='<button class="bigbtn" data-v="tcp">TCP</button><button class="bigbtn" data-v="udp">UDP</button>';
+      }
+      Array.prototype.forEach.call($('gcBtns').children,function(b){ b.onclick=function(){ answer(b); }; });
+    }
+    function answer(btn){
+      var ok=btn.dataset.v===cur.ans;
+      if(ok){ sc++; if(sc>best) best=sc; btn.classList.add('flash-good');
+        $('gcFb').innerHTML='<span class="ok">✓</span>';
+      } else { btn.classList.add('flash-bad');
+        var corr = cur.ans==='wk'?'Well-known':cur.ans==='ef'?'Efemer':cur.ans.toUpperCase();
+        $('gcFb').innerHTML='<span class="no">✗ Era '+corr+'.</span>'+(cur.o?' '+cur.o.s+' = '+cur.o.p+'/'+cur.o.t:''); sc=0;
+      }
+      setSc();
+      setTimeout(ask, ok?420:1100);
+    }
+    setSc(); ask();
+  })();
+
+  /* ---- GAME D: FTP PORT ---- */
+  (function(){
+    if(!$('gD')) return;
+    var sc={ok:0,n:0}, cur=null;
+    function setSc(){ $('gdSc').textContent=sc.ok+' / '+sc.n; }
+    function chall(){
+      $('gdFb').textContent=''; $('gdAns').value='';
+      var h=[rnd(224)+1,rnd(256),rnd(256),rnd(254)+1], p1=rnd(255)+1, p2=rnd(256);
+      cur={h:h,p1:p1,p2:p2,port:p1*256+p2};
+      $('gdQ').innerHTML='<code>PORT '+h.join(',')+','+p1+','+p2+'</code><br>Ce <b>port de date</b> rezultă?';
+    }
+    $('gdCheck').onclick=function(){
+      if(!cur) return;
+      var v=parseInt($('gdAns').value,10); sc.n++;
+      if(v===cur.port){ sc.ok++; $('gdFb').innerHTML='<span class="ok">✓ Corect!</span> '+cur.p1+'×256 + '+cur.p2+' = '+cur.port; }
+      else $('gdFb').innerHTML='<span class="no">✗ Nu.</span> '+cur.p1+'×256 + '+cur.p2+' = <b>'+cur.port+'</b>';
+      setSc();
+    };
+    $('gdAns').addEventListener('keydown',function(e){ if(e.key==='Enter') $('gdCheck').click(); });
+    $('gdNew').onclick=chall;
+    function calc(){
+      var m=($('gdCalc').value||'').replace(/port/i,'').trim().split(/[\s,]+/).filter(function(x){return x!=='';}).map(Number);
+      if(m.length<6 || m.some(isNaN)){ $('gdOut').innerHTML='<span style="color:var(--muted)">Scrie 6 numere: h1,h2,h3,h4,p1,p2</span>'; return; }
+      var ip=m.slice(0,4).join('.'), port=m[4]*256+m[5];
+      $('gdOut').innerHTML='IP = <span class="hl">'+ip+'</span> · Port = '+m[4]+'×256 + '+m[5]+' = <span class="hl">'+port+'</span>';
+    }
+    $('gdCalc').addEventListener('input',calc);
+    setSc(); chall(); calc();
+  })();
 })();
 
 /* ============================================================
