@@ -25,23 +25,49 @@ const MAP = require("./map.js");
 
 const PORT          = parseInt(process.env.PORT || "3002", 10);
 const QUESTIONS_DIR = process.env.QUESTIONS_DIR || path.join(__dirname, "questions");
-const MAX_PLAYERS   = parseInt(process.env.MAX_PLAYERS || "4", 10);
+const MAX_PLAYERS   = parseInt(process.env.MAX_PLAYERS || "8", 10);
 const MIN_PLAYERS   = parseInt(process.env.MIN_PLAYERS || "2", 10);
+
+// Moduri de joc: harta + intervalul de jucători
+const MODES = {
+  romania: { min: 2, max: 4, nume: "România", map: "./map.js" },
+  europa:  { min: 4, max: 8, nume: "Europa",  map: "./map-europa.js" }
+};
+function modeCfg(room){ return MODES[room && room.mode] || MODES.romania; }
+const MAP_CACHE = {};
+function loadMap(mode){
+  if(MAP_CACHE[mode] !== undefined) return MAP_CACHE[mode];
+  try{ MAP_CACHE[mode] = require((MODES[mode] || {}).map || "./map.js"); }
+  catch(e){ MAP_CACHE[mode] = null; }   // harta poate lipsi (ex. Europa până e gata)
+  return MAP_CACHE[mode];
+}
 const RECONNECT_MS  = parseInt(process.env.RECONNECT_MS || "45000", 10); // grațieer reconectare
 const EMPTY_ROOM_MS = parseInt(process.env.EMPTY_ROOM_MS || "60000", 10); // cameră goală -> ștearsă
 
 // ---- timere de joc (ms) — generoase, neabuzive ----
 const T_BASE_PICK = parseInt(process.env.T_BASE_PICK || "25000", 10);
 const T_SELECT    = parseInt(process.env.T_SELECT    || "25000", 10);  // faza de alegere a teritoriului
-const T_QUESTION  = parseInt(process.env.T_QUESTION  || "30000", 10);
+const T_QUESTION  = parseInt(process.env.T_QUESTION  || "30000", 10);   // timp implicit / întrebare
+const T_QUESTION_MAX = parseInt(process.env.T_QUESTION_MAX || "75000", 10); // plafon (întrebări grele cu cod/diagrame)
 const T_ATTACKPICK= parseInt(process.env.T_ATTACKPICK|| "25000", 10);
-const T_REVEAL    = parseInt(process.env.T_REVEAL    || "6500", 10);
+const T_REVEAL    = parseInt(process.env.T_REVEAL    || "7000", 10);    // reveal când toți au răspuns corect
+const T_REVEAL_WRONG = parseInt(process.env.T_REVEAL_WRONG || "13000", 10); // reveal mai lung dacă cineva a greșit (timp de învățat)
 const ATTACKS_PER_PLAYER = parseInt(process.env.ATTACKS_PER_PLAYER || "3", 10);
 const BASE_VALUE  = 1000;  // valoarea (puncte) a unei regiuni-bază — stil Triviador
 const BASE_LIVES  = 3;     // o bază rezistă la BASE_LIVES atacuri reușite înainte de a cădea
 
-// Culorile jucătorilor (pentru hartă, în ordinea intrării)
-const COLORS = ["#ef4444", "#3b82f6", "#22c55e", "#f59e0b"];
+// Culorile jucătorilor (pentru hartă, în ordinea intrării) — până la 8 jucători
+const COLORS = ["#ef4444", "#3b82f6", "#22c55e", "#f59e0b", "#a855f7", "#ec4899", "#14b8a6", "#f97316"];
+
+// timpul alocat unei întrebări: dacă YAML are `timp` (secunde), îl folosim (plafonat),
+// altfel implicit. Așa întrebările mai grele (cod/diagrame) primesc mai mult timp.
+function questionMs(q){
+  const t = q && Number(q.timp);
+  if(t && isFinite(t) && t > 0) return Math.min(T_QUESTION_MAX, Math.max(10000, t * 1000));
+  return T_QUESTION;
+}
+// reveal mai lung dacă vreun participant a greșit (ca să apuce să învețe)
+function revealMs(hadWrong){ return hadWrong ? T_REVEAL_WRONG : T_REVEAL; }
 
 // ============================================================
 //  Banca de întrebări — încărcată din YAML la pornire
@@ -128,10 +154,12 @@ function lobbyState(room){
     cod: room.cod,
     faza: room.faza,
     hostId: room.hostId,
+    mode: room.mode || "romania",
+    modeNume: modeCfg(room).nume,
     topic: room.topic,
     dificultate: room.dificultate,
-    minPlayers: MIN_PLAYERS,
-    maxPlayers: MAX_PLAYERS,
+    minPlayers: modeCfg(room).min,
+    maxPlayers: modeCfg(room).max,
     jucatori: publicPlayers(room)
   };
 }
@@ -218,6 +246,7 @@ function handleCreate(ws, msg){
     order: [id],
     hostId: id,
     faza: "LOBBY",
+    mode: (MODES[String(msg.mode)] ? String(msg.mode) : "romania"),
     topic: null,
     dificultate: null,
     createdAt: Date.now(),
@@ -235,7 +264,7 @@ function handleJoin(ws, msg){
   const room = rooms.get(cod);
   if(!room) return sendError(ws, "Camera nu există. Verifică codul.");
   if(room.faza !== "LOBBY") return sendError(ws, "Partida a început deja.");
-  if(room.order.length >= MAX_PLAYERS) return sendError(ws, "Camera e plină (" + MAX_PLAYERS + " jucători).");
+  if(room.order.length >= modeCfg(room).max) return sendError(ws, "Camera e plină (" + modeCfg(room).max + " jucători).");
 
   const id = genId();
   const color = COLORS[room.order.length % COLORS.length];
@@ -287,6 +316,18 @@ function handleTopic(ws, msg){
   broadcast(room, lobbyState(room));
 }
 
+function handleMode(ws, msg){
+  const room = roomOf(ws); if(!room) return;
+  if(ws._playerId !== room.hostId) return sendError(ws, "Doar gazda alege modul.");
+  if(room.faza !== "LOBBY") return;
+  const m = String(msg.mode || "");
+  if(!MODES[m]) return sendError(ws, "Mod necunoscut.");
+  if(room.order.length > MODES[m].max) return sendError(ws, "Sunt prea mulți jucători pentru modul " + MODES[m].nume + " (max " + MODES[m].max + ").");
+  room.mode = m;
+  for(const p of room.players.values()) p.ready = false;
+  broadcast(room, lobbyState(room));
+}
+
 function handleReady(ws, msg){
   const room = roomOf(ws); if(!room) return;
   const p = room.players.get(ws._playerId); if(!p) return;
@@ -298,7 +339,9 @@ function handleStart(ws){
   const room = roomOf(ws); if(!room) return;
   if(ws._playerId !== room.hostId) return sendError(ws, "Doar gazda poate porni jocul.");
   if(room.faza !== "LOBBY") return;
-  if(room.order.length < MIN_PLAYERS) return sendError(ws, "E nevoie de minim " + MIN_PLAYERS + " jucători.");
+  const cfg = modeCfg(room);
+  if(room.order.length < cfg.min) return sendError(ws, "Modul " + cfg.nume + " are nevoie de minim " + cfg.min + " jucători.");
+  if(!loadMap(room.mode)) return sendError(ws, "Harta pentru modul " + cfg.nume + " nu e gata încă.");
   if(!room.topic) return sendError(ws, "Alege întâi un topic.");
   const connected = room.order.filter(id => room.players.get(id).ws);
   const allReady = connected.every(id => room.players.get(id).ready);
@@ -344,13 +387,15 @@ function isCorrect(q, val){
 function pubQuestion(q, qid, mode, deadline){
   const o = { qid, tip: q.tip, enunt: q.enunt, mode, deadline };
   if(q.tip === "grila") o.variante = q.variante;
+  if(q.cod) o.cod = String(q.cod);   // bloc de cod/schemă (afișat monospace)
   return o;
 }
 
 function ownerRegions(room, pid){ return room.game.regions.filter(r => room.game.owners[r.id] === pid).map(r => r.id); }
+function regionNeighbors(room, id){ const r = room.game.regions.find(x => x.id === id); return r ? (r.neighbors || []) : []; }
 function isAdjacentToOwner(room, pid, regionId){
   const mine = new Set(ownerRegions(room, pid));
-  return MAP.neighborsOf(regionId).some(n => mine.has(n));
+  return regionNeighbors(room, regionId).some(n => mine.has(n));
 }
 function freeRegions(room){ return room.game.regions.filter(r => !room.game.owners[r.id]).map(r => r.id); }
 function claimTargets(room, pid){ return freeRegions(room).filter(id => isAdjacentToOwner(room, pid, id)); }
@@ -381,7 +426,8 @@ function computeScores(room){
 function startGame(room){
   const order = shuffle(room.order.filter(id => room.players.get(id) && room.players.get(id).ws));
   room.faza = "GAME";
-  const mapData = MAP.mapForClient();
+  const mapMod = loadMap(room.mode) || loadMap("romania");
+  const mapData = mapMod.mapForClient();
   room.game = {
     mapData,                    // {border, labels, regions} — trimis clientului
     regions: mapData.regions,   // array intern de regiuni
@@ -542,14 +588,15 @@ function beginExpansionQuestion(room){
   g.answers = new Map();
   g.answerers = Object.keys(g.selections).filter(id => g.selections[id] && room.players.get(id).ws);
   g.mode = "expansion";
-  const deadline = Date.now() + T_QUESTION;
+  const ms = questionMs(pick.q);
+  const deadline = Date.now() + ms;
   g.deadline = deadline;
   g.prompt = pubQuestion(pick.q, g.qid, "expansion", deadline);
   g.prompt.kind = "question";
   g.prompt.selections = g.selections;   // ca să vadă fiecare ce a ales
   g.lastOutcome = { text: "Răspundeți! Cine răspunde corect (cel mai repede) primește teritoriul ales." };
   broadcastGame(room);
-  g.timer = setTimeout(() => resolveExpansion(room), T_QUESTION + 300);
+  g.timer = setTimeout(() => resolveExpansion(room), ms + 300);
 }
 function resolveExpansion(room){
   const g = room.game; clearGameTimer(room);
@@ -578,7 +625,8 @@ function resolveExpansion(room){
   g.prompt = revealPrompt(q, g.qid, "expansion", results, "Teritoriile au fost revendicate de cei mai rapizi corecți.");
   g.lastOutcome = { text: "Rezolvare — vezi cine a cucerit." };
   broadcastGame(room);
-  g.timer = setTimeout(() => beginExpansionRound(room), T_REVEAL);
+  const hadWrong = results.some(r => !r.correct);
+  g.timer = setTimeout(() => beginExpansionRound(room), revealMs(hadWrong));
 }
 
 function revealPrompt(q, qid, mode, results, outcome, extra){
@@ -588,6 +636,7 @@ function revealPrompt(q, qid, mode, results, outcome, extra){
     corectText: q.tip === "grila" ? (q.variante[q.corect]) : String(q.corect),
     explicatie: q.explicatie || "",
     enunt: q.enunt,
+    cod: q.cod ? String(q.cod) : "",
     results, outcome
   };
   if(extra) Object.assign(o, extra);
@@ -644,7 +693,8 @@ function beginDuel(room, attacker, defender, region, mode){
   g.answers = new Map();
   g.answerers = defender ? [attacker, defender].filter(id => room.players.get(id).ws) : [attacker];
   g.mode = mode;
-  const deadline = Date.now() + T_QUESTION;
+  const ms = questionMs(pick.q);
+  const deadline = Date.now() + ms;
   g.deadline = deadline;
   g.prompt = pubQuestion(pick.q, g.qid, mode, deadline);
   g.prompt.kind = "question";
@@ -654,9 +704,9 @@ function beginDuel(room, attacker, defender, region, mode){
   const label = defender
     ? playerName(room, attacker) + " atacă " + regionName(room, region) + " (apărat de " + playerName(room, defender) + ")"
     : playerName(room, attacker) + " cucerește teritoriul neutru " + regionName(room, region);
-  g.lastOutcome = { text: label + (mode === "duel-tie" ? " — DEPARTAJARE: cine se apropie!" : "") };
+  g.lastOutcome = { text: label + (mode === "duel-tie" ? " — DEPARTAJARE: cine se apropie cel mai mult (viteza NU contează)!" : "") };
   broadcastGame(room);
-  g.timer = setTimeout(() => resolveDuel(room), T_QUESTION + 300);
+  g.timer = setTimeout(() => resolveDuel(room), ms + 300);
 }
 function regionName(room, id){ const r = room.game.regions.find(x => x.id === id); return r ? r.nume : id; }
 
@@ -684,10 +734,10 @@ function resolveDuel(room){
     if(aC && !dC) return finishDuel(room, d.attacker, d.defender, d.region, true,  "Atacatorul a răspuns corect, apărătorul nu — cucerit!", q, results);
     if(!aC && dC) return finishDuel(room, d.attacker, d.defender, d.region, false, "Apărarea a rezistat!", q, results);
     // egalitate (ambii corect sau ambii greșit) -> departajare numerică
-    g.prompt = revealPrompt(q, g.qid, "duel-grila", results, "Egalitate! Urmează o întrebare de departajare (cine se apropie).");
+    g.prompt = revealPrompt(q, g.qid, "duel-grila", results, "Egalitate! Urmează o întrebare de departajare — cine se apropie cel mai mult.");
     g.lastOutcome = { text: "Egalitate — departajare!" };
     broadcastGame(room);
-    g.timer = setTimeout(() => beginDuel(room, d.attacker, d.defender, d.region, "duel-tie"), T_REVEAL);
+    g.timer = setTimeout(() => beginDuel(room, d.attacker, d.defender, d.region, "duel-tie"), revealMs(!(aC && dC)));
     return;
   }
 
@@ -695,13 +745,21 @@ function resolveDuel(room){
     const target = q.corect;
     const da = aA ? Math.abs(Number(aA.val) - target) : Infinity;
     const dd = aD ? Math.abs(Number(aD.val) - target) : Infinity;
-    const aWin = da < dd; // egalitate strictă -> apărarea ține
+    // CINE SE APROPIE CEL MAI MULT (viteza NU contează). La egalitate exactă
+    // NU mai favorizăm apărarea -> atacatorul ia teritoriul. Dacă niciunul nu
+    // răspunde, apărarea ține.
+    let aWin;
+    if(!isFinite(da) && !isFinite(dd)) aWin = false;
+    else if(da === dd) aWin = true;
+    else aWin = da < dd;
     const results = [
       { playerId: d.attacker, val: aA ? aA.val : null, dist: isFinite(da) ? da : null },
       { playerId: d.defender, val: aD ? aD.val : null, dist: isFinite(dd) ? dd : null }
     ];
-    return finishDuel(room, d.attacker, d.defender, d.region, aWin,
-      aWin ? "Atacatorul s-a apropiat mai mult — cucerit!" : "Apărătorul s-a apropiat mai mult — rezistă!", q, results);
+    const txt = aWin
+      ? (da === dd ? "Egalitate perfectă — atacatorul cucerește (apărarea nu mai are avantaj)!" : "Atacatorul s-a apropiat mai mult — cucerit!")
+      : (!isFinite(da) && !isFinite(dd) ? "Niciunul n-a răspuns — apărarea ține." : "Apărătorul s-a apropiat mai mult — rezistă!");
+    return finishDuel(room, d.attacker, d.defender, d.region, aWin, txt, q, results);
   }
 }
 
@@ -728,7 +786,8 @@ function finishDuel(room, attacker, defender, region, success, outcomeText, q, r
   g.duel = null;
   g.lastOutcome = { text: outcomeText };
   broadcastGame(room);
-  g.timer = setTimeout(() => nextAttackTurn(room), T_REVEAL + 800);
+  const hadWrong = (results || []).some(r => r.correct === false);
+  g.timer = setTimeout(() => nextAttackTurn(room), revealMs(hadWrong) + 800);
 }
 
 // ---------- RESULTS ----------
@@ -816,6 +875,7 @@ wss.on("connection", (ws) => {
       case "join":      return handleJoin(ws, msg);
       case "reconnect": return handleReconnect(ws, msg);
       case "topic":     return handleTopic(ws, msg);
+      case "mode":      return handleMode(ws, msg);
       case "ready":     return handleReady(ws, msg);
       case "start":     return handleStart(ws);
       case "basePick":  return handleBasePick(ws, msg);

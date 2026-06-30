@@ -18,10 +18,10 @@ intrebari:
       [
         "O interogare salvată în baza de date",
         "O constrângere de integritate",
-        "O tabelă cu un antet și un conținut (rânduri)",
-        "Legătura dintre două tabele prin cheie străină"
+        "Legătura dintre două tabele prin cheie străină",
+        "O tabelă cu un antet și un conținut (rânduri)"
       ]
-    corect: 2
+    corect: 3
     explicatie: "În modelul relațional o relație este transpusă ca tabelă: are un
       antet (set de atribute) și un conținut (set de tupluri/rânduri)."
 
@@ -29,8 +29,8 @@ intrebari:
     dificultate: licenta
     enunt: "În arhitectura pe trei niveluri (three-tier), nivelul responsabil cu
       stocarea și interogarea datelor este:"
-    variante: [ "Data tier", "Presentation tier", "Business tier", "Application tier" ]
-    corect: 0
+    variante: [ "Presentation tier", "Business tier", "Data tier", "Application tier" ]
+    corect: 2
     explicatie: "Data tier reprezintă nivelul serverului de baze de date, unde este
       stocată și de unde este interogată informația."
 
@@ -39,12 +39,12 @@ intrebari:
     enunt: "Care afirmație despre Transact-SQL (T-SQL) este corectă?"
     variante:
       [
-        "Este un standard independent de orice producător",
-        "Înlocuiește complet SQL standard",
         "Este un limbaj fără funcții procedurale",
-        "Este extensia Microsoft a standardului SQL"
+        "Este extensia Microsoft a standardului SQL",
+        "Este un standard independent de orice producător",
+        "Înlocuiește complet SQL standard"
       ]
-    corect: 3
+    corect: 1
     explicatie: "T-SQL este extensia proprietară Microsoft a standardului ANSI SQL,
       adăugând programare procedurală, variabile, funcții etc."
 
@@ -59,8 +59,8 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "Conform procesării logice a interogării, care clauză este evaluată PRIMA?"
-    variante: [ "FROM", "WHERE", "SELECT", "ORDER BY" ]
-    corect: 0
+    variante: [ "ORDER BY", "SELECT", "WHERE", "FROM" ]
+    corect: 3
     explicatie: "FROM este prima clauză evaluată logic; abia apoi WHERE, GROUP BY,
       HAVING, SELECT și la final ORDER BY."
 
@@ -70,12 +70,12 @@ intrebari:
       pentru un rând în care Region este NULL?"
     variante:
       [
-        "unknown, deci rândul nu apare în rezultatul WHERE",
         "false, deci rândul nu apare",
+        "eroare de execuție",
         "true, deci rândul apare în rezultat",
-        "eroare de execuție"
+        "unknown, deci rândul nu apare în rezultatul WHERE"
       ]
-    corect: 0
+    corect: 3
     explicatie: "Comparațiile cu NULL dau unknown; clauza WHERE întoarce doar
       rândurile pentru care predicatul este adevărat, deci rândul cu NULL este
       ignorat."
@@ -86,8 +86,8 @@ intrebari:
       este NULL)?"
     variante:
       [
-        "WHERE Region = NULL",
         "WHERE Region <> NULL",
+        "WHERE Region = NULL",
         "WHERE Region IS NULL",
         "WHERE NULL(Region)"
       ]
@@ -101,10 +101,10 @@ intrebari:
       (underscore)?"
     variante:
       [
-        "O cifră de la 0 la 9",
+        "Un caracter care nu este în listă",
         "Exact un singur caracter",
         "Orice șir de caractere, inclusiv vid",
-        "Un caracter care nu este în listă"
+        "O cifră de la 0 la 9"
       ]
     corect: 1
     explicatie: "În LIKE, '_' reprezintă exact un singur caracter, în timp ce '%'
@@ -128,8 +128,8 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "Ce întoarce expresia SUBSTRING('abcde', 1, 3) în T-SQL?"
-    variante: [ "'abc'", "'cde'", "'abcde'", "'bcd'" ]
-    corect: 0
+    variante: [ "'bcd'", "'cde'", "'abc'", "'abcde'" ]
+    corect: 2
     explicatie: "SUBSTRING extrage din 'abcde' începând de la poziția 1, pe lungime
       3, deci rezultatul este 'abc'."
 
@@ -137,8 +137,8 @@ intrebari:
     dificultate: licenta
     enunt: "Ce clauză din SELECT permite restrângerea rezultatului la un anumit
       număr de rânduri, conform ordinii date de ORDER BY?"
-    variante: [ "HAVING", "TOP", "ROWNUM", "LIMIT" ]
-    corect: 1
+    variante: [ "LIMIT", "ROWNUM", "TOP", "HAVING" ]
+    corect: 2
     explicatie: "În T-SQL clauza TOP (de ex. TOP (3)) restrânge numărul sau
       procentul de rânduri întoarse, conform ordinii din ORDER BY."
 
@@ -147,8 +147,8 @@ intrebari:
     dificultate: licenta
     enunt: "Ce comandă se folosește pentru a modifica structura unui tabel existent
       (ex. a adăuga o coloană)?"
-    variante: [ "CHANGE TABLE", "ALTER TABLE", "MODIFY TABLE", "UPDATE TABLE" ]
-    corect: 1
+    variante: [ "CHANGE TABLE", "MODIFY TABLE", "UPDATE TABLE", "ALTER TABLE" ]
+    corect: 3
     explicatie: "ALTER TABLE se folosește pentru a adăuga/șterge coloane, a schimba
       tipuri sau a adăuga/șterge constrângeri."
 
@@ -158,11 +158,11 @@ intrebari:
     variante:
       [
         "Un tabel poate avea mai multe chei primare",
-        "Se aplică doar pe o singură coloană",
+        "Conține valori unice și nu poate fi NULL",
         "Poate conține valori NULL",
-        "Conține valori unice și nu poate fi NULL"
+        "Se aplică doar pe o singură coloană"
       ]
-    corect: 3
+    corect: 1
     explicatie: "Cheia primară conține valori unice, nu poate fi NULL, este unică pe
       tabel și poate fi aplicată uneia sau mai multor coloane."
 
@@ -171,13 +171,13 @@ intrebari:
     enunt: "Prin ce se diferențiază constrângerea UNIQUE de PRIMARY KEY?"
     variante:
       [
+        "UNIQUE nu garantează unicitatea",
+        "UNIQUE nu permite valori NULL",
         "Un tabel poate avea mai multe constrângeri UNIQUE, dar o singură
           cheie primară",
-        "UNIQUE se aplică doar pe o coloană",
-        "UNIQUE nu garantează unicitatea",
-        "UNIQUE nu permite valori NULL"
+        "UNIQUE se aplică doar pe o coloană"
       ]
-    corect: 0
+    corect: 2
     explicatie: "Un tabel poate avea mai multe chei unice (UNIQUE), dar o singură
       cheie primară."
 
@@ -186,12 +186,12 @@ intrebari:
     enunt: "Ce rol are constrângerea CHECK?"
     variante:
       [
+        "Limitează domeniul de valori permise pe o coloană",
         "Asigură unicitatea valorilor",
-        "Leagă două tabele între ele",
         "Generează automat valori incrementale",
-        "Limitează domeniul de valori permise pe o coloană"
+        "Leagă două tabele între ele"
       ]
-    corect: 3
+    corect: 0
     explicatie: "Constrângerea CHECK limitează domeniul de valori permise (ex. CHECK
       (Age>=18))."
 
@@ -200,12 +200,12 @@ intrebari:
     enunt: "Cheia străină (FOREIGN KEY) într-un tabel:"
     variante:
       [
-        "Este obligatoriu compusă din mai multe coloane",
         "Referă cheia primară dintr-un alt tabel",
+        "Este obligatoriu compusă din mai multe coloane",
         "Identifică în mod unic fiecare rând din tabelul propriu",
         "Nu poate referi alt tabel"
       ]
-    corect: 1
+    corect: 0
     explicatie: "Cheia străină este un câmp (sau o colecție de câmpuri) într-un
       tabel care referă cheia primară dintr-un alt tabel, legând cele două
       tabele."
@@ -215,12 +215,12 @@ intrebari:
     enunt: "Ce face proprietatea IDENTITY(seed, increment) aplicată unei coloane?"
     variante:
       [
-        "Creează o cheie străină",
-        "Verifică un interval de valori",
         "Generează automat valori, pornind de la seed și adăugând increment",
-        "Impune valori NULL"
+        "Impune valori NULL",
+        "Verifică un interval de valori",
+        "Creează o cheie străină"
       ]
-    corect: 2
+    corect: 0
     explicatie: "IDENTITY generează automat valori: seed este valoarea primei linii,
       iar increment se adaugă la fiecare linie nouă."
 
@@ -230,12 +230,12 @@ intrebari:
       categoria:"
     variante:
       [
-        "DML (Data Manipulation Language)",
-        "DCL (Data Control Language)",
         "TCL (Transaction Control Language)",
-        "DDL (Data Definition Language)"
+        "DDL (Data Definition Language)",
+        "DML (Data Manipulation Language)",
+        "DCL (Data Control Language)"
       ]
-    corect: 3
+    corect: 1
     explicatie: "CREATE/ALTER/DROP definesc structura obiectelor bazei de date, deci
       sunt instrucțiuni DDL; INSERT/UPDATE/DELETE/SELECT sunt DML."
 
@@ -246,12 +246,12 @@ intrebari:
       rânduri?"
     variante:
       [
+        "Produsul cartezian, cu m*n rânduri",
         "Doar rândurile care se potrivesc",
-        "Un tabel cu max(m,n) rânduri",
         "Un tabel cu m+n rânduri",
-        "Produsul cartezian, cu m*n rânduri"
+        "Un tabel cu max(m,n) rânduri"
       ]
-    corect: 3
+    corect: 0
     explicatie: "CROSS JOIN realizează produsul cartezian al celor două tabele, deci
       m*n rânduri."
 
@@ -260,12 +260,12 @@ intrebari:
     enunt: "Ce rânduri întoarce un INNER JOIN?"
     variante:
       [
+        "Numai rândurile pentru care predicatul de join este adevărat",
         "Toate rândurile din tabelul stâng",
         "Toate rândurile din ambele tabele",
-        "Rândurile fără potrivire în celălalt tabel",
-        "Numai rândurile pentru care predicatul de join este adevărat"
+        "Rândurile fără potrivire în celălalt tabel"
       ]
-    corect: 3
+    corect: 0
     explicatie: "INNER JOIN conține numai rândurile pentru care predicatul de
       potrivire a fost evaluat ca adevărat (nu fals, nu nedeterminat)."
 
@@ -275,9 +275,9 @@ intrebari:
       întoarce:"
     variante:
       [
-        "Toate rândurile din B și cele potrivite din A",
-        "Doar rândurile din A fără potrivire în B",
         "Doar rândurile potrivite din ambele tabele",
+        "Doar rândurile din A fără potrivire în B",
+        "Toate rândurile din B și cele potrivite din A",
         "Toate rândurile din A și cele potrivite din B, cu NULL unde nu există
           potrivire"
       ]
@@ -291,13 +291,13 @@ intrebari:
       WHERE?"
     variante:
       [
-        "ON filtrează final, WHERE potrivește rândurile",
         "ON potrivește rândurile (înainte de join), WHERE filtrează rezultatul
           (după join)",
         "Ambele filtrează doar partea conservată",
-        "Sunt complet interschimbabile"
+        "Sunt complet interschimbabile",
+        "ON filtrează final, WHERE potrivește rândurile"
       ]
-    corect: 1
+    corect: 0
     explicatie: "La OUTER JOIN se aplică întâi joncțiunea (ON, rol de potrivire),
       apoi WHERE (rol final de filtrare). Spre deosebire de INNER JOIN, aici nu
       sunt interschimbabile."
@@ -306,7 +306,7 @@ intrebari:
     dificultate: licenta
     enunt: "Cum se numește joncțiunea unui tabel cu el însuși (ex. Employees cu
       Employees pentru a afla șeful direct)?"
-    variante: [ "Anti-join", "Auto-joncțiune (self join)", "Full join", "Cross join" ]
+    variante: [ "Cross join", "Auto-joncțiune (self join)", "Anti-join", "Full join" ]
     corect: 1
     explicatie: "Auto-joncțiunea (self join) leagă un tabel cu el însuși folosind
       aliasuri diferite, de exemplu ON E.ReportsTo = M.EmployeeID."
@@ -316,12 +316,12 @@ intrebari:
     enunt: "Ce este o subinterogare corelată (correlated subquery)?"
     variante:
       [
-        "O subinterogare care întoarce mereu o singură valoare",
-        "O subinterogare independentă de interogarea externă",
+        "O subinterogare care referă o coloană din interogarea externă",
         "Un JOIN deghizat",
-        "O subinterogare care referă o coloană din interogarea externă"
+        "O subinterogare care întoarce mereu o singură valoare",
+        "O subinterogare independentă de interogarea externă"
       ]
-    corect: 3
+    corect: 0
     explicatie: "O subinterogare corelată face referire la o coloană a unui tabel
       din interogarea externă, fiind reevaluată pentru fiecare rând extern."
 
@@ -331,12 +331,12 @@ intrebari:
     enunt: "Care este diferența dintre UNION și UNION ALL?"
     variante:
       [
-        "UNION elimină duplicatele (DISTINCT implicit), UNION ALL le păstrează",
         "UNION păstrează duplicatele, UNION ALL le elimină",
+        "UNION elimină duplicatele (DISTINCT implicit), UNION ALL le păstrează",
         "UNION ALL ordonează automat rezultatul",
         "Sunt identici"
       ]
-    corect: 0
+    corect: 1
     explicatie: "UNION are proprietatea DISTINCT implicită (elimină duplicatele), în
       timp ce UNION ALL păstrează toate rândurile, inclusiv duplicatele."
 
@@ -346,9 +346,9 @@ intrebari:
     variante:
       [
         "Produsul cartezian",
-        "Reuniunea celor două seturi",
+        "Rândurile comune ambelor seturi",
         "Rândurile care apar în query1 dar nu și în query2",
-        "Rândurile comune ambelor seturi"
+        "Reuniunea celor două seturi"
       ]
     corect: 2
     explicatie: "EXCEPT efectuează diferența: întoarce rândurile care apar în primul
@@ -361,10 +361,10 @@ intrebari:
       [
         "WHERE filtrează grupuri, HAVING filtrează rânduri",
         "Sunt echivalente",
-        "HAVING se evaluează înaintea lui WHERE",
-        "WHERE filtrează la nivel de rând, HAVING filtrează la nivel de grup"
+        "WHERE filtrează la nivel de rând, HAVING filtrează la nivel de grup",
+        "HAVING se evaluează înaintea lui WHERE"
       ]
-    corect: 3
+    corect: 2
     explicatie: "WHERE este evaluată la nivel de rând (înainte de grupare), iar
       HAVING evaluează predicate per grup (după GROUP BY), putând folosi funcții
       de agregare."
@@ -375,12 +375,12 @@ intrebari:
       GROUP BY și nu este într-o funcție de agregare:"
     variante:
       [
-        "Generează o eroare",
         "Este înlocuită automat cu NULL",
+        "Este ignorată tacit",
         "Este permisă și ia prima valoare din grup",
-        "Este ignorată tacit"
+        "Generează o eroare"
       ]
-    corect: 0
+    corect: 3
     explicatie: "T-SQL generează eroare: coloana trebuie fie inclusă în GROUP BY,
       fie cuprinsă într-o funcție de agregare, pentru a garanta o singură
       valoare per grup."
@@ -391,12 +391,12 @@ intrebari:
       de valorile NULL?"
     variante:
       [
-        "Le numără ca valori distincte",
+        "Le tratează ca 0",
         "Generează eroare la întâlnirea NULL",
-        "Le ignoră (cu excepția COUNT(*))",
-        "Le tratează ca 0"
+        "Le numără ca valori distincte",
+        "Le ignoră (cu excepția COUNT(*))"
       ]
-    corect: 2
+    corect: 3
     explicatie: "Funcțiile de agregare ignoră valorile NULL. COUNT(*) numără toate
       rândurile, în timp ce COUNT(coloana) ignoră NULL-urile din acea coloană."
 
@@ -412,8 +412,8 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "Care operator pe seturi are prioritate față de ceilalți (UNION, EXCEPT)?"
-    variante: [ "EXCEPT", "Toți au aceeași prioritate", "UNION", "INTERSECT" ]
-    corect: 3
+    variante: [ "Toți au aceeași prioritate", "UNION", "INTERSECT", "EXCEPT" ]
+    corect: 2
     explicatie: "INTERSECT are prioritate față de UNION și EXCEPT; UNION și EXCEPT
       au același nivel de prioritate."
 
@@ -425,8 +425,8 @@ intrebari:
       [
         "Este definit de o instrucțiune SELECT, datele nu sunt stocate în view",
         "Poate conține clauza ORDER BY în definiție fără restricții",
-        "Nu poate referenția alte tabele",
-        "Stochează fizic datele rezultate"
+        "Stochează fizic datele rezultate",
+        "Nu poate referenția alte tabele"
       ]
     corect: 0
     explicatie: "Un view este definit de o instrucțiune SELECT; datele NU sunt
@@ -439,11 +439,11 @@ intrebari:
     variante:
       [
         "Nu poate folosi JOIN",
+        "Nu poate avea aliasuri",
         "Nu poate folosi GROUP BY",
-        "Nu este permisă clauza ORDER BY (în interogarea internă)",
-        "Nu poate avea aliasuri"
+        "Nu este permisă clauza ORDER BY (în interogarea internă)"
       ]
-    corect: 2
+    corect: 3
     explicatie: "Interogarea internă a unui CTE/view nu poate conține clauza ORDER
       BY, deoarece o expresie de tabel reprezintă o relație (set neordonat)."
 
@@ -451,8 +451,8 @@ intrebari:
     dificultate: licenta
     enunt: "Ce operator este folosit de obicei pentru a uni membrul ancoră cu
       membrul recursiv într-un CTE recursiv?"
-    variante: [ "UNION ALL", "INTERSECT", "UNION", "EXCEPT" ]
-    corect: 0
+    variante: [ "UNION", "UNION ALL", "INTERSECT", "EXCEPT" ]
+    corect: 1
     explicatie: "Corpul unui CTE recursiv folosește de obicei UNION ALL între
       membrul ancoră și membrul recursiv (care se autoreferă)."
 
@@ -462,13 +462,13 @@ intrebari:
     enunt: "Care este diferența principală dintre DELETE și TRUNCATE TABLE?"
     variante:
       [
+        "TRUNCATE poate șterge rânduri selectiv cu WHERE",
         "Sunt complet echivalente",
         "TRUNCATE nu acceptă filtru WHERE, ștergând toate rândurile (totul sau
           nimic)",
-        "TRUNCATE poate șterge rânduri selectiv cu WHERE",
         "DELETE șterge structura, TRUNCATE doar datele"
       ]
-    corect: 1
+    corect: 2
     explicatie: "DELETE poate avea un filtru WHERE opțional; TRUNCATE nu are filtru
       și șterge toate rândurile, după modelul totul sau nimic."
 
@@ -479,9 +479,9 @@ intrebari:
       [
         "Se pot face modificări asupra unei singure tabele, iar dacă mai multe
           rânduri sursă se potrivesc, UPDATE-ul poate fi nedeterminist",
-        "Standardul SQL îl admite, dar T-SQL nu",
         "Se pot modifica simultan mai multe tabele",
-        "JOIN-ul nu influențează rezultatul niciodată"
+        "JOIN-ul nu influențează rezultatul niciodată",
+        "Standardul SQL îl admite, dar T-SQL nu"
       ]
     corect: 0
     explicatie: "Într-un UPDATE se modifică o singură tabelă; dacă mai multe rânduri
@@ -512,9 +512,9 @@ intrebari:
     variante:
       [
         "EXECUTE (sau EXEC) nume_proc",
+        "SELECT nume_proc",
         "CALL nume_proc",
-        "RUN nume_proc",
-        "SELECT nume_proc"
+        "RUN nume_proc"
       ]
     corect: 0
     explicatie: "În T-SQL procedurile stocate se apelează cu EXECUTE sau EXEC."
@@ -524,11 +524,11 @@ intrebari:
     enunt: "Ce este un trigger DML?"
     variante:
       [
+        "O procedură apelată explicit cu EXEC",
         "Un index special",
-        "O funcție care întoarce o valoare scalară",
         "Un batch de cod asociat unui tabel/view, care se execută automat la
           un eveniment INSERT, UPDATE sau DELETE",
-        "O procedură apelată explicit cu EXEC"
+        "O funcție care întoarce o valoare scalară"
       ]
     corect: 2
     explicatie: "Un trigger DML este un batch de cod asociat unui tabel sau view,
@@ -541,10 +541,10 @@ intrebari:
       operație UPDATE?"
     variante:
       [
-        "Doar Inserted este populat",
+        "Ambele sunt goale la UPDATE",
         "Inserted conține rândurile noi, Deleted conține rândurile vechi",
-        "Deleted conține rândurile noi",
-        "Ambele sunt goale la UPDATE"
+        "Doar Inserted este populat",
+        "Deleted conține rândurile noi"
       ]
     corect: 1
     explicatie: "La UPDATE (tratat ca DELETE urmat de INSERT), tabela Deleted
@@ -556,13 +556,13 @@ intrebari:
     enunt: "Care este diferența dintre un trigger AFTER și un trigger INSTEAD OF?"
     variante:
       [
-        "AFTER se execută în locul evenimentului, INSTEAD OF după",
         "Ambele se execută înaintea evenimentului",
         "AFTER se execută după evenimentul DML, INSTEAD OF se execută în locul
           lui",
-        "INSTEAD OF se poate defini doar pe tabele"
+        "INSTEAD OF se poate defini doar pe tabele",
+        "AFTER se execută în locul evenimentului, INSTEAD OF după"
       ]
-    corect: 2
+    corect: 1
     explicatie: "Triggerul AFTER se execută după ce evenimentul DML și
       constrângerile au fost îndeplinite; triggerul INSTEAD OF se execută în
       locul evenimentului (util mai ales pe view-uri)."
@@ -573,13 +573,13 @@ intrebari:
     enunt: "Ce înseamnă o tranzacție în context de baze de date?"
     variante:
       [
-        "O singură instrucțiune SELECT",
         "O conexiune la server",
         "O unitate logică de lucru: ori toate operațiile reușesc, ori niciuna
           nu este aplicată",
-        "O copie de siguranță a datelor"
+        "O copie de siguranță a datelor",
+        "O singură instrucțiune SELECT"
       ]
-    corect: 2
+    corect: 1
     explicatie: "O tranzacție este o unitate logică de lucru: ori toate sarcinile se
       execută cu succes ca un întreg, ori niciuna nu este aplicată."
 
@@ -594,16 +594,16 @@ intrebari:
     dificultate: licenta
     enunt: "Care proprietate ACID garantează că o tranzacție este o unitate atomică:
       ori toate modificările se aplică, ori niciuna?"
-    variante: [ "Consistența", "Atomicitatea", "Izolarea", "Durabilitatea" ]
-    corect: 1
+    variante: [ "Durabilitatea", "Izolarea", "Consistența", "Atomicitatea" ]
+    corect: 3
     explicatie: "Atomicitatea: fiecare tranzacție este o unitate de lucru atomică —
       fie toate modificările se execută cu succes, fie niciuna."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce comandă confirmă (face permanente) modificările unei tranzacții?"
-    variante: [ "SAVE TRAN", "COMMIT", "BEGIN TRAN", "ROLLBACK" ]
-    corect: 1
+    variante: [ "COMMIT", "SAVE TRAN", "ROLLBACK", "BEGIN TRAN" ]
+    corect: 0
     explicatie: "COMMIT (COMMIT TRAN) confirmă tranzacția, aplicând definitiv
       modificările; ROLLBACK le anulează."
 
@@ -613,10 +613,10 @@ intrebari:
       indiferent de nivelul la care e apelată?"
     variante:
       [
+        "Nu are niciun efect",
         "Doar decrementează @@TRANCOUNT cu 1",
-        "Anulează doar tranzacția interioară",
         "Anulează întreaga tranzacție și resetează @@TRANCOUNT la 0",
-        "Nu are niciun efect"
+        "Anulează doar tranzacția interioară"
       ]
     corect: 2
     explicatie: "ROLLBACK anulează întreaga tranzacție (toate nivelurile) și
@@ -626,8 +626,8 @@ intrebari:
     dificultate: licenta
     enunt: "În tratarea structurată a erorilor, codul care se execută când apare o
       eroare se plasează în blocul:"
-    variante: [ "FINALLY", "TRY", "EXCEPT", "CATCH" ]
-    corect: 3
+    variante: [ "CATCH", "TRY", "EXCEPT", "FINALLY" ]
+    corect: 0
     explicatie: "Codul de testare se pune în blocul TRY; dacă apare o eroare,
       controlul trece în blocul CATCH, unde se tratează eroarea (ERROR_NUMBER,
       ERROR_MESSAGE etc.)."
@@ -638,13 +638,13 @@ intrebari:
       multe instrucțiuni distanță?"
     variante:
       [
-        "Pentru că @@ERROR raportează starea de eroare a ultimei comenzi
-          executate și se resetează",
-        "Pentru că @@ERROR întoarce mesajul, nu numărul",
         "Pentru că @@ERROR este mereu 0",
-        "Pentru că @@ERROR nu există în T-SQL"
+        "Pentru că @@ERROR întoarce mesajul, nu numărul",
+        "Pentru că @@ERROR nu există în T-SQL",
+        "Pentru că @@ERROR raportează starea de eroare a ultimei comenzi
+          executate și se resetează"
       ]
-    corect: 0
+    corect: 3
     explicatie: "@@ERROR raportează întotdeauna starea ultimei comenzi executate;
       orice instrucțiune ulterioară o resetează, deci valoarea trebuie salvată
       imediat într-o variabilă."
@@ -656,3 +656,285 @@ intrebari:
     corect: 2
     explicatie: "SQL Server are două tipuri de bază: tranzacții de sistem (interne,
       în afara controlului utilizatorului) și tranzacții utilizator."
+
+  # ============================================================
+  #  ÎNTREBĂRI NOI — accent pe COD SQL și DEPARTAJARE (numeric_aprox)
+  # ============================================================
+
+  # ---------- numeric_aprox: departajare ----------
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Câte forme normale „clasice\" se studiază uzual în proiectarea bazelor
+      de date relaționale (de la 1NF până la BCNF inclusiv)?"
+    corect: 4
+    explicatie: "Uzual se consideră 1NF, 2NF, 3NF și forma Boyce-Codd (BCNF), adică
+      4 forme normale clasice. Există și 4NF, 5NF, dar nu fac parte din nucleul
+      de bază. Răspuns acceptat în jurul valorii 4."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Tabelul Angajati are 9 rânduri, tabelul Comenzi are 830 de rânduri și
+      fiecare comandă are exact un angajat (FK EmployeeID NOT NULL). Aproximativ
+      câte rânduri întoarce: SELECT * FROM Angajati A INNER JOIN Comenzi C ON
+      A.id = C.EmployeeID ?"
+    corect: 830
+    explicatie: "Fiecare comandă se potrivește cu exact un angajat, deci INNER JOIN
+      pe cheia străină păstrează numărul de comenzi: aproximativ 830 de
+      rânduri."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Un CROSS JOIN între un tabel cu 9 rânduri și un tabel cu 8 rânduri
+      produce aproximativ câte rânduri?"
+    corect: 72
+    explicatie: "CROSS JOIN realizează produsul cartezian: 9 * 8 = 72 de rânduri."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Tabelul Clienti are 91 de rânduri și 5 dintre ei nu au nicio comandă.
+      Aproximativ câte rânduri întoarce: SELECT C.id FROM Clienti C WHERE NOT
+      EXISTS (SELECT 1 FROM Comenzi O WHERE O.client_id = C.id) ?"
+    corect: 5
+    explicatie: "NOT EXISTS păstrează doar clienții fără nicio comandă potrivită,
+      deci aproximativ 5 rânduri."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Tabelul Produse are 77 de rânduri, dintre care 9 au UnitPrice peste 40.
+      Aproximativ câte rânduri întoarce: SELECT COUNT(*) FROM Produse WHERE
+      UnitPrice > 40 ? (numărul, nu COUNT-ul)"
+    corect: 9
+    explicatie: "COUNT(*) cu filtrul WHERE numără doar rândurile care satisfac
+      predicatul UnitPrice > 40, adică aproximativ 9."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Tabelul Comenzi are 830 de rânduri, repartizate pe 3 curieri (ShipVia ia
+      valorile 1, 2 sau 3, fără NULL). Aproximativ câte rânduri întoarce: SELECT
+      ShipVia, COUNT(*) FROM Comenzi GROUP BY ShipVia ?"
+    corect: 3
+    explicatie: "GROUP BY ShipVia produce câte un rând per valoare distinctă de
+      ShipVia; existând 3 curieri, rezultatul are aproximativ 3 rânduri (nu
+      830)."
+
+  # ---------- grila cu cod SQL (timp: 55) ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce întoarce interogarea de mai jos pentru un client fără comenzi?"
+    cod: |
+      SELECT c.nume, COUNT(o.id) AS nr
+      FROM Clienti c
+      LEFT JOIN Comenzi o ON o.client_id = c.id
+      GROUP BY c.nume;
+    timp: 55
+    variante:
+      - "Clientul apare cu nr = 0"
+      - "Clientul nu apare deloc"
+      - "Eroare de sintaxa"
+      - "Clientul apare cu nr = NULL"
+    corect: 0
+    explicatie: "LEFT JOIN pastreaza clientul; COUNT(o.id) numara doar randuri
+      nenule => 0."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Aceeași schemă ca anterior. Prin ce diferă rezultatul interogării de mai
+      jos față de varianta cu COUNT(o.id), pentru un client fără comenzi?"
+    cod: |
+      SELECT c.nume, COUNT(*) AS nr
+      FROM Clienti c
+      LEFT JOIN Comenzi o ON o.client_id = c.id
+      GROUP BY c.nume;
+    timp: 55
+    variante:
+      - "Clientul nu mai apare deloc"
+      - "Clientul apare cu nr = 0"
+      - "Eroare: COUNT(*) nu se poate folosi cu GROUP BY"
+      - "Clientul apare cu nr = 1, fiindcă COUNT(*) numără și rândul cu NULL-uri"
+    corect: 3
+    explicatie: "La LEFT JOIN, clientul fără comenzi produce un rând cu coloanele
+      din Comenzi NULL. COUNT(*) numără rânduri, nu valori nenule, deci numără
+      acel rând: nr = 1. De aceea pentru a număra comenzile reale se folosește
+      COUNT(o.id)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Câte rânduri întoarce interogarea, știind că Angajati are 9 rânduri și
+      Clienti are 91?"
+    cod: |
+      SELECT Country, Region, City FROM Angajati
+      UNION ALL
+      SELECT Country, Region, City FROM Clienti;
+    timp: 55
+    variante:
+      - "Exact 71 de rânduri"
+      - "Exact 100 de rânduri"
+      - "Exact 91 de rânduri"
+      - "Cel mult 9 rânduri"
+    corect: 1
+    explicatie: "UNION ALL păstrează toate rândurile, fără eliminarea duplicatelor:
+      9 + 91 = 100. (Cu UNION simplu s-ar elimina duplicatele și ar rezulta mai
+      puține.)"
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Pe aceleași tabele (Angajati 9 rânduri, Clienti 91), ce se poate spune
+      despre numărul de rânduri întors de interogarea de mai jos?"
+    cod: |
+      SELECT Country, Region, City FROM Angajati
+      UNION
+      SELECT Country, Region, City FROM Clienti;
+    timp: 55
+    variante:
+      - "Eroare, fiindcă numărul de coloane diferă"
+      - "Exact 9 rânduri"
+      - "Exact 100, la fel ca UNION ALL"
+      - "Cel mult 100, posibil mai puține din cauza eliminării duplicatelor"
+    corect: 3
+    explicatie: "UNION are DISTINCT implicit: elimină rândurile duplicate (locațiile
+      care apar și la angajați și la clienți), deci rezultatul are cel mult 100
+      de rânduri, de regulă mai puține."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Schema: Produse(id, nume, CategoryID, UnitPrice). Care interogare
+      afișează corect cel mai mare preț din fiecare categorie?"
+    cod: |
+      -- varianta din variante răspuns
+      SELECT CategoryID, MAX(UnitPrice) AS pret_max
+      FROM Produse
+      GROUP BY CategoryID;
+    timp: 55
+    variante:
+      - "SELECT CategoryID, MAX(UnitPrice) FROM Produse GROUP BY CategoryID"
+      - "SELECT CategoryID, UnitPrice FROM Produse WHERE UnitPrice =
+        MAX(UnitPrice)"
+      - "SELECT CategoryID, MAX(UnitPrice) FROM Produse HAVING CategoryID > 0"
+      - "SELECT CategoryID, MAX(UnitPrice) FROM Produse"
+    corect: 0
+    explicatie: "Pentru un maxim per categorie se grupează după CategoryID și se
+      aplică MAX. MAX nu poate apărea în WHERE; fără GROUP BY, CategoryID
+      neagregat dă eroare; HAVING fără GROUP BY nu rezolvă gruparea pe
+      categorii."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Schema: Comenzi(id, client_id, ShipVia). Ce face interogarea de mai jos?"
+    cod: |
+      SELECT ShipVia, COUNT(*) AS nr
+      FROM Comenzi
+      GROUP BY ShipVia
+      HAVING COUNT(*) > 100;
+    timp: 55
+    variante:
+      - "Afișează curierii care au sub 100 de comenzi"
+      - "Numără toate comenzile, indiferent de curier"
+      - "Afișează curierii cu peste 100 de comenzi și numărul lor de comenzi"
+      - "Dă eroare: HAVING nu poate folosi COUNT(*)"
+    corect: 2
+    explicatie: "GROUP BY ShipVia grupează comenzile pe curier, COUNT(*) numără
+      comenzile fiecărui grup, iar HAVING COUNT(*) > 100 păstrează doar
+      grupurile (curierii) cu peste 100 de comenzi. HAVING poate folosi funcții
+      de agregare."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Câte rânduri întoarce interogarea de mai jos? (Angajati are 9 rânduri,
+      coloana ReportsTo este NULL doar pentru directorul general.)"
+    cod: |
+      SELECT E.id, M.id AS sef
+      FROM Angajati E
+      INNER JOIN Angajati M ON E.ReportsTo = M.id;
+    timp: 55
+    variante:
+      - "8 rânduri (toți angajații, mai puțin directorul fără șef)"
+      - "81 de rânduri (produs cartezian)"
+      - "Toate cele 9 rânduri"
+      - "0 rânduri, fiindcă nu se poate face JOIN cu același tabel"
+    corect: 0
+    explicatie: "Este o auto-joncțiune. INNER JOIN păstrează doar rândurile unde
+      E.ReportsTo are potrivire. Directorul are ReportsTo NULL (nu se potrivește
+      cu nimic), deci este eliminat: rămân 8 angajați cu șef direct."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce întoarce interogarea de mai jos dacă tabelul Comenzi conține valori
+      NULL pe coloana Freight (pentru unele comenzi)?"
+    cod: |
+      SELECT AVG(Freight) AS medie, COUNT(*) AS total
+      FROM Comenzi;
+    timp: 55
+    variante:
+      - "AVG tratează NULL ca 0, iar COUNT(*) ignoră NULL-urile"
+      - "AVG și COUNT(*) ignoră amândouă NULL-urile"
+      - "AVG ignoră NULL-urile, iar COUNT(*) numără toate rândurile"
+      - "Ambele dau eroare la întâlnirea unui NULL"
+    corect: 2
+    explicatie: "Funcțiile de agregare ignoră NULL-urile, deci AVG(Freight) face
+      media doar pe valorile nenule. COUNT(*) este excepția: numără toate
+      rândurile, inclusiv cele cu Freight NULL."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Schema: Clienti(id, tara). Ce returnează interogarea de mai jos?"
+    cod: |
+      SELECT id FROM Clienti WHERE tara = 'Franta'
+      EXCEPT
+      SELECT client_id FROM Comenzi WHERE an = 1996;
+    timp: 55
+    variante:
+      - "Clienții din Franța care au comenzi în 1996"
+      - "Eroare: EXCEPT necesită același tabel în ambele interogări"
+      - "Toți clienții care au comenzi în 1996"
+      - "Clienții din Franța care NU apar printre cei cu comenzi în 1996"
+    corect: 3
+    explicatie: "EXCEPT întoarce rândurile din primul set care nu apar în al doilea.
+      Deci: id-urile clienților din Franța, mai puțin cele care apar ca
+      client_id cu comenzi în 1996. EXCEPT nu cere același tabel, doar coloane
+      compatibile."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Este corectă din punct de vedere sintactic interogarea de mai jos în
+      T-SQL? Coloana nume NU apare în GROUP BY."
+    cod: |
+      SELECT CategoryID, nume, COUNT(*) AS nr
+      FROM Produse
+      GROUP BY CategoryID;
+    timp: 55
+    variante:
+      - "Da, nume ia prima valoare din fiecare grup"
+      - "Nu, eroare: nume nu e nici în GROUP BY, nici într-o funcție de agregare"
+      - "Da, nume este înlocuit automat cu NULL"
+      - "Da, dar doar dacă există un index pe nume"
+    corect: 1
+    explicatie: "În T-SQL, o coloană din SELECT trebuie fie inclusă în GROUP BY, fie
+      cuprinsă într-o funcție de agregare, ca să garanteze o singură valoare per
+      grup. Altfel se generează eroare (Msg 8120)."
+
+  # ---------- grila normale ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care operator pe seturi de date are proprietatea DISTINCT implicită
+      (elimină duplicatele)?"
+    variante: [ "UNION ALL", "UNION", "CROSS JOIN", "Niciunul" ]
+    corect: 1
+    explicatie: "UNION elimină rândurile duplicate (DISTINCT implicit), spre
+      deosebire de UNION ALL care păstrează toate rândurile."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Pentru a afla clienții care NU au efectuat nicio comandă, care abordare
+      este corectă?"
+    variante:
+      [
+        "Un INNER JOIN între Clienti și Comenzi",
+        "Un CROSS JOIN între Clienti și Comenzi",
+        "Un UNION ALL între Clienti și Comenzi",
+        "Un LEFT JOIN de la Clienti la Comenzi, filtrând rândurile unde cheia
+          din Comenzi este NULL (sau NOT EXISTS / NOT IN)"
+      ]
+    corect: 3
+    explicatie: "LEFT JOIN păstrează toți clienții; cei fără comenzi au coloanele
+      din Comenzi NULL, deci se filtrează cu IS NULL. Echivalent se poate folosi
+      NOT EXISTS sau NOT IN. INNER JOIN ar elimina exact clienții doriți."

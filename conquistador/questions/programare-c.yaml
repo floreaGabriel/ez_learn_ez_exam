@@ -29,8 +29,8 @@ intrebari:
     dificultate: licenta
     enunt: "Care este valoarea expresiei '1 / 2' în C, dacă ambii operanzi sunt de
       tip int?"
-    variante: [ "1", "2", "0.5", "0" ]
-    corect: 3
+    variante: [ "0.5", "0", "1", "2" ]
+    corect: 1
     explicatie: "Împărțirea întreagă elimină restul: 1/2 dă 0 (rezultat de tip int)."
 
   - tip: numeric_exact
@@ -52,8 +52,8 @@ intrebari:
     dificultate: licenta
     enunt: "Pentru 'unsigned int a = 60;', cât este valoarea expresiei 'a << 2'
       (deplasare stânga cu 2 biți)?"
-    variante: [ "120", "240", "30", "62" ]
-    corect: 1
+    variante: [ "62", "120", "240", "30" ]
+    corect: 2
     explicatie: "Deplasarea la stânga cu 2 înmulțește cu 4: 60 * 4 = 240."
 
   - tip: grila
@@ -62,12 +62,12 @@ intrebari:
       calculează:"
     variante:
       [
+        "maximul dintre a și b",
         "restul a % b",
         "minimul dintre a și b",
-        "suma a + b",
-        "maximul dintre a și b"
+        "suma a + b"
       ]
-    corect: 3
+    corect: 0
     explicatie: "Operatorul ternar returnează a dacă condiția (a > b) este
       adevărată, altfel b, adică maximul."
 
@@ -76,12 +76,12 @@ intrebari:
     enunt: "Operatorul '++' postfixat, ca în 'c = a++;', face ca:"
     variante:
       [
-        "c să primească valoarea veche a lui a, iar apoi a să fie incrementat",
-        "c să devină adresa lui a",
         "a să rămână neschimbat",
-        "c să primească a deja incrementat"
+        "c să devină adresa lui a",
+        "c să primească a deja incrementat",
+        "c să primească valoarea veche a lui a, iar apoi a să fie incrementat"
       ]
-    corect: 0
+    corect: 3
     explicatie: "La postincrementare (a++), valoarea curentă este folosită întâi în
       expresie, iar incrementarea are loc după."
 
@@ -91,11 +91,11 @@ intrebari:
     variante:
       [
         "Orice valoare diferită de 0",
+        "Doar valoarea 1",
         "Doar valoarea 0",
-        "Doar valoarea -1",
-        "Doar valoarea 1"
+        "Doar valoarea -1"
       ]
-    corect: 1
+    corect: 2
     explicatie: "C consideră orice valoare diferită de 0 ca adevărat, iar valoarea 0
       (sau null) ca fals."
 
@@ -105,13 +105,13 @@ intrebari:
       în C?"
     variante:
       [
-        "while nu testează nicio condiție",
         "do-while nu acceptă instrucțiunea break",
         "do-while execută corpul cel puțin o dată, deoarece testează condiția
           la final",
+        "while nu testează nicio condiție",
         "while nu poate fi infinită"
       ]
-    corect: 2
+    corect: 1
     explicatie: "La do-while condiția se evaluează după corpul buclei, deci acesta
       se execută cel puțin o dată."
 
@@ -121,12 +121,12 @@ intrebari:
       la finalul unui caz (case)?"
     variante:
       [
-        "Programul dă eroare de compilare",
         "Se iese imediat din switch",
-        "Se sare automat la default",
-        "Execuția continuă (cade) în următorul case"
+        "Programul dă eroare de compilare",
+        "Execuția continuă (cade) în următorul case",
+        "Se sare automat la default"
       ]
-    corect: 3
+    corect: 2
     explicatie: "Fără break, execuția continuă în cazurile următoare (fenomenul de
       fall-through)."
 
@@ -136,11 +136,11 @@ intrebari:
       funcție înseamnă că:"
     variante:
       [
+        "argumentul devine pointer automat",
         "funcția modifică direct variabila apelantului",
-        "funcția nu poate folosi argumentul",
         "funcția primește o copie a argumentului; modificările locale nu
           afectează variabila originală",
-        "argumentul devine pointer automat"
+        "funcția nu poate folosi argumentul"
       ]
     corect: 2
     explicatie: "La call by value se copiază valoarea în parametrul formal, deci
@@ -152,12 +152,12 @@ intrebari:
       parametrul trebuie transmis:"
     variante:
       [
-        "obligatoriu ca variabilă globală",
-        "prin valoare",
         "prin adresă (pointer), iar funcția dereferențiază cu *",
-        "ca o constantă const"
+        "obligatoriu ca variabilă globală",
+        "ca o constantă const",
+        "prin valoare"
       ]
-    corect: 2
+    corect: 0
     explicatie: "Transmiterea adresei (call by reference) permite ca funcția să
       modifice valoarea originală prin dereferențiere cu *."
 
@@ -165,8 +165,8 @@ intrebari:
     dificultate: licenta
     enunt: "Pentru funcția recursivă 'int fact(int n){ if(n==0) return 1; else
       return fact(n-1)*n; }', cât este fact(0)?"
-    variante: [ "Eroare de compilare", "1", "Recursie infinită", "0" ]
-    corect: 1
+    variante: [ "0", "Recursie infinită", "Eroare de compilare", "1" ]
+    corect: 3
     explicatie: "Cazul de bază n==0 returnează 1, deci fact(0) este 1 (0! = 1)."
 
   - tip: grila
@@ -174,12 +174,12 @@ intrebari:
     enunt: "În C, ce relație există între numele unui tablou (array) și un pointer?"
     variante:
       [
-        "tabloul și pointerul sunt tipuri complet incompatibile",
         "numele tabloului se comportă ca adresa primului element",
         "numele tabloului este o copie a întregului tablou",
+        "tabloul și pointerul sunt tipuri complet incompatibile",
         "tabloul nu poate fi accesat prin indexare"
       ]
-    corect: 1
+    corect: 0
     explicatie: "Numele unui tablou se evaluează la adresa primului element, de
       aceea poate fi folosit ca pointer."
 
@@ -188,12 +188,12 @@ intrebari:
     enunt: "În C, un tablou 'int a[10];' are indici valizi:"
     variante:
       [
-        "de la 1 la 10",
-        "de la 0 la 10",
+        "de la -1 la 9",
         "de la 0 la 9, deci a[10] nu există",
-        "de la -1 la 9"
+        "de la 1 la 10",
+        "de la 0 la 10"
       ]
-    corect: 2
+    corect: 1
     explicatie: "Tablourile în C sunt indexate de la 0; cele 10 elemente sunt
       a[0]..a[9], iar a[10] este în afara limitelor."
 
@@ -204,9 +204,9 @@ intrebari:
     variante:
       [
         "folosirea condiției 'i <= 10', care accesează a[10], inexistent",
-        "folosirea condiției 'i < 10'",
+        "inițializarea cu 'int i = 0'",
         "incrementarea cu 'i++'",
-        "inițializarea cu 'int i = 0'"
+        "folosirea condiției 'i < 10'"
       ]
     corect: 0
     explicatie: "Condiția 'i <= 10' ajunge la indicele 10, în afara tabloului;
@@ -218,12 +218,12 @@ intrebari:
       \"Hello\"?"
     variante:
       [
-        "ca o secvență terminată cu spațiu",
-        "ca un singur întreg",
+        "ca un tablou fără terminator",
         "ca o secvență de caractere terminată cu caracterul null '\\0'",
-        "ca un tablou fără terminator"
+        "ca un singur întreg",
+        "ca o secvență terminată cu spațiu"
       ]
-    corect: 2
+    corect: 1
     explicatie: "Un C-string este o secvență de caractere terminată cu '\\0'
       (caracterul null, cu cod 0)."
 
@@ -238,16 +238,16 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "Ce returnează 'strcmp(s1, s2)' dacă cele două șiruri sunt identice?"
-    variante: [ "1", "0", "-1", "lungimea șirurilor" ]
-    corect: 1
+    variante: [ "1", "-1", "lungimea șirurilor", "0" ]
+    corect: 3
     explicatie: "strcmp returnează 0 când șirurile sunt egale, valoare negativă dacă
       s1<s2 și pozitivă dacă s1>s2."
 
   - tip: grila
     dificultate: licenta
     enunt: "Pentru 'int x = 2; int *j = &x;', ce valoare are expresia '*j'?"
-    variante: [ "adresa lui j", "adresa lui x", "0", "2 (valoarea lui x)" ]
-    corect: 3
+    variante: [ "0", "2 (valoarea lui x)", "adresa lui x", "adresa lui j" ]
+    corect: 1
     explicatie: "Operatorul de dereferențiere * accesează valoarea de la adresa
       stocată în j, adică valoarea lui x (2)."
 
@@ -264,13 +264,13 @@ intrebari:
     enunt: "Ce este constanta NULL folosită la pointeri în C?"
     variante:
       [
+        "întotdeauna adresa 0xFFFF",
         "o valoare simbolică (de regulă 0) care indică un pointer ce nu
           pointează spre nimic valid",
         "adresa primei variabile globale",
-        "întotdeauna adresa 0xFFFF",
         "un șir vid de caractere"
       ]
-    corect: 0
+    corect: 1
     explicatie: "NULL (definit uzual ca 0) marchează un pointer care nu indică o
       locație de memorie validă."
 
@@ -279,13 +279,13 @@ intrebari:
     enunt: "Ce returnează funcția 'malloc(size)' din <stdlib.h>?"
     variante:
       [
-        "un întreg cu codul de eroare",
         "întotdeauna NULL",
-        "numărul de octeți alocați",
         "un pointer (void*) către blocul alocat, sau NULL dacă alocarea
-          eșuează"
+          eșuează",
+        "numărul de octeți alocați",
+        "un întreg cu codul de eroare"
       ]
-    corect: 3
+    corect: 1
     explicatie: "malloc returnează un pointer către blocul cerut din heap sau NULL
       dacă cererea nu poate fi satisfăcută."
 
@@ -302,13 +302,13 @@ intrebari:
     enunt: "Ce este un 'memory leak' (scurgere de memorie) în C?"
     variante:
       [
-        "citirea în afara limitelor unui tablou",
-        "depășirea stivei la recursie",
+        "folosirea unui pointer NULL",
         "memorie alocată cu malloc care nu este eliberată cu free și devine
           inaccesibilă",
-        "folosirea unui pointer NULL"
+        "citirea în afara limitelor unui tablou",
+        "depășirea stivei la recursie"
       ]
-    corect: 2
+    corect: 1
     explicatie: "Un memory leak apare când memoria din heap nu este eliberată cu
       free și nu mai poate fi recuperată."
 
@@ -317,12 +317,12 @@ intrebari:
     enunt: "Ce este un 'dangling pointer' (pointer suspendat)?"
     variante:
       [
-        "un pointer care încă reține adresa unui bloc deja eliberat cu free",
-        "un pointer către o variabilă globală",
+        "un pointer inițializat cu NULL",
         "un pointer la o funcție",
-        "un pointer inițializat cu NULL"
+        "un pointer către o variabilă globală",
+        "un pointer care încă reține adresa unui bloc deja eliberat cu free"
       ]
-    corect: 0
+    corect: 3
     explicatie: "După free, pointerul continuă să indice blocul eliberat; folosirea
       lui (dangling pointer) duce la comportament nedefinit."
 
@@ -330,8 +330,8 @@ intrebari:
     dificultate: licenta
     enunt: "Cum se accesează membrul unei structuri printr-un pointer la structură,
       de ex. 'struct Books *p;'?"
-    variante: [ "&p.title", "*p.title", "p.title", "p->title" ]
-    corect: 3
+    variante: [ "p.title", "*p.title", "p->title", "&p.title" ]
+    corect: 2
     explicatie: "Prin pointer se folosește operatorul ->, deci p->title este
       echivalent cu (*p).title."
 
@@ -341,12 +341,12 @@ intrebari:
     variante:
       [
         "struct nu poate conține tablouri",
-        "union ocupă mai multă memorie decât struct",
-        "union poate avea doar un singur membru",
         "la struct membrii au locații separate; la union toți membrii
-          partajează aceeași zonă de memorie"
+          partajează aceeași zonă de memorie",
+        "union ocupă mai multă memorie decât struct",
+        "union poate avea doar un singur membru"
       ]
-    corect: 3
+    corect: 1
     explicatie: "Într-o uniune toți membrii ocupă aceeași zonă de memorie
       (suprapuși), pe când într-o structură fiecare are spațiul propriu."
 
@@ -354,8 +354,8 @@ intrebari:
     dificultate: licenta
     enunt: "În ce mod se deschide un fișier cu fopen pentru a SCRIE (creând fișierul
       sau golindu-l)?"
-    variante: [ "modul \"x\"", "modul \"w\"", "modul \"r\"", "modul \"a\"" ]
-    corect: 1
+    variante: [ "modul \"w\"", "modul \"r\"", "modul \"x\"", "modul \"a\"" ]
+    corect: 0
     explicatie: "Modul \"w\" deschide/creează un fișier text pentru scriere; \"r\" e
       citire, \"a\" e adăugare (append)."
 
@@ -363,7 +363,7 @@ intrebari:
     dificultate: licenta
     enunt: "Care pereche de funcții se folosește în mod tipic pentru citire/scriere
       în fișiere BINARE în C?"
-    variante: [ "fread / fwrite", "fscanf / fprintf", "fgetc / fputc", "fgets / fputs" ]
+    variante: [ "fread / fwrite", "fgets / fputs", "fgetc / fputc", "fscanf / fprintf" ]
     corect: 0
     explicatie: "Pentru fișiere binare se folosesc fread și fwrite, care transferă
       blocuri de octeți; fprintf/fscanf sunt pentru text."
@@ -375,12 +375,12 @@ intrebari:
     variante:
       [
         "while nu acceptă variabile unsigned",
+        "i nu poate fi negativ",
         "i este convertit la unsigned, iar -10 devine un număr foarte mare,
           deci condiția e falsă",
-        "stop_val nu poate fi 0",
-        "i nu poate fi negativ"
+        "stop_val nu poate fi 0"
       ]
-    corect: 1
+    corect: 2
     explicatie: "La compararea int cu unsigned, i (-10) este convertit la unsigned
       (o valoare mare), deci 'i <= 0' devine falsă și bucla nu intră."
 
@@ -390,13 +390,13 @@ intrebari:
       locale, ex. 'int r[10]; ... return r;'?"
     variante:
       [
-        "variabila locală este dealocată la ieșirea din funcție, deci
-          pointerul devine invalid",
         "funcțiile nu pot returna pointeri",
+        "tablourile nu pot fi locale",
         "r nu poate fi inițializat",
-        "tablourile nu pot fi locale"
+        "variabila locală este dealocată la ieșirea din funcție, deci
+          pointerul devine invalid"
       ]
-    corect: 0
+    corect: 3
     explicatie: "Memoria locală (de pe stivă) este eliberată la ieșirea din funcție;
       pointerul returnat devine dangling, cu comportament nedefinit."
 
@@ -406,11 +406,11 @@ intrebari:
     variante:
       [
         "inițializarea cu acolade {}",
-        "citirea corectă a unui tablou",
         "scrierea în afara zonei alocate, peste limitele tabloului/buffer-ului",
+        "citirea corectă a unui tablou",
         "folosirea lui sizeof"
       ]
-    corect: 2
+    corect: 1
     explicatie: "Un buffer overflow apare când se scrie dincolo de capacitatea
       alocată, coruptând memoria învecinată."
 
@@ -422,10 +422,245 @@ intrebari:
       [
         "se asociază cu cel mai apropiat 'if' interior, nu neapărat cu cel
           sugerat de indentare",
-        "nu poate exista fără switch",
+        "se asociază cu primul if din program",
         "generează întotdeauna eroare de compilare",
-        "se asociază cu primul if din program"
+        "nu poate exista fără switch"
       ]
     corect: 0
     explicatie: "Un else se leagă de cel mai apropiat if anterior; pentru asocierea
       dorită se folosesc acolade explicite."
+
+  # ==========================================================
+  #  ÎNTREBĂRI NOI — accent pe COD (citire/execuție mentală)
+  # ==========================================================
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce afișează programul?"
+    cod: |
+      int a[] = {10, 20, 30, 40, 50};
+      int *p = a + 2;
+      printf("%d", *(p + 1));
+    timp: 50
+    variante: [ "50", "30", "40", "20" ]
+    corect: 2
+    explicatie: "p indică a[2] (valoarea 30); *(p+1) accesează a[3], adică 40."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce afișează programul?"
+    cod: |
+      int a[] = {5, 10, 15, 20};
+      int *p = a;
+      printf("%d", *(p + 3) - *p);
+    timp: 50
+    variante: [ "20", "10", "15", "5" ]
+    corect: 2
+    explicatie: "*(p+3) este a[3] = 20, iar *p este a[0] = 5; diferența 20 - 5 = 15."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce afișează programul (împărțire și modulo pe întregi)?"
+    cod: |
+      int x = 5, y = 2;
+      printf("%d", x / y + x % y);
+    timp: 50
+    variante: [ "4", "2", "5", "3" ]
+    corect: 3
+    explicatie: "x/y = 5/2 = 2 (împărțire întreagă), x%y = 5%2 = 1; suma este 2 + 1 = 3."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce valoare are b după execuție?"
+    cod: |
+      int a = 2;
+      int b = a++ + ++a;
+      printf("%d", b);
+    timp: 50
+    variante: [ "6", "5", "7", "4" ]
+    corect: 0
+    explicatie: "a++ folosește 2 (apoi a devine 3); ++a îl face 4 și folosește 4; b
+      = 2 + 4 = 6."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce afișează programul (operatorul ȘI pe biți)?"
+    cod: |
+      unsigned char x = 0x37;
+      unsigned char y = 0x19;
+      printf("%d", x & y);
+    timp: 50
+    variante: [ "15", "55", "17", "63" ]
+    corect: 2
+    explicatie: "0x37 = 0011 0111, 0x19 = 0001 1001; ȘI pe biți dă 0001 0001 = 17."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce afișează programul?"
+    cod: |
+      char c = 'A';
+      c = c + 1;
+      printf("%c", c);
+    timp: 50
+    variante: [ "66", "A", "B", "1" ]
+    corect: 2
+    explicatie: "'A' are codul 65; 65 + 1 = 66, iar cu %c se afișează caracterul cu
+      codul 66, adică 'B'."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce afișează programul (operatorul SAU-exclusiv pe biți)?"
+    cod: |
+      int a = 12;
+      int b = 10;
+      printf("%d", a ^ b);
+    timp: 50
+    variante: [ "6", "2", "22", "8" ]
+    corect: 0
+    explicatie: "12 = 1100, 10 = 1010; XOR pune 1 doar unde biții diferă: 0110 = 6."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce valoare afișează programul?"
+    cod: |
+      int i = 0, s = 0;
+      while (i < 5) {
+          s += i;
+          i++;
+      }
+      printf("%d", s);
+    timp: 50
+    variante: [ "10", "25", "15", "5" ]
+    corect: 0
+    explicatie: "Bucla adună 0+1+2+3+4 (pentru i de la 0 la 4); suma este 10."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce afișează programul (numărul de elemente al unui tablou)?"
+    cod: |
+      int a[] = {1, 2, 3, 4, 5};
+      printf("%d", (int)(sizeof(a) / sizeof(a[0])));
+    timp: 50
+    variante: [ "5", "20", "1", "4" ]
+    corect: 0
+    explicatie: "sizeof(a) este 20 (5*4 octeți), sizeof(a[0]) este 4; 20/4 = 5 elemente."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce valoare are f (factorial) după buclă?"
+    cod: |
+      int n = 5, f = 1, i;
+      for (i = 1; i <= n; i++)
+          f *= i;
+      printf("%d", f);
+    timp: 50
+    variante: [ "60", "720", "24", "120" ]
+    corect: 3
+    explicatie: "f acumulează 1*1*2*3*4*5 = 120, adică 5! (factorial de 5)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce afișează programul? Atenție la operatorul folosit în condiție."
+    cod: |
+      int x = 10;
+      if (x = 0)
+          printf("DA");
+      else
+          printf("NU");
+    timp: 50
+    variante: [ "DA", "0", "Eroare de compilare", "NU" ]
+    corect: 3
+    explicatie: "'x = 0' este o atribuire (nu comparație ==); valoarea 0 este falsă,
+      deci se execută ramura else: 'NU'."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce afișează programul (deplasare la dreapta)?"
+    cod: |
+      int a = 7;
+      printf("%d", a >> 1);
+    timp: 50
+    variante: [ "7", "14", "3", "2" ]
+    corect: 2
+    explicatie: "Deplasarea la dreapta cu 1 împarte la 2 (întreg): 7 >> 1 = 3 (0111
+      devine 0011)."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Cât este suma 1 + 2 + 3 + ... + 100 (rezultatul buclei
+      'for(i=1;i<=100;i++) s+=i;')?"
+    corect: 5050
+    explicatie: "Suma primelor 100 de numere naturale este n(n+1)/2 = 100*101/2 = 5050."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Aproximativ ce valoare are 2 la puterea 10 (rezultatul lui '1 << 10')?"
+    corect: 1024
+    explicatie: "Deplasarea '1 << 10' înmulțește 1 cu 2 de zece ori: 2^10 = 1024."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "De câte ori se execută corpul cel mai interior la două bucle imbricate,
+      fiecare 'for(i=0;i<100;i++)' (100 pe 100)?"
+    corect: 10000
+    explicatie: "Bucla exterioară rulează de 100 de ori, iar cea interioară de 100
+      pentru fiecare: 100 * 100 = 10000 execuții."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Aproximativ câți octeți ocupă tabloul 'int a[1000];' pe un sistem cu
+      sizeof(int)=4?"
+    corect: 4000
+    explicatie: "1000 de elemente * 4 octeți fiecare = 4000 de octeți."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "De câte ori se execută corpul buclei 'for(i=0; i<50; i+=2)' (numărul de
+      iterații)?"
+    corect: 25
+    explicatie: "i ia valorile 0, 2, 4, ..., 48 (pas 2 până sub 50): 50/2 = 25 iterații."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care variantă conține o GREȘEALĂ ce duce la accesarea în afara tabloului
+      'int a[5];'?"
+    variante:
+      [
+        "for(i = 0; i < 5; i++) a[i] = 0;",
+        "for(i = 0; i <= 5; i++) a[i] = 0;",
+        "for(i = 4; i >= 0; i--) a[i] = 0;",
+        "a[0] = 1; a[4] = 2;"
+      ]
+    corect: 1
+    explicatie: "Condiția 'i <= 5' ajunge la i = 5 și accesează a[5], inexistent
+      (indici valizi 0..4); este o eroare off-by-one."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Pentru 'double r = 7.0 / 4.0;', ce valoare are r și de ce?"
+    variante:
+      [
+        "3, restul împărțirii",
+        "2, prin rotunjire",
+        "1, fiindcă împărțirea este întotdeauna întreagă",
+        "1.75, deoarece cel puțin un operand este flotant, deci rezultatul
+          este flotant"
+      ]
+    corect: 3
+    explicatie: "Când un operand este flotant (7.0, 4.0), împărțirea păstrează
+      partea fracționară: 7.0/4.0 = 1.75."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce rezultat produce o instrucțiune 'switch' fără 'break', dacă variabila
+      potrivită este primul caz dintr-o secvență de cazuri consecutive?"
+    variante:
+      [
+        "sare direct la default",
+        "execută doar cazul potrivit",
+        "generează eroare la execuție",
+        "cade (fall-through) și execută și instrucțiunile cazurilor următoare"
+      ]
+    corect: 3
+    explicatie: "Fără break, după cazul potrivit execuția continuă (fall-through) în
+      cazurile următoare până la un break sau la finalul switch-ului."

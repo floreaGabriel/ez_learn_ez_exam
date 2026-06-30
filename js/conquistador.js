@@ -90,6 +90,8 @@
       case "lobby":
         state.cod = msg.cod;
         state.faza = msg.faza;
+        state.mode = msg.mode || "romania";
+        state.modeNume = msg.modeNume || "România";
         state.hostId = msg.hostId;
         state.topic = msg.topic;
         state.dificultate = msg.dificultate;
@@ -160,6 +162,7 @@
   }
   function pickTopic(topic){ sendMsg({ t: "topic", topic: topic }); }
   function pickDif(dif){ sendMsg({ t: "topic", dificultate: dif }); }
+  function pickMode(mode){ snd("select"); sendMsg({ t: "mode", mode: mode }); }
   function toggleReady(){
     var me = myPlayer();
     sendMsg({ t: "ready", ready: !(me && me.ready) });
@@ -347,6 +350,13 @@
     var allReady = connected.length >= state.minPlayers && connected.every(function(p){ return p.ready; });
     var canStart = host && state.topic && allReady;
 
+    var modeRow = '<div class="conq-modebar"><span class="conq-modebar-lbl">Mod de joc:</span>'
+      + [["romania", "🇷🇴 România", "2–4"], ["europa", "🇪🇺 Europa", "4–8"]].map(function(m){
+          return '<button class="conq-mode' + (state.mode === m[0] ? " active" : "") + '" data-mode="' + m[0] + '"' + (host ? "" : " disabled") + '>'
+            + m[1] + ' <small>' + m[2] + ' jucători</small></button>';
+        }).join("")
+      + (host ? "" : '<span class="conq-hint" style="margin-left:8px">(alege gazda)</span>') + '</div>';
+
     c.innerHTML = ''
       + '<div class="conq-lobby">'
       +   '<div class="conq-room-head">'
@@ -355,6 +365,7 @@
       +     '<button class="conq-btn ghost" id="conq-leave">Părăsește</button>'
       +   '</div>'
       +   errBox()
+      +   modeRow
       +   '<div class="conq-cols">'
       +     '<div class="conq-card">'
       +       '<h3>Jucători <small>' + connected.length + '/' + state.maxPlayers + '</small></h3>'
@@ -380,6 +391,7 @@
     byId("conq-start", function(b){ b.onclick = doStart; });
     var codeEl = c.querySelector(".conq-code-big");
     if(codeEl) codeEl.onclick = function(){ copyText(state.cod); codeEl.classList.add("copied"); setTimeout(function(){ codeEl.classList.remove("copied"); }, 900); };
+    c.querySelectorAll(".conq-mode").forEach(function(b){ b.onclick = function(){ if(!b.disabled) pickMode(b.dataset.mode); }; });
     c.querySelectorAll(".conq-topic").forEach(function(b){ b.onclick = function(){ pickTopic(b.dataset.topic); }; });
     c.querySelectorAll(".conq-dif").forEach(function(b){ b.onclick = function(){ pickDif(b.dataset.dif); }; });
   }
@@ -424,24 +436,36 @@
   function polyStr(poly){ return poly.map(function(p){ return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" "); }
 
   function mapSVG(highlight){
-    var g = state.game, cells = getCells();
+    var g = state.game;
+    var hasBorder = !!(g.map.border && g.map.border.length);   // România=Voronoi; Europa=markere/discuri
+    var cells = hasBorder ? getCells() : null;
     var hl = {}; (highlight || []).forEach(function(id){ hl[id] = 1; });
     var img = g.map.img || { url: "", w: 700, h: 500 };
     var svg = '<svg class="conq-map" viewBox="0 0 ' + img.w + ' ' + img.h + '" preserveAspectRatio="xMidYMid meet">';
     svg += '<defs><filter id="cqShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="1.4" stdDeviation="1.5" flood-color="rgba(0,0,0,.55)"/></filter></defs>';
-    // FUNDAL: imaginea reală a hărții României (href + xlink:href pentru compatibilitate)
+    // FUNDAL: imaginea reală a hărții (href + xlink:href pentru compatibilitate)
     svg += '<image href="' + img.url + '" xlink:href="' + img.url + '" x="0" y="0" width="' + img.w + '" height="' + img.h + '" preserveAspectRatio="none"></image>';
-    // regiunile — umplere semi-transparentă ca să se vadă harta dedesubt + delimitări
-    g.map.regions.forEach(function(rg){
-      var poly = cells[rg.id]; if(!poly || !poly.length) return;
-      var owner = g.owners[rg.id];
-      var col = owner ? playerColor(owner) : null;
-      var cls = "conq-reg" + (hl[rg.id] ? " hl" : "") + (owner ? "" : " neutral");
-      svg += '<polygon class="' + cls + '" data-id="' + rg.id + '" points="' + polyStr(poly) + '" style="fill:' + (col || "#ffffff") + ';fill-opacity:' + (col ? "0.42" : "0") + '"></polygon>';
-    });
+    if(hasBorder){
+      // REGIUNI ca poligoane Voronoi (umplere semi-transparentă + delimitări)
+      g.map.regions.forEach(function(rg){
+        var poly = cells[rg.id]; if(!poly || !poly.length) return;
+        var owner = g.owners[rg.id];
+        var col = owner ? playerColor(owner) : null;
+        var cls = "conq-reg" + (hl[rg.id] ? " hl" : "") + (owner ? "" : " neutral");
+        svg += '<polygon class="' + cls + '" data-id="' + rg.id + '" points="' + polyStr(poly) + '" style="fill:' + (col || "#ffffff") + ';fill-opacity:' + (col ? "0.42" : "0") + '"></polygon>';
+      });
+    } else {
+      // EUROPA: disc de proprietar sub fiecare marker (fără contur de țară)
+      g.map.regions.forEach(function(rg){
+        var owner = g.owners[rg.id];
+        var col = owner ? playerColor(owner) : null;
+        var rr = hl[rg.id] ? 28 : 24;
+        svg += '<circle class="conq-disc' + (hl[rg.id] ? " hl" : "") + (owner ? "" : " neutral") + '" data-id="' + rg.id + '" cx="' + rg.cx + '" cy="' + rg.cy + '" r="' + rr + '" style="fill:' + (col || "#d8c9ad") + ';fill-opacity:' + (col ? "0.62" : "0.32") + '"></circle>';
+      });
+    }
     // markere (castel = bază / scut = normal + valoare) la centrul regiunii
     g.map.regions.forEach(function(rg){
-      if(!cells[rg.id] || !cells[rg.id].length) return;
+      if(hasBorder && (!cells[rg.id] || !cells[rg.id].length)) return;
       var owner = g.owners[rg.id];
       var col = owner ? playerColor(owner) : "#6b5b3e";
       var isBase = g.bases && Object.keys(g.bases).some(function(pid){ return g.bases[pid] === rg.id; });
@@ -524,7 +548,7 @@
 
     byId("conq-leave", function(b){ b.onclick = doLeave; });
     byId("conq-mute", function(b){ b.onclick = function(){ var m = window.ConqAudio.toggle(); b.textContent = m ? "🔇" : "🔊"; }; });
-    c.querySelectorAll(".conq-reg, .conq-marker").forEach(function(el){ el.onclick = function(){ onRegionClick(el.dataset.id); }; });
+    c.querySelectorAll(".conq-reg, .conq-marker, .conq-disc").forEach(function(el){ el.onclick = function(){ onRegionClick(el.dataset.id); }; });
     wireModal(g, pr);
     startCountdown(pr);
   }
@@ -570,6 +594,7 @@
       body += '<div class="conq-modal-tag">' + tag + '</div>';
       body += combat;
       body += '<div class="conq-modal-q">' + esc(pr.enunt) + '</div>';
+      if(pr.cod) body += '<pre class="conq-code">' + esc(pr.cod) + '</pre>';
       if(!participate){
         body += '<div class="conq-modal-wait">Duel în desfășurare — privești.</div>';
       } else if(state.answered){
@@ -594,6 +619,7 @@
       }).join("");
       body += '<div class="conq-modal-tag reveal">💡 Rezolvare</div>';
       if(pr.enunt) body += '<div class="conq-modal-q small">' + esc(pr.enunt) + '</div>';
+      if(pr.cod) body += '<pre class="conq-code">' + esc(pr.cod) + '</pre>';
       if(pr.corectText != null) body += '<div class="conq-correct">Corect: <b>' + esc(pr.corectText) + '</b></div>';
       if(pr.explicatie) body += '<div class="conq-expl">' + esc(pr.explicatie) + '</div>';
       if(rows) body += '<div class="conq-rev">' + rows + '</div>';

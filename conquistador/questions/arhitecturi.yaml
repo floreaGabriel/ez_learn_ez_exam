@@ -17,10 +17,10 @@ intrebari:
       [
         "Registrul EFLAGS",
         "Stack pointer (ESP)",
-        "Program counter (EIP)",
-        "Acumulatorul (EAX)"
+        "Acumulatorul (EAX)",
+        "Program counter (EIP)"
       ]
-    corect: 2
+    corect: 3
     explicatie: "Registrul program counter (EIP în IA-32) conține offset-ul în
       segmentul de cod al următoarei instrucțiuni de executat."
 
@@ -30,12 +30,12 @@ intrebari:
       efectuează operații aritmetice și pe biți asupra numerelor întregi?"
     variante:
       [
-        "FPU",
-        "ALU (unitatea logică și aritmetică)",
         "Unitatea de control",
-        "Registrul de stare"
+        "Registrul de stare",
+        "FPU",
+        "ALU (unitatea logică și aritmetică)"
       ]
-    corect: 1
+    corect: 3
     explicatie: "ALU este circuitul combinațional care efectuează operații
       aritmetice și de tip bitwise asupra numerelor întregi; FPU se ocupă de
       virgula mobilă."
@@ -45,8 +45,8 @@ intrebari:
     enunt: "În taxonomia lui Flynn, cum este clasificat modelul Von Neumann clasic
       cu o singură componentă ALU care execută o instrucțiune asupra unui singur
       flux de date?"
-    variante: [ "SISD", "MIMD", "MISD", "SIMD" ]
-    corect: 0
+    variante: [ "MIMD", "SIMD", "MISD", "SISD" ]
+    corect: 3
     explicatie: "Modelul Von Neumann cu o singură ALU ce execută o instrucțiune la
       un moment dat asupra unui singur flux de date corespunde SISD (Single
       Instruction, Single Data)."
@@ -55,7 +55,7 @@ intrebari:
     dificultate: licenta
     enunt: "Ce arhitectură folosește memorii separate pentru instrucțiuni și pentru
       date, eliminând concurența pentru o singură magistrală?"
-    variante: [ "Harvard", "Arhitectura stack", "Von Neumann", "Arhitectura accumulator" ]
+    variante: [ "Harvard", "Arhitectura stack", "Arhitectura accumulator", "Von Neumann" ]
     corect: 0
     explicatie: "Arhitectura Harvard are memorii și magistrale separate pentru
       instrucțiuni și date, astfel încât procesorul poate prelua instrucțiuni și
@@ -67,9 +67,9 @@ intrebari:
     variante:
       - "ISA definește modul în care componentele hardware sunt controlate
         software, iar HSA modul în care componentele fizice sunt organizate"
-      - "ISA și HSA sunt termeni identici"
-      - "Ambele descriu doar implementarea fizică a procesorului"
       - "ISA descrie organizarea fizică, iar HSA setul de instrucțiuni"
+      - "Ambele descriu doar implementarea fizică a procesorului"
+      - "ISA și HSA sunt termeni identici"
     corect: 0
     explicatie: "ISA (Instruction Set Architecture) definește interfața
       software-hardware, iar HSA (Hardware System Architecture /
@@ -79,8 +79,8 @@ intrebari:
     dificultate: licenta
     enunt: "Arhitectura RISC este de tip load/store, iar arhitectura CISC este de
       tip register-memory. Care exemplu este CISC?"
-    variante: [ "SPARC", "MIPS", "ARM", "x86" ]
-    corect: 3
+    variante: [ "MIPS", "ARM", "x86", "SPARC" ]
+    corect: 2
     explicatie: "x86 (și VAX) sunt arhitecturi CISC de tip register-memory; ARM,
       MIPS, SPARC, PowerPC sunt RISC de tip load/store."
 
@@ -88,12 +88,12 @@ intrebari:
     dificultate: licenta
     enunt: "În IA-32, ce caracterizează modul real de operare?"
     variante:
-      - "Mod pe 64 de biți cu spațiu liniar de adrese"
       - "Mod pe 32 de biți cu adresare până la 4 GB"
       - "Mod pe 16 biți cu adresare până la 1 MB, care implementează mediul
         procesorului 8086"
+      - "Mod pe 64 de biți cu spațiu liniar de adrese"
       - "Mod care oferă paginare și multitasking complet"
-    corect: 2
+    corect: 1
     explicatie: "Modul real este pe 16 biți cu adresare până la 1 MB, implementează
       mediul 8086 și este modul în care intră toate procesoarele Intel imediat
       după reset/power-up."
@@ -104,12 +104,12 @@ intrebari:
       înlocuită cu un mecanism în care adresa de bază a segmentului este
       preluată din:"
     variante:
-      - "Direct din registrul segment înmulțit cu 10H"
-      - "Registrul program counter"
       - "Registrul EFLAGS"
       - "Un descriptor de segment dintr-un tabel, indexat de selectorul de
         segment"
-    corect: 3
+      - "Registrul program counter"
+      - "Direct din registrul segment înmulțit cu 10H"
+    corect: 1
     explicatie: "În modul protejat, selectorul (registrul segment) indexează un
       descriptor de segment dintr-un tabel (GDT/LDT) care conține adresa de bază
       pe 32 de biți, dimensiunea și drepturile de acces."
@@ -118,7 +118,7 @@ intrebari:
     dificultate: licenta
     enunt: "În mecanismele de protecție IA-32, în care nivel de privilegii (ring)
       rulează kernelul cu acces nelimitat la resursele hardware?"
-    variante: [ "Ring 1", "Ring 2", "Ring 0", "Ring 3" ]
+    variante: [ "Ring 3", "Ring 2", "Ring 0", "Ring 1" ]
     corect: 2
     explicatie: "În ring 0 este rezident kernelul, cu acces nelimitat la hardware;
       aplicațiile utilizatorului rulează în ring 3, iar trecerea în ring 0 se
@@ -131,8 +131,8 @@ intrebari:
       - "Translatarea adreselor logice în adrese liniare"
       - "Translatarea adreselor liniare în adrese fizice, fiecare segment fiind
         împărțit în pagini"
-      - "Verificarea drepturilor de acces ale segmentelor"
       - "Înmulțirea registrului segment cu 10H"
+      - "Verificarea drepturilor de acces ale segmentelor"
     corect: 1
     explicatie: "Paginarea translatează adresele liniare în adrese fizice; fiecare
       segment este împărțit în pagini aflate în memoria fizică sau pe disc,
@@ -143,12 +143,12 @@ intrebari:
     enunt: "Ce se întâmplă în mecanismul de swapping atunci când o pagină cerută nu
       există în memoria primară (RAM)?"
     variante:
+      - "Procesorul intră în modul real"
       - "CPU generează o excepție de tip page-fault, iar pagina este transferată
         în memoria primară (swap-in)"
       - "Procesorul ignoră cererea"
-      - "Procesorul intră în modul real"
       - "Pagina este ștearsă definitiv"
-    corect: 0
+    corect: 1
     explicatie: "La swap-in, dacă pagina cerută nu e în RAM, CPU generează o
       page-fault exception, iar pagina este adusă din memoria secundară în
       memoria primară."
@@ -159,12 +159,12 @@ intrebari:
       Linux pentru swapping?"
     variante:
       [
-        "O variantă LRU (Least Recently Used)",
-        "FIFO (First-In First-Out)",
         "MRU (Most Recently Used)",
-        "Round-robin"
+        "O variantă LRU (Least Recently Used)",
+        "Round-robin",
+        "FIFO (First-In First-Out)"
       ]
-    corect: 0
+    corect: 1
     explicatie: "Nucleul Linux folosește o variantă de LRU (Least Recently Used),
       care transferă în memoria secundară cele mai vechi utilizate pagini."
 
@@ -173,10 +173,10 @@ intrebari:
     enunt: "În ierarhia memoriei, ce înseamnă un hit la nivelul n?"
     variante:
       - "Memoria de la nivelul n este plină"
+      - "Apare o eroare de paritate"
       - "Datele sau instrucțiunile căutate se află la nivelul n"
       - "Datele nu se află la nivelul n și trebuie căutate la nivelul următor"
-      - "Apare o eroare de paritate"
-    corect: 1
+    corect: 2
     explicatie: "Un hit înseamnă că datele/instrucțiunile sunt prezente la nivelul
       n; un miss înseamnă că lipsesc și trebuie căutate la nivelul superior."
 
@@ -188,11 +188,11 @@ intrebari:
     variante:
       [
         "Proprietatea de incluziune",
+        "Localizare spațială",
         "Localizare temporală",
-        "Granularitate",
-        "Localizare spațială"
+        "Granularitate"
       ]
-    corect: 1
+    corect: 2
     explicatie: "Localizarea temporală: locațiile accesate recent sunt susceptibile
       de a fi accesate din nou în viitorul apropiat (de exemplu, codul unei
       bucle reexecutat)."
@@ -202,8 +202,8 @@ intrebari:
     enunt: "În maparea directă a memoriei cache, un bloc x din memoria principală
       este transferat în linia cache calculată prin care relație (L = nr. biți
       index linie)?"
-    variante: [ "2^L mod x", "x + 2^L", "x * 2^L", "x mod 2^L" ]
-    corect: 3
+    variante: [ "x * 2^L", "2^L mod x", "x mod 2^L", "x + 2^L" ]
+    corect: 2
     explicatie: "În maparea directă, blocul x este mapat strict în linia x mod 2^L,
       ceea ce poate genera conflict miss când mai multe blocuri concurează
       pentru aceeași linie."
@@ -216,11 +216,11 @@ intrebari:
     variante:
       [
         "Mapare directă",
-        "Mapare asociativă pe seturi de 4 linii",
+        "Mapare complet asociativă",
         "Mapare asociativă pe seturi de 2 linii",
-        "Mapare complet asociativă"
+        "Mapare asociativă pe seturi de 4 linii"
       ]
-    corect: 3
+    corect: 1
     explicatie: "Maparea complet asociativă (fully associative) nu impune restricții
       de mapare; orice bloc poate merge în orice linie, deci nu există biți
       pentru indexul liniei, ci doar tag și offset."
@@ -230,11 +230,11 @@ intrebari:
     enunt: "În maparea asociativă pe seturi, ce reprezintă gradul de asociativitate
       k?"
     variante:
-      - "Numărul de linii cache dintr-un set"
-      - "Numărul total de blocuri din memoria principală"
       - "Numărul de biți pentru tag"
+      - "Numărul total de blocuri din memoria principală"
+      - "Numărul de linii cache dintr-un set"
       - "Dimensiunea în octeți a unei linii cache"
-    corect: 0
+    corect: 2
     explicatie: "k este gradul de asociativitate, adică numărul de linii cache
       dintr-un set; k=1 înseamnă mapare directă, iar k=L_max înseamnă mapare
       complet asociativă."
@@ -244,8 +244,8 @@ intrebari:
     enunt: "Care politică de scriere a memoriei cache actualizează datele doar la
       nivelul cache și propagă modificarea în memoria principală abia când linia
       trebuie înlocuită?"
-    variante: [ "Write Allocate", "Write Through", "Write Back", "Write Combining" ]
-    corect: 2
+    variante: [ "Write Back", "Write Allocate", "Write Through", "Write Combining" ]
+    corect: 0
     explicatie: "Write Back actualizează doar nivelul cache (marcat prin dirty bit)
       și propagă modificarea în memoria principală doar la înlocuirea liniei;
       Write Through actualizează simultan toate nivelurile."
@@ -255,12 +255,12 @@ intrebari:
     enunt: "Ciclul fundamental executat la infinit de CPU este:"
     variante:
       [
-        "push-pop-call",
         "fetch-decode-execute",
-        "read-modify-write",
-        "load-store-branch"
+        "push-pop-call",
+        "load-store-branch",
+        "read-modify-write"
       ]
-    corect: 1
+    corect: 0
     explicatie: "CPU execută la infinit ciclul fetch (preluare instrucțiune), decode
       (decodificare) și execute (execuție prin acțiune specifică)."
 
@@ -268,12 +268,12 @@ intrebari:
     dificultate: licenta
     enunt: "Care este rolul unității de control în CPU?"
     variante:
+      - "Stochează permanent datele"
       - "Organizează secvențierea etapelor execuției instrucțiunilor și
         coordonează ALU și FPU prin semnale de control"
       - "Mapează adresele virtuale în adrese fizice"
-      - "Stochează permanent datele"
       - "Efectuează operații aritmetice pe numere întregi"
-    corect: 0
+    corect: 1
     explicatie: "Unitatea de control organizează secvențierea etapelor execuției,
       coordonează ALU și FPU și generează semnale pe magistrala de control."
 
@@ -282,11 +282,11 @@ intrebari:
     enunt: "În codificarea unei instrucțiuni 8086, ce semnificație are bitul w
       (word/byte) din primul octet?"
     variante:
-      - "Extinde o valoare imediată"
-      - "Specifică direcția de transfer a datelor"
-      - "Specifică modul de adresare"
       - "Identifică dimensiunea operanzilor (w=1 pe 2 octeți, w=0 pe 1 octet)"
-    corect: 3
+      - "Specifică direcția de transfer a datelor"
+      - "Extinde o valoare imediată"
+      - "Specifică modul de adresare"
+    corect: 0
     explicatie: "Bitul w identifică dimensiunea operanzilor: w=1 înseamnă date pe 2
       octeți, w=0 înseamnă date pe 1 octet; bitul d specifică direcția
       transferului."
@@ -296,12 +296,12 @@ intrebari:
     enunt: "În codificarea instrucțiunilor 8086, ce determină biții mod (din al
       doilea octet) împreună cu câmpul r/m?"
     variante:
-      - "Dimensiunea opcode-ului"
-      - "Tipul instrucțiunii (mov, add)"
       - "Numărul de privilegii"
+      - "Tipul instrucțiunii (mov, add)"
       - "Interpretarea câmpului r/m, adică modul de adresare și prezența unui
         deplasament"
-    corect: 3
+      - "Dimensiunea opcode-ului"
+    corect: 2
     explicatie: "Biții mod determină interpretarea câmpului r/m: mod=00 fără
       deplasament, mod=01/10 cu deplasament pe 8/16 biți, mod=11 ambii operanzi
       sunt registri."
@@ -310,12 +310,12 @@ intrebari:
     dificultate: licenta
     enunt: "În pipelining, ce reprezintă o dependență a datelor (data hazard)?"
     variante:
-      - "Memoria cache este plină"
-      - "Procesorul rulează în modul real"
       - "O instrucțiune depinde de rezultatul încă indisponibil al unei
         instrucțiuni anterioare, forțând blocarea execuției (pipeline stall)"
+      - "Procesorul rulează în modul real"
+      - "Memoria cache este plină"
       - "Două instrucțiuni au același opcode"
-    corect: 2
+    corect: 0
     explicatie: "Data hazard apare când o instrucțiune depinde de rezultatul
       indisponibil al uneia anterioare; instrucțiunea trebuie să aștepte,
       introducând stall-uri și bubbles în pipeline."
@@ -324,12 +324,12 @@ intrebari:
     dificultate: licenta
     enunt: "Ce caracterizează predicția statică a salturilor?"
     variante:
+      - "Folosește un Branch History Table pe 2 biți"
       - "Ține cont de un istoric dinamic colectat la runtime"
       - "Folosește presupuneri fixe (saltul înapoi se face, saltul în față nu),
         deciziile fiind luate la compilare"
-      - "Folosește un Branch History Table pe 2 biți"
       - "Necesită modele neuronale hardware"
-    corect: 1
+    corect: 2
     explicatie: "Predicția statică nu ține cont de istoricul dinamic; presupune că
       salturile înapoi (bucle for) se efectuează și cele în față nu, deciziile
       fiind luate la compilare."
@@ -341,10 +341,10 @@ intrebari:
     variante:
       - "Garantează predicție 100% corectă"
       - "Nu mai folosește deloc memorie pentru istoric"
+      - "Elimină complet pipeline-ul"
       - "Schimbă predicția doar după două predicții succesive greșite, fiind mai
         robust la excepții izolate"
-      - "Elimină complet pipeline-ul"
-    corect: 2
+    corect: 3
     explicatie: "Predictorul pe 2 biți (counter cu saturație) schimbă predicția doar
       după două greșeli succesive, fiind mai tolerant la o singură basculare
       izolată decât cel pe 1 bit."
@@ -416,3 +416,211 @@ intrebari:
     corect: 8
     explicatie: "Pentru un procesor single-core, creșterea gradului de
       asociativitate peste 8 nu mai aduce beneficii practice semnificative."
+
+  # ==========================================================
+  #  ÎNTREBĂRI NOI — adăugate (ancorate pe cursurile 4 și 5)
+  # ==========================================================
+
+  # ---- numeric_aprox (departajare) ----
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Pentru o adresă fizică pe 32 de biți și o memorie cache cu mapare
+      directă de 1024 de linii, cu dimensiunea blocului/liniei de 32 KB, câți
+      biți are câmpul de TAG?"
+    corect: 7
+    explicatie: "offset = log2(32 KB) = log2(2^15) = 15 biți; index = log2(1024) =
+      10 biți; tag = 32 - 10 - 15 = 7 biți."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "O memorie cache cu mapare directă are dimensiunea de 16 KB și linii de
+      64 de octeți. Câte linii cache rezultă?"
+    corect: 256
+    explicatie: "Numărul de linii = 16 KB / 64 B = 16384 / 64 = 256 de linii."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Pentru o memorie principală de 16 GB și un bloc/linie de 16 KB, la
+      mapare directă, câți biți de offset (index în bloc) sunt necesari?"
+    corect: 14
+    explicatie: "16 KB = 2^14 octeți, deci offset-ul în bloc are log2(2^14) = 14
+      biți; restul biților din adresa de 34 de biți se împart între index și
+      tag."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Aproximativ câți tranzistori sunt necesari pentru a construi un
+      flip-flop standard de tip D folosit în registri?"
+    corect: 16
+    explicatie: "Conform cursului, un flip-flop standard de tip D este proiectat
+      folosind aproximativ 16 tranzistori; un registru menține un vector de
+      astfel de flip-flops pentru un cuvânt de 16/32/64 de biți."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Pentru un procesor 8086 cu frecvența de lucru de 5 MHz, aproximativ câte
+      nanosecunde durează o perioadă de ceas (P)?"
+    corect: 200
+    explicatie: "P = 1/f = 1/(5 MHz) = 200 ns; cursul indică P = 200 ns pentru 8086,
+      accesul la o locație de memorie durând circa 800 ns."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "În exemplul de eficiență a memoriei cache din curs, accesul în memoria
+      principală durează aproximativ câte cicluri de ceas?"
+    corect: 200
+    explicatie: "Cursul folosește 200 de cicluri de ceas pentru accesul în memoria
+      principală și 15 cicluri pentru accesul în memoria cache."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Câte porțiuni distincte are forma binară a unei instrucțiuni Intel 64 și
+      IA-32 (prefix, opcode, ModR/M, SIB, deplasament, imediat)?"
+    corect: 6
+    explicatie: "Forma binară are 6 porțiuni: prefix (opțional), opcode (max 3
+      octeți), specificator de adresare (ModR/M + SIB), deplasament și valoare
+      imediată."
+
+  # ---- grila cu schemă/calcul în câmpul cod ----
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "O memorie cache cu mapare directă are 256 de linii a câte 16 octeți,
+      adresă pe 32 de biți. Câți biți are câmpul de offset în bloc?"
+    cod: |
+      Adresa (32b): [ TAG | INDEX (8b) | OFFSET (?) ]
+      linii = 256, bloc = 16 octeti
+    timp: 55
+    variante: [ "4 biti", "16 biti", "3 biti", "8 biti" ]
+    corect: 0
+    explicatie: "bloc = 16 = 2^4 octeti => offset 4 biti; index = 256 = 2^8 => 8
+      biti; tag = 32 - 8 - 4 = 20 biti."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Memorie cache cu mapare directă, adresă de 32 de biți, 1024 de linii,
+      bloc de 32 KB. Pentru adresa fizică 0xDEF2024, care este valoarea în
+      hexazecimal a câmpului de TAG?"
+    cod: |
+      Adresa (32b): [ TAG (7b) | INDEX (10b) | OFFSET (15b) ]
+      0xDEF2024 = 1101 1110 1111 0010 0000 0010 0100 (binar)
+      offset = bitii 0..14 ; index = bitii 15..24 ; tag = bitii 25..31
+    timp: 55
+    variante: [ "0x3DE", "0xDE", "0x2024", "0x6" ]
+    corect: 3
+    explicatie: "offset(15b)=0x2024, index(10b)=0x3DE, tag(7b)=0x6. Tag-ul ia cei
+      mai semnificativi 7 biti ai adresei => 0x6."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În modul real 8086/IA-32, adresa de bază a segmentului este CS = 2000H
+      iar offset-ul IP = 0100H. Care este adresa fizică pe 20 de biți?"
+    cod: |
+      adresa_fizica = CS * 10H + IP
+                    = 2000H * 10H + 0100H
+                    = 20000H + 0100H
+    timp: 55
+    variante: [ "20010H", "02100H", "21000H", "20100H" ]
+    corect: 3
+    explicatie: "CS se inmulteste cu 10H (deplasare cu o cifra hexa la stanga):
+      20000H; se aduna IP = 0100H => 20100H."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În maparea directă, blocurile 3, 7, 11, 15, 19 sunt cerute succesiv, iar
+      cache-ul are L = 2 biți pentru index (4 linii). În ce linie ajung toate
+      aceste blocuri (generând conflict miss)?"
+    cod: |
+      linie = bloc % 2^L , L = 2 => 2^L = 4
+      3 %4=3 ; 7 %4=3 ; 11 %4=3 ; 15 %4=3 ; 19 %4=3
+    timp: 55
+    variante: [ "linia 3", "linia 1", "linia 0", "linia 2" ]
+    corect: 0
+    explicatie: "Toate blocurile dau restul 3 la impartirea cu 4, deci se mapeaza
+      strict in linia 3 (5 stari de conflict miss), in timp ce liniile 0,1,2
+      raman nepopulate."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Codificarea instrucțiunii 8086 MOV BX, [DI] (mod 00, fără deplasament).
+      Care sunt primii doi octeți ai instrucțiunii?"
+    cod: |
+      Octet 1: [ opcode(6) | d | w ] = 100010 1 1
+      Octet 2: [ mod | reg | r/m ] = 00 011 001
+      d=1 (reg=destinatie), w=1 (2 octeti), reg=011=BX, r/m=001=[DI]
+    timp: 55
+    variante: [ "8919h", "8B1Dh", "891Dh", "8B19h" ]
+    corect: 3
+    explicatie: "Octet1 = 1000 1011 = 8Bh; Octet2 = 0001 1001 = 19h => 8B19h. mod=00
+      r/m=001 corespunde [DI], reg=011 cu w=1 este BX, d=1 face din reg
+      destinatia."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Într-un pipeline cu 5 etape (IF, ID, Ex, MEM, WB) apare un data hazard:
+      instrucțiunea I2 are nevoie de rezultatul lui I1, care nu e disponibil
+      decât după etapa WB a lui I1. Ce introduce procesorul pentru a rezolva
+      situația?"
+    cod: |
+      I1: IF ID Ex MEM WB
+      I2:    IF ID -- -- Ex MEM WB   (-- = stall/bubble)
+      I2 asteapta rezultatul lui I1
+    timp: 55
+    variante:
+      - "Stall-uri (bubbles) care blocheaza temporar executia lui I2"
+      - "O comutare in modul real"
+      - "O ramificare neconditionata"
+      - "Un page-fault"
+    corect: 0
+    explicatie: "La un data hazard, instructiunea dependenta trebuie sa astepte pana
+      cand datele devin disponibile; se introduc stall-uri (bubbles) care
+      incetinesc executia in pipeline."
+
+  # ---- grila normale, subiecte neacoperite ----
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce realizează tehnica de preluare speculativă a datelor (prefetching) în
+      CPU?"
+    variante:
+      - "Șterge liniile cache vechi"
+      - "Identifică un pattern în secvența de MISS-uri și preia în avans datele
+        ce vor fi probabil utilizate în viitorul apropiat"
+      - "Schimbă procesorul în modul protejat"
+      - "Înmulțește registrul segment cu 10H"
+    corect: 1
+    explicatie: "Citirea secvențială (predictibilă) din memorie permite CPU să
+      identifice un pattern în secvența de MISS-uri și să preia în avans datele,
+      menținând cache-ul cu un pas înaintea procesării."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce face procesorul prin replanificarea (reordonarea) execuției
+      instrucțiunilor?"
+    variante:
+      - "Forțează toate salturile să fie efectuate"
+      - "Execută blocurile de instrucțiuni complet independente într-o ordine
+        arbitrară, fără a respecta ordinea din program"
+      - "Execută instrucțiunile strict în ordinea din cod"
+      - "Elimină memoria cache"
+    corect: 1
+    explicatie: "Blocurile de instrucțiuni complet independente (registri diferiți,
+      adrese diferite) pot fi executate fără a ține cont de ordine; în cazul
+      unui MISS, un alt bloc independent ale cărui date sunt în cache poate fi
+      executat între timp."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce reprezintă un Correlating Branch Predictor?"
+    variante:
+      - "Un predictor pe 1 bit indexat doar de adresa instrucțiunii"
+      - "Un mecanism de paginare a memoriei"
+      - "Un predictor care presupune fix că saltul înapoi se face"
+      - "Un predictor care corelează comportamentul branch-ului curent cu
+        comportamentul celor mai recente branch-uri executate"
+    corect: 3
+    explicatie: "Correlating Branch Predictor identifică un tipar repetitiv corelând
+      branch-ul curent cu istoricul celor mai recente branch-uri (stocate
+      într-un registru cu deplasare pe M biți), indexând astfel tabela de
+      predicție BHT."
