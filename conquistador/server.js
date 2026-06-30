@@ -79,11 +79,18 @@ function revealMs(hadWrong){ return hadWrong ? T_REVEAL_WRONG : T_REVEAL; }
 // ============================================================
 const TOPICS = new Map();
 
+// Variantele FIXE pentru întrebările de departajare Adevărat / Fals.
+// În yaml: tip: adevarat_fals, corect: 0 (Adevărat) sau 1 (Fals).
+const AF_VARIANTE = ["Adevărat", "Fals"];
+
 function validQuestion(q){
   if(!q || typeof q.enunt !== "string") return false;
   if(q.tip === "grila"){
     return Array.isArray(q.variante) && q.variante.length >= 2 &&
            Number.isInteger(q.corect) && q.corect >= 0 && q.corect < q.variante.length;
+  }
+  if(q.tip === "adevarat_fals"){
+    return Number.isInteger(q.corect) && (q.corect === 0 || q.corect === 1);
   }
   if(q.tip === "numeric_exact" || q.tip === "numeric_aprox"){
     return typeof q.corect === "number" && isFinite(q.corect);
@@ -431,14 +438,18 @@ function pickQuestion(room, kinds){
 
 function isCorrect(q, val){
   if(q.tip === "grila") return Number(val) === q.corect;
+  if(q.tip === "adevarat_fals") return Number(val) === q.corect;  // 0=Adevărat, 1=Fals
   if(q.tip === "numeric_exact") return Number(val) === q.corect;
   return false; // numeric_aprox nu are corect/greșit — se judecă prin distanță
 }
 
-// versiunea publică a întrebării (FĂRĂ corect/explicatie)
+// versiunea publică a întrebării (FĂRĂ corect/explicatie). Întrebările de tip
+// adevarat_fals sunt trimise clientului CA grila (3 variante fixe), ca să refolosească
+// exact aceeași interfață de răspuns — fără cod nou pe client.
 function pubQuestion(q, qid, mode, deadline){
   const o = { qid, tip: q.tip, enunt: q.enunt, mode, deadline };
   if(q.tip === "grila") o.variante = q.variante;
+  if(q.tip === "adevarat_fals"){ o.tip = "grila"; o.variante = AF_VARIANTE; }
   if(q.cod) o.cod = String(q.cod);   // bloc de cod/schemă (afișat monospace)
   return o;
 }
@@ -686,11 +697,14 @@ function resolveExpansion(room){
 }
 
 function revealPrompt(q, qid, mode, results, outcome, extra){
+  const isAF = q.tip === "adevarat_fals";
+  const tip = isAF ? "grila" : q.tip;
+  const variante = isAF ? AF_VARIANTE : q.variante;
   const o = {
-    kind: "reveal", qid, tip: q.tip, mode,
+    kind: "reveal", qid, tip, mode,
     corect: q.corect,
-    corectText: q.tip === "grila" ? (q.variante[q.corect]) : String(q.corect),
-    variante: q.tip === "grila" ? q.variante : undefined,
+    corectText: tip === "grila" ? (variante[q.corect]) : String(q.corect),
+    variante: tip === "grila" ? variante : undefined,
     explicatie: q.explicatie || "",
     enunt: q.enunt,
     cod: q.cod ? String(q.cod) : "",
@@ -740,7 +754,7 @@ function handleAttackPick(ws, msg){
 }
 function beginDuel(room, attacker, defender, region, mode){
   const g = room.game; clearGameTimer(room);
-  const kinds = (mode === "duel-tie") ? ["numeric_aprox"] : ["grila"];
+  const kinds = (mode === "duel-tie") ? ["adevarat_fals"] : ["grila"];
   const pick = pickQuestion(room, kinds);
   if(!pick){ // fără întrebare potrivită: atacul eșuează grațios
     return finishDuel(room, attacker, defender, region, false, "Fără întrebare disponibilă — atac anulat.");
@@ -762,7 +776,7 @@ function beginDuel(room, attacker, defender, region, mode){
   const label = defender
     ? playerName(room, attacker) + " atacă " + regionName(room, region) + " (apărat de " + playerName(room, defender) + ")"
     : playerName(room, attacker) + " cucerește teritoriul neutru " + regionName(room, region);
-  g.lastOutcome = { text: label + (mode === "duel-tie" ? " — DEPARTAJARE: cine se apropie cel mai mult (viteza NU contează)!" : "") };
+  g.lastOutcome = { text: label + (mode === "duel-tie" ? " — DEPARTAJARE (Adevărat/Fals): cine răspunde corect mai repede!" : "") };
   broadcastGame(room);
   g.timer = setTimeout(() => resolveDuel(room), ms + 300);
 }
@@ -792,7 +806,7 @@ function resolveDuel(room){
     if(aC && !dC) return finishDuel(room, d.attacker, d.defender, d.region, true,  "Atacatorul a răspuns corect, apărătorul nu — cucerit!", q, results);
     if(!aC && dC) return finishDuel(room, d.attacker, d.defender, d.region, false, "Apărarea a rezistat!", q, results);
     // egalitate (ambii corect sau ambii greșit) -> departajare numerică
-    g.prompt = revealPrompt(q, g.qid, "duel-grila", results, "Egalitate! Urmează o întrebare de departajare — cine se apropie cel mai mult.");
+    g.prompt = revealPrompt(q, g.qid, "duel-grila", results, "Egalitate! Urmează o întrebare de departajare Adevărat/Fals — cine răspunde corect mai repede.");
     g.lastOutcome = { text: "Egalitate — departajare!" };
     broadcastGame(room);
     g.timer = setTimeout(() => beginDuel(room, d.attacker, d.defender, d.region, "duel-tie"), revealMs(!(aC && dC)));
@@ -800,23 +814,27 @@ function resolveDuel(room){
   }
 
   if(d.mode === "duel-tie"){
-    const target = q.corect;
-    const da = aA ? Math.abs(Number(aA.val) - target) : Infinity;
-    const dd = aD ? Math.abs(Number(aD.val) - target) : Infinity;
-    // CINE SE APROPIE CEL MAI MULT (viteza NU contează). La egalitate exactă
-    // NU mai favorizăm apărarea -> atacatorul ia teritoriul. Dacă niciunul nu
-    // răspunde, apărarea ține.
+    // DEPARTAJARE Adevărat/Fals: câștigă cine răspunde CORECT; dacă ambii
+    // răspund corect, departajează VITEZA (mai rapid). Dacă niciunul nu e corect
+    // (greșit sau „Nu știu"), apărarea ține. La viteză perfect egală -> atacatorul.
+    const aC = aA && isCorrect(q, aA.val);
+    const dC = aD && isCorrect(q, aD.val);
+    const ta = aA ? (aA.time - g.qStart) : Infinity;
+    const td = aD ? (aD.time - g.qStart) : Infinity;
     let aWin;
-    if(!isFinite(da) && !isFinite(dd)) aWin = false;
-    else if(da === dd) aWin = true;
-    else aWin = da < dd;
+    if(aC && !dC) aWin = true;
+    else if(dC && !aC) aWin = false;
+    else if(aC && dC) aWin = (ta <= td);
+    else aWin = false;
     const results = [
-      { playerId: d.attacker, val: aA ? aA.val : null, dist: isFinite(da) ? da : null, ms: aA ? (aA.time - g.qStart) : null },
-      { playerId: d.defender, val: aD ? aD.val : null, dist: isFinite(dd) ? dd : null, ms: aD ? (aD.time - g.qStart) : null }
+      { playerId: d.attacker, val: aA ? aA.val : null, correct: !!aC, ms: isFinite(ta) ? ta : null },
+      { playerId: d.defender, val: aD ? aD.val : null, correct: !!dC, ms: isFinite(td) ? td : null }
     ];
     const txt = aWin
-      ? (da === dd ? "Egalitate perfectă — atacatorul cucerește (apărarea nu mai are avantaj)!" : "Atacatorul s-a apropiat mai mult — cucerit!")
-      : (!isFinite(da) && !isFinite(dd) ? "Niciunul n-a răspuns — apărarea ține." : "Apărătorul s-a apropiat mai mult — rezistă!");
+      ? (aC && dC ? "Ambii corect — atacatorul a răspuns mai repede, cucerit!" : "Atacatorul a răspuns corect — cucerit!")
+      : (dC && !aC ? "Apărătorul a răspuns corect — rezistă!"
+                   : (aC && dC ? "Ambii corect — apărătorul a fost mai rapid, rezistă!"
+                               : "Niciunul n-a răspuns corect — apărarea ține."));
     return finishDuel(room, d.attacker, d.defender, d.region, aWin, txt, q, results);
   }
 }

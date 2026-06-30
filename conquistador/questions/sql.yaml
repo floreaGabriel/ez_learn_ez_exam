@@ -661,61 +661,59 @@ intrebari:
   #  ÎNTREBĂRI NOI — accent pe COD SQL și DEPARTAJARE (numeric_aprox)
   # ============================================================
 
-  # ---------- numeric_aprox: departajare ----------
-  - tip: numeric_aprox
+  # ---------- adevarat_fals: departajare (definiții/concepte) ----------
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Câte forme normale „clasice\" se studiază uzual în proiectarea bazelor
-      de date relaționale (de la 1NF până la BCNF inclusiv)?"
-    corect: 4
-    explicatie: "Uzual se consideră 1NF, 2NF, 3NF și forma Boyce-Codd (BCNF), adică
-      4 forme normale clasice. Există și 4NF, 5NF, dar nu fac parte din nucleul
-      de bază. Răspuns acceptat în jurul valorii 4."
+    enunt: "Un INNER JOIN întoarce doar rândurile care au corespondent în ambele
+      tabele, conform predicatului de potrivire."
+    corect: 0
+    explicatie: "Adevărat: INNER JOIN păstrează exclusiv perechile de rânduri pentru
+      care predicatul de join este adevărat, eliminând rândurile fără
+      corespondent."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Tabelul Angajati are 9 rânduri, tabelul Comenzi are 830 de rânduri și
-      fiecare comandă are exact un angajat (FK EmployeeID NOT NULL). Aproximativ
-      câte rânduri întoarce: SELECT * FROM Angajati A INNER JOIN Comenzi C ON
-      A.id = C.EmployeeID ?"
-    corect: 830
-    explicatie: "Fiecare comandă se potrivește cu exact un angajat, deci INNER JOIN
-      pe cheia străină păstrează numărul de comenzi: aproximativ 830 de
-      rânduri."
+    enunt: "În SQL, comparația `NULL = NULL` întoarce TRUE."
+    corect: 1
+    explicatie: "Fals: în logica trivalentă orice comparație cu NULL (inclusiv `NULL
+      = NULL`) întoarce `unknown`, nu TRUE; testul corect al valorilor NULL se
+      face cu `IS NULL`."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Un CROSS JOIN între un tabel cu 9 rânduri și un tabel cu 8 rânduri
-      produce aproximativ câte rânduri?"
-    corect: 72
-    explicatie: "CROSS JOIN realizează produsul cartezian: 9 * 8 = 72 de rânduri."
+    enunt: "Un LEFT JOIN păstrează toate rândurile din tabelul din stânga, completând
+      cu NULL coloanele din dreapta acolo unde nu există corespondent."
+    corect: 0
+    explicatie: "Adevărat: LEFT (OUTER) JOIN conservă toate rândurile din tabelul
+      stâng; pentru cele fără potrivire în dreapta, coloanele din tabelul drept
+      apar ca NULL."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Tabelul Clienti are 91 de rânduri și 5 dintre ei nu au nicio comandă.
-      Aproximativ câte rânduri întoarce: SELECT C.id FROM Clienti C WHERE NOT
-      EXISTS (SELECT 1 FROM Comenzi O WHERE O.client_id = C.id) ?"
-    corect: 5
-    explicatie: "NOT EXISTS păstrează doar clienții fără nicio comandă potrivită,
-      deci aproximativ 5 rânduri."
+    enunt: "Clauza WHERE poate folosi direct funcții de agregare precum `COUNT(*)`
+      pentru a filtra grupurile rezultate dintr-un GROUP BY."
+    corect: 1
+    explicatie: "Fals: WHERE filtrează rândurile înainte de grupare și nu poate folosi
+      funcții de agregare; filtrarea grupurilor pe baza agregatelor se face cu
+      HAVING (după GROUP BY)."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Tabelul Produse are 77 de rânduri, dintre care 9 au UnitPrice peste 40.
-      Aproximativ câte rânduri întoarce: SELECT COUNT(*) FROM Produse WHERE
-      UnitPrice > 40 ? (numărul, nu COUNT-ul)"
-    corect: 9
-    explicatie: "COUNT(*) cu filtrul WHERE numără doar rândurile care satisfac
-      predicatul UnitPrice > 40, adică aproximativ 9."
+    enunt: "Funcția `COUNT(coloana)` ignoră valorile NULL din acea coloană, în timp ce
+      `COUNT(*)` numără toate rândurile."
+    corect: 0
+    explicatie: "Adevărat: ca toate funcțiile de agregare, `COUNT(coloana)` ignoră
+      NULL-urile; `COUNT(*)` este excepția care numără toate rândurile,
+      indiferent de valorile NULL."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Tabelul Comenzi are 830 de rânduri, repartizate pe 3 curieri (ShipVia ia
-      valorile 1, 2 sau 3, fără NULL). Aproximativ câte rânduri întoarce: SELECT
-      ShipVia, COUNT(*) FROM Comenzi GROUP BY ShipVia ?"
-    corect: 3
-    explicatie: "GROUP BY ShipVia produce câte un rând per valoare distinctă de
-      ShipVia; existând 3 curieri, rezultatul are aproximativ 3 rânduri (nu
-      830)."
+    enunt: "O cheie străină (FOREIGN KEY) referă cheia primară (sau o cheie unică)
+      dintr-un alt tabel, asigurând integritatea referențială."
+    corect: 0
+    explicatie: "Adevărat: cheia străină este o coloană (sau set de coloane) care
+      referă cheia primară/unică a altui tabel, garantând că valorile introduse
+      există în tabelul referit (integritate referențială)."
 
   # ---------- grila cu cod SQL (timp: 55) ----------
   - tip: grila

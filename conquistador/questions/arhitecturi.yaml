@@ -390,32 +390,32 @@ intrebari:
     explicatie: "Numărul de blocuri = 64/4 = 16 blocuri; adresarea întregului spațiu
       la nivel de bloc necesită log2(16)=4 biți."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ ce raport reprezintă dimensiunea uzuală a memoriei cache
-      față de memoria principală (exprimă numitorul: 1/N din memoria
-      principală)?"
-    corect: 1000
-    explicatie: "Memoria cache este cu câteva ordine de mărime mai mică decât
-      memoria principală, de obicei aproximativ 1/1000 din dimensiunea
-      acesteia."
+    enunt: "În modul real IA-32, adresa fizică se obține prin adunarea offset-ului
+      la adresa de bază a segmentului înmulțită cu 10H, rezultând un spațiu de
+      adresare de 1 MB."
+    corect: 0
+    explicatie: "Adevărat: adresa fizică = segment*10H + offset, ceea ce dă adrese
+      pe 20 de biți (1 MB), specifice modului real care emulează 8086."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ câți tranzistori sunt necesari pentru a proiecta un
-      flip-flop standard de tip D folosit la construirea registrilor?"
-    corect: 16
-    explicatie: "Conform cursului, un flip-flop standard de tip D este proiectat
-      folosind aproximativ 16 tranzistori; un registru menține un vector de
-      astfel de flip-flops."
+    enunt: "În maparea complet asociativă, fiecare bloc din memoria principală poate
+      fi plasat într-o singură linie de cache, determinată prin restul împărțirii
+      la numărul de linii."
+    corect: 1
+    explicatie: "Fals: descrierea aparține mapării directe; la maparea complet
+      asociativă orice bloc poate fi plasat în oricare linie a cache-ului."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Peste ce grad de asociativitate al memoriei cache, creșterea nu mai
-      aduce beneficii practice pentru un sistem cu procesor single-core?"
-    corect: 8
-    explicatie: "Pentru un procesor single-core, creșterea gradului de
-      asociativitate peste 8 nu mai aduce beneficii practice semnificative."
+    enunt: "Localizarea spațială afirmă că, după accesarea unei locații de memorie,
+      este probabil să fie accesate în curând locațiile vecine acesteia."
+    corect: 0
+    explicatie: "Adevărat: localizarea spațială vizează locațiile învecinate
+      (parcurgerea unui vector), motiv pentru care cache-ul aduce blocuri întregi,
+      nu cuvinte izolate."
 
   # ==========================================================
   #  ÎNTREBĂRI NOI — adăugate (ancorate pe cursurile 4 și 5)
@@ -423,64 +423,67 @@ intrebari:
 
   # ---- numeric_aprox (departajare) ----
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Pentru o adresă fizică pe 32 de biți și o memorie cache cu mapare
-      directă de 1024 de linii, cu dimensiunea blocului/liniei de 32 KB, câți
-      biți are câmpul de TAG?"
-    corect: 7
-    explicatie: "offset = log2(32 KB) = log2(2^15) = 15 biți; index = log2(1024) =
-      10 biți; tag = 32 - 10 - 15 = 7 biți."
+    enunt: "Paginarea translatează adresele liniare în adrese fizice, fiecare segment
+      fiind împărțit în pagini care pot fi rezidente în memoria fizică sau pe
+      disc."
+    corect: 0
+    explicatie: "Adevărat: paginarea (activată prin bitul PG din CR0) transformă
+      adresele liniare în adrese fizice, paginile putând fi în RAM sau pe disc."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "O memorie cache cu mapare directă are dimensiunea de 16 KB și linii de
-      64 de octeți. Câte linii cache rezultă?"
-    corect: 256
-    explicatie: "Numărul de linii = 16 KB / 64 B = 16384 / 64 = 256 de linii."
+    enunt: "În modul protejat IA-32, adresa de bază a segmentului se obține înmulțind
+      direct conținutul registrului segment cu 10H, la fel ca în modul real."
+    corect: 1
+    explicatie: "Fals: în modul protejat selectorul indexează un descriptor de
+      segment din GDT/LDT, de unde se preia adresa de bază pe 32 de biți;
+      înmulțirea cu 10H este specifică modului real."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Pentru o memorie principală de 16 GB și un bloc/linie de 16 KB, la
-      mapare directă, câți biți de offset (index în bloc) sunt necesari?"
-    corect: 14
-    explicatie: "16 KB = 2^14 octeți, deci offset-ul în bloc are log2(2^14) = 14
-      biți; restul biților din adresa de 34 de biți se împart între index și
-      tag."
+    enunt: "Într-un cache cu mapare asociativă pe seturi, un bloc al memoriei
+      principale este asignat unui set fix, dar poate ocupa oricare linie din
+      acel set."
+    corect: 0
+    explicatie: "Adevărat: setul este determinat (de obicei bloc mod nr_seturi),
+      însă în interiorul setului blocul poate fi plasat în oricare dintre cele k
+      linii."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ câți tranzistori sunt necesari pentru a construi un
-      flip-flop standard de tip D folosit în registri?"
-    corect: 16
-    explicatie: "Conform cursului, un flip-flop standard de tip D este proiectat
-      folosind aproximativ 16 tranzistori; un registru menține un vector de
-      astfel de flip-flops pentru un cuvânt de 16/32/64 de biți."
+    enunt: "Politica de scriere Write Through actualizează datele doar în cache și
+      propagă modificarea în memoria principală abia la înlocuirea liniei."
+    corect: 1
+    explicatie: "Fals: descrierea aparține Write Back; Write Through scrie simultan
+      în cache și în memoria principală la fiecare operație de scriere."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Pentru un procesor 8086 cu frecvența de lucru de 5 MHz, aproximativ câte
-      nanosecunde durează o perioadă de ceas (P)?"
-    corect: 200
-    explicatie: "P = 1/f = 1/(5 MHz) = 200 ns; cursul indică P = 200 ns pentru 8086,
-      accesul la o locație de memorie durând circa 800 ns."
+    enunt: "În taxonomia lui Flynn, modelul Von Neumann clasic cu o singură ALU care
+      execută o instrucțiune asupra unui singur flux de date corespunde clasei
+      SISD."
+    corect: 0
+    explicatie: "Adevărat: o singură instrucțiune asupra unui singur flux de date
+      este definiția SISD (Single Instruction, Single Data)."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "În exemplul de eficiență a memoriei cache din curs, accesul în memoria
-      principală durează aproximativ câte cicluri de ceas?"
-    corect: 200
-    explicatie: "Cursul folosește 200 de cicluri de ceas pentru accesul în memoria
-      principală și 15 cicluri pentru accesul în memoria cache."
+    enunt: "Pipelining-ul reduce numărul total de instrucțiuni executate de procesor,
+      eliminând etapele redundante din ciclul fetch-decode-execute."
+    corect: 1
+    explicatie: "Fals: pipelining-ul nu reduce numărul de instrucțiuni, ci suprapune
+      execuția mai multor instrucțiuni pe etape, crescând throughput-ul."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Câte porțiuni distincte are forma binară a unei instrucțiuni Intel 64 și
-      IA-32 (prefix, opcode, ModR/M, SIB, deplasament, imediat)?"
-    corect: 6
-    explicatie: "Forma binară are 6 porțiuni: prefix (opțional), opcode (max 3
-      octeți), specificator de adresare (ModR/M + SIB), deplasament și valoare
-      imediată."
+    enunt: "În codificarea instrucțiunilor 8086, bitul w din primul octet indică
+      dimensiunea operanzilor: w=1 pentru operanzi pe 2 octeți, w=0 pentru
+      operanzi pe 1 octet."
+    corect: 0
+    explicatie: "Adevărat: bitul w (word/byte) selectează dimensiunea operanzilor,
+      iar bitul d indică direcția transferului față de registrul reg."
 
   # ---- grila cu schemă/calcul în câmpul cod ----
 

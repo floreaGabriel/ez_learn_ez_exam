@@ -514,52 +514,46 @@ intrebari:
   #  ÎNTREBĂRI NOI — ACCENT PE COD
   # ============================================================
 
-  # ---------- numeric_aprox (departajare) ----------
-  - tip: numeric_aprox
+  # ---------- adevarat_fals (departajare) ----------
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Pentru lanțul class B {}; class A : public B {}; class C : public A {};
-      class D : public C {}; la crearea unui singur obiect D, de câte ori se
-      apelează în total constructori (incluzând bazele)?"
-    corect: 4
-    explicatie: "Se apelează constructorii în ordinea bază->derivat: B(), A(), C(),
-      D() — adică 4 constructori în total."
+    enunt: "Un constructor are același nume ca al clasei și nu returnează niciun tip,
+      nici măcar void."
+    corect: 0
+    explicatie: "Adevărat: constructorii poartă numele clasei și nu au tip de retur,
+      nici void."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "O clasă Vector are ca membri doi obiecte Point (start și end) și un
-      pointer char*. La construirea unui singur obiect Vector se apelează cei
-      doi constructori Point plus constructorul Vector. Câți constructori se
-      apelează în total?"
-    corect: 3
-    explicatie: "Întâi se construiesc cele două obiecte Point membre (2
-      constructori), apoi corpul constructorului Vector (1) — în total 3.
-      Pointerul char* nu este un obiect-clasă, nu adaugă apel."
+    enunt: "O funcție virtuală pură (= 0) face clasa abstractă, astfel încât nu se
+      mai pot instanția obiecte directe ale acelei clase."
+    corect: 0
+    explicatie: "Adevărat: o clasă cu cel puțin o metodă virtuală pură este abstractă
+      și nu poate fi instanțiată direct."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Se execută: { Derivat D; } unde class Derivat : public Baza. Considerând
-      atât constructorii cât și destructorii apelați (Baza, Derivat la creare și
-      la distrugere), câte apeluri de constructori SAU destructori au loc în
-      total?"
-    corect: 4
-    explicatie: "La creare: Baza(), Derivat() = 2 apeluri; la distrugere (ordine
-      inversă): ~Derivat(), ~Baza() = 2 apeluri. Total 4."
-
-  - tip: numeric_aprox
-    dificultate: licenta
-    enunt: "În ce an a apărut standardul C++ care a introdus auto, referințele
-      rvalue (&&), move semantics și nullptr (anul din numele standardului)?"
-    corect: 2011
-    explicatie: "C++11 (anul 2011) a introdus auto, referințele rvalue T&&, move
-      semantics, nullptr și multe alte facilități."
-
-  - tip: numeric_aprox
-    dificultate: licenta
-    enunt: "Câți constructori de copiere distincți poate avea, cel mult, o clasă în
-      C++ (după regula din curs)?"
+    enunt: "În C++ destructorii pot fi supraîncărcați, o clasă putând avea mai mulți
+      destructori cu parametri diferiți."
     corect: 1
-    explicatie: "La nivelul unei clase poate exista un singur constructor de
-      copiere; acesta îl anulează pe cel implicit generat de compilator."
+    explicatie: "Fals: o clasă are un singur destructor, fără parametri și fără
+      supraîncărcare."
+
+  - tip: adevarat_fals
+    dificultate: licenta
+    enunt: "Apelul unei metode virtuale printr-un pointer la clasa de bază este
+      rezolvat la compilare (legare statică), pe baza tipului pointerului."
+    corect: 1
+    explicatie: "Fals: metodele virtuale folosesc legarea dinamică (la execuție), prin
+      vtable, pe baza tipului real al obiectului, nu al pointerului."
+
+  - tip: adevarat_fals
+    dificultate: licenta
+    enunt: "La instanțierea unui template de clasă, compilatorul generează cod
+      specializat pentru fiecare tip concret cu care este folosit."
+    corect: 0
+    explicatie: "Adevărat: template-urile sunt instanțiate de compilator, generând o
+      versiune de cod pentru fiecare tip efectiv utilizat."
 
   # ---------- grila cu COD (timp 50) ----------
   - tip: grila

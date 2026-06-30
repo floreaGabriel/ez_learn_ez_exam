@@ -442,31 +442,29 @@ intrebari:
       rezolvă recursiv și combină soluțiile (ex. Merge Sort interclasează
       jumătățile sortate)."
 
-  # ---------- Estimări (numeric_aprox) ----------
-  - tip: numeric_aprox
+  # ---------- Adevărat/Fals (departajare) ----------
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ câte comparații face o căutare binară, în cel mai rău caz,
-      într-un vector sortat cu 1.000.000 de elemente? (log2 de 1.000.000 este
-      circa 20)"
-    corect: 20
-    explicatie: "Căutarea binară face circa log2(n) comparații; log2(1.000.000) este
-      aproximativ 20, deci circa 20 de comparații."
+    enunt: "Căutarea binară funcționează corect doar pe un vector deja sortat."
+    corect: 0
+    explicatie: "Căutarea binară se bazează pe înjumătățirea spațiului comparând cu
+      elementul median; ea presupune că vectorul este ordonat, altfel deciziile
+      stânga/dreapta devin greșite."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Pentru n = 1000, aproximativ câte operații (în milioane) execută un
-      algoritm de complexitate O(n^2)?"
+    enunt: "Notația O (big-O) descrie o limită inferioară asimptotică a unei
+      funcții."
     corect: 1
-    explicatie: "Pentru un algoritm O(n^2) cu n=1000 avem aproximativ 1000^2 =
-      1.000.000 de operații, adică circa 1 milion."
+    explicatie: "Fals: notația O descrie o limită SUPERIOARĂ asimptotică; limita
+      inferioară este descrisă de notația Omega."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Câte interschimbări face Bubble Sort, aproximativ, pentru un vector cu
-      100 de elemente în ordine inversă (complet descrescător)?"
-    corect: 4950
-    explicatie: "Pentru un vector complet inversat numărul de interschimbări este
-      n*(n-1)/2 = 100*99/2 = 4950."
+    enunt: "Bubble Sort are complexitatea O(n^2) în cazul cel mai defavorabil."
+    corect: 0
+    explicatie: "Adevărat: pentru un vector în ordine inversă Bubble Sort face
+      ~n*(n-1)/2 comparații și interschimbări, deci O(n^2)."
 
   - tip: numeric_exact
     dificultate: licenta
@@ -484,89 +482,89 @@ intrebari:
     explicatie: "Un arbore binar complet cu 15 noduri are 1+2+4+8 = 15 noduri pe 4
       niveluri (înălțimea în muchii este 3)."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ câte operații execută un algoritm de complexitate O(n log n)
-      pentru n = 1000? (log2 de 1000 este circa 10)"
-    corect: 10000
-    explicatie: "n*log2(n) = 1000 * 10 = 10.000 de operații."
+    enunt: "Parcurgerea inordine (Stânga-Rădăcină-Dreapta) a unui arbore binar de
+      căutare vizitează cheile în ordine crescătoare."
+    corect: 0
+    explicatie: "Adevărat: datorită proprietății BST, parcurgerea inordine produce
+      mereu cheile sortate crescător."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Pentru o tabelă hash cu factor de încărcare ideal, complexitatea medie a
-      căutării este O(1); pentru câte operații (aproximativ) trebuie să te
-      aștepți la o căutare reușită cu chaining și factor de încărcare mic?"
-    corect: 1
-    explicatie: "Cu un factor de încărcare mic și distribuție uniformă, fiecare slot
-      are puține elemente, deci căutarea medie este aproximativ o operație,
-      adică O(1)."
+    enunt: "Într-o tabelă hash, o coliziune apare atunci când două chei diferite
+      produc aceeași valoare de dispersie."
+    corect: 0
+    explicatie: "Adevărat: coliziunea înseamnă hash(A) = hash(B) pentru A diferit de
+      B; ea se rezolvă prin chaining sau adresare deschisă."
 
   # ============================================================
   #  ÎNTREBĂRI NOI — departajare (numeric_aprox) și cod/pseudocod
   # ============================================================
 
-  # ---------- numeric_aprox (departajare) ----------
-  - tip: numeric_aprox
+  # ---------- adevarat_fals (departajare) ----------
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ câte operații elementare execută bucla dublă imbricată
-      dependentă for i=0..n-1, for j=i..n-1, pentru n = 100? (≈ n^2/2)"
-    corect: 5050
-    explicatie: "Numărul de perechi (i,j) cu i <= j este n*(n+1)/2 = 100*101/2 =
-      5050, adică aproximativ n^2/2."
+    enunt: "Quick Sort are complexitate O(n) în cazul cel mai defavorabil."
+    corect: 1
+    explicatie: "Fals: în cel mai rău caz (pivot mereu minimul sau maximul) Quick
+      Sort are complexitate O(n^2); cazul mediu este O(n log n)."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ câte comparații face Merge Sort pentru n = 1024, estimând
-      prin n*log2(n)? (log2 de 1024 este 10)"
-    corect: 10240
-    explicatie: "n*log2(n) = 1024 * 10 = 10240 de comparații aproximativ."
+    enunt: "Merge Sort are complexitatea O(n log n) în toate cazurile (favorabil,
+      mediu și defavorabil)."
+    corect: 0
+    explicatie: "Adevărat: Merge Sort împarte mereu în două și interclasează liniar,
+      deci este Theta(n log n) indiferent de datele de intrare."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Care este înălțimea (numărul de muchii pe cea mai lungă ramură) a unui
-      arbore binar complet echilibrat cu 1023 de noduri? (≈ log2(n+1) - 1)"
-    corect: 9
-    explicatie: "Un arbore binar complet cu 1023 = 2^10 - 1 noduri are 10 niveluri,
-      deci înălțimea în muchii este 9."
+    enunt: "O stivă (stack) funcționează după principiul FIFO (primul intrat, primul
+      ieșit)."
+    corect: 1
+    explicatie: "Fals: stiva este LIFO (ultimul intrat, primul ieșit); FIFO este
+      principiul cozii (queue)."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Câte muchii are un graf neorientat complet cu 20 de noduri? (n*(n-1)/2)"
-    corect: 190
-    explicatie: "Un graf complet cu n noduri are n*(n-1)/2 muchii; pentru n=20
-      rezultă 20*19/2 = 190."
+    enunt: "Parcurgerea în lățime (BFS) a unui graf folosește o coadă ca structură
+      auxiliară."
+    corect: 0
+    explicatie: "Adevărat: BFS folosește o coadă (FIFO) pentru a explora nodurile
+      nivel cu nivel; DFS folosește, în schimb, o stivă."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ câte apeluri recursive (noduri în arborele de recursivitate)
-      generează calculul lui Fibonacci recursiv naiv pentru F(10)? (≈ 2*F(n)-1)"
-    corect: 177
-    explicatie: "Numărul de apeluri pentru F(n) recursiv naiv este 2*F(n)-1;
-      F(10)=89, deci 2*89-1 = 177 de apeluri."
+    enunt: "Algoritmul lui Dijkstra funcționează corect și pe grafuri cu muchii de
+      cost negativ."
+    corect: 1
+    explicatie: "Fals: Dijkstra cere costuri nenegative; pentru muchii negative se
+      folosește Bellman-Ford."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Câte noduri (interne și frunze) are un arbore binar perfect cu înălțimea
-      h = 5 (măsurată în muchii)? (2^(h+1) - 1)"
-    corect: 63
-    explicatie: "Un arbore binar perfect de înălțime h are 2^(h+1)-1 noduri; pentru
-      h=5 rezultă 2^6 - 1 = 63 de noduri."
+    enunt: "Tehnica Greedy ia la fiecare pas decizia optimă local, fără a reveni
+      asupra ei."
+    corect: 0
+    explicatie: "Adevărat: metoda Greedy alege candidatul optim local la fiecare pas
+      și nu revine asupra deciziilor luate."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Câte interschimbări (swap) face Selection Sort, aproximativ, pentru un
-      vector cu n = 50 de elemente? (≈ n-1 interschimbări)"
-    corect: 49
-    explicatie: "Selection Sort face cel mult o interschimbare per pas, deci n-1 =
-      49 de interschimbări (deși numărul de comparații este ~n^2/2)."
+    enunt: "Tehnica Backtracking explorează sistematic spațiul soluțiilor și revine
+      (backtrack) atunci când o cale nu poate duce la o soluție validă."
+    corect: 0
+    explicatie: "Adevărat: Backtracking construiește soluția incremental și revine
+      când o decizie nu mai poate fi extinsă la o soluție corectă."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Câte comparații, aproximativ, face construirea unui heap (build-heap) cu
-      n = 1.000.000 de elemente, știind că build-heap este O(n)?"
-    corect: 1000000
-    explicatie: "Construirea unui heap prin heapify de jos în sus are complexitate
-      liniară O(n), deci aproximativ n = 1.000.000 de operații, nu n*log n."
+    enunt: "Într-un arbore AVL factorul de echilibru al fiecărui nod poate fi cel
+      mult 1 în valoare absolută (-1, 0 sau 1)."
+    corect: 0
+    explicatie: "Adevărat: condiția AVL impune factor de echilibru în {-1, 0, 1}; la
+      depășire se aplică rotații pentru a menține înălțimea logaritmică."
 
   # ---------- grila cu cod/pseudocod ----------
   - tip: grila

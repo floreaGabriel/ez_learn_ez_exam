@@ -84,18 +84,21 @@ intrebari:
     explicatie: "ARP (Address Resolution Protocol) află adresa MAC asociată unei
       adrese IP din aceeași subrețea."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "În ce an a fost standardizat IPv6 prin RFC 2460?"
-    corect: 1998
-    explicatie: "RFC 2460 (specificația IPv6) a fost publicat în decembrie 1998."
+    enunt: "TCP este un protocol orientat pe conexiune care garantează livrarea și
+      ordinea octeților transmiși."
+    corect: 0
+    explicatie: "Adevărat: TCP stabilește o conexiune (three-way handshake) și
+      asigură fiabilitatea prin numere de secvență, confirmări și retransmisii."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ câți octeți are antetul minim (fără opțiuni) al unui segment
-      TCP?"
-    corect: 20
-    explicatie: "Antetul TCP minim are 20 de octeți (poate crește până la 60 cu opțiuni)."
+    enunt: "UDP retransmite automat segmentele pierdute pentru a garanta livrarea
+      datelor."
+    corect: 1
+    explicatie: "Fals: UDP este neorientat conexiune și nu retransmite; eventualele
+      retransmisii cad în sarcina aplicației."
 
   # ----------------- ÎNTREBĂRI NOI -----------------
 
@@ -141,12 +144,13 @@ intrebari:
     explicatie: "IPv6 folosește adrese pe 128 de biți, scrise în notație
       hexazecimală (8 grupuri de câte 16 biți)."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Câți octeți (lungime fixă) are antetul de bază al unui pachet IPv6?"
-    corect: 40
-    explicatie: "Antetul de bază IPv6 are lungime fixă de 40 de octeți, simplificat
-      față de IPv4 pentru rutare eficientă."
+    enunt: "Antetul de bază al unui pachet IPv6 are o lungime fixă, spre deosebire de
+      antetul IPv4 a cărui lungime poate varia din cauza opțiunilor."
+    corect: 0
+    explicatie: "Adevărat: antetul de bază IPv6 are lungime fixă, iar opțiunile se
+      mută în antete de extensie; antetul IPv4 are lungime variabilă (câmpul IHL)."
 
   - tip: grila
     dificultate: licenta
@@ -212,13 +216,13 @@ intrebari:
     explicatie: "Adresa MAC are 48 de biți (6 octeți): primii 3 octeți sunt OUI
       (producătorul), ultimii 3 identifică placa de rețea."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Care este dimensiunea minimă, în octeți, a unui cadru Ethernet (fără
-      preambul și SFD)?"
-    corect: 64
-    explicatie: "Dimensiunea minimă a unui cadru Ethernet este 64 de octeți,
-      necesară pentru funcționarea corectă a mecanismului CSMA/CD."
+    enunt: "Adresa MAC dintr-un cadru Ethernet identifică interfața în cadrul aceleiași
+      legături și nu este folosită pentru rutarea între rețele diferite."
+    corect: 0
+    explicatie: "Adevărat: adresa MAC are semnificație locală (nivel 2); rutarea
+      între rețele se face pe baza adreselor IP (nivel 3)."
 
   - tip: numeric_exact
     dificultate: licenta
@@ -377,68 +381,69 @@ intrebari:
 
   # ---------- numeric_aprox (estimări / departajare) ----------
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "În ce an au publicat Vinton Cerf și Robert Kahn articolul care a pus
-      bazele protocolului TCP (și a folosit prima dată termenul „Internet”)?"
-    corect: 1974
-    explicatie: "În 1974 Cerf și Kahn au publicat „A Protocol for Packet Network
-      Internetworking”, fundamentul TCP; tot atunci apare termenul Internet."
+    enunt: "Three-way handshake-ul TCP folosește succesiunea de segmente SYN,
+      SYN+ACK și ACK pentru a stabili o conexiune."
+    corect: 0
+    explicatie: "Adevărat: clientul trimite SYN, serverul răspunde SYN+ACK, iar
+      clientul confirmă cu ACK, sincronizând numerele de secvență."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "În ce an a fost standardizat Wi-Fi 802.11n (rate mari, MIMO, 2,4/5 GHz)?"
-    corect: 2009
-    explicatie: "Standardul IEEE 802.11n a fost ratificat în 2009; a introdus MIMO
-      și rate de ordinul sutelor de Mbps față de 802.11g."
+    enunt: "Protocolul ARP traduce o adresă MAC într-o adresă IP din aceeași
+      subrețea."
+    corect: 1
+    explicatie: "Fals: ARP face exact invers — mapează o adresă IP cunoscută la
+      adresa MAC corespunzătoare din rețeaua locală."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ câte porturi de comunicație (numerotate pe 16 biți) poate
-      avea un host pentru un protocol de transport?"
-    corect: 65535
-    explicatie: "Numărul de port se codifică pe 16 biți, deci există 65535 porturi
-      utile per host (0 e rezervat); 0-1023 sunt porturi standard (IANA)."
+    enunt: "Numărul de port folosit de protocoalele de transport TCP și UDP este
+      codificat pe 16 biți."
+    corect: 0
+    explicatie: "Adevărat: câmpul de port are 16 biți, ceea ce permite valori de la
+      0 la 65535 pentru identificarea aplicațiilor."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ care este valoarea maximă a numărului de secvență TCP (codat
-      pe 32 de biți), exprimată în număr de octeți?"
-    corect: 4294967295
-    explicatie: "Numărul de secvență TCP are 32 de biți: 2^32 - 1 ≈ 4,29 miliarde,
-      adică aproximativ 4,3 Gbyte de flux înainte de revenire (wrap-around)."
+    enunt: "Un switch ia deciziile de înaintare a cadrelor pe baza adreselor IP
+      destinație."
+    corect: 1
+    explicatie: "Fals: switch-ul operează la nivel 2 și comută pe baza adreselor MAC
+      destinație; deciziile pe adrese IP sunt specifice routerelor (nivel 3)."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Care era throughput-ul (rata) backbone-ului NSFNET la înființarea sa în
-      1986, în kbps?"
-    corect: 56
-    explicatie: "Backbone-ul NSFNET pornea în 1986 cu legături de 56 kbps între 5
-      noduri principale (supercalculatoare)."
+    enunt: "Procesul DHCP de obținere a unei adrese (DORA) parcurge etapele
+      Discover, Offer, Request și Acknowledge."
+    corect: 0
+    explicatie: "Adevărat: clientul difuzează DISCOVER, serverul răspunde cu OFFER,
+      clientul cere prin REQUEST, iar serverul confirmă cu ACK."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ câți octeți are antetul (header-ul) MAXIM al unui segment
-      TCP, cu toate opțiunile incluse?"
-    corect: 60
-    explicatie: "Câmpul „header length” are 4 biți și se exprimă în cuvinte de 32 de
-      biți: maxim 15 cuvinte × 4 = 60 octeți (minim 20 octeți fără opțiuni)."
+    enunt: "Încapsularea presupune ca, pe măsură ce datele coboară prin stivă,
+      fiecare nivel să adauge propriul antet (și uneori un trailer)."
+    corect: 0
+    explicatie: "Adevărat: fiecare nivel încapsulează PDU-ul nivelului superior,
+      adăugând informația de control proprie (antet/trailer)."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Câte clase de adrese IP (A, B, C, D, E) au fost definite în schema
-      inițială Classful Addressing?"
-    corect: 5
-    explicatie: "Spațiul de adrese IPv4 a fost împărțit inițial în 5 clase: A, B, C
-      (unicast), D (multicast) și E (rezervată)."
+    enunt: "În modelul OSI, PDU-ul de la nivelul Transport se numește pachet, iar de
+      la nivelul Rețea se numește segment."
+    corect: 1
+    explicatie: "Fals: la Transport PDU-ul este segmentul, iar la nivelul Rețea este
+      pachetul; cei doi termeni sunt inversați în afirmație."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ câți biți are câmpul de offset al fragmentului
-      (Fragmentation offset) din antetul IPv4?"
-    corect: 13
-    explicatie: "Câmpul Fragmentation offset are 13 biți și exprimă poziția
-      fragmentului în segmente de câte 8 octeți (64 biți)."
+    enunt: "Spre deosebire de TCP, protocolul UDP nu asigură control al fluxului și
+      nici control al congestiei."
+    corect: 0
+    explicatie: "Adevărat: UDP este minimalist, fără mecanisme de flow/congestion
+      control; acestea sunt asigurate de TCP prin fereastra glisantă."
 
   # ---------- grila cu SCHEMĂ în câmpul cod ----------
 
@@ -655,23 +660,21 @@ intrebari:
     explicatie: "500.000 / 1.472 ≈ 339,67; ultima datagramă e parțială, deci se
       rotunjește în sus → 340 datagrame."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Calculați RTT (dus-întors) pentru o legătură între Pământ și Lună:
-      distanța = 385.000 km, semnalul se propagă cu viteza luminii (3·10^8 m/s).
-      Răspundeți în secunde."
-    corect: 2.56
-    explicatie: "RTT = 2 × distanță / viteză = 2 × (385.000.000 m) / (3·10^8 m/s) ≈
-      2,56 secunde (drumul se parcurge dus și întors)."
+    enunt: "Adresele IP sursă și destinație ale unui pachet rămân neschimbate de la
+      un capăt la altul, în timp ce adresele MAC se rescriu la fiecare hop."
+    corect: 0
+    explicatie: "Adevărat: IP-urile identifică capetele end-to-end și nu se schimbă,
+      iar MAC-urile sunt locale fiecărei legături și sunt rescrise de fiecare router."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Un modem are rata de 28.800 biți/sec. Cât durează (în secunde)
-      transferul unui fișier de 1.000.000 octeți?"
-    corect: 277.78
-    explicatie: "Fișierul în biți: 1.000.000 × 8 = 8.000.000 biți. T = 8.000.000 /
-      28.800 ≈ 277,78 secunde (~4 min 38 s). Atenție la conversia octeți →
-      biți."
+    enunt: "În modelul TCP/IP, nivelul Internet (IP) oferă un serviciu fiabil,
+      orientat pe conexiune, cu garantarea livrării pachetelor."
+    corect: 1
+    explicatie: "Fals: IP oferă un serviciu best-effort, neorientat conexiune;
+      fiabilitatea (livrare, ordine) este asigurată de TCP la nivelul transport."
 
   - tip: grila
     dificultate: licenta

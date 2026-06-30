@@ -104,13 +104,15 @@ intrebari:
     explicatie: "Pipe-ul anonim funcționează doar între procese înrudite, care
       moștenesc descriptorii prin fork()."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Câte condiții Coffman trebuie îndeplinite simultan pentru a apărea un
-      deadlock?"
-    corect: 4
-    explicatie: "Toate cele 4 condiții (excludere mutuală, hold-and-wait, fără
-      preempțiune, așteptare circulară) trebuie să fie prezente."
+    enunt: "Cele patru condiții Coffman (excludere mutuală, hold-and-wait, fără
+      preempțiune și așteptare circulară) trebuie îndeplinite SIMULTAN pentru ca
+      un deadlock să poată apărea."
+    corect: 0
+    explicatie: "Cele patru condiții sunt necesare împreună: dacă măcar una
+      lipsește, deadlock-ul nu se poate forma. Tocmai pe spargerea uneia dintre
+      ele se bazează metodele de prevenire."
 
   # ===================== ÎNTREBĂRI NOI =====================
 
@@ -554,94 +556,105 @@ intrebari:
       pozitiv."
 
   # ---- Întrebări numerice de estimare ----
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "În ce an a apărut prima versiune a nucleului Linux (anunțată de Linus
-      Torvalds)?"
-    corect: 1991
-    explicatie: "Linus Torvalds a anunțat și lansat prima versiune a nucleului Linux
-      în 1991."
+    enunt: "Apelul exec() (familia execv/execl) creează un proces nou, copil al
+      celui care îl apelează."
+    corect: 1
+    explicatie: "Fals: exec() NU creează niciun proces nou. El înlocuiește imaginea
+      (cod, date, stivă) a procesului curent cu un alt program, păstrând același
+      PID. Crearea unui proces nou se face cu fork()."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Care este dimensiunea tipică (uzuală) a unei pagini de memorie pe
-      arhitecturile x86, în KiB?"
-    corect: 4
-    explicatie: "Dimensiunea standard a paginii pe x86/x86-64 este 4 KiB (4096
-      octeți), corespunzând unui offset pe 12 biți; există și pagini mari (huge
-      pages) de 2 MiB sau 1 GiB."
+    enunt: "Paginarea memoriei elimină fragmentarea externă, deoarece folosește
+      pagini de dimensiune fixă, dar poate produce fragmentare internă."
+    corect: 0
+    explicatie: "Adevărat: paginile fiind de dimensiune fixă, orice cadru liber
+      poate găzdui orice pagină, deci nu apare fragmentare externă; în schimb
+      ultima pagină a unui proces rămâne de regulă parțial folosită (fragmentare
+      internă, în medie ~1/2 pagină)."
 
   # ============================================================
   #  ÎNTREBĂRI NOI (set 2) — ancorate pe cursurile PSO-NOI
   # ============================================================
 
   # ---- numeric_aprox (DEPARTAJARE — estimări, cine se apropie câștigă) ----
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ câți biți de offset (deplasament în interiorul paginii) are
-      o adresă pentru o pagină de 4 KiB?"
-    corect: 12
-    explicatie: "O pagină de 4 KiB = 4096 = 2^12 octeți, deci offset-ul ocupă 12
-      biți; restul biților adresei selectează numărul paginii."
+    enunt: "Un semnal SIGKILL poate fi prins (cu un handler) sau ignorat de către
+      procesul care îl primește, dacă programatorul dorește acest lucru."
+    corect: 1
+    explicatie: "Fals: SIGKILL (9) și SIGSTOP nu pot fi interceptate, blocate sau
+      ignorate; ele opresc, respectiv suspendă procesul necondiționat. Doar așa
+      sistemul poate garanta oprirea forțată a oricărui proces."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Câte intrări (entries) are, ca ordin de mărime tipic, un TLB modern de
-      nivel 1 pentru pagini de date?"
-    corect: 64
-    explicatie: "Un TLB de nivel 1 are tipic câteva zeci de intrări (frecvent ~64);
-      fiind un cache hardware scump și foarte rapid, capacitatea lui este mică,
-      motiv pentru care există și un TLB de nivel 2 mai mare."
+    enunt: "TLB-ul (Translation Lookaside Buffer) este un cache hardware al
+      traducerilor adresă virtuală -> adresă fizică."
+    corect: 0
+    explicatie: "Adevărat: TLB-ul memorează cele mai recente intrări din tabela de
+      pagini, accelerând translatarea adreselor virtuale în fizice și evitând un
+      acces suplimentar la memorie pentru tabela de pagini."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "În jurul cărui an au apărut sistemele Unix la Bell Labs (prima versiune)?"
-    corect: 1969
-    explicatie: "Unix a fost dezvoltat la Bell Labs în jurul anului 1969-1970 de Ken
-      Thompson și Dennis Ritchie; este strămoșul familiei de SO de tip Unix
-      (Linux, BSD, macOS)."
+    enunt: "Toate firele (thread-urile) aceluiași proces partajează spațiul de
+      adrese (heap, date globale), dar fiecare fir are propria stivă și proprii
+      regiștri."
+    corect: 0
+    explicatie: "Adevărat: firele unui proces împart heap-ul, variabilele globale și
+      descriptorii de fișiere, însă fiecare fir are stivă proprie, propriul PC și
+      set de regiștri, pentru a-și păstra contextul de execuție."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Conform recomandării clasice, de câte ori dimensiunea memoriei RAM ar
-      trebui să fie partiția de swap?"
-    corect: 2
-    explicatie: "Regula clasică spune swap = 2 * RAM; partiția de swap (backing
-      store) extinde spațiul de memorie folosibil, dar accesul este mult mai
-      lent decât la RAM."
+    enunt: "Un spinlock pune firul în starea blocat (sleep) atunci când lock-ul este
+      deja ocupat, eliberând astfel procesorul pentru alte fire."
+    corect: 1
+    explicatie: "Fals: spinlock-ul face busy-waiting (așteaptă activ, ocupând CPU)
+      cât timp lock-ul este ocupat, fiind potrivit pentru secțiuni critice
+      scurte. Mutex-ul, în schimb, pune firul în sleep."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Pe ce dimensiune (în GiB) este, clasic, separat spațiul de adrese
-      virtual al unui proces pe x86 pe 32 de biți între user-space și
-      kernel-space (partea de user)?"
-    corect: 3
-    explicatie: "Pe x86 pe 32 de biți, spațiul virtual de 4 GiB este împărțit clasic
-      3 GiB user-space + 1 GiB kernel-space (TASK_SIZE = 0xc0000000)."
+    enunt: "O barieră (barrier) eliberează un grup de fire să continue abia după ce
+      TOATE firele participante au ajuns în punctul de sincronizare."
+    corect: 0
+    explicatie: "Adevărat: bariera oprește fiecare fir ajuns în punct; numai când
+      ultimul fir sosește, toate firele sunt eliberate simultan. Este folosită
+      pentru a sincroniza fazele unui calcul paralel."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Care este, ca ordin de mărime, dimensiunea uzuală (în MiB) a stivei
-      principale a unui proces în Linux (RLIMIT_STACK implicit)?"
-    corect: 8
-    explicatie: "Limita implicită a stivei (RLIMIT_STACK) în Linux este tipic 8 MiB;
-      stiva crește de la adrese mari spre adrese mici."
+    enunt: "Operația P (wait) asupra unui semafor îi incrementează valoarea, iar
+      operația V (signal) i-o decrementează."
+    corect: 1
+    explicatie: "Fals: este exact invers. P (wait) DECREMENTEAZĂ semaforul (și
+      blochează firul dacă ar deveni negativ), iar V (signal) îl INCREMENTEAZĂ,
+      eventual deblocând un fir care aștepta."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "În jurul cărui procent de utilizare a CPU se situează, în practică, un
-      sistem încărcat (limita superioară uzuală menționată la curs)?"
-    corect: 90
-    explicatie: "La curs se menționează că utilizarea CPU variază teoretic 0-100%,
-      dar în practică se situează în intervalul 40-90%."
+    enunt: "Un proces care s-a terminat dar al cărui părinte nu a apelat încă wait()
+      pentru a-i citi codul de ieșire se numește proces zombie."
+    corect: 0
+    explicatie: "Adevărat: procesul zombie și-a încheiat execuția, dar intrarea lui
+      rămâne în tabela de procese până când părintele citește exit status-ul cu
+      wait(); un proces orfan este, în schimb, unul al cărui părinte s-a terminat
+      înaintea lui."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Câți octeți are o adresă pe o arhitectură pe 64 de biți?"
-    corect: 8
-    explicatie: "O adresă pe 64 de biți ocupă 64 / 8 = 8 octeți; în practică doar o
-      parte din cei 64 de biți sunt folosiți efectiv pentru adresare (ex. 48
-      biți)."
+    enunt: "Un page fault apare ori de câte ori un proces accesează o adresă de
+      memorie ilegală (în afara spațiului său de adrese) și duce întotdeauna la
+      terminarea procesului."
+    corect: 1
+    explicatie: "Fals: page fault-ul apare când pagina referită nu este prezentă în
+      RAM și, de regulă, este tratat normal (nucleul aduce pagina prin demand
+      paging și reia instrucțiunea). Accesul la o adresă ilegală generează un
+      segmentation fault, nu un simplu page fault."
 
   # ---- grila cu SCHEMĂ (cod) — întrebări mai grele, timp: 50 ----
   - tip: grila

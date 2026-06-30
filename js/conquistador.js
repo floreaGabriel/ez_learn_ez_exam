@@ -691,7 +691,7 @@
     if(pr.kind === "question"){
       var participate = pr.mode === "expansion" || pr.attacker === state.you || pr.defender === state.you;
       var tag = pr.mode === "expansion" ? "Întrebare — Expansiune"
-              : pr.mode === "duel-tie" ? "Departajare — cine se apropie 🎯" : "Duel ⚔️";
+              : pr.mode === "duel-tie" ? "Departajare — Adevărat / Fals ⚡" : "Duel ⚔️";
       var combat = (pr.attacker || pr.defender)
         ? '<div class="conq-vs">' + fighter(g, pr.attacker, "atac") + '<span class="conq-vs-x">VS</span>' + (pr.defender ? fighter(g, pr.defender, "apărare") : '<span class="conq-neutral-tag">teritoriu neutru</span>') + '</div>'
         : '';

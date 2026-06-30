@@ -585,40 +585,45 @@ intrebari:
     explicatie: "Deplasarea la dreapta cu 1 împarte la 2 (întreg): 7 >> 1 = 3 (0111
       devine 0011)."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Cât este suma 1 + 2 + 3 + ... + 100 (rezultatul buclei
-      'for(i=1;i<=100;i++) s+=i;')?"
-    corect: 5050
-    explicatie: "Suma primelor 100 de numere naturale este n(n+1)/2 = 100*101/2 = 5050."
+    enunt: "În C, numele unui tablou se comportă, în majoritatea contextelor, ca
+      adresa primului său element."
+    corect: 0
+    explicatie: "Numele unui tablou se convertește (decay) la un pointer către
+      primul element, deci se comportă ca adresa lui a[0]."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ ce valoare are 2 la puterea 10 (rezultatul lui '1 << 10')?"
-    corect: 1024
-    explicatie: "Deplasarea '1 << 10' înmulțește 1 cu 2 de zece ori: 2^10 = 1024."
+    enunt: "În C, transmiterea unui argument prin valoare (call by value) permite
+      funcției să modifice direct variabila originală a apelantului."
+    corect: 1
+    explicatie: "Fals: la call by value funcția primește o copie; pentru a modifica
+      originalul trebuie transmis pointerul (adresa) variabilei."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "De câte ori se execută corpul cel mai interior la două bucle imbricate,
-      fiecare 'for(i=0;i<100;i++)' (100 pe 100)?"
-    corect: 10000
-    explicatie: "Bucla exterioară rulează de 100 de ori, iar cea interioară de 100
-      pentru fiecare: 100 * 100 = 10000 execuții."
+    enunt: "În C, operatorul -> se folosește pentru a accesa un membru al unei
+      structuri printr-un pointer la acea structură."
+    corect: 0
+    explicatie: "p->camp este echivalent cu (*p).camp, adică accesarea unui membru
+      prin dereferențierea pointerului la structură."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "Aproximativ câți octeți ocupă tabloul 'int a[1000];' pe un sistem cu
-      sizeof(int)=4?"
-    corect: 4000
-    explicatie: "1000 de elemente * 4 octeți fiecare = 4000 de octeți."
+    enunt: "În C, funcția malloc inițializează automat cu zero memoria pe care o
+      alocă."
+    corect: 1
+    explicatie: "Fals: malloc nu inițializează memoria (conține valori
+      nedefinite); funcția care zeroizează blocul alocat este calloc."
 
-  - tip: numeric_aprox
+  - tip: adevarat_fals
     dificultate: licenta
-    enunt: "De câte ori se execută corpul buclei 'for(i=0; i<50; i+=2)' (numărul de
-      iterații)?"
-    corect: 25
-    explicatie: "i ia valorile 0, 2, 4, ..., 48 (pas 2 până sub 50): 50/2 = 25 iterații."
+    enunt: "Într-o funcție recursivă, cazul de bază (condiția de oprire) este
+      esențial pentru a evita recursivitatea infinită."
+    corect: 0
+    explicatie: "Cazul de bază oprește auto-apelul; fără el recursivitatea continuă
+      nelimitat și duce la depășirea stivei (stack overflow)."
 
   - tip: grila
     dificultate: licenta
