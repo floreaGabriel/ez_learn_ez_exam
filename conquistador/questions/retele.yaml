@@ -12,7 +12,7 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "Ce protocol de transport folosește DNS pentru interogările uzuale?"
-    variante: [ "ICMP", "UDP", "TCP", "ARP" ]
+    variante: [ "TCP", "UDP", "ARP", "ICMP" ]
     corect: 1
     explicatie: "DNS folosește UDP/53 pentru interogări obișnuite; trece pe TCP la
       transfer de zonă sau când răspunsul depășește limita UDP."
@@ -32,8 +32,8 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "La ce nivel din modelul OSI operează un switch clasic (Layer 2)?"
-    variante: [ "Nivel transport", "Nivel legătură de date", "Nivel rețea", "Nivel fizic" ]
-    corect: 1
+    variante: [ "Nivel rețea", "Nivel fizic", "Nivel transport", "Nivel legătură de date" ]
+    corect: 3
     explicatie: "Switch-ul clasic comută cadre pe baza adreselor MAC — nivelul 2
       (legătură de date)."
 
@@ -41,11 +41,11 @@ intrebari:
     dificultate: licenta
     enunt: "Câmpul TTL dintr-un pachet IPv4 este folosit pentru a:"
     variante:
+      - "Calcula suma de control a datelor"
+      - "Limita numărul de hop-uri și a preveni buclele"
       - "Cripta conținutul pachetului"
       - "Indica portul destinație"
-      - "Limita numărul de hop-uri și a preveni buclele"
-      - "Calcula suma de control a datelor"
-    corect: 2
+    corect: 1
     explicatie: "TTL (Time To Live) scade cu 1 la fiecare router; când ajunge la 0
       pachetul e aruncat — astfel se evită buclele infinite."
 
@@ -67,19 +67,19 @@ intrebari:
     enunt: "Care mecanism TCP asigură controlul fluxului (flow control)?"
     variante:
       [
-        "Checksum",
         "Three-way handshake",
         "Fereastra glisantă (sliding window)",
-        "TTL"
+        "TTL",
+        "Checksum"
       ]
-    corect: 2
+    corect: 1
     explicatie: "Fereastra glisantă reglează câte date poate trimite emițătorul
       înainte de un ACK, în funcție de capacitatea receptorului."
 
   - tip: grila
     dificultate: licenta
     enunt: "Ce protocol mapează o adresă IP la o adresă MAC în rețeaua locală?"
-    variante: [ "ARP", "ICMP", "DHCP", "NAT" ]
+    variante: [ "ARP", "ICMP", "NAT", "DHCP" ]
     corect: 0
     explicatie: "ARP (Address Resolution Protocol) află adresa MAC asociată unei
       adrese IP din aceeași subrețea."
@@ -102,16 +102,16 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "Câte niveluri are modelul de referință OSI?"
-    variante: [ "7 niveluri", "8 niveluri", "5 niveluri", "4 niveluri" ]
-    corect: 0
+    variante: [ "5 niveluri", "8 niveluri", "7 niveluri", "4 niveluri" ]
+    corect: 2
     explicatie: "Modelul OSI are 7 niveluri: Fizic, Legătură de date, Rețea,
       Transport, Sesiune, Prezentare, Aplicație."
 
   - tip: grila
     dificultate: licenta
     enunt: "Cum se numește unitatea de date (PDU) la nivelul Rețea din modelul OSI?"
-    variante: [ "Pachet (packet)", "Cadru (frame)", "Bit", "Segment" ]
-    corect: 0
+    variante: [ "Segment", "Cadru (frame)", "Pachet (packet)", "Bit" ]
+    corect: 2
     explicatie: "La nivelul Rețea PDU-ul este pachetul; la Transport segment, la
       Legătură de date cadru, la Fizic bit."
 
@@ -119,11 +119,11 @@ intrebari:
     dificultate: licenta
     enunt: "Care afirmație despre UDP este corectă?"
     variante:
-      - "Este orientat conexiune și garantează livrarea"
-      - "Folosește three-way handshake la stabilirea conexiunii"
-      - "Este neorientat conexiune și nu garantează livrarea datelor"
       - "Asigură controlul fluxului prin fereastră glisantă"
-    corect: 2
+      - "Este neorientat conexiune și nu garantează livrarea datelor"
+      - "Folosește three-way handshake la stabilirea conexiunii"
+      - "Este orientat conexiune și garantează livrarea"
+    corect: 1
     explicatie: "UDP este un protocol datagram, neorientat conexiune, cu overhead
       redus, care nu garantează livrarea sau ordinea datelor."
 
@@ -152,16 +152,16 @@ intrebari:
     dificultate: licenta
     enunt: "Ce flag-uri TCP sunt setate în al doilea pachet al unui three-way
       handshake?"
-    variante: [ "FIN și ACK", "doar SYN", "SYN și ACK", "doar ACK" ]
-    corect: 2
+    variante: [ "doar ACK", "SYN și ACK", "FIN și ACK", "doar SYN" ]
+    corect: 1
     explicatie: "Serverul răspunde cu SYN+ACK (confirmă SYN-ul clientului și trimite
       propriul număr de secvență), apoi clientul trimite ACK."
 
   - tip: grila
     dificultate: licenta
     enunt: "Pe ce port TCP rulează implicit SMTP (transferul mesajelor de e-mail)?"
-    variante: [ "143", "25", "110", "21" ]
-    corect: 1
+    variante: [ "25", "21", "143", "110" ]
+    corect: 0
     explicatie: "SMTP folosește portul 25/TCP; 110 este POP3, 143 este IMAP, iar 21
       este portul de comenzi FTP."
 
@@ -170,11 +170,11 @@ intrebari:
     enunt: "Pe ce porturi TCP ascultă implicit un server FTP (comenzi și date, mod
       activ)?"
     variante:
-      - "20 (comenzi) și 21 (date)"
-      - "23 (comenzi) și 24 (date)"
       - "21 (comenzi) și 20 (date)"
+      - "20 (comenzi) și 21 (date)"
       - "80 (comenzi) și 443 (date)"
-    corect: 2
+      - "23 (comenzi) și 24 (date)"
+    corect: 0
     explicatie: "FTP folosește portul 21/TCP pentru conexiunea de comenzi și portul
       20 pentru conexiunea de date (mod activ)."
 
@@ -182,8 +182,8 @@ intrebari:
     dificultate: licenta
     enunt: "Ce tip de înregistrare DNS (Resource Record) asociază un nume de domeniu
       cu o adresă IPv4?"
-    variante: [ "PTR", "CNAME", "MX", "A" ]
-    corect: 3
+    variante: [ "CNAME", "MX", "A", "PTR" ]
+    corect: 2
     explicatie: "Înregistrarea A mapează un nume de domeniu la o adresă IPv4 pe 32
       de biți; AAAA face același lucru pentru IPv6."
 
@@ -191,8 +191,8 @@ intrebari:
     dificultate: licenta
     enunt: "Ce înregistrare DNS indică serverul de e-mail responsabil pentru un
       domeniu?"
-    variante: [ "MX", "NS", "CNAME", "A" ]
-    corect: 0
+    variante: [ "A", "NS", "CNAME", "MX" ]
+    corect: 3
     explicatie: "Înregistrarea MX (Mail eXchange) specifică numele serverului de
       e-mail al domeniului, folosit de SMTP la livrarea mesajelor."
 
@@ -200,8 +200,8 @@ intrebari:
     dificultate: licenta
     enunt: "Care este metoda de control al accesului la mediu folosită în rețelele
       Ethernet clasice (802.3)?"
-    variante: [ "CSMA/CD", "TDMA", "CSMA/CA", "Token passing" ]
-    corect: 0
+    variante: [ "TDMA", "Token passing", "CSMA/CA", "CSMA/CD" ]
+    corect: 3
     explicatie: "Ethernet clasic folosește CSMA/CD (Carrier Sense Multiple Access
       with Collision Detection); CSMA/CA este folosit în Wi-Fi (802.11)."
 
@@ -232,11 +232,11 @@ intrebari:
     dificultate: licenta
     enunt: "Care este diferența esențială dintre un hub și un switch?"
     variante:
-      - "Hub-ul comută pe baza adreselor IP, switch-ul pe MAC"
+      - "Nu există nicio diferență funcțională"
       - "Hub-ul retransmite cadrul către toate stațiile, switch-ul doar către
         stația destinație"
       - "Switch-ul operează la nivel 3, hub-ul la nivel 4"
-      - "Nu există nicio diferență funcțională"
+      - "Hub-ul comută pe baza adreselor IP, switch-ul pe MAC"
     corect: 1
     explicatie: "Hub-ul difuzează cadrul recepționat pe toate porturile, în timp ce
       switch-ul îl trimite selectiv doar pe portul către destinație, pe baza
@@ -247,11 +247,11 @@ intrebari:
     enunt: "Pe baza căror adrese își construiește un switch tabela de comutare (MAC
       address table)?"
     variante:
+      - "Adresa MAC sursă din cadrele recepționate"
       - "Adresa MAC destinație din cadrele recepționate"
       - "Adresa IP destinație din pachete"
-      - "Adresa MAC sursă din cadrele recepționate"
       - "Adresa IP sursă din pachete"
-    corect: 2
+    corect: 0
     explicatie: "Switch-ul învață (learning) asociind adresa MAC sursă din fiecare
       cadru cu portul pe care acesta a sosit."
 
@@ -259,11 +259,11 @@ intrebari:
     dificultate: licenta
     enunt: "Care este principala funcție a unui router?"
     variante:
-      - "Rutarea pachetelor între rețele diferite pe baza adreselor IP"
-      - "Conversia numelor în adrese IP"
       - "Comutarea cadrelor pe baza adreselor MAC"
+      - "Conversia numelor în adrese IP"
+      - "Rutarea pachetelor între rețele diferite pe baza adreselor IP"
       - "Amplificarea semnalului electric"
-    corect: 0
+    corect: 2
     explicatie: "Router-ul operează la nivel 3 (Rețea) și dirijează pachetele între
       subrețele diferite folosind adresele IP și tabela de rutare."
 
@@ -272,11 +272,11 @@ intrebari:
     enunt: "În notația CIDR, ce reprezintă numărul de după caracterul / (de exemplu
       /24)?"
     variante:
-      - "Numărul clasei de adrese"
-      - "Numărul de subrețele posibile"
-      - "Numărul de gazde din rețea"
       - "Numărul de biți de 1 din masca de rețea (lungimea prefixului)"
-    corect: 3
+      - "Numărul de gazde din rețea"
+      - "Numărul de subrețele posibile"
+      - "Numărul clasei de adrese"
+    corect: 0
     explicatie: "Sufixul CIDR indică lungimea prefixului de rețea, adică numărul de
       biți de 1 din masca de rețea (ex. /24 = 255.255.255.0)."
 
@@ -284,11 +284,11 @@ intrebari:
     dificultate: licenta
     enunt: "Care dintre următoarele este un interval de adrese IP private (RFC 1918)?"
     variante:
-      - "8.0.0.0 - 8.255.255.255"
       - "172.16.0.0 - 172.31.255.255"
-      - "127.0.0.0 - 127.255.255.255"
+      - "8.0.0.0 - 8.255.255.255"
       - "200.0.0.0 - 200.255.255.255"
-    corect: 1
+      - "127.0.0.0 - 127.255.255.255"
+    corect: 0
     explicatie: "Intervalele private sunt 10.0.0.0/8, 172.16.0.0/12 (172.16-172.31)
       și 192.168.0.0/16; acestea nu sunt rutate în Internet."
 
@@ -296,9 +296,9 @@ intrebari:
     dificultate: licenta
     enunt: "La ce servește mecanismul NAT (Network Address Translation)?"
     variante:
-      - "Criptează traficul dintre două host-uri"
-      - "Mapează adrese IP în adrese MAC"
       - "Convertește numele de domenii în adrese IP"
+      - "Mapează adrese IP în adrese MAC"
+      - "Criptează traficul dintre două host-uri"
       - "Translatează adresele IP private în adrese IP publice (rutabile)"
     corect: 3
     explicatie: "NAT înlocuiește adresa IP privată dintr-un pachet cu o adresă IP
@@ -308,7 +308,7 @@ intrebari:
     dificultate: licenta
     enunt: "Care protocol asigură alocarea dinamică (automată) a adreselor IP unei
       stații în rețea?"
-    variante: [ "DNS", "ARP", "ICMP", "DHCP" ]
+    variante: [ "ICMP", "ARP", "DNS", "DHCP" ]
     corect: 3
     explicatie: "DHCP (Dynamic Host Configuration Protocol) atribuie automat adresa
       IP, masca, gateway-ul și serverul DNS, prin schimbul
@@ -318,12 +318,12 @@ intrebari:
     dificultate: licenta
     enunt: "Ce reprezintă încapsularea datelor în stiva de protocoale?"
     variante:
+      - "Compresia conținutului pentru a reduce dimensiunea"
+      - "Criptarea datelor înainte de transmisie"
       - "Adăugarea unui antet (și eventual trailer) la fiecare nivel pe măsură
         ce datele coboară prin stivă"
-      - "Criptarea datelor înainte de transmisie"
-      - "Compresia conținutului pentru a reduce dimensiunea"
       - "Fragmentarea pachetelor mari în pachete mici"
-    corect: 0
+    corect: 2
     explicatie: "La fiecare nivel datele primesc un antet propriu (HTTP -> TCP -> IP
       -> Ethernet), formând succesiv segment, pachet și cadru."
 
@@ -331,12 +331,12 @@ intrebari:
     dificultate: licenta
     enunt: "Cum este caracterizat protocolul HTTP din punct de vedere al stării?"
     variante:
+      - "Orientat conexiune permanentă obligatorie"
+      - "Bazat pe UDP fără confirmări"
+      - "Stateful — serverul reține toate cererile anterioare"
       - "Stateless — serverul nu menține informații despre cererile anterioare
         ale clientului"
-      - "Orientat conexiune permanentă obligatorie"
-      - "Stateful — serverul reține toate cererile anterioare"
-      - "Bazat pe UDP fără confirmări"
-    corect: 0
+    corect: 3
     explicatie: "HTTP este stateless: serverul nu reține contextul cererilor
       anterioare; starea se gestionează prin cookies, sesiuni server-side etc."
 
@@ -345,11 +345,11 @@ intrebari:
     enunt: "În IPv6, care protocol înlocuiește funcția ARP din IPv4 (determinarea
       adreselor MAC ale vecinilor)?"
     variante:
+      - "DHCPv6"
       - "IGMP"
       - "RARP"
       - "Neighbor Discovery (ND)"
-      - "DHCPv6"
-    corect: 2
+    corect: 3
     explicatie: "Neighbor Discovery (RFC 4861), bazat pe ICMPv6, înlocuiește ARP și
       permite descoperirea vecinilor, autoconfigurarea adreselor și descoperirea
       routerelor."
@@ -357,8 +357,8 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "Cărui standard IEEE 802 îi corespunde rețeaua Wireless LAN (Wi-Fi)?"
-    variante: [ "802.15", "802.11", "802.16", "802.3" ]
-    corect: 1
+    variante: [ "802.15", "802.3", "802.11", "802.16" ]
+    corect: 2
     explicatie: "IEEE 802.11 definește WLAN (Wi-Fi); 802.3 este Ethernet, 802.15
       este WPAN (Bluetooth), 802.16 este WiMAX."
 
@@ -366,8 +366,8 @@ intrebari:
     dificultate: licenta
     enunt: "Cum se clasifică o rețea care acoperă o arie redusă (clădire sau campus)
       cu rate mari de transfer?"
-    variante: [ "MAN", "PAN", "LAN", "WAN" ]
-    corect: 2
+    variante: [ "MAN", "WAN", "PAN", "LAN" ]
+    corect: 3
     explicatie: "LAN (Local Area Network) acoperă o arie redusă (clădire, campus);
       MAN acoperă un oraș, WAN o țară/continent, PAN aria personală."
 
@@ -450,8 +450,8 @@ intrebari:
       Masca:  255.255.255.192   (/26)
       Biti gazda: 32 - 26 = 6
     timp: 50
-    variante: [ "254", "62", "30", "126" ]
-    corect: 1
+    variante: [ "62", "254", "30", "126" ]
+    corect: 0
     explicatie: "/26 lasă 6 biți de gazdă => 2^6 = 64 adrese, minus adresa de rețea
       și cea de broadcast = 62 gazde utilizabile."
 
@@ -463,8 +463,8 @@ intrebari:
       Subretea:     /26  (64 adrese fiecare)
       /24 -> /26 : se imprumuta 2 biti de subretea
     timp: 50
-    variante: [ "4", "2", "8", "16" ]
-    corect: 0
+    variante: [ "2", "16", "4", "8" ]
+    corect: 2
     explicatie: "Prefixul crește de la /24 la /26 (cu 2 biți): 2^2 = 4 subrețele a
       câte 64 de adrese (256 / 64 = 4)."
 
@@ -477,8 +477,8 @@ intrebari:
       Biti gazda: 2  ->  4 adrese
       [ retea | host | host | broadcast ]
     timp: 50
-    variante: [ "4", "1", "6", "2" ]
-    corect: 3
+    variante: [ "6", "2", "1", "4" ]
+    corect: 1
     explicatie: "/30 => 2^2 = 4 adrese; scădem rețeaua și broadcast-ul => 2 gazde
       utilizabile, exact cât trebuie pentru o legătură între 2 routere."
 
@@ -500,8 +500,8 @@ intrebari:
       |          Destination IP address (32b)      |
       +--------------------------------------------+
     timp: 50
-    variante: [ "Urgent pointer", "Protocol", "Sequence number", "Window size" ]
-    corect: 1
+    variante: [ "Window size", "Sequence number", "Protocol", "Urgent pointer" ]
+    corect: 2
     explicatie: "După TTL urmează câmpul Protocol (8 biți), care indică protocolul
       de nivel superior: 1=ICMP, 6=TCP, 17=UDP. Window/Urgent/Sequence sunt
       câmpuri TCP."
@@ -534,8 +534,8 @@ intrebari:
       LAN A (192.168.1.0/24)        LAN B (192.168.2.0/24)
         PC --- Switch ---[ ? ]--- Switch --- PC
     timp: 50
-    variante: [ "Hub", "Repetor", "Switch suplimentar", "Router" ]
-    corect: 3
+    variante: [ "Switch suplimentar", "Router", "Repetor", "Hub" ]
+    corect: 1
     explicatie: "Două subrețele IP diferite se interconectează printr-un router
       (nivel 3), care rutează pachetele între ele; un switch/hub operează în
       aceeași subrețea."
@@ -546,9 +546,9 @@ intrebari:
     dificultate: licenta
     enunt: "Ce indică flag-ul DF (Do not Fragment) setat pe 1 într-un pachet IPv4?"
     variante:
+      - "Pachetul este ultimul fragment dintr-o serie"
       - "Pachetul conține date urgente"
       - "Mai urmează și alte fragmente"
-      - "Pachetul este ultimul fragment dintr-o serie"
       - "Pachetul nu trebuie fragmentat pe traseu"
     corect: 3
     explicatie: "DF=1 interzice fragmentarea: dacă pachetul depășește MTU-ul unei
@@ -559,7 +559,7 @@ intrebari:
     dificultate: licenta
     enunt: "Ce valoare are câmpul Protocol din antetul IPv4 atunci când datele
       încapsulate aparțin protocolului TCP?"
-    variante: [ "17", "53", "6", "1" ]
+    variante: [ "1", "53", "6", "17" ]
     corect: 2
     explicatie: "Valoarea 6 în câmpul Protocol indică TCP; 1 este ICMP, 17 este UDP,
       2 este IGMP. (53 este un port DNS, nu un număr de protocol.)"
@@ -569,11 +569,11 @@ intrebari:
     enunt: "Care organizație alocă blocurile mari de adrese IP regiunilor geografice
       (de exemplu RIPE NCC pentru Europa)?"
     variante:
-      - "IETF (Internet Engineering Task Force)"
-      - "RIR (Regional Internet Registry)"
       - "ICANN DNS root"
+      - "IETF (Internet Engineering Task Force)"
       - "ISP (Internet Service Provider)"
-    corect: 1
+      - "RIR (Regional Internet Registry)"
+    corect: 3
     explicatie: "IANA deleagă spațiul de adrese către RIR-uri (AfriNIC, ARIN, APNIC,
       LACNIC, RIPE NCC), care îl repartizează mai departe către ISP/LIR și
       clienți."
@@ -583,11 +583,333 @@ intrebari:
     enunt: "Ce caracteristică definește serviciul oferit de nivelul rețea (IP)
       într-o rețea TCP/IP?"
     variante:
-      - "Orientat conexiune, cu garantarea livrării și a ordinii"
-      - "Cu control de flux prin fereastră glisantă"
       - "Cu confirmare hop-by-hop la fiecare router"
       - "Best effort, connectionless — pachetele se pot pierde sau reordona"
-    corect: 3
+      - "Cu control de flux prin fereastră glisantă"
+      - "Orientat conexiune, cu garantarea livrării și a ordinii"
+    corect: 1
     explicatie: "IP oferă un serviciu „best effort, connectionless”: fiecare pachet
       e rutat independent, fără setup; pachetele se pot pierde sau ajunge în
       altă ordine — fiabilitatea o asigură TCP la nivelul transport."
+
+  # ============================================================
+  #  ÎNTREBĂRI NOI — set 3 (exerciții rezolvate stil examen)
+  #  Subnetizare/VLSM, calcule TCP/IP, hexdump, fragmentare, rutare
+  # ============================================================
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Calculatorul A trimite către B un segment TCP cu SEQ=43, ACK=103. B
+      răspunde cu un segment SEQ=103, ACK=57. Câți octeți de date a transmis A
+      către B?"
+    corect: 14
+    explicatie: "Regula TCP: ACK = ultimul octet primit + 1. B confirmă ACK=57, deci
+      a primit până la octetul 56, iar segmentul lui A a început la SEQ=43.
+      Octeți = 57 − 43 = 14."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Un pachet IP pleacă de la sursă cu TTL=128 și trece pe drumul A → R2 →
+      R1 → B (două routere). Ce valoare are câmpul TTL când pachetul ajunge la
+      B?"
+    corect: 126
+    explicatie: "TTL scade cu 1 la fiecare router traversat. Drumul trece prin 2
+      routere → TTL final = 128 − 2 = 126."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Un administrator trebuie să găzduiască 60 de calculatoare într-un LAN
+      nou. Care este cel mai mic prefix CIDR (numărul de după /) pe care îl
+      poate folosi pentru acea subrețea?"
+    corect: 26
+    explicatie: "2^h − 2 ≥ 60 → cu h=6 biți de host: 2^6 − 2 = 62 ≥ 60 (h=5 dă doar
+      30, insuficient). 6 biți de host → prefix /26 → mască 255.255.255.192."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Aplicație audio peste RTP/UDP/IP/Ethernet. Antetul RTP = 12 octeți,
+      antetul IP fără opțiuni = 20, antetul UDP = 8, iar Ethernet (antet 14 +
+      trailer FCS 4) = 18. Care este overhead-ul total, în octeți, per pachet
+      (ignorând preambulul)?"
+    corect: 58
+    explicatie: "Fiecare nivel adaugă propriul antet: 18 (Ethernet) + 20 (IP) + 8
+      (UDP) + 12 (RTP) = 58 octeți overhead per pachet."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Două LAN-uri sunt legate printr-un router. LAN1 are MTU=1000, LAN2 are
+      MTU=500. A trimite prin LAN1 un pachet IP de 1000 octeți (20 antet + 980
+      date) către B din LAN2. În câte fragmente îl împarte routerul pentru a-l
+      trece pe LAN2?"
+    corect: 3
+    explicatie: "Date utile per fragment = MTU(LAN2) − antet IP = 500 − 20 = 480
+      (multiplu de 8). 980 date → 480 + 480 + 20 = 3 fragmente (de 500, 500 și
+      40 octeți)."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Un fișier de 500.000 octeți se transferă prin UDP cu MTU=1472 octeți de
+      date per datagramă. Câte datagrame UDP sunt necesare pentru întreg
+      fișierul?"
+    corect: 340
+    explicatie: "500.000 / 1.472 ≈ 339,67; ultima datagramă e parțială, deci se
+      rotunjește în sus → 340 datagrame."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Calculați RTT (dus-întors) pentru o legătură între Pământ și Lună:
+      distanța = 385.000 km, semnalul se propagă cu viteza luminii (3·10^8 m/s).
+      Răspundeți în secunde."
+    corect: 2.56
+    explicatie: "RTT = 2 × distanță / viteză = 2 × (385.000.000 m) / (3·10^8 m/s) ≈
+      2,56 secunde (drumul se parcurge dus și întors)."
+
+  - tip: numeric_aprox
+    dificultate: licenta
+    enunt: "Un modem are rata de 28.800 biți/sec. Cât durează (în secunde)
+      transferul unui fișier de 1.000.000 octeți?"
+    corect: 277.78
+    explicatie: "Fișierul în biți: 1.000.000 × 8 = 8.000.000 biți. T = 8.000.000 /
+      28.800 ≈ 277,78 secunde (~4 min 38 s). Atenție la conversia octeți →
+      biți."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Se dă blocul 13.2.80.0/21 (interval 13.2.80.0 – 13.2.87.255). Subrețeaua
+      X are nevoie de 1000 de hosturi. Ce prefix (mască) minim i se alocă prin
+      VLSM?"
+    cod: |
+      Bloc parinte: 13.2.80.0/21  (2048 adrese)
+      X necesita 1000 hosturi:
+        2^10 - 2 = 1022 >= 1000  ->  10 biti de host
+      32 - 10 = 22  ->  prefix /22
+    timp: 50
+    variante:
+      [
+        "/22 (255.255.252.0)",
+        "/23 (255.255.254.0)",
+        "/24 (255.255.255.0)",
+        "/21 (255.255.248.0)"
+      ]
+    corect: 0
+    explicatie: "1000 hosturi cer 10 biți de host (2^10−2 = 1022 ≥ 1000) → 32−10 =
+      /22, adică un bloc de 1024 adrese (13.2.80.0/22)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Pentru blocul 192.168.10.0/24, prin VLSM se alocă subrețele de 120, 60,
+      30 și 2 hosturi (de la cea mai mare la cea mai mică). Ce adresă + mască
+      primește subrețeaua de 60 de hosturi?"
+    cod: |
+      A (120 h): 192.168.10.0/25   -> urmatorul liber: .128
+      B (60  h): 192.168.10.128/?
+        2^6 - 2 = 62 >= 60  ->  6 biti host  ->  /26
+    timp: 50
+    variante:
+      - "192.168.10.128/25"
+      - "192.168.10.128/26"
+      - "192.168.10.64/26"
+      - "192.168.10.192/27"
+    corect: 1
+    explicatie: "60 hosturi → /26 (62 utilizabile). După blocul A (/25 = .0–.127),
+      următorul bloc liber începe la .128 → 192.168.10.128/26."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Pentru pachetul din hexdump-ul de mai jos, care este adresa IP sursă și
+      ce protocol de nivel transport/rețea transportă (câmpul Protocol din
+      antetul IP)?"
+    cod: |
+      0000  00 0c ce 13 b9 a0 00 22 5f 3f 98 91 08 00 45 00
+      0010  00 3c c6 3e 00 00 80 01 59 c0 c0 a8 00 59 c0 a8
+      0020  00 01 08 00 42 5c ...
+      (Ethernet=14o; EtherType 08 00 = IPv4; IP incepe la 45 00)
+    timp: 60
+    variante:
+      - "IP src 192.168.0.1 · Protocol = TCP"
+      - "IP src 192.168.0.89 · Protocol = ICMP"
+      - "IP src 192.168.0.1 · Protocol = ICMP"
+      - "IP src 192.168.0.89 · Protocol = UDP"
+    corect: 1
+    explicatie: "Câmpul Protocol (octetul 10 din antetul IP) este 01 = ICMP. IP src
+      = c0 a8 00 59 = 192.168.0.89, IP dst = c0 a8 00 01 = 192.168.0.1."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Într-un pachet TCP capturat, headerul TCP începe cu octeții 08 00 00 50.
+      Care sunt portul sursă și portul destinație, și ce protocol de aplicație
+      sugerează portul destinație?"
+    cod: |
+      TCP src port: 08 00 (hex) = 0x0800 = 2048
+      TCP dst port: 00 50 (hex) = 0x0050 = 80
+    timp: 50
+    variante:
+      - "src 800, dst 50 → SMTP"
+      - "src 2048, dst 443 → HTTPS"
+      - "src 2048, dst 80 → HTTP"
+      - "src 80, dst 2048 → HTTPS"
+    corect: 2
+    explicatie: "0x0800 = 2048 (port sursă efemer), 0x0050 = 80 (port destinație).
+      Portul 80 indică HTTP, confirmat de payload-ul text „GET / HTTP/1.1”."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Tabela de rutare are intrările: 128.8.128.0/24 → if.3 și 128.8.128.0/28
+      → if.4 (plus Default → if.5). Pe ce interfață se trimite un pachet către
+      128.8.128.5, conform regulii longest prefix match?"
+    cod: |
+      128.8.128.0/24  -> if.3   (gazde .0 - .255)
+      128.8.128.0/28  -> if.4   (gazde .0 - .15)
+      Destinatie: 128.8.128.5  (5 este in 0-15)
+    timp: 50
+    variante: [ "if.5 (Default)", "if.3 si if.4 simultan", "if.4 (/28)", "if.3 (/24)" ]
+    corect: 2
+    explicatie: ".5 se potrivește atât cu /24 cât și cu /28 (5 ∈ 0–15). Longest
+      prefix match alege prefixul cel mai lung (cel mai specific) → /28 → if.4."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Un switch cu 4 porturi are tabela CAM goală. Primește pe portul 3 un
+      cadru cu MAC sursă cunoscut, dar MAC destinația nu apare în tabelă. Ce
+      face switch-ul cu acel cadru?"
+    cod: |
+      Tabela CAM: destinatia NU este invatata
+      Cadru intrat pe: portul 3
+    timp: 50
+    variante:
+      - "Flooding: îl trimite pe toate porturile, mai puțin cel de intrare (1,
+        2, 4)"
+      - "Trimite o interogare ARP pentru a afla portul"
+      - "Îl aruncă (drop), pentru că nu știe destinația"
+      - "Îl trimite înapoi pe portul 3"
+    corect: 0
+    explicatie: "Când destinația lipsește din tabela CAM, switch-ul face flooding:
+      forwardează cadrul pe toate porturile cu excepția celui pe care a intrat
+      (portul 3) → porturile 1, 2 și 4."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Calculatoarele A și B sunt legate prin același switch Ethernet. A
+      trimite un pachet IP către B. Câte interogări ARP inițiază switch-ul ca să
+      poată forwarda cadrul la B?"
+    variante:
+      [
+        "Una (pentru gateway)",
+        "Două (pentru A și pentru B)",
+        "Una (pentru MAC-ul lui B)",
+        "Niciuna (0)"
+      ]
+    corect: 3
+    explicatie: "Switch-ul lucrează la nivelul 2 și forwardează pe baza MAC-ului
+      destinație deja scris în cadru, învățând MAC-urile sursă. Nu cunoaște
+      adrese IP și nu inițiază niciodată ARP → 0 interogări. ARP-ul îl face A,
+      înainte."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "O captură ping arată răspunsuri cu icmp_seq = 0, 1, 3, 4 (timpii 2, 3,
+      4, 3 ms). Care sunt rata de pierdere a pachetelor și RTT-ul mediu?"
+    cod: |
+      seq primite: 0, 1, 3, 4   (seq=2 LIPSESTE)
+      trimise: 5 (0..4)   primite: 4
+      timpi: 2, 3, 4, 3 ms
+    timp: 50
+    variante:
+      - "Pierdere 20% · RTT mediu 3 ms"
+      - "Pierdere 25% · RTT mediu 4 ms"
+      - "Pierdere 0% · RTT mediu 3 ms"
+      - "Pierdere 20% · RTT mediu 4 ms"
+    corect: 0
+    explicatie: "seq=2 lipsește: 1 pierdut din 5 trimise = 20%. RTT mediu =
+      (2+3+4+3)/4 = 3 ms (min 2, max 4)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Un cadru traversează A → R1 → R2 → B (A și B în subrețele diferite). Ce
+      se întâmplă cu adresele IP și MAC ale pachetului pe parcurs?"
+    variante:
+      - "Adresele IP sursă/destinație rămân neschimbate, dar MAC-urile se
+        rescriu la fiecare hop"
+      - "Toate adresele rămân neschimbate până la destinație"
+      - "Atât IP-urile cât și MAC-urile se rescriu la fiecare router"
+      - "MAC-urile rămân fixe, dar IP-ul destinație se schimbă la fiecare router"
+    corect: 0
+    explicatie: "Adresele IP sursă/destinație identifică capetele end-to-end și NU
+      se schimbă pe drum; adresele MAC sunt locale fiecărei legături, deci
+      routerele le rescriu la fiecare hop (către vecinul direct)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Host A trimite segmente cu SEQ 10, 20, 30, 40, 50, 60 (câte 10 octeți).
+      Host B confirmă cu ACK 30, 50, 70. Dacă ACK=50 se pierde pe drum, trebuie
+      A să retransmită ceva?"
+    variante:
+      - "Nu — ACK-urile TCP sunt cumulative, ACK=70 confirmă și ce confirma
+        ACK=50"
+      - "Nu, dar conexiunea se închide cu RST"
+      - "Da, retransmite tot fluxul de la SEQ 30"
+      - "Da, retransmite segmentele cu SEQ 30 și 40"
+    corect: 0
+    explicatie: "ACK-urile TCP sunt cumulative: ACK=N confirmă tot până la octetul
+      N−1. ACK=70 confirmă cumulativ tot ce ar fi confirmat ACK=50 (și mai
+      mult), deci pierderea unui ACK intermediar nu provoacă retransmisii."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Interfața eth0 are IP 107.85.20.3 și masca 255.255.255.240. Din ce clasă
+      face parte adresa și care este adresa de broadcast a subrețelei?"
+    cod: |
+      Masca 255.255.255.240 = /28  (4 biti host)
+      Blocuri de 16 pe ultimul octet: 0-15, 16-31, ...
+      .3 este in blocul 0-15
+    timp: 50
+    variante:
+      - "Clasa B · broadcast 107.85.20.255"
+      - "Clasa A · broadcast 107.85.20.15"
+      - "Clasa C · broadcast 107.85.20.15"
+      - "Clasa A · broadcast 107.85.20.16"
+    corect: 1
+    explicatie: "Primul octet 107 ∈ 1–126 → clasa A. /28 = blocuri de 16; .3 ∈ 0–15,
+      deci subrețeaua e 107.85.20.0/28 și broadcast-ul (ultima adresă) =
+      107.85.20.15."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "O captură tcpdump arată: clientul (172.20.1.21, port 1303) deschide o
+      conexiune (S, S+ack, ack) către portul 23 al serverului, urmată de
+      segmente mici de date. Ce serviciu de aplicație este?"
+    variante: [ "SMTP", "HTTP", "Telnet", "SSH" ]
+    corect: 2
+    explicatie: "Portul destinație 23 este Telnet. Segmentele mici de date (caracter
+      cu caracter) sunt tipice sesiunilor Telnet interactive; pachetele
+      S/S+ack/ack sunt three-way handshake-ul."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Cum descoperă comanda traceroute fiecare router de pe traseu către o
+      destinație?"
+    variante:
+      - "Trimite cereri ARP succesive către fiecare router"
+      - "Trimite pachete cu TTL crescător (1, 2, 3...); fiecare router care îl
+        aduce la 0 răspunde cu ICMP Time Exceeded"
+      - "Citește direct tabelele de rutare ale fiecărui router prin SNMP"
+      - "Interoghează serverul DNS pentru lista de hop-uri"
+    corect: 1
+    explicatie: "traceroute trimite pachete cu TTL=1, apoi 2, 3... Routerul la care
+      TTL ajunge 0 aruncă pachetul și trimite înapoi ICMP Time Exceeded,
+      dezvăluindu-și adresa IP; așa se mapează traseul hop cu hop."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este ordinea corectă (de sus în jos) a nivelurilor 4–7 din modelul
+      OSI și un exemplu reprezentativ pentru fiecare?"
+    variante:
+      - "Aplicație (HTTP), Prezentare (SSL/TLS), Sesiune (control dialog),
+        Transport (TCP)"
+      - "Aplicație (Ethernet), Prezentare (MAC), Sesiune (IP), Transport (UDP)"
+      - "Aplicație (TCP), Prezentare (IP), Sesiune (HTTP), Transport (Ethernet)"
+      - "Transport (HTTP), Sesiune (TCP), Prezentare (IP), Aplicație (DNS)"
+    corect: 0
+    explicatie: "Nivel 7 Aplicație (HTTP, DNS), 6 Prezentare (SSL/TLS, compresie), 5
+      Sesiune (controlul dialogului), 4 Transport (TCP/UDP). IP e nivel 3,
+      Ethernet și MAC sunt nivel 2."

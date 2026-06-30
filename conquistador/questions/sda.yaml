@@ -14,8 +14,8 @@ intrebari:
     dificultate: licenta
     enunt: "Care este complexitatea în cazul cel mai defavorabil a căutării liniare
       a unui element într-un vector neordonat cu n elemente?"
-    variante: [ "O(log n)", "O(n log n)", "O(1)", "O(n)" ]
-    corect: 3
+    variante: [ "O(n log n)", "O(n)", "O(log n)", "O(1)" ]
+    corect: 1
     explicatie: "În cel mai rău caz elementul este pe ultima poziție sau lipsește,
       deci se parcurg toate cele n elemente, rezultând O(n)."
 
@@ -23,8 +23,8 @@ intrebari:
     dificultate: licenta
     enunt: "Care este complexitatea căutării binare într-un vector sortat cu n
       elemente?"
-    variante: [ "O(1)", "O(log n)", "O(n log n)", "O(n)" ]
-    corect: 1
+    variante: [ "O(n)", "O(1)", "O(n log n)", "O(log n)" ]
+    corect: 3
     explicatie: "La fiecare pas spațiul de căutare se înjumătățește, deci numărul de
       pași este de ordinul log n, adică O(log n)."
 
@@ -33,8 +33,8 @@ intrebari:
     enunt: "Despre ce notație asimptotică vorbim atunci când o funcție este
       încadrată simultan de o limită inferioară și una superioară de același
       ordin?"
-    variante: [ "Notația Omega", "Notația o (litera mică)", "Notația O", "Notația Theta" ]
-    corect: 3
+    variante: [ "Notația Theta", "Notația o (litera mică)", "Notația Omega", "Notația O" ]
+    corect: 0
     explicatie: "Notația Theta oferă o încadrare strânsă: c1*g(n) <= f(n) <=
       c2*g(n), deci limită inferioară și superioară de același ordin."
 
@@ -44,20 +44,20 @@ intrebari:
     enunt: "O stivă (stack) funcționează după principiul:"
     variante:
       [
-        "LIFO (Last In, First Out)",
-        "Prioritate",
         "FIFO (First In, First Out)",
-        "Acces aleator"
+        "Acces aleator",
+        "LIFO (Last In, First Out)",
+        "Prioritate"
       ]
-    corect: 0
+    corect: 2
     explicatie: "Stiva este o structură LIFO: ultimul element introdus este primul
       extras (ex. transferul parametrilor la apeluri de funcții)."
 
   - tip: grila
     dificultate: licenta
     enunt: "O coadă (queue) funcționează după principiul:"
-    variante: [ "FIFO", "LIFO", "Cel mai mare prioritar", "Acces direct prin index" ]
-    corect: 0
+    variante: [ "Cel mai mare prioritar", "FIFO", "LIFO", "Acces direct prin index" ]
+    corect: 1
     explicatie: "Coada este o structură FIFO: primul element introdus este primul
       extras (ex. pachete în Internet)."
 
@@ -65,8 +65,8 @@ intrebari:
     dificultate: licenta
     enunt: "Care este complexitatea accesului la elementul de pe poziția k într-o
       listă simplu înlănțuită cu n noduri?"
-    variante: [ "O(log n)", "O(n)", "O(n log n)", "O(1)" ]
-    corect: 1
+    variante: [ "O(log n)", "O(n log n)", "O(n)", "O(1)" ]
+    corect: 2
     explicatie: "Într-o listă înlănțuită nu există acces direct prin index; trebuie
       parcurse nodurile de la cap, deci O(n). La vector accesul este O(1)."
 
@@ -74,7 +74,7 @@ intrebari:
     dificultate: licenta
     enunt: "Care este complexitatea inserării unui nou element la începutul (în
       capul) unei liste simplu înlănțuite?"
-    variante: [ "O(1)", "O(n)", "O(n log n)", "O(log n)" ]
+    variante: [ "O(1)", "O(log n)", "O(n)", "O(n log n)" ]
     corect: 0
     explicatie: "Inserarea la cap presupune doar legarea noului nod la head și
       actualizarea head-ului, operații în timp constant O(1)."
@@ -86,11 +86,11 @@ intrebari:
       că pentru fiecare nod:"
     variante:
       - "Cheia este mai mare decât toate cheile din subarborele drept"
-      - "Subarborele stâng și drept au același număr de noduri"
       - "Toate frunzele sunt pe același nivel"
       - "Cheia este superioară oricărei chei din subarborele stâng și inferioară
         oricărei chei din subarborele drept"
-    corect: 3
+      - "Subarborele stâng și drept au același număr de noduri"
+    corect: 2
     explicatie: "În BST, cheia unui nod este mai mare decât toate cheile din
       subarborele stâng și mai mică decât toate cheile din subarborele drept."
 
@@ -100,9 +100,9 @@ intrebari:
       crescătoare (sortate)?"
     variante:
       [
+        "Postordine (SDR)",
         "Preordine (RSD)",
         "Parcurgerea în lățime",
-        "Postordine (SDR)",
         "Inordine (SRD)"
       ]
     corect: 3
@@ -113,8 +113,8 @@ intrebari:
     dificultate: licenta
     enunt: "Care este complexitatea operațiilor de căutare, inserare și ștergere
       într-un arbore binar de căutare, în funcție de înălțimea h?"
-    variante: [ "O(n log n)", "O(1)", "O(h)", "O(n^2)" ]
-    corect: 2
+    variante: [ "O(h)", "O(1)", "O(n log n)", "O(n^2)" ]
+    corect: 0
     explicatie: "Aceste operații coboară pe o ramură a arborelui, deci costul este
       proporțional cu înălțimea h: O(h). Pentru un arbore echilibrat h = O(log
       n)."
@@ -123,8 +123,8 @@ intrebari:
     dificultate: licenta
     enunt: "Un arbore binar de căutare degenerat (fiecare nod are cel mult un fiu)
       are înălțimea:"
-    variante: [ "O(n)", "O(log n)", "O(1)", "O(sqrt(n))" ]
-    corect: 0
+    variante: [ "O(log n)", "O(sqrt(n))", "O(n)", "O(1)" ]
+    corect: 2
     explicatie: "Un arbore degenerat se comportă ca o listă înlănțuită, deci
       înălțimea este O(n), iar operațiile devin O(n)."
 
@@ -134,11 +134,11 @@ intrebari:
       nod, factorul de echilibru (diferența de înălțime între subarborele stâng
       și cel drept) este:"
     variante:
-      - "Cel mult 1 în valoare absolută (-1, 0 sau 1)"
-      - "Egal cu numărul de noduri"
-      - "Exact 0"
       - "Cel puțin 2"
-    corect: 0
+      - "Egal cu numărul de noduri"
+      - "Cel mult 1 în valoare absolută (-1, 0 sau 1)"
+      - "Exact 0"
+    corect: 2
     explicatie: "În arborele AVL factorul de echilibru al fiecărui nod este -1, 0
       sau 1; la depășire se aplică rotații pentru a menține echilibrul și
       înălțimea O(log n)."
@@ -147,8 +147,8 @@ intrebari:
     dificultate: licenta
     enunt: "Ce operație folosesc arborii AVL pentru a se reechilibra după o inserare
       sau ștergere care strică echilibrul?"
-    variante: [ "Rotațiile", "Heapify", "Interclasarea", "Partiționarea" ]
-    corect: 0
+    variante: [ "Interclasarea", "Partiționarea", "Heapify", "Rotațiile" ]
+    corect: 3
     explicatie: "Arborii AVL folosesc rotații (simple sau duble, stânga/dreapta)
       pentru a reface factorul de echilibru și a menține înălțimea logaritmică."
 
@@ -166,11 +166,11 @@ intrebari:
     enunt: "Un Trie (arbore prefix) este folosit în special pentru:"
     variante:
       - "Gestiunea cozilor de priorități"
-      - "Sortarea numerelor întregi"
-      - "Calculul drumurilor minime în grafuri"
       - "Căutarea și stocarea eficientă a șirurilor de caractere (ex.
         autocomplete)"
-    corect: 3
+      - "Calculul drumurilor minime în grafuri"
+      - "Sortarea numerelor întregi"
+    corect: 1
     explicatie: "Trie-ul (arbore prefix) este folosit pentru operații cu șiruri:
       autocomplete, corectare cuvinte, rutare IP — fiecare nod conține legături
       către alte noduri."
@@ -178,8 +178,8 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "Care este complexitatea căutării unui cuvânt de lungime M într-un Trie?"
-    variante: [ "O(N*M)", "O(N) unde N e numărul de cuvinte", "O(M log N)", "O(M)" ]
-    corect: 3
+    variante: [ "O(M log N)", "O(M)", "O(N*M)", "O(N) unde N e numărul de cuvinte" ]
+    corect: 1
     explicatie: "Căutarea într-un Trie depinde doar de lungimea M a cuvântului, nu
       de numărul de cuvinte stocate, deci este Theta(M)."
 
@@ -188,11 +188,11 @@ intrebari:
     dificultate: licenta
     enunt: "Despre filtrele Bloom, ce afirmație este corectă?"
     variante:
-      - "Stochează efectiv elementele introduse"
       - "Pot da false negative, dar niciodată false pozitive"
-      - "Pot da false pozitive, dar niciodată false negative"
       - "Nu dau nici false pozitive, nici false negative"
-    corect: 2
+      - "Stochează efectiv elementele introduse"
+      - "Pot da false pozitive, dar niciodată false negative"
+    corect: 3
     explicatie: "Filtrul Bloom este o structură probabilistică: dacă spune că un
       element NU există, e sigur corect (fără false negative), dar poate semnala
       greșit prezența (false pozitiv)."
@@ -202,12 +202,12 @@ intrebari:
     enunt: "Într-un filtru Bloom, cum se verifică dacă un element ar putea fi în
       mulțime?"
     variante:
-      - "Se aplică funcțiile de dispersie și se verifică dacă toți biții
-        corespunzători sunt 1"
       - "Se parcurge o listă înlănțuită de coliziuni"
       - "Se compară elementul cu fiecare element stocat"
       - "Se face o căutare binară în vectorul de biți"
-    corect: 0
+      - "Se aplică funcțiile de dispersie și se verifică dacă toți biții
+        corespunzători sunt 1"
+    corect: 3
     explicatie: "Elementul trece prin toate funcțiile de dispersie; dacă toți biții
       indicați sunt 1 elementul e posibil prezent, dacă măcar unul e 0 sigur
       lipsește."
@@ -217,10 +217,10 @@ intrebari:
     dificultate: licenta
     enunt: "Într-o tabelă de dispersie, o coliziune apare atunci când:"
     variante:
-      - "Funcția de hash returnează zero"
+      - "Tabela este plină"
       - "O cheie este ștearsă de două ori"
       - "Două chei diferite produc aceeași valoare de hash"
-      - "Tabela este plină"
+      - "Funcția de hash returnează zero"
     corect: 2
     explicatie: "O coliziune este situația în care două chei diferite A și B au
       hash(A) = hash(B), deci ar trebui plasate în același slot."
@@ -229,11 +229,11 @@ intrebari:
     dificultate: licenta
     enunt: "Dispersia deschisă (chaining) rezolvă coliziunile prin:"
     variante:
-      - "Redimensionarea automată a tabelei"
       - "Folosirea unei a doua funcții de hash în interiorul tabelei"
       - "Gruparea coliziunilor într-o structură externă (ex. listă înlănțuită)"
+      - "Redimensionarea automată a tabelei"
       - "Verificare liniară a sloturilor următoare"
-    corect: 2
+    corect: 1
     explicatie: "La dispersia deschisă (chaining), fiecare slot pointează către o
       listă (sau arbore) ce conține elementele care duc la același hash."
 
@@ -241,8 +241,8 @@ intrebari:
     dificultate: licenta
     enunt: "Care este complexitatea în cazul cel mai defavorabil a căutării într-o
       tabelă hash cu dispersie deschisă?"
-    variante: [ "O(1)", "O(n)", "O(n log n)", "O(log n)" ]
-    corect: 1
+    variante: [ "O(n)", "O(log n)", "O(1)", "O(n log n)" ]
+    corect: 0
     explicatie: "În cel mai rău caz toate cheile au același hash și ajung în aceeași
       listă, deci căutarea devine O(n)."
 
@@ -250,7 +250,7 @@ intrebari:
     dificultate: licenta
     enunt: "Factorul de încărcare (load factor) al unei tabele hash cu N chei și M
       sloturi este definit ca:"
-    variante: [ "N + M", "N / M", "M / N", "N * M" ]
+    variante: [ "N + M", "N / M", "N * M", "M / N" ]
     corect: 1
     explicatie: "Factorul de încărcare este alfa = N/M; când N este proporțional cu
       M, complexitatea medie a operațiilor rămâne O(1)."
@@ -259,8 +259,8 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "Parcurgerea în lățime (BFS) a unui graf folosește ca structură auxiliară:"
-    variante: [ "O stivă", "O coadă", "Un heap", "Un arbore binar de căutare" ]
-    corect: 1
+    variante: [ "Un arbore binar de căutare", "Un heap", "O coadă", "O stivă" ]
+    corect: 2
     explicatie: "BFS folosește o coadă: se extrage nodul curent, se afișează și se
       adaugă în coadă vecinii nevizitați."
 
@@ -270,10 +270,10 @@ intrebari:
       eficientă din punct de vedere al spațiului?"
     variante:
       - "Ambele consumă același spațiu"
-      - "Matricea de adiacență"
       - "Listele de adiacență"
+      - "Matricea de adiacență"
       - "Matricea de costuri"
-    corect: 2
+    corect: 1
     explicatie: "Listele de adiacență stochează doar muchiile existente, fiind
       eficiente pentru grafuri rare; matricea de adiacență ocupă mereu N*N
       indiferent de muchii."
@@ -290,11 +290,11 @@ intrebari:
     enunt: "Algoritmul lui Dijkstra pentru drumuri de cost minim are o cerință
       obligatorie:"
     variante:
-      - "Graful trebuie să fie neorientat"
       - "Toate muchiile trebuie să aibă cost pozitiv"
-      - "Graful trebuie să fie aciclic"
       - "Graful trebuie să fie complet"
-    corect: 1
+      - "Graful trebuie să fie aciclic"
+      - "Graful trebuie să fie neorientat"
+    corect: 0
     explicatie: "Dijkstra funcționează corect doar dacă muchiile au cost pozitiv; cu
       muchii negative nu poate detecta drumul minim real."
 
@@ -304,10 +304,10 @@ intrebari:
       constă în:"
     variante:
       - "Inversarea sensului muchiei"
+      - "Adăugarea unei noi muchii între u și v"
       - "Actualizarea estimării d[v] dacă d[u] + w(u,v) este mai mic decât d[v]"
       - "Ștergerea muchiei din graf"
-      - "Adăugarea unei noi muchii între u și v"
-    corect: 1
+    corect: 2
     explicatie: "Relaxarea verifică dacă drumul prin u îmbunătățește estimarea către
       v: dacă d[u] + w(u,v) < d[v], atunci d[v] se actualizează."
 
@@ -318,9 +318,9 @@ intrebari:
       și fiu C:"
     variante:
       - "value(P) = value(C)"
-      - "Frunzele au cea mai mare valoare"
-      - "value(P) >= value(C)"
       - "value(P) <= value(C)"
+      - "value(P) >= value(C)"
+      - "Frunzele au cea mai mare valoare"
     corect: 2
     explicatie: "Într-un max-heap valoarea părintelui este mai mare sau egală cu
       valoarea fiilor, deci maximul se află în rădăcină."
@@ -329,7 +329,7 @@ intrebari:
     dificultate: licenta
     enunt: "Care este complexitatea operației de extragere a minimului/maximului
       (extract) dintr-un heap binar cu n elemente?"
-    variante: [ "O(1)", "O(n)", "O(n log n)", "O(log n)" ]
+    variante: [ "O(n)", "O(1)", "O(n log n)", "O(log n)" ]
     corect: 3
     explicatie: "Extragerea rădăcinii necesită mutarea ultimului element în vârf și
       un heapify_down, operație de cost O(log n)."
@@ -338,8 +338,8 @@ intrebari:
     dificultate: licenta
     enunt: "Care este complexitatea operației de a citi (find) elementul minim/maxim
       dintr-un heap binar, fără a-l extrage?"
-    variante: [ "O(1)", "O(log n)", "O(n log n)", "O(n)" ]
-    corect: 0
+    variante: [ "O(n log n)", "O(n)", "O(log n)", "O(1)" ]
+    corect: 3
     explicatie: "Minimul/maximul se află mereu în rădăcină (v[0]), deci citirea lui
       este O(1), similar cu peek."
 
@@ -354,8 +354,8 @@ intrebari:
     dificultate: licenta
     enunt: "Care este complexitatea algoritmului Heap Sort în cazul cel mai
       defavorabil?"
-    variante: [ "O(log n)", "O(n)", "O(n log n)", "O(n^2)" ]
-    corect: 2
+    variante: [ "O(n)", "O(log n)", "O(n^2)", "O(n log n)" ]
+    corect: 3
     explicatie: "Heap Sort are complexitate O(n log n) în toate cazurile (favorabil,
       mediu, defavorabil), dar nu este stabil."
 
@@ -364,8 +364,8 @@ intrebari:
     dificultate: licenta
     enunt: "Care este complexitatea în cazul cel mai favorabil a algoritmului
       Insertion Sort (vector deja sortat)?"
-    variante: [ "O(log n)", "O(n log n)", "O(n^2)", "O(n)" ]
-    corect: 3
+    variante: [ "O(n)", "O(n log n)", "O(n^2)", "O(log n)" ]
+    corect: 0
     explicatie: "Pe un vector deja sortat Insertion Sort nu face nicio deplasare,
       doar o comparație per element, deci Theta(n)."
 
@@ -373,7 +373,7 @@ intrebari:
     dificultate: licenta
     enunt: "Care este complexitatea în cazul cel mai defavorabil a algoritmului
       Quick Sort (alegere proastă a pivotului)?"
-    variante: [ "O(n log n)", "O(log n)", "O(n^2)", "O(n)" ]
+    variante: [ "O(n log n)", "O(n)", "O(n^2)", "O(log n)" ]
     corect: 2
     explicatie: "Dacă pivotul ales este mereu minimul sau maximul, partițiile sunt
       dezechilibrate și se ajunge la O(n^2). În cazul mediu și favorabil este
@@ -382,8 +382,8 @@ intrebari:
   - tip: grila
     dificultate: licenta
     enunt: "Algoritmul Merge Sort are complexitatea în cazul cel mai defavorabil:"
-    variante: [ "O(log n)", "O(n log n)", "O(n)", "O(n^2)" ]
-    corect: 1
+    variante: [ "O(n^2)", "O(n)", "O(n log n)", "O(log n)" ]
+    corect: 2
     explicatie: "Merge Sort împarte recursiv vectorul în două și interclasează în
       timp liniar; prin teorema Master rezultă Theta(n log n) în toate
       cazurile."
@@ -392,8 +392,8 @@ intrebari:
     dificultate: licenta
     enunt: "Care dintre următorii algoritmi de sortare are complexitatea Theta(n^2)
       în cazul mediu?"
-    variante: [ "Bubble Sort", "Merge Sort", "Heap Sort", "Quick Sort" ]
-    corect: 0
+    variante: [ "Quick Sort", "Merge Sort", "Heap Sort", "Bubble Sort" ]
+    corect: 3
     explicatie: "Bubble Sort, Selection Sort și Insertion Sort au complexitate
       Theta(n^2) în cazul mediu; Merge, Quick (mediu) și Heap Sort sunt O(n log
       n)."
@@ -403,12 +403,12 @@ intrebari:
     dificultate: licenta
     enunt: "Metoda Greedy (lacomă) se caracterizează prin:"
     variante:
-      - "Luarea unei decizii optime local la fiecare pas, fără a reveni asupra
-        ei"
       - "Împărțirea problemei în subprobleme independente"
       - "Memorarea soluțiilor subproblemelor"
+      - "Luarea unei decizii optime local la fiecare pas, fără a reveni asupra
+        ei"
       - "Explorarea tuturor soluțiilor posibile prin revenire (backtracking)"
-    corect: 0
+    corect: 2
     explicatie: "Greedy ia la fiecare pas decizia optimă local (cel mai bun candidat
       curent), fără a privi în perspectivă și fără revenire."
 
@@ -417,12 +417,12 @@ intrebari:
     enunt: "Tehnica Backtracking este potrivită pentru probleme precum problema
       reginelor sau rezolvarea unui labirint deoarece:"
     variante:
-      - "Garantează mereu complexitate polinomială"
-      - "Folosește optimizarea locală fără revenire"
       - "Explorează sistematic spațiul soluțiilor și revine când o cale nu duce
         la soluție"
+      - "Folosește optimizarea locală fără revenire"
       - "Nu necesită recursivitate"
-    corect: 2
+      - "Garantează mereu complexitate polinomială"
+    corect: 0
     explicatie: "Backtracking construiește soluția incremental, iar când o decizie
       nu poate duce la o soluție validă, revine (backtrack) și încearcă altă
       variantă."
@@ -432,12 +432,12 @@ intrebari:
     enunt: "Tehnica Divide et Impera (Divide and Conquer), folosită de exemplu în
       Merge Sort, presupune:"
     variante:
-      - "Alegerea celui mai bun candidat la fiecare pas"
       - "Parcurgerea în lățime a unui graf"
+      - "Verificarea apartenenței probabilistice la o mulțime"
+      - "Alegerea celui mai bun candidat la fiecare pas"
       - "Împărțirea problemei în subprobleme, rezolvarea lor și combinarea
         rezultatelor"
-      - "Verificarea apartenenței probabilistice la o mulțime"
-    corect: 2
+    corect: 3
     explicatie: "Divide et Impera împarte problema în subprobleme de același tip, le
       rezolvă recursiv și combină soluțiile (ex. Merge Sort interclasează
       jumătățile sortate)."
@@ -577,8 +577,8 @@ intrebari:
         for (j = i; j < n; j++)
           suma += a[i] * a[j];
     timp: 50
-    variante: [ "O(2^n)", "O(n)", "O(n^2)", "O(n log n)" ]
-    corect: 2
+    variante: [ "O(n)", "O(n^2)", "O(n log n)", "O(2^n)" ]
+    corect: 1
     explicatie: "Două bucle imbricate dependente execută ~n^2/2 iterații, deci
       complexitatea este O(n^2)."
 
@@ -593,8 +593,8 @@ intrebari:
         i = i * 2;
       }
     timp: 50
-    variante: [ "O(n^2)", "O(log n)", "O(n)", "O(1)" ]
-    corect: 1
+    variante: [ "O(n)", "O(1)", "O(n^2)", "O(log n)" ]
+    corect: 3
     explicatie: "Indicele i ia valorile 1, 2, 4, 8, ... până depășește n, deci bucla
       se execută de aproximativ log2(n) ori: O(log n)."
 
@@ -610,11 +610,11 @@ intrebari:
       BST.insert(40)
     timp: 50
     variante:
-      - "Rădăcina 50, cu 30 (și fiii 20, 40) în stânga și 70 în dreapta"
       - "Rădăcina 50, cu 70 în stânga și 30 în dreapta"
-      - "Rădăcina 30, cu 20 și 50 ca fii"
+      - "Rădăcina 50, cu 30 (și fiii 20, 40) în stânga și 70 în dreapta"
       - "Rădăcina 20, arborele este o listă degenerată"
-    corect: 0
+      - "Rădăcina 30, cu 20 și 50 ca fii"
+    corect: 1
     explicatie: "Prima cheie inserată (50) devine rădăcină; 30<50 merge stânga,
       70>50 dreapta, 20<30 stânga lui 30, 40>30 dreapta lui 30. Rezultă un
       arbore echilibrat cu rădăcina 50."
@@ -629,8 +629,8 @@ intrebari:
       maxheap.insert(5)
       maxheap.insert(30)
     timp: 50
-    variante: [ "10", "5", "30", "20" ]
-    corect: 2
+    variante: [ "10", "5", "20", "30" ]
+    corect: 3
     explicatie: "La inserarea lui 30 acesta urcă prin heapify_up până în rădăcină,
       fiind valoarea maximă; într-un max-heap maximul este mereu în v[0]."
 
@@ -646,11 +646,11 @@ intrebari:
       (17 are fiii 2 si 7; restul frunzelor nu au copii)
     timp: 50
     variante:
-      - "2, 7, 17, 3, 19, 25, 1, 36, 100"
       - "100, 19, 36, 17, 3, 25, 1, 2, 7"
-      - "100, 19, 17, 2, 7, 3, 36, 25, 1"
       - "2, 17, 7, 19, 3, 100, 25, 36, 1"
-    corect: 1
+      - "100, 19, 17, 2, 7, 3, 36, 25, 1"
+      - "2, 7, 17, 3, 19, 25, 1, 36, 100"
+    corect: 0
     explicatie: "BFS vizitează nodurile nivel cu nivel, de la stânga la dreapta: 100
       | 19, 36 | 17, 3, 25, 1 | 2, 7."
 
@@ -667,10 +667,10 @@ intrebari:
     timp: 50
     variante:
       - "100, 19, 36, 17, 3, 25, 1, 2, 7"
-      - "2, 7, 17, 3, 19, 25, 1, 36, 100"
-      - "2, 17, 7, 19, 3, 100, 25, 36, 1"
       - "100, 19, 17, 2, 7, 3, 36, 25, 1"
-    corect: 3
+      - "2, 17, 7, 19, 3, 100, 25, 36, 1"
+      - "2, 7, 17, 3, 19, 25, 1, 36, 100"
+    corect: 1
     explicatie: "Preordinea vizitează întâi rădăcina, apoi recursiv subarborele
       stâng și apoi cel drept: 100, 19, 17, 2, 7, 3, 36, 25, 1."
 
@@ -687,11 +687,11 @@ intrebari:
       }
     timp: 50
     variante:
-      - "8 3 10 1 6 14 4 7 13"
-      - "8 3 1 6 4 7 10 14 13"
-      - "1 4 7 6 3 13 14 10 8"
       - "1 3 4 6 7 8 10 13 14"
-    corect: 3
+      - "8 3 1 6 4 7 10 14 13"
+      - "8 3 10 1 6 14 4 7 13"
+      - "1 4 7 6 3 13 14 10 8"
+    corect: 0
     explicatie: "Parcurgerea inordine (Stânga-Rădăcină-Dreapta) a unui BST produce
       cheile în ordine crescătoare: 1 3 4 6 7 8 10 13 14."
 
@@ -704,8 +704,8 @@ intrebari:
         return f(n - 1) + f(n - 1);
       }
     timp: 50
-    variante: [ "O(n)", "O(n^2)", "O(n log n)", "O(2^n)" ]
-    corect: 3
+    variante: [ "O(2^n)", "O(n)", "O(n^2)", "O(n log n)" ]
+    corect: 0
     explicatie: "Fiecare apel generează două apeluri pe n-1, deci numărul de apeluri
       se dublează la fiecare nivel: T(n) = 2*T(n-1) => O(2^n)."
 
@@ -714,8 +714,8 @@ intrebari:
     dificultate: licenta
     enunt: "Parcurgerea în adâncime (DFS) a unui graf folosește în mod natural ca
       structură auxiliară (sau recursivitatea, care folosește implicit):"
-    variante: [ "O coadă", "O stivă", "O tabelă hash", "Un heap" ]
-    corect: 1
+    variante: [ "O stivă", "O tabelă hash", "Un heap", "O coadă" ]
+    corect: 0
     explicatie: "DFS folosește o stivă (LIFO) — explicit sau implicit prin stiva de
       apeluri a recursivității; BFS, în schimb, folosește o coadă."
 
@@ -723,8 +723,8 @@ intrebari:
     dificultate: licenta
     enunt: "Ce structură de date este cea mai potrivită pentru a implementa eficient
       o coadă de priorități (priority queue)?"
-    variante: [ "Tabelă hash", "Trie", "Listă simplu înlănțuită neordonată", "Heap binar" ]
-    corect: 3
+    variante: [ "Listă simplu înlănțuită neordonată", "Heap binar", "Tabelă hash", "Trie" ]
+    corect: 1
     explicatie: "Heap-ul binar oferă inserare și extragere a extremului în O(log n),
       fiind implementarea uzuală a unei cozi de priorități."
 
@@ -745,12 +745,283 @@ intrebari:
     dificultate: licenta
     enunt: "Care dintre următoarele afirmații despre Quick Sort este corectă?"
     variante:
-      - "Folosește interclasarea (merge) a două jumătăți sortate"
       - "Sortează in-place și are complexitate medie O(n log n)"
-      - "Necesită întotdeauna memorie suplimentară O(n)"
+      - "Folosește interclasarea (merge) a două jumătăți sortate"
       - "Are întotdeauna complexitate O(n log n), inclusiv în cazul cel mai
         defavorabil"
-    corect: 1
+      - "Necesită întotdeauna memorie suplimentară O(n)"
+    corect: 0
     explicatie: "Quick Sort sortează in-place (memorie suplimentară O(log n) pentru
       stivă) și are complexitate medie O(n log n), dar O(n^2) în cazul cel mai
       defavorabil."
+
+  # ============================================================
+  #  ÎNTREBĂRI NOI — din „Exerciții rezolvate — stil examen"
+  #  (subiecte reale: BST în interval, AVL, complexități, trace)
+  # ============================================================
+
+  # ---------- EX1: BST countBetween ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Funcția de mai jos numără nodurile unui BST cu valori în [min, max].
+      Care este complexitatea ei, unde h = înălțimea, iar k = numărul de noduri
+      din interval?"
+    cod: |
+      int countBetween(Node* r, int min, int max) {
+        if (r == NULL) return 0;
+        if (r->val < min)                 // prea mic -> doar dreapta
+          return countBetween(r->right, min, max);
+        if (r->val > max)                 // prea mare -> doar stanga
+          return countBetween(r->left, min, max);
+        return 1 + countBetween(r->left,  min, max)
+                 + countBetween(r->right, min, max);
+      }
+    timp: 50
+    variante: [ "O(k * h)", "O(h + k)", "O(log n)", "O(n)" ]
+    corect: 1
+    explicatie: "Proprietatea BST permite tăierea subarborilor complet în afara
+      intervalului: se coboară pe înălțime (h) plus se vizitează cele k noduri
+      din interval, deci O(h + k)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În funcția countBetween de mai sus, de ce nu se coboară în subarborele
+      stâng atunci când valoarea nodului curent este strict mai mică decât min?"
+    cod: |
+      if (r->val < min)
+        return countBetween(r->right, min, max);
+    timp: 50
+    variante:
+      - "Pentru că subarborele stâng conține doar valori și mai mici decât
+        nodul, deci tot sub min"
+      - "Pentru că subarborele stâng conține valori mai mari decât max"
+      - "Pentru că subarborele stâng este întotdeauna vid"
+      - "Pentru că s-ar produce o buclă infinită"
+    corect: 0
+    explicatie: "Într-un BST, toate valorile din subarborele stâng sunt mai mici
+      decât nodul curent; dacă nodul deja e sub min, întreg subarborele stâng e
+      prea mic și se ignoră, mergând doar la dreapta."
+
+  # ---------- EX2 / EX6: AVL ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Se inserează în ordine cheile 2, 4, 6 într-un arbore AVL inițial vid. Ce
+      rotație este necesară și pe ce nod, după inserarea lui 6?"
+    cod: |
+      insert(2); insert(4); insert(6);
+
+        2  (BF = -2, caz RR)
+         \
+          4
+           \
+            6
+    timp: 60
+    variante:
+      - "Nicio rotație, arborele e deja echilibrat"
+      - "Rotație simplă la stânga (caz RR) pe nodul 2"
+      - "Rotație dublă stânga-dreapta (LR) pe nodul 4"
+      - "Rotație simplă la dreapta pe nodul 2"
+    corect: 1
+    explicatie: "Nodul 2 are factor de echilibru -2, iar inserarea s-a făcut pe
+      dreapta-dreapta (caz RR), deci se aplică o rotație simplă la stânga pe
+      nodul 2, iar 4 devine rădăcină."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Continuând inserarea în AVL cu cheile 2, 4, 6, 8, 7 (arborele are deja
+      rădăcina 4, cu 2 la stânga și 6-8 la dreapta), ce tip de rotație necesită
+      inserarea lui 7?"
+    cod: |
+      Arbore inainte de +7:
+            4
+           / \
+          2   6
+               \
+                8
+               /
+              7    (7 intra in stanga lui 8; nodul 6 are BF = -2)
+    timp: 60
+    variante:
+      - "Caz RL: rotație dublă (dreapta pe 8, apoi stânga pe 6)"
+      - "Caz RR: rotație simplă la stânga pe 6"
+      - "Nicio rotație"
+      - "Caz LL: rotație simplă la dreapta pe 8"
+    corect: 0
+    explicatie: "Nodul 6 are BF = -2, dar 7 intră în stânga lui 8 (configurație
+      dreapta-stânga, caz RL), deci se face întâi rotație dreapta pe 8, apoi
+      rotație stânga pe 6."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Care este numărul minim de noduri al unui arbore AVL de înălțime 5,
+      conform recurenței N(h) = N(h-1) + N(h-2) + 1 cu N(0)=1, N(1)=2?"
+    corect: 20
+    explicatie: "N(0)=1, N(1)=2, N(2)=4, N(3)=7, N(4)=12, N(5)=20. Deci un AVL de
+      înălțime 5 are minim 20 de noduri."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Care este numărul minim de noduri al unui arbore AVL de înălțime 7,
+      conform recurenței N(h) = N(h-1) + N(h-2) + 1 cu N(0)=1, N(1)=2?"
+    corect: 54
+    explicatie: "Continuând recurența: N(5)=20, N(6)=33, N(7)=54. Un AVL de înălțime
+      7 are minim 54 de noduri."
+
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Care este valoarea minimă pe care o poate avea rădăcina unui arbore AVL
+      ce conține numerele 1..12 (rădăcina e a k-a valoare, stânga are k-1
+      noduri, dreapta 12-k noduri, ambele subarbori AVL valizi)?"
+    corect: 5
+    explicatie: "Pentru k=4: stânga=3 (înălțime 1), dreapta=8 (înălțime 3),
+      diferență 2 — invalid. Pentru k=5: stânga=4 (înălțime 2), dreapta=7
+      (înălțime 3), diferență 1 — AVL valid. Deci rădăcina minimă este 5."
+
+  # ---------- EX3: BST din preordine ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Se construiește un BST inserând în ordine valorile date de o parcurgere
+      în preordine: 6, 2, 1, 4, 3, 5, 9, 7, 8, 11, 10. Care este rădăcina și ce
+      valori conține subarborele stâng al rădăcinii?"
+    cod: |
+      preordine: 6, 2, 1, 4, 3, 5, 9, 7, 8, 11, 10
+    timp: 60
+    variante:
+      - "Rădăcina 1, arborele este o listă degenerată"
+      - "Rădăcina 6, subarborele stâng conține {1, 2, 3, 4, 5}"
+      - "Rădăcina 2, subarborele stâng conține {1}"
+      - "Rădăcina 6, subarborele stâng conține {7, 8, 9, 10, 11}"
+    corect: 1
+    explicatie: "Primul element al preordinii (6) e rădăcina. Valorile mai mici
+      decât 6 (2,1,4,3,5) formează subarborele stâng, iar cele mai mari
+      (9,7,8,11,10) cel drept. Inordinea rezultată este 1..11, sortată —
+      verificare corectă."
+
+  # ---------- EX4: complexitate triplă buclă ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce complexitate are fragmentul de mai jos? Atenție la capcana cu j*=2."
+    cod: |
+      int s=0;
+      for (int i=n; i>0; i--)
+        for (int j=1; j<n; j*=2)
+          for (int k=0; k<j; k++)
+            s++;
+    timp: 70
+    variante: [ "Θ(n log² n)", "Θ(n)", "Θ(n log n)", "Θ(n²)" ]
+    corect: 3
+    explicatie: "Cele două bucle interioare: j ia 1,2,4,...<n, iar k rulează de j
+      ori, deci suma 1+2+4+... este o serie geometrică ≈ 2n → Θ(n). Bucla pe i
+      rulează de n ori. Total: Θ(n) × n = Θ(n²)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "De ce munca celor două bucle interioare de mai jos este Θ(n) și NU Θ(log
+      n), deși j se dublează?"
+    cod: |
+      for (int j=1; j<n; j*=2)
+        for (int k=0; k<j; k++)
+          s++;
+    timp: 60
+    variante:
+      - "Pentru că dublarea face munca constantă O(1)"
+      - "Pentru că j se dublează, deci sunt log n iterații exterioare"
+      - "Pentru că bucla pe k nu se execută niciodată"
+      - "Pentru că suma 1+2+4+...+2^m este o serie geometrică dominată de
+        ultimul termen ≈ n"
+    corect: 3
+    explicatie: "Deși bucla pe j are doar ~log n iterații, munca interioară totală
+      este suma 1+2+4+...+2^m ≈ 2n (serie geometrică, dominată de ultimul
+      termen), deci Θ(n), nu Θ(log n)."
+
+  # ---------- EX5: bucla cu sqrt ----------
+  - tip: numeric_exact
+    dificultate: licenta
+    enunt: "Pentru codul de mai jos, cu n = 256, care este valoarea finală a lui k?"
+    cod: |
+      int k=0;
+      for (int j=n; j>1; j=sqrt(j))
+        for (int i=j; i>0; i/=2)
+          k++;
+    timp: 70
+    variante: [ "12", "16", "19", "24" ]
+    corect: 2
+    explicatie: "j ia valorile 256 -> 16 -> 4 -> 2. Bucla interioară (i/=2) rulează
+      ⌊log2 j⌋+1 ori: 9, 5, 3, 2. Deci k = 9 + 5 + 3 + 2 = 19."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce complexitate are bucla cu radical de mai jos, în funcție de n?"
+    cod: |
+      int k=0;
+      for (int j=n; j>1; j=sqrt(j))
+        for (int i=j; i>0; i/=2)
+          k++;
+    timp: 70
+    variante: [ "Θ(log² n)", "Θ(n)", "Θ(√n)", "Θ(log n)" ]
+    corect: 3
+    explicatie: "Bucla interioară e O(log j). Suma log n + log√n + log⁴√n + ... =
+      log n·(1 + ½ + ¼ + ...) = 2·log n → Θ(log n)."
+
+  # ---------- EX7: adevărat/fals asimptotic ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care dintre următoarele afirmații asimptotice este ADEVĂRATĂ?"
+    timp: 60
+    variante:
+      - "n! ∈ Ω(nⁿ)"
+      - "n³ + 5n ∈ Θ(n² + 500n)"
+      - "2^(n+1) ∈ Θ(2ⁿ)"
+      - "2ⁿ ∈ O(n²)"
+    corect: 2
+    explicatie: "2^(n+1) = 2·2ⁿ; constanta multiplicativă 2 se ignoră, deci e
+      aceeași clasă Θ(2ⁿ). Celelalte sunt false: n! ∈ O(nⁿ) (nu Ω), n³ ∉ Θ(n²),
+      iar exponențiala 2ⁿ nu e mărginită de un polinom."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Afirmația «n! ∈ Ω(nⁿ)» este falsă. Care este relația corectă între n! și
+      nⁿ?"
+    timp: 50
+    variante: [ "n! și nⁿ nu sunt comparabile", "n! ∈ ω(nⁿ)", "n! ∈ O(nⁿ)", "n! ∈ Θ(nⁿ)" ]
+    corect: 2
+    explicatie: "nⁿ crește mai repede decât n! deoarece n! = n·(n-1)·...·1 ≤
+      n·n·...·n = nⁿ. Deci n! este mărginit superior de nⁿ: n! ∈ O(nⁿ)."
+
+  # ---------- EX8: sortare fără comparații ----------
+  - tip: grila
+    dificultate: licenta
+    enunt: "Cum se poate sorta un vector de întregi FĂRĂ a folosi vreo operație de
+      comparație între elemente, și ce complexitate are metoda?"
+    cod: |
+      // valori in [0, k]
+      int cnt[k+1] = {0};
+      for (int i=0;i<n;i++) cnt[a[i]]++;   // numara aparitiile
+      int idx=0;
+      for (int v=0;v<=k;v++)
+        while (cnt[v]--) a[idx++]=v;        // reconstruieste sortat
+    timp: 60
+    variante:
+      - "Merge Sort, în O(n log n)"
+      - "Counting Sort, folosind valoarea ca indice, în O(n + k)"
+      - "Heap Sort, în O(n log n)"
+      - "Quick Sort, în O(n log n)"
+    corect: 1
+    explicatie: "Counting Sort folosește valoarea ca indice într-un vector de
+      frecvențe, fără nicio comparație între elemente; complexitatea este O(n +
+      k), unde k e domeniul valorilor."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Radix Sort sortează numere mari fără comparații. Pe ce se bazează și
+      care este complexitatea sa pentru d cifre?"
+    timp: 50
+    variante:
+      - "Compară numerele cifră cu cifră, în O(n²)"
+      - "Aplică Quick Sort pe fiecare cifră, în O(d·n log n)"
+      - "Aplică Counting Sort succesiv pe fiecare cifră, în O(d·(n + k))"
+      - "Folosește un heap pentru fiecare cifră, în O(n log n)"
+    corect: 2
+    explicatie: "Radix Sort aplică Counting Sort stabil succesiv pe fiecare cifră
+      (de regulă de la cea mai puțin semnificativă), obținând O(d·(n + k)) fără
+      comparații directe între numere."
