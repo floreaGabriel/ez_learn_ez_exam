@@ -1,444 +1,438 @@
 /* ============================================================
-   OOP C++ — Scenarii animate (ciclul de viață)
-   Același model „hartă de memorie" ca MEM_DEMOS, plus:
-     step.out  -> linie afișată în consola de output (cumulativ)
-   scene.output -> outputul final al programului (referință).
+   OOP C++ — Joculețe (scenarii animate, ciclul de viață)
+   Model „hartă de memorie" identic cu engine-ul din index.html:
+     scene = { id, nume, rezumat, cod, output?, regions:[...], steps:[...] }
+     step  = { title, note(html), out?, cells:{ regiune:[celulă...] }, aliases? }
+     celulă= { id, label, val, addr?, points?, hot?, dead? }
+   Mapat pe programa de facultate (TOGAN). Fiecare joc explică pas cu pas
+   ce se întâmplă în memorie la un concept important.
    ============================================================ */
 const OOP_SCENARII = [
 
-  /* 1) Ordinea de construcție / distrugere -------------------- */
+  /* 1) Instanțiere: stack vs heap vs pointer neinițializat (Cap 2) */
   {
-    id:"ctor-dtor",
-    nume:"Ordinea de construcție și distrugere",
-    rezumat:"Baza se construiește prima, apoi membrii (în ordinea declarării), apoi corpul. Distrugerea e exact invers.",
+    id:"instantiere",
+    nume:"Instanțiere: ce se creează în memorie",
+    rezumat:"Pe stivă (obiect direct), pe heap (cu new, prin pointer), prin referință (alias) — și de ce un pointer neinițializat dă crash.",
     cod:
-`struct Base    { Base(){std::cout<<"Base()\\n";}    ~Base(){std::cout<<"~Base()\\n";} };
-struct Member  { Member(){std::cout<<"Member()\\n";} ~Member(){std::cout<<"~Member()\\n";} };
+`Student  S1;                 // obiect direct, pe STIVĂ
+Student *S2 = new Student;   // obiect în HEAP, S2 ține adresa
+Student &S3 = S1;            // referință: alt nume pentru S1
+Student *S5;                 // pointer NEINIȚIALIZAT — nu există obiect!
 
-struct Derived : Base {
-    Member m_;                       // membru
-    Derived(){ std::cout<<"Derived()\\n"; }
-    ~Derived(){ std::cout<<"~Derived()\\n"; }
+S5->setId(103);             // crash: dereferențiezi o adresă-gunoi`,
+    output:"",
+    regions:["stack","heap"],
+    steps:[
+      { title:"1. Student S1; — pe stivă",
+        note:"Declararea unui obiect <b>direct</b> îi alocă spațiu în cadrul de stivă al funcției. <code>S1</code> <b>este</b> obiectul; trăiește până la sfârșitul scope-ului.",
+        cells:{ stack:[ {id:"s1", label:"Student S1", val:"obiect (id,nume,medie)", addr:"0x7ffe10", hot:true} ], heap:[] } },
+      { title:"2. new Student — pe heap",
+        note:"<code>new</code> alocă obiectul în <b>heap</b> și întoarce adresa lui. <code>S2</code> e doar un <b>pointer</b> pe stivă care reține acea adresă.",
+        cells:{ stack:[ {id:"s1", label:"Student S1", val:"obiect", addr:"0x7ffe10"},
+                        {id:"s2", label:"Student* S2", val:"0x1a40", addr:"0x7ffe18", points:"h1", hot:true} ],
+                heap:[ {id:"h1", label:"Student (heap)", val:"obiect", addr:"0x1a40", hot:true} ] } },
+      { title:"3. Student& S3 = S1; — alias",
+        note:"O <b>referință</b> nu creează obiect nou și nu ocupă spațiu propriu: <code>S3</code> e doar un al doilea nume pentru <code>S1</code>.",
+        cells:{ stack:[ {id:"s1", label:"Student S1", val:"obiect", addr:"0x7ffe10", hot:true},
+                        {id:"s2", label:"Student* S2", val:"0x1a40", addr:"0x7ffe18", points:"h1"} ],
+                heap:[ {id:"h1", label:"Student (heap)", val:"obiect", addr:"0x1a40"} ] },
+        aliases:[{name:"Student& S3", target:"s1"}] },
+      { title:"4. Student* S5; — pointer gol",
+        note:"Am declarat <b>doar pointerul</b>, nu și obiectul. <code>S5</code> conține o valoare-gunoi: <b>nu arată spre niciun Student valid</b>.",
+        cells:{ stack:[ {id:"s1", label:"Student S1", val:"obiect", addr:"0x7ffe10"},
+                        {id:"s2", label:"Student* S2", val:"0x1a40", addr:"0x7ffe18", points:"h1"},
+                        {id:"s5", label:"Student* S5", val:"?? gunoi", addr:"0x7ffe20", points:"VOID", hot:true} ],
+                heap:[ {id:"h1", label:"Student (heap)", val:"obiect", addr:"0x1a40"} ] } },
+      { title:"5. S5->setId(103); — CRASH",
+        note:"Dereferențiezi o adresă-gunoi → <b>comportament nedefinit</b> (de regulă crash). Corect: întâi <code>S5 = new Student;</code>, abia apoi <code>S5-&gt;...</code>.",
+        cells:{ stack:[ {id:"s1", label:"Student S1", val:"obiect", addr:"0x7ffe10"},
+                        {id:"s2", label:"Student* S2", val:"0x1a40", addr:"0x7ffe18", points:"h1"},
+                        {id:"s5", label:"Student* S5", val:"?? gunoi", addr:"0x7ffe20", points:"VOID", dead:true, hot:true} ],
+                heap:[ {id:"h1", label:"Student (heap)", val:"obiect", addr:"0x1a40"} ] } }
+    ]
+  },
+
+  /* 2) Ordinea constructorilor: membri întâi, corpul la final (Cap 3) */
+  {
+    id:"ctor-membri-corp",
+    nume:"Constructor: membrii întâi, corpul la final",
+    rezumat:"La construirea unui Vector, întâi se construiesc membrii (Point start, Point end), abia apoi rulează corpul constructorului Vector.",
+    cod:
+`class Vector {
+    Point start;     // membru 1
+    Point end;       // membru 2
+public:
+    Vector() {       // corpul rulează DUPĂ ce start și end există deja
+        cout << "Constructor Vector\\n";
+    }
 };
 
-{ Derived d; }   // construcție, apoi distrugere la finalul scope-ului`,
-    output:"Base()\nMember()\nDerived()\n~Derived()\n~Member()\n~Base()",
+Vector V1;`,
+    output:"Initializare punct: 0,0\nInitializare punct: 0,0\nConstructor Vector",
     regions:["obj"],
     steps:[
-      { title:"1. Subobiectul Base", out:"Base()",
-        note:"Mai întâi rulează constructorul bazei. Subobiectul <b>Base</b> ocupă fizic primii octeți ai lui Derived.",
-        cells:{ obj:[ {id:"base", label:"Base", val:"construit", hot:true} ] } },
-      { title:"2. Membrii (ordinea declarării)", out:"Member()",
-        note:"Apoi membrii lui Derived, în <b>ordinea declarării în clasă</b> (nu ordinea din lista de inițializare).",
-        cells:{ obj:[ {id:"base", label:"Base", val:"construit"}, {id:"m", label:"Member m_", val:"construit", hot:true} ] } },
-      { title:"3. Corpul Derived()", out:"Derived()",
-        note:"Abia la final rulează corpul constructorului Derived. Obiectul e complet.",
-        cells:{ obj:[ {id:"base", label:"Base", val:"construit"}, {id:"m", label:"Member m_", val:"construit"}, {id:"body", label:"Derived (corp)", val:"gata", hot:true} ] } },
-      { title:"4. ~Derived() — corp", out:"~Derived()",
-        note:"La ieșirea din scope, distrugerea pornește invers: întâi corpul destructorului Derived.",
-        cells:{ obj:[ {id:"base", label:"Base", val:"construit"}, {id:"m", label:"Member m_", val:"construit"}, {id:"body", label:"Derived (corp)", val:"distrus", dead:true, hot:true} ] } },
-      { title:"5. Membrul m_", out:"~Member()",
-        note:"Apoi se distrug membrii lui Derived, în ordine inversă declarării.",
-        cells:{ obj:[ {id:"base", label:"Base", val:"construit"}, {id:"m", label:"Member m_", val:"distrus", dead:true, hot:true} ] } },
-      { title:"6. Subobiectul Base", out:"~Base()",
-        note:"Ultimul se distruge subobiectul Base. Logic: derivata se putea baza pe el, deci el moare ultimul.",
-        cells:{ obj:[ {id:"base", label:"Base", val:"distrus", dead:true, hot:true} ] } }
+      { title:"1. Se alocă memoria obiectului",
+        note:"Întâi se rezervă spațiul pentru tot obiectul <code>V1</code> (start + end + restul), <b>neinițializat</b> încă.",
+        cells:{ obj:[ {id:"st", label:"Point start", val:"neinițializat"},
+                      {id:"en", label:"Point end", val:"neinițializat"},
+                      {id:"bd", label:"corp Vector()", val:"încă nu a rulat"} ] } },
+      { title:"2. Se construiește membrul start", out:"Initializare punct: 0,0",
+        note:"Membrii se construiesc <b>în ordinea declarării în clasă</b>. Întâi <code>start</code>: i se apelează constructorul <code>Point()</code>.",
+        cells:{ obj:[ {id:"st", label:"Point start", val:"(0, 0)", hot:true},
+                      {id:"en", label:"Point end", val:"neinițializat"},
+                      {id:"bd", label:"corp Vector()", val:"încă nu a rulat"} ] } },
+      { title:"3. Se construiește membrul end", out:"Initializare punct: 0,0",
+        note:"Apoi <code>end</code>, tot cu <code>Point()</code>. Ordinea e dată de declarare, NU de lista de inițializare.",
+        cells:{ obj:[ {id:"st", label:"Point start", val:"(0, 0)"},
+                      {id:"en", label:"Point end", val:"(0, 0)", hot:true},
+                      {id:"bd", label:"corp Vector()", val:"încă nu a rulat"} ] } },
+      { title:"4. Rulează corpul Vector()", out:"Constructor Vector",
+        note:"Abia acum, cu toți membrii deja construiți, rulează <b>corpul</b> constructorului. Obiectul e complet.",
+        cells:{ obj:[ {id:"st", label:"Point start", val:"(0, 0)"},
+                      {id:"en", label:"Point end", val:"(0, 0)"},
+                      {id:"bd", label:"corp Vector()", val:"gata", hot:true} ] } }
     ]
   },
 
-  /* 2) Apel virtual în constructor (vptr) --------------------- */
+  /* 3) Copy constructor shallow — capcana pointerului (Cap 3) */
   {
-    id:"vptr-ctor",
-    nume:"Apel virtual în constructor",
-    rezumat:"În timpul constructorului bazei, vptr arată încă spre vtable-ul bazei — un apel virtual cheamă versiunea din bază, nu override-ul.",
+    id:"copy-shallow",
+    nume:"Constructorul de copiere: shallow vs deep",
+    rezumat:"Copy-ul implicit copiază bit cu bit. Dacă un membru e pointer, ambele obiecte ajung să arate spre ACELAȘI buffer — capcană la distrugere.",
     cod:
-`struct Base {
-    Base() { f(); }                              // apel virtual din constructor
-    virtual void f() { std::cout << "Base\\n"; }
-};
-struct Derived : Base {
-    void f() override { std::cout << "Derived\\n"; }
+`class Student {
+    char *nume;      // resursă alocată cu new
+public:
+    Student(const char* n) { nume = new char[strlen(n)+1]; strcpy(nume, n); }
+    // FĂRĂ copy constructor definit => compilatorul îl generează: copiere bit-cu-bit
 };
 
-Derived d;   // afișează "Base"`,
-    output:"Base",
-    regions:["stack","rodata"],
+Student a("Popescu");
+Student b = a;       // copy constructor implicit (shallow)`,
+    output:"",
+    regions:["stack","heap"],
     steps:[
-      { title:"Intră Base()",
-        note:"La construirea lui Derived rulează întâi Base(). Constructorul Base setează <b>vptr</b> spre vtable-ul lui <b>Base</b> — partea Derived a obiectului nici nu există încă.",
-        cells:{ stack:[ {id:"vptr", label:"d.vptr", val:"→ vtable Base", addr:"+0", points:"vtB", hot:true} ],
-                rodata:[ {id:"vtB", label:"vtable Base [0] f", val:"&Base::f", addr:"0x4020"},
-                         {id:"vtD", label:"vtable Derived [0] f", val:"&Derived::f", addr:"0x4040"} ] } },
-      { title:"f() din corpul Base()", out:"Base",
-        note:"Dispatch-ul virtual citește vptr → vtable Base → slot[0] = <code>&Base::f</code>. Se afișează <b>Base</b>, deși obiectul final e un Derived.",
-        cells:{ stack:[ {id:"vptr", label:"d.vptr", val:"→ vtable Base", addr:"+0", points:"vtB", hot:true} ],
-                rodata:[ {id:"vtB", label:"vtable Base [0] f", val:"&Base::f", addr:"0x4020", hot:true},
-                         {id:"vtD", label:"vtable Derived [0] f", val:"&Derived::f", addr:"0x4040"} ] } },
-      { title:"Base() s-a terminat → Derived()",
-        note:"Abia după ce Base() se încheie, constructorul Derived <b>suprascrie vptr</b> spre vtable-ul lui Derived.",
-        cells:{ stack:[ {id:"vptr", label:"d.vptr", val:"→ vtable Derived", addr:"+0", points:"vtD", hot:true} ],
-                rodata:[ {id:"vtB", label:"vtable Base [0] f", val:"&Base::f", addr:"0x4020"},
-                         {id:"vtD", label:"vtable Derived [0] f", val:"&Derived::f", addr:"0x4040", hot:true} ] } },
-      { title:"Obiect complet",
-        note:"De acum <code>d.f()</code> ar afișa „Derived”. Dar apelul din constructor a fost rezolvat deja, ca Base. Aceeași logică, inversă, se aplică în destructor.",
-        cells:{ stack:[ {id:"vptr", label:"d.vptr", val:"→ vtable Derived", addr:"+0", points:"vtD"} ],
-                rodata:[ {id:"vtB", label:"vtable Base [0] f", val:"&Base::f", addr:"0x4020"},
-                         {id:"vtD", label:"vtable Derived [0] f", val:"&Derived::f", addr:"0x4040"} ] } }
+      { title:"1. Student a(\"Popescu\")",
+        note:"Constructorul alocă în heap un buffer pentru nume și pune adresa în <code>a.nume</code>.",
+        cells:{ stack:[ {id:"a", label:"Student a", val:"nume → 0x30", addr:"0x7ffe00", points:"buf1", hot:true} ],
+                heap:[ {id:"buf1", label:"char[8]", val:"\"Popescu\"", addr:"0x30"} ] } },
+      { title:"2. Student b = a; (shallow)",
+        note:"Copy-ul implicit copiază <b>valoarea</b> lui <code>a.nume</code> — adică <b>adresa</b> 0x30. Nu se alocă buffer nou: <code>b.nume</code> ajunge spre <b>același</b> buffer.",
+        cells:{ stack:[ {id:"a", label:"Student a", val:"nume → 0x30", addr:"0x7ffe00", points:"buf1"},
+                        {id:"b", label:"Student b", val:"nume → 0x30", addr:"0x7ffe10", points:"buf1", hot:true} ],
+                heap:[ {id:"buf1", label:"char[8]", val:"\"Popescu\"", addr:"0x30", hot:true} ] } },
+      { title:"3. Capcana: dublă eliberare",
+        note:"Când se distrug ambele obiecte, fiecare destructor face <code>delete[] nume</code> pe <b>aceeași</b> adresă → <b>double free</b> (crash). Iar o modificare prin <code>a</code> se vede și în <code>b</code>.",
+        cells:{ stack:[ {id:"a", label:"Student a", val:"nume → 0x30", addr:"0x7ffe00", points:"buf1", dead:true},
+                        {id:"b", label:"Student b", val:"nume → 0x30", addr:"0x7ffe10", points:"buf1", dead:true} ],
+                heap:[ {id:"buf1", label:"char[8]", val:"eliberat de 2 ori!", addr:"0x30", dead:true, hot:true} ] } },
+      { title:"4. Soluția: deep copy",
+        note:"Definești un <b>copy constructor</b> care alocă buffer propriu și copiază conținutul: <code>nume = new char[...]; strcpy(nume, alt.nume);</code>. Acum fiecare obiect are resursa lui.",
+        cells:{ stack:[ {id:"a", label:"Student a", val:"nume → 0x30", addr:"0x7ffe00", points:"buf1"},
+                        {id:"b", label:"Student b", val:"nume → 0x50", addr:"0x7ffe10", points:"buf2", hot:true} ],
+                heap:[ {id:"buf1", label:"char[8]", val:"\"Popescu\"", addr:"0x30"},
+                       {id:"buf2", label:"char[8]", val:"\"Popescu\"", addr:"0x50", hot:true} ] } }
     ]
   },
 
-  /* 3) Object slicing ----------------------------------------- */
+  /* 4) Destrucție în ordine inversă LIFO (Cap 3) */
   {
-    id:"slicing",
-    nume:"Object slicing",
-    rezumat:"Trecerea unui Derived prin valoare într-un parametru Base copiază doar subobiectul Base — partea derivată și comportamentul virtual se pierd.",
+    id:"dtor-lifo",
+    nume:"Distrugere în ordine inversă (LIFO)",
+    rezumat:"Obiectele locale se distrug în ordinea inversă creării lor — ca o stivă: ultimul construit, primul distrus.",
     cod:
-`struct Base    { int x_=1; virtual void f(){ std::cout<<"Base::f\\n"; } };
-struct Derived : Base { int y_=2; void f() override { std::cout<<"Derived::f\\n"; } };
-
-void process(Base b) { b.f(); }   // primește prin VALOARE
-
-Derived d;
-process(d);     // SLICING`,
-    output:"Base::f",
+`{
+    Vector V1("V1");    // construit primul
+    Vector V2("V2");    // construit al doilea
+}   // la } se distrug: întâi ~V2, apoi ~V1`,
+    output:"Constructor V1\nConstructor V2\n~V2\n~V1",
     regions:["stack"],
     steps:[
-      { title:"Derived d;",
-        note:"Obiectul complet: vptr spre vtable Derived, plus x_ și y_.",
-        cells:{ stack:[
-          {id:"dv", label:"d.vptr", val:"→ vtable Derived", addr:"+0", hot:true},
-          {id:"dx", label:"d.x_", val:"1", addr:"+8"},
-          {id:"dy", label:"d.y_", val:"2", addr:"+12"}
-        ] } },
-      { title:"process(Base b) — copiere prin valoare",
-        note:"Copy constructorul lui <b>Base</b> copiază doar subobiectul Base. <b>y_ este tăiat</b>, iar vptr-ul lui b devine al lui Base (b e literalmente mai mic).",
-        cells:{ stack:[
-          {id:"dv", label:"d.vptr", val:"→ vtable Derived", addr:"+0"},
-          {id:"dx", label:"d.x_", val:"1", addr:"+8"},
-          {id:"dy", label:"d.y_", val:"2", addr:"+12"},
-          {id:"bv", label:"b.vptr", val:"→ vtable Base", addr:"+0", hot:true},
-          {id:"bx", label:"b.x_", val:"1", addr:"+8", hot:true}
-        ] } },
-      { title:"b.f();", out:"Base::f",
-        note:"Dispatch prin vptr-ul lui b → vtable Base → <code>Base::f</code>. Soluția: lucrează polimorfic prin <b>Base&amp;</b> sau <b>Base*</b>, niciodată prin valoare.",
-        cells:{ stack:[
-          {id:"dv", label:"d.vptr", val:"→ vtable Derived", addr:"+0"},
-          {id:"dx", label:"d.x_", val:"1", addr:"+8"},
-          {id:"dy", label:"d.y_", val:"2", addr:"+12"},
-          {id:"bv", label:"b.vptr", val:"→ vtable Base", addr:"+0", hot:true},
-          {id:"bx", label:"b.x_", val:"1", addr:"+8"}
-        ] } }
+      { title:"1. Vector V1", out:"Constructor V1",
+        note:"Se construiește <code>V1</code> și se pune pe stivă.",
+        cells:{ stack:[ {id:"v1", label:"Vector V1", val:"construit", addr:"0x7ffe20", hot:true} ] } },
+      { title:"2. Vector V2", out:"Constructor V2",
+        note:"Se construiește <code>V2</code>, deasupra lui V1 pe stivă.",
+        cells:{ stack:[ {id:"v1", label:"Vector V1", val:"construit", addr:"0x7ffe20"},
+                        {id:"v2", label:"Vector V2", val:"construit", addr:"0x7ffe30", hot:true} ] } },
+      { title:"3. } → se distruge V2", out:"~V2",
+        note:"La ieșirea din scope, <b>ultimul construit se distruge primul</b>: rulează <code>~V2</code>.",
+        cells:{ stack:[ {id:"v1", label:"Vector V1", val:"construit", addr:"0x7ffe20"},
+                        {id:"v2", label:"Vector V2", val:"distrus", addr:"0x7ffe30", dead:true, hot:true} ] } },
+      { title:"4. apoi se distruge V1", out:"~V1",
+        note:"Apoi <code>~V1</code>. Ordinea de distrugere e exact inversul ordinii de construcție (Last In, First Out).",
+        cells:{ stack:[ {id:"v1", label:"Vector V1", val:"distrus", addr:"0x7ffe20", dead:true, hot:true},
+                        {id:"v2", label:"Vector V2", val:"distrus", addr:"0x7ffe30", dead:true} ] } }
     ]
   },
 
-  /* 4) Destructor virtual ------------------------------------- */
+  /* 5) Ordinea de construcție/distrugere pe ierarhie (Cap 6) */
   {
-    id:"virtual-dtor",
-    nume:"Destructor virtual — de ce e obligatoriu",
-    rezumat:"delete printr-un Base* fără destructor virtual cheamă doar ~Base(): partea derivată (și resursele ei) nu se eliberează.",
+    id:"ierarhie-ctor",
+    nume:"Moștenire: ordinea pe ierarhie (Bază → Derivată)",
+    rezumat:"Pe un lanț de moștenire A→B→C→D, constructorii rulează de la bază spre derivată; destructorii, exact invers.",
     cod:
-`struct Base    { ~Base(){} };                 // NU e virtual!
-struct Derived : Base {
-    int* buf = new int[100];                  // resursă
-    ~Derived(){ delete[] buf; }
+`struct A { A(){cout<<"A()\\n";}  ~A(){cout<<"~A()\\n";} };
+struct B : A { B(){cout<<"B()\\n";}  ~B(){cout<<"~B()\\n";} };
+struct C : B { C(){cout<<"C()\\n";}  ~C(){cout<<"~C()\\n";} };
+struct D : C { D(){cout<<"D()\\n";}  ~D(){cout<<"~D()\\n";} };
+
+{ D d; }   // construcție A..D, apoi distrugere ~D..~A`,
+    output:"A()\nB()\nC()\nD()\n~D()\n~C()\n~B()\n~A()",
+    regions:["obj"],
+    steps:[
+      { title:"1. Constructorul A (baza)", out:"A()",
+        note:"Construcția pornește de la <b>cea mai de sus bază</b>. Subobiectul <code>A</code> ocupă fizic primii octeți.",
+        cells:{ obj:[ {id:"a", label:"A", val:"construit", hot:true} ] } },
+      { title:"2. Constructorul B", out:"B()",
+        note:"Apoi nivelul următor, <code>B</code> — care se putea baza pe <code>A</code> deja gata.",
+        cells:{ obj:[ {id:"a", label:"A", val:"construit"}, {id:"b", label:"B", val:"construit", hot:true} ] } },
+      { title:"3. Constructorul C", out:"C()",
+        note:"Apoi <code>C</code>.",
+        cells:{ obj:[ {id:"a", label:"A", val:"construit"}, {id:"b", label:"B", val:"construit"},
+                      {id:"c", label:"C", val:"construit", hot:true} ] } },
+      { title:"4. Constructorul D (derivata)", out:"D()",
+        note:"La final, derivata cea mai de jos, <code>D</code>. Obiectul e complet.",
+        cells:{ obj:[ {id:"a", label:"A", val:"construit"}, {id:"b", label:"B", val:"construit"},
+                      {id:"c", label:"C", val:"construit"}, {id:"d", label:"D", val:"construit", hot:true} ] } },
+      { title:"5. Distrugere: ~D primul", out:"~D()",
+        note:"La distrugere ordinea se inversează: pleacă <b>de la derivată spre bază</b>. Întâi <code>~D</code>.",
+        cells:{ obj:[ {id:"a", label:"A", val:"construit"}, {id:"b", label:"B", val:"construit"},
+                      {id:"c", label:"C", val:"construit"}, {id:"d", label:"D", val:"distrus", dead:true, hot:true} ] } },
+      { title:"6. ~C, ~B, ~A", out:"~C()",
+        note:"Apoi <code>~C</code>, <code>~B</code> și ultimul <code>~A</code> — baza moare ultima, fiindcă derivatele se puteau baza pe ea.",
+        cells:{ obj:[ {id:"a", label:"A", val:"se distruge ultimul", hot:true}, {id:"b", label:"B", val:"distrus", dead:true},
+                      {id:"c", label:"C", val:"distrus", dead:true}, {id:"d", label:"D", val:"distrus", dead:true} ] } }
+    ]
+  },
+
+  /* 6) Dispatch virtual prin vtable (Cap 7) */
+  {
+    id:"vtable-dispatch",
+    nume:"Polimorfism: apelul virtual prin vtable",
+    rezumat:"Printr-un Baza*, apelul unei metode virtuale e rezolvat la execuție: vptr → vtable-ul clasei reale → adresa metodei suprascrise.",
+    cod:
+`struct Baza    { virtual void f() { cout << "Baza::f\\n"; } };
+struct Derivat : Baza { void f() override { cout << "Derivat::f\\n"; } };
+
+Baza *p = new Derivat;   // tip static Baza*, obiect real Derivat
+p->f();                  // afișează "Derivat::f" — late binding`,
+    output:"Derivat::f",
+    regions:["heap","rodata"],
+    steps:[
+      { title:"1. new Derivat — obiect cu vptr",
+        note:"Orice clasă cu metode virtuale primește un <b>vptr</b> ascuns. Constructorul lui Derivat îl setează spre <b>vtable-ul lui Derivat</b>.",
+        cells:{ heap:[ {id:"obj", label:"obiect Derivat", val:"vptr → vtable Derivat", addr:"0x1a40", points:"vtD", hot:true} ],
+                rodata:[ {id:"vtB", label:"vtable Baza [0] f", val:"&Baza::f", addr:"0x4020"},
+                         {id:"vtD", label:"vtable Derivat [0] f", val:"&Derivat::f", addr:"0x4040"} ] } },
+      { title:"2. Baza* p = &obiect",
+        note:"<code>p</code> are tipul static <code>Baza*</code>, dar arată spre un obiect real <code>Derivat</code>. Tipul pointerului NU schimbă vptr-ul din obiect.",
+        cells:{ heap:[ {id:"obj", label:"obiect Derivat", val:"vptr → vtable Derivat", addr:"0x1a40", points:"vtD"} ],
+                rodata:[ {id:"vtB", label:"vtable Baza [0] f", val:"&Baza::f", addr:"0x4020"},
+                         {id:"vtD", label:"vtable Derivat [0] f", val:"&Derivat::f", addr:"0x4040"} ] } },
+      { title:"3. p->f(): se citește vptr",
+        note:"Apelul virtual nu sare direct la o adresă fixă. Întâi citește <b>vptr</b> din obiect → ajunge la <b>vtable-ul lui Derivat</b>.",
+        cells:{ heap:[ {id:"obj", label:"obiect Derivat", val:"vptr → vtable Derivat", addr:"0x1a40", points:"vtD", hot:true} ],
+                rodata:[ {id:"vtB", label:"vtable Baza [0] f", val:"&Baza::f", addr:"0x4020"},
+                         {id:"vtD", label:"vtable Derivat [0] f", val:"&Derivat::f", addr:"0x4040", hot:true} ] } },
+      { title:"4. slot[0] → &Derivat::f", out:"Derivat::f",
+        note:"Din vtable se ia slot-ul lui <code>f</code>: <code>&amp;Derivat::f</code>. Se execută versiunea din clasa <b>reală</b>, nu cea din tipul pointerului. Asta e <b>late binding</b>.",
+        cells:{ heap:[ {id:"obj", label:"obiect Derivat", val:"vptr → vtable Derivat", addr:"0x1a40", points:"vtD"} ],
+                rodata:[ {id:"vtB", label:"vtable Baza [0] f", val:"&Baza::f", addr:"0x4020"},
+                         {id:"vtD", label:"vtable Derivat [0] f", val:"&Derivat::f → APELAT", addr:"0x4040", hot:true} ] } }
+    ]
+  },
+
+  /* 7) Destructor virtual — de ce e obligatoriu (Cap 7) */
+  {
+    id:"dtor-virtual",
+    nume:"De ce destructorul trebuie să fie virtual",
+    rezumat:"delete printr-un Baza* fără destructor virtual cheamă doar ~Baza — partea Derivat rămâne nedistrusă (leak / UB).",
+    cod:
+`struct Baza    { ~Baza()    { cout << "~Baza\\n"; } };          // NU e virtual!
+struct Derivat : Baza {
+    char *buf = new char[1024];
+    ~Derivat() { delete[] buf; cout << "~Derivat\\n"; }
 };
 
-Base* p = new Derived;
-delete p;     // ~Base NEvirtual -> doar ~Base() rulează`,
-    output:"(memory leak: buf-ul de 100 int nu se eliberează)",
-    regions:["stack","heap"],
+Baza *p = new Derivat;
+delete p;     // cheamă DOAR ~Baza → buf-ul lui Derivat se pierde (leak)`,
+    output:"~Baza",
+    regions:["heap"],
     steps:[
-      { title:"Base* p = new Derived;",
-        note:"Obiectul Derived e pe heap; membrul <code>buf</code> alocă o a doua zonă heap. <code>p</code> e un Base* care arată spre el.",
-        cells:{ stack:[ {id:"p", label:"Base* p", val:"0x9000", addr:"0x7ffe10", points:"obj"} ],
-                heap:[ {id:"obj", label:"Derived (Base + buf)", val:"buf=0x9100", addr:"0x9000", points:"buf"},
-                       {id:"buf", label:"int[100]", val:"...", addr:"0x9100"} ] } },
-      { title:"delete p;  (~Base NEvirtual)",
-        note:"<code>delete p</code> cheamă doar <b>~Base()</b> (dispatch static, după tipul pointerului). <b>~Derived() nu rulează</b>, deci <code>delete[] buf</code> nu se face niciodată.",
-        cells:{ stack:[ {id:"p", label:"Base* p", val:"0x9000", addr:"0x7ffe10", points:"obj"} ],
-                heap:[ {id:"obj", label:"Derived (eliberat parțial)", val:"~Base() doar", addr:"0x9000", dead:true},
-                       {id:"buf", label:"int[100]  ← LEAK", val:"NEEliberat", addr:"0x9100", hot:true} ] } },
-      { title:"Remediu: virtual ~Base()",
-        note:"Cu <code>virtual ~Base()</code>, dispatch-ul prin vtable găsește <b>~Derived()</b> → <code>delete[] buf</code>, apoi ~Base(). Lanțul rulează corect, totul se eliberează.",
-        cells:{ stack:[ {id:"p", label:"Base* p", val:"(șters)", addr:"0x7ffe10"} ],
-                heap:[ {id:"obj", label:"Derived", val:"eliberat", addr:"0x9000", dead:true},
-                       {id:"buf", label:"int[100]", val:"eliberat", addr:"0x9100", dead:true, hot:true} ] } }
+      { title:"1. new Derivat",
+        note:"Obiectul Derivat conține și un buffer alocat cu <code>new[]</code>, eliberat în <code>~Derivat</code>.",
+        cells:{ heap:[ {id:"obj", label:"obiect Derivat", val:"buf → 0x90", addr:"0x1a40", points:"buf"},
+                       {id:"buf", label:"char[1024]", val:"alocat", addr:"0x90"} ] } },
+      { title:"2. delete p; (p e Baza*)",
+        note:"Pentru că <code>~Baza</code> <b>nu e virtual</b>, compilatorul cheamă static doar destructorul tipului pointerului: <code>~Baza</code>.",
+        cells:{ heap:[ {id:"obj", label:"obiect Derivat", val:"~Baza rulează", addr:"0x1a40", points:"buf", hot:true},
+                       {id:"buf", label:"char[1024]", val:"alocat", addr:"0x90"} ] } },
+      { title:"3. ~Derivat NU rulează → leak", out:"~Baza",
+        note:"<code>~Derivat</code> nu e apelat, deci <code>delete[] buf</code> nu se execută: bufferul de 1024 octeți rămâne pierdut. Comportament nedefinit la distrugere parțială.",
+        cells:{ heap:[ {id:"obj", label:"parte Baza distrusă", val:"~Baza only", addr:"0x1a40", points:"buf", dead:true},
+                       {id:"buf", label:"char[1024]", val:"LEAK — nedealocat", addr:"0x90", dead:true, hot:true} ] } },
+      { title:"4. Soluția: virtual ~Baza()",
+        note:"Declarând <code>virtual ~Baza()</code>, <code>delete p</code> trece prin vtable și cheamă întâi <code>~Derivat</code> (eliberează buf) apoi <code>~Baza</code>. Regulă: <b>orice clasă de bază polimorfică are destructor virtual</b>.",
+        cells:{ heap:[ {id:"obj", label:"obiect Derivat", val:"~Derivat apoi ~Baza", addr:"0x1a40", hot:true} ] } }
     ]
   },
 
-  /* 5) std::move este doar un cast ---------------------------- */
+  /* 8) Supraîncărcarea operatorului + (Cap 8) */
   {
-    id:"stdmove-cast",
-    nume:"std::move este doar un cast",
-    rezumat:"std::move nu mută nimic — e un static_cast la rvalue. Pe un obiect const nu se leagă de move ctor, așa că se cheamă tăcut copy ctor.",
+    id:"operator-plus",
+    nume:"Supraîncărcarea operatorului +",
+    rezumat:"c = a + b este de fapt apelul a.operator+(b) — funcția returnează un obiect nou cu suma.",
     cod:
-`// echivalent conceptual:
-template<class T> T&& move(T& t){ return static_cast<T&&>(t); }
-
-Buffer a(3);
-Buffer b = std::move(a);   // move ctor -> a devine goală
-
-const Buffer c(3);
-Buffer d = std::move(c);   // c e const -> COPY ctor, c rămâne intactă`,
-    output:"(a: goală după move) · (c: intactă, copiată)",
-    regions:["stack","heap"],
-    steps:[
-      { title:"Stare inițială",
-        note:"a și c (const) dețin fiecare câte o zonă heap.",
-        cells:{ stack:[ {id:"a", label:"a.data_", val:"0x55a0", addr:"0x10", points:"blkA"},
-                        {id:"c", label:"const c.data_", val:"0x77c0", addr:"0x20", points:"blkC"} ],
-                heap:[ {id:"blkA", label:"int[3]  (a)", val:"[1,2,3]", addr:"0x55a0"},
-                       {id:"blkC", label:"int[3]  (c)", val:"[9,9,9]", addr:"0x77c0"} ] } },
-      { title:"Buffer b = std::move(a);",
-        note:"<code>std::move(a)</code> = cast la <code>Buffer&amp;&amp;</code> → se alege <b>move ctor</b>: b fură pointerul, a devine goală. Niciun new.",
-        cells:{ stack:[ {id:"a", label:"a.data_", val:"nullptr", addr:"0x10", hot:true},
-                        {id:"b", label:"b.data_", val:"0x55a0", addr:"0x18", points:"blkA", hot:true},
-                        {id:"c", label:"const c.data_", val:"0x77c0", addr:"0x20", points:"blkC"} ],
-                heap:[ {id:"blkA", label:"int[3]", val:"[1,2,3]", addr:"0x55a0"},
-                       {id:"blkC", label:"int[3]  (c)", val:"[9,9,9]", addr:"0x77c0"} ] } },
-      { title:"Buffer d = std::move(c);  (capcană)",
-        note:"<code>std::move(c)</code> produce <code>const Buffer&amp;&amp;</code>, care NU se leagă de move ctor (cere <code>Buffer&amp;&amp;</code> non-const). Se alege <b>copy ctor</b>: d primește o copie nouă, iar c rămâne intactă. std::move pe const e tăcut inutil.",
-        cells:{ stack:[ {id:"a", label:"a.data_", val:"nullptr", addr:"0x10"},
-                        {id:"b", label:"b.data_", val:"0x55a0", addr:"0x18", points:"blkA"},
-                        {id:"c", label:"const c.data_", val:"0x77c0", addr:"0x20", points:"blkC"},
-                        {id:"d", label:"d.data_", val:"0x8a40", addr:"0x28", points:"blkD", hot:true} ],
-                heap:[ {id:"blkA", label:"int[3]", val:"[1,2,3]", addr:"0x55a0"},
-                       {id:"blkC", label:"int[3]  (c)", val:"[9,9,9]", addr:"0x77c0"},
-                       {id:"blkD", label:"int[3]  (copie d)", val:"[9,9,9]", addr:"0x8a40", hot:true} ] } }
-    ]
-  },
-
-  /* 6) RVO / copy elision ------------------------------------- */
-  {
-    id:"rvo",
-    nume:"RVO / copy elision",
-    rezumat:"Din C++17, un prvalue returnat se construiește direct în destinație — nu se cheamă nici copy, nici move constructor.",
-    cod:
-`struct Tracer {
-    Tracer()              { std::cout << "ctor\\n"; }
-    Tracer(const Tracer&) { std::cout << "copy\\n"; }
-    Tracer(Tracer&&)      { std::cout << "move\\n"; }
+`class Complex {
+    float re, im;
+public:
+    Complex(float r=0, float i=0) : re(r), im(i) {}
+    Complex operator+(const Complex& alt) const {
+        return Complex(re + alt.re, im + alt.im);
+    }
 };
 
-Tracer make() { return Tracer(); }   // prvalue
-Tracer t = make();                    // construit DIRECT în t`,
-    output:"ctor",
+Complex a(1, 2), b(3, 4);
+Complex c = a + b;          // <=> a.operator+(b)`,
+    output:"",
     regions:["stack"],
     steps:[
-      { title:"Tracer t = make();",
-        note:"Naiv te-ai aștepta: construiește temporar în make(), apoi îl copiază/mută în t. <b>Greșit din C++17.</b>",
-        cells:{ stack:[ {id:"t", label:"Tracer t", val:"(locul final)", addr:"0x7ffe10", hot:true} ] } },
-      { title:"Tracer() rulează direct în t", out:"ctor",
-        note:"Compilatorul construiește prvalue-ul <b>direct</b> în locația finală t (guaranteed copy elision). Se afișează doar <b>ctor</b> — niciun copy, niciun move.",
-        cells:{ stack:[ {id:"t", label:"Tracer t", val:"construit pe loc", addr:"0x7ffe10", hot:true} ] } },
-      { title:"Capcană: nu pune std::move pe return",
-        note:"<code>return std::move(local);</code> dezactivează elision-ul (returnezi o rvalue reference, nu obiectul) și forțează un <b>move</b> inutil. Lasă pur și simplu <code>return local;</code>.",
-        cells:{ stack:[ {id:"t", label:"Tracer t", val:"construit pe loc", addr:"0x7ffe10"} ] } }
+      { title:"1. a(1,2) și b(3,4)",
+        note:"Două obiecte Complex pe stivă, fiecare cu <code>re</code> și <code>im</code>.",
+        cells:{ stack:[ {id:"a", label:"Complex a", val:"re=1, im=2", hot:true},
+                        {id:"b", label:"Complex b", val:"re=3, im=4", hot:true} ] } },
+      { title:"2. a + b → a.operator+(b)",
+        note:"Compilatorul traduce <code>a + b</code> în apelul metodei <code>a.operator+(b)</code>: <code>a</code> e obiectul-gazdă (<code>this</code>), <code>b</code> e parametrul.",
+        cells:{ stack:[ {id:"a", label:"Complex a (this)", val:"re=1, im=2", hot:true},
+                        {id:"b", label:"Complex b (param)", val:"re=3, im=4", hot:true} ] } },
+      { title:"3. Se calculează suma",
+        note:"În corp: <code>re + alt.re</code> = 1+3 = 4, <code>im + alt.im</code> = 2+4 = 6. Se construiește un <b>obiect temporar</b> cu rezultatul.",
+        cells:{ stack:[ {id:"a", label:"Complex a", val:"re=1, im=2"},
+                        {id:"b", label:"Complex b", val:"re=3, im=4"},
+                        {id:"t", label:"Complex (temporar)", val:"re=4, im=6", hot:true} ] } },
+      { title:"4. c primește rezultatul",
+        note:"Obiectul întors inițializează <code>c</code>. Operatorii sunt funcții obișnuite, doar cu o sintaxă specială de apel.",
+        cells:{ stack:[ {id:"a", label:"Complex a", val:"re=1, im=2"},
+                        {id:"b", label:"Complex b", val:"re=3, im=4"},
+                        {id:"c", label:"Complex c", val:"re=4, im=6", hot:true} ] } }
     ]
   },
 
-  /* ===== Extindere: value categories · copy vs move · referințe ===== */
-
-  /* 7) O rvalue reference cu nume este lvalue ------------------ */
+  /* 9) Template = generator de cod (Cap 9) */
   {
-    id:"named-rvalue-lvalue",
-    nume:"O rvalue reference cu nume este lvalue",
-    rezumat:"Înăuntrul funcției, un parametru Buffer&& are NUME → este lvalue; un apel simplu alege COPY. Abia std::move îl re-cast la rvalue → MOVE.",
+    id:"template-instantiere",
+    nume:"Template = generator de cod",
+    rezumat:"Un template nu e cod, ci un șablon. Compilatorul generează câte o funcție concretă pentru fiecare tip cu care îl folosești.",
     cod:
-`void sink(Buffer&& x) {       // x este rvalue reference, DAR are nume
-    Buffer a = x;             // x e LVALUE -> COPY (alocare nouă)
-    Buffer b = std::move(x);  // re-cast la rvalue -> MOVE (fură buffer-ul lui x)
-}
-sink(Buffer(3));`,
-    output:"a = copie nouă · b = a furat buffer-ul lui x · x = golit",
-    regions:["stack","heap"],
+`template <class T>
+T maxim(T a, T b) { return (a > b) ? a : b; }
+
+maxim(3, 5);        // instanțiază maxim<int>
+maxim(2.7, 1.1);    // instanțiază maxim<double>
+maxim('a', 'z');    // instanțiază maxim<char>`,
+    output:"",
+    regions:["text"],
     steps:[
-      { title:"sink(Buffer(3))",
-        note:"Temporarul <code>Buffer(3)</code> se leagă de parametrul rvalue-reference <code>x</code>. Dar înăuntru, <code>x</code> are nume → categoria lui devine <b>lvalue</b>.",
-        cells:{ stack:[ {id:"x", label:"Buffer&& x", val:"0x55a0", addr:"0x10", points:"blkX"} ],
-                heap:[ {id:"blkX", label:"int[3]", val:"[1, 2, 3]", addr:"0x55a0"} ] } },
-      { title:"Buffer a = x;  (x e lvalue → COPY)", out:"copy",
-        note:"<code>x</code> e lvalue → overload resolution alege <b>copy ctor</b>: alocare nouă + copiere element-cu-element. Buffer-ul lui x rămâne intact.",
-        cells:{ stack:[ {id:"x", label:"Buffer&& x", val:"0x55a0", addr:"0x10", points:"blkX"},
-                        {id:"a", label:"a.data_", val:"0x77c0", addr:"0x18", points:"blkA", hot:true} ],
-                heap:[ {id:"blkX", label:"int[3]", val:"[1, 2, 3]", addr:"0x55a0"},
-                       {id:"blkA", label:"int[3]  (copie)", val:"[1, 2, 3]", addr:"0x77c0", hot:true} ] } },
-      { title:"Buffer b = std::move(x);  (→ MOVE)", out:"move",
-        note:"<code>std::move(x)</code> re-cast la rvalue → <b>move ctor</b>: b fură pointerul lui x; x devine gol. Niciun new.",
-        cells:{ stack:[ {id:"x", label:"Buffer&& x", val:"nullptr", addr:"0x10", hot:true},
-                        {id:"a", label:"a.data_", val:"0x77c0", addr:"0x18", points:"blkA"},
-                        {id:"b", label:"b.data_", val:"0x55a0", addr:"0x20", points:"blkX", hot:true} ],
-                heap:[ {id:"blkX", label:"int[3]", val:"[1, 2, 3]", addr:"0x55a0"},
-                       {id:"blkA", label:"int[3]  (copie)", val:"[1, 2, 3]", addr:"0x77c0"} ] } }
+      { title:"1. Șablonul (nu generează cod)",
+        note:"<code>template&lt;class T&gt; maxim</code> e doar o <b>rețetă</b>. Atât timp cât nu e folosit, nu apare nicio funcție în binar.",
+        cells:{ text:[ {id:"tpl", label:"template maxim<T>", val:"șablon — nicio instanțiere", hot:true} ] } },
+      { title:"2. maxim(3,5) → maxim<int>",
+        note:"La primul apel cu <code>int</code>, compilatorul <b>instanțiază</b> o funcție concretă <code>maxim&lt;int&gt;</code> și o pune în secțiunea de cod.",
+        cells:{ text:[ {id:"tpl", label:"template maxim<T>", val:"șablon"},
+                       {id:"i", label:"maxim<int>(int,int)", val:"cod generat", hot:true} ] } },
+      { title:"3. maxim(2.7,1.1) → maxim<double>",
+        note:"Pentru <code>double</code> se generează o <b>altă</b> funcție, complet separată. Pentru linker sunt simboluri distincte.",
+        cells:{ text:[ {id:"tpl", label:"template maxim<T>", val:"șablon"},
+                       {id:"i", label:"maxim<int>(int,int)", val:"cod generat"},
+                       {id:"d", label:"maxim<double>(double,double)", val:"cod generat", hot:true} ] } },
+      { title:"4. maxim('a','z') → maxim<char>",
+        note:"Și pentru <code>char</code>. Concluzie: <b>un șablon → multiple instanțieri</b>, câte una per tip folosit. De-aici și de ce template-urile stau în header.",
+        cells:{ text:[ {id:"tpl", label:"template maxim<T>", val:"șablon"},
+                       {id:"i", label:"maxim<int>", val:"cod generat"},
+                       {id:"d", label:"maxim<double>", val:"cod generat"},
+                       {id:"c", label:"maxim<char>(char,char)", val:"cod generat", hot:true} ] } }
     ]
   },
 
-  /* 8) push_back: copy vs move -------------------------------- */
+  /* 10) Excepții: throw → stack unwinding → catch (Cap 12) */
   {
-    id:"push-copy-move",
-    nume:"push_back: copy vs move",
-    rezumat:"v.push_back(b) copiază (b e lvalue); v.push_back(std::move(b)) mută (fură buffer-ul lui b).",
+    id:"exceptii-unwinding",
+    nume:"Excepții: throw, stack unwinding, catch",
+    rezumat:"O excepție aruncată în adânc derulează stiva în sus (apelând destructorii obiectelor locale) până găsește un catch potrivit.",
     cod:
-`std::vector<Buffer> v;
-v.reserve(2);               // capacitate rezervată (fără realocare)
-Buffer b(3);
-v.push_back(b);             // b e lvalue -> COPY (alocare nouă)
-v.push_back(std::move(b));  // rvalue -> MOVE (fură, b golit)`,
-    output:"v[0] = copie a lui b · v[1] = mutat din b · b = golit",
-    regions:["stack","heap"],
-    steps:[
-      { title:"Buffer b(3);",
-        note:"b deține zona cu [1, 2, 3].",
-        cells:{ stack:[ {id:"b", label:"b.data_", val:"0x55a0", addr:"0x10", points:"blkB"} ],
-                heap:[ {id:"blkB", label:"int[3]  (b)", val:"[1, 2, 3]", addr:"0x55a0"} ] } },
-      { title:"v.push_back(b);  (lvalue → COPY)", out:"copy",
-        note:"<code>b</code> e lvalue → <b>copy ctor</b>: v[0] primește o zonă NOUĂ, copiată. b rămâne intact.",
-        cells:{ stack:[ {id:"b", label:"b.data_", val:"0x55a0", addr:"0x10", points:"blkB"},
-                        {id:"v0", label:"v[0].data_", val:"0x6100", addr:"vector", points:"blk0", hot:true} ],
-                heap:[ {id:"blkB", label:"int[3]  (b)", val:"[1, 2, 3]", addr:"0x55a0"},
-                       {id:"blk0", label:"int[3]  (copie)", val:"[1, 2, 3]", addr:"0x6100", hot:true} ] } },
-      { title:"v.push_back(std::move(b));  (rvalue → MOVE)", out:"move",
-        note:"<code>std::move(b)</code> → <b>move ctor</b>: v[1] fură buffer-ul original al lui b; b devine gol. Niciun new.",
-        cells:{ stack:[ {id:"b", label:"b.data_", val:"nullptr", addr:"0x10", hot:true},
-                        {id:"v0", label:"v[0].data_", val:"0x6100", addr:"vector", points:"blk0"},
-                        {id:"v1", label:"v[1].data_", val:"0x55a0", addr:"vector", points:"blkB", hot:true} ],
-                heap:[ {id:"blkB", label:"int[3]  (mutat din b)", val:"[1, 2, 3]", addr:"0x55a0"},
-                       {id:"blk0", label:"int[3]  (copie)", val:"[1, 2, 3]", addr:"0x6100"} ] } }
-    ]
-  },
-
-  /* 9) Self-assignment & copy-and-swap ------------------------ */
-  {
-    id:"self-assign",
-    nume:"Self-assignment & copy-and-swap",
-    rezumat:"Un operator= naiv care eliberează înainte de copiere se sparge la a = a (use-after-free). Copy-and-swap îl rezolvă.",
-    cod:
-`// operator= NAIV (periculos):
-Buffer& operator=(const Buffer& o) {
-    delete[] data_;                              // 1) eliberează ce avem
-    data_ = new int[o.size_];                    // 2) alocă
-    std::copy(o.data_, o.data_ + o.size_, data_);// 3) copiază din o
-    return *this;
-}
-a = a;   // self-assignment: o ESTE a !`,
-    output:"operator= naiv: use-after-free la a = a; copy-and-swap îl rezolvă",
-    regions:["stack","heap"],
-    steps:[
-      { title:"a = a;  (o și *this sunt același obiect)",
-        note:"La self-assignment, parametrul <code>o</code> este chiar <code>a</code>: ambele arată spre același buffer.",
-        cells:{ stack:[ {id:"a", label:"a.data_", val:"0x55a0", addr:"0x10", points:"blk"} ],
-                heap:[ {id:"blk", label:"int[3]", val:"[1, 2, 3]", addr:"0x55a0"} ] } },
-      { title:"delete[] data_;",
-        note:"Eliberăm propriul buffer. Dar <code>o</code> (= a) arată tot spre el → sursa de copiere e acum ELIBERATĂ.",
-        cells:{ stack:[ {id:"a", label:"a.data_", val:"0x55a0", addr:"0x10", points:"blk"} ],
-                heap:[ {id:"blk", label:"int[3]", val:"(eliberat)", addr:"0x55a0", dead:true, hot:true} ] } },
-      { title:"new + std::copy din o  → use-after-free",
-        note:"Copierea citește din <code>o.data_</code> = zona deja eliberată → <b>comportament nedefinit</b> (date corupte / crash).",
-        cells:{ stack:[ {id:"a", label:"a.data_", val:"0x8a40", addr:"0x10", points:"blkNew", hot:true} ],
-                heap:[ {id:"blk", label:"int[3]", val:"(eliberat)", addr:"0x55a0", dead:true},
-                       {id:"blkNew", label:"int[3]", val:"[gunoi]", addr:"0x8a40", hot:true} ] } },
-      { title:"Remediu: copy-and-swap",
-        note:"<code>Buffer&amp; operator=(Buffer o){ swap(*this, o); return *this; }</code> — primești prin valoare (copy/move făcut de compilator), apoi swap. Self-assignment devine inofensiv și e exception-safe.",
-        cells:{ stack:[ {id:"a", label:"a.data_", val:"0x55a0", addr:"0x10", points:"blk2"} ],
-                heap:[ {id:"blk2", label:"int[3]  (intact)", val:"[1, 2, 3]", addr:"0x55a0"} ] } }
-    ]
-  },
-
-  /* 10) Tip move-only (unique_ptr) ---------------------------- */
-  {
-    id:"move-only",
-    nume:"Tip move-only (unique_ptr)",
-    rezumat:"unique_ptr se poate muta dar nu copia: mutarea transferă proprietatea, copy = eroare de compilare.",
-    cod:
-`std::unique_ptr<Widget> a = std::make_unique<Widget>();
-std::unique_ptr<Widget> b = std::move(a);  // transfer de proprietate
-// std::unique_ptr<Widget> c = a;           // EROARE: copy ctor = delete`,
-    output:"a -> b: proprietate transferată; copy interzis",
-    regions:["stack","heap"],
-    steps:[
-      { title:"make_unique<Widget>()",
-        note:"a deține obiectul Widget de pe heap.",
-        cells:{ stack:[ {id:"a", label:"unique_ptr a", val:"0x9000", addr:"0x10", points:"w"} ],
-                heap:[ {id:"w", label:"Widget", val:"{ ... }", addr:"0x9000"} ] } },
-      { title:"b = std::move(a);  (transfer)",
-        note:"unique_ptr e <b>move-only</b>: mutarea transferă pointerul. a devine <code>nullptr</code>, b devine proprietarul. O singură proprietate → fără double-delete.",
-        cells:{ stack:[ {id:"a", label:"unique_ptr a", val:"nullptr", addr:"0x10", hot:true},
-                        {id:"b", label:"unique_ptr b", val:"0x9000", addr:"0x18", points:"w", hot:true} ],
-                heap:[ {id:"w", label:"Widget", val:"{ ... }", addr:"0x9000"} ] } },
-      { title:"copy interzis",
-        note:"<code>unique_ptr c = a;</code> <b>nu compilează</b> — copy ctor-ul e <code>=delete</code>. Asta previne două pointere care ar elibera același obiect.",
-        cells:{ stack:[ {id:"a", label:"unique_ptr a", val:"nullptr", addr:"0x10"},
-                        {id:"b", label:"unique_ptr b", val:"0x9000", addr:"0x18", points:"w"} ],
-                heap:[ {id:"w", label:"Widget", val:"{ ... }", addr:"0x9000"} ] } }
-    ]
-  },
-
-  /* 11) Use-after-move ---------------------------------------- */
-  {
-    id:"use-after-move",
-    nume:"Use-after-move",
-    rezumat:"După std::move, sursa e validă dar nespecificată; a-i citi conținutul e un bug de logică.",
-    cod:
-`std::string s1 = "salut";
-std::string s2 = std::move(s1);   // s2 preia conținutul
-std::cout << s1;                  // s1 e valid dar NESPECIFICAT (tipic gol)`,
-    output:"s2 = salut · s1 = (tipic gol, dar nespecificat)",
-    regions:["stack","heap"],
-    steps:[
-      { title:"std::string s1 = salut;",
-        note:"s1 deține bufferul cu textul.",
-        cells:{ stack:[ {id:"s1", label:"string s1", val:"-> text", addr:"0x10", points:"buf"} ],
-                heap:[ {id:"buf", label:"char[6]", val:"salut", addr:"0x55a0"} ] } },
-      { title:"std::string s2 = std::move(s1);",
-        note:"Move ctor: s2 preia bufferul lui s1. s1 rămâne <b>valid dar gol</b> (stare moved-from, tipic goală).",
-        cells:{ stack:[ {id:"s1", label:"string s1", val:"(gol — moved-from)", addr:"0x10", hot:true},
-                        {id:"s2", label:"string s2", val:"-> text", addr:"0x18", points:"buf", hot:true} ],
-                heap:[ {id:"buf", label:"char[6]", val:"salut", addr:"0x55a0"} ] } },
-      { title:"std::cout << s1;",
-        note:"Legal (s1 e valid), dar valoarea e <b>nespecificată</b> de standard (tipic gol). A te baza pe conținutul lui s1 după move = <b>bug de logică</b>.",
-        cells:{ stack:[ {id:"s1", label:"string s1", val:"(nespecificat)", addr:"0x10", hot:true},
-                        {id:"s2", label:"string s2", val:"-> text", addr:"0x18", points:"buf"} ],
-                heap:[ {id:"buf", label:"char[6]", val:"salut", addr:"0x55a0"} ] } }
-    ]
-  },
-
-  /* 12) Lifetime extension cu const& -------------------------- */
-  {
-    id:"lifetime-ext",
-    nume:"Lifetime extension cu const&",
-    rezumat:"const& legat DIRECT de un temporar îi prelungește viața; dar nu prin valoarea de retur a unei funcții (ex. vec[0]) → dangling.",
-    cod:
-`const Buffer& r = makeBuffer();        // OK: viața temporarului e EXTINSĂ cât trăiește r
-
-const int& bad = std::vector<int>{1,2,3}[0];  // NU se extinde: vectorul moare
-std::cout << bad;                              // dangling -> UB`,
-    output:"r: temporar prelungit (OK) · bad: dangling (UB)",
+`void f3() { throw runtime_error("eroare!"); }   // aruncă
+void f2() { Resursa r; f3(); }                  // r se distruge la unwinding
+void f1() {
+    try { f2(); }
+    catch (exception& e) { cout << e.what(); }  // prinde aici
+}`,
+    output:"eroare!",
     regions:["stack"],
     steps:[
-      { title:"const Buffer& r = makeBuffer();",
-        note:"Legarea <b>directă</b> a unui temporar de un <code>const&amp;</code> îi <b>prelungește viața</b> cât trăiește r. r e un alias valid.",
-        cells:{ stack:[ {id:"tmp", label:"Buffer temporar", val:"[1, 2, 3]", addr:"0x7ffe40", hot:true} ] },
-        aliases:[ {name:"const Buffer& r", target:"tmp"} ] },
-      { title:"const int& bad = vector{1,2,3}[0];",
-        note:"Aici <code>bad</code> NU se leagă direct de temporar, ci de rezultatul lui <code>operator[]</code> (un subobiect). Viața vectorului <b>nu</b> se extinde.",
-        cells:{ stack:[ {id:"tmp", label:"Buffer temporar", val:"[1, 2, 3]", addr:"0x7ffe40"},
-                        {id:"vec", label:"vector temporar", val:"[1, 2, 3]", addr:"0x7ffe60", hot:true},
-                        {id:"bad", label:"const int& bad", val:"-> vec[0]", addr:"0x7ffe80", points:"vec", hot:true} ] },
-        aliases:[ {name:"const Buffer& r", target:"tmp"} ] },
-      { title:"Vectorul temporar moare",
-        note:"La finalul expresiei, vectorul temporar e distrus. <code>bad</code> arată spre o celulă eliberată — este <b>dangling</b>.",
-        cells:{ stack:[ {id:"tmp", label:"Buffer temporar", val:"[1, 2, 3]", addr:"0x7ffe40"},
-                        {id:"vec", label:"vector temporar", val:"(eliberat)", addr:"0x7ffe60", dead:true, hot:true},
-                        {id:"bad", label:"const int& bad", val:"-> vec[0]", addr:"0x7ffe80", points:"vec"} ] },
-        aliases:[ {name:"const Buffer& r", target:"tmp"} ] },
-      { title:"std::cout << bad;",
-        note:"Citirea prin <code>bad</code> accesează memorie eliberată → <b>comportament nedefinit</b>. (r rămâne valid — temporarul lui a fost prelungit corect.)",
-        cells:{ stack:[ {id:"tmp", label:"Buffer temporar", val:"[1, 2, 3]", addr:"0x7ffe40"},
-                        {id:"bad", label:"const int& bad", val:"-> ???", addr:"0x7ffe80", points:"VOID", hot:true} ] },
-        aliases:[ {name:"const Buffer& r", target:"tmp"} ] }
+      { title:"1. f1 → f2 → f3 (stiva crește)",
+        note:"<code>f1</code> apelează <code>f2</code>, care apelează <code>f3</code>. Cadrele se stivuiesc. <code>f2</code> are un obiect local <code>r</code>.",
+        cells:{ stack:[ {id:"f1", label:"f1() — try", val:"așteaptă"},
+                        {id:"f2", label:"f2() — Resursa r", val:"r construit"},
+                        {id:"f3", label:"f3()", val:"rulează", hot:true} ] } },
+      { title:"2. throw în f3", out:"",
+        note:"<code>f3</code> aruncă o excepție. Execuția normală se oprește; începe căutarea unui <code>catch</code> potrivit, în sus pe stivă.",
+        cells:{ stack:[ {id:"f1", label:"f1() — try", val:"așteaptă"},
+                        {id:"f2", label:"f2() — Resursa r", val:"r construit"},
+                        {id:"f3", label:"f3() — THROW", val:"excepție aruncată", dead:true, hot:true} ] } },
+      { title:"3. Stack unwinding: ~Resursa",
+        note:"Pe măsură ce se derulează cadrele (<b>stack unwinding</b>), obiectele locale se distrug corect: <code>~Resursa</code> pentru <code>r</code> din f2. (De-aici importanța destructorilor — RAII.)",
+        cells:{ stack:[ {id:"f1", label:"f1() — try", val:"așteaptă"},
+                        {id:"f2", label:"f2() — ~Resursa", val:"r distrus", dead:true, hot:true},
+                        {id:"f3", label:"f3()", val:"derulat", dead:true} ] } },
+      { title:"4. catch în f1", out:"eroare!",
+        note:"<code>f1</code> are un <code>catch(exception&amp;)</code> care se potrivește → excepția e prinsă, se afișează mesajul și programul continuă normal.",
+        cells:{ stack:[ {id:"f1", label:"f1() — catch", val:"excepție prinsă", hot:true},
+                        {id:"f2", label:"f2()", val:"derulat", dead:true},
+                        {id:"f3", label:"f3()", val:"derulat", dead:true} ] } }
+    ]
+  },
+
+  /* 11) Move semantics — furtul resursei (Cap 13) */
+  {
+    id:"move",
+    nume:"Move semantics: furtul resursei",
+    rezumat:"Move constructor nu copiază bufferul, ci îi fură pointerul; sursa rămâne goală (nullptr). Rapid și fără alocare nouă.",
+    cod:
+`class MemoryBuff {
+    char *buf;
+public:
+    MemoryBuff(MemoryBuff&& alt) {   // move constructor
+        buf = alt.buf;               // FURĂ pointerul
+        alt.buf = nullptr;           // sursa rămâne goală
+    }
+};
+
+MemoryBuff a(1024);
+MemoryBuff b = std::move(a);   // mută a în b`,
+    output:"",
+    regions:["stack","heap"],
+    steps:[
+      { title:"1. MemoryBuff a(1024)",
+        note:"<code>a</code> deține un buffer în heap; <code>a.buf</code> ține adresa lui.",
+        cells:{ stack:[ {id:"a", label:"MemoryBuff a", val:"buf → 0x80", addr:"0x7ffe00", points:"buf1", hot:true} ],
+                heap:[ {id:"buf1", label:"char[1024]", val:"date", addr:"0x80"} ] } },
+      { title:"2. std::move(a) marchează a ca „de furat”",
+        note:"<code>std::move</code> NU mută nimic singur — doar transformă <code>a</code> într-un rvalue, ca să se aleagă <b>move constructor</b>-ul în loc de copy.",
+        cells:{ stack:[ {id:"a", label:"MemoryBuff a (rvalue)", val:"buf → 0x80", addr:"0x7ffe00", points:"buf1", hot:true} ],
+                heap:[ {id:"buf1", label:"char[1024]", val:"date", addr:"0x80"} ] } },
+      { title:"3. b fură pointerul",
+        note:"Move constructor copiază doar <b>adresa</b> în <code>b.buf</code> — fără alocare nouă, fără copiat 1024 octeți. Acum <code>b</code> deține bufferul.",
+        cells:{ stack:[ {id:"a", label:"MemoryBuff a", val:"buf → 0x80", addr:"0x7ffe00", points:"buf1"},
+                        {id:"b", label:"MemoryBuff b", val:"buf → 0x80", addr:"0x7ffe10", points:"buf1", hot:true} ],
+                heap:[ {id:"buf1", label:"char[1024]", val:"date", addr:"0x80", hot:true} ] } },
+      { title:"4. a.buf = nullptr (sursa golită)",
+        note:"Sursa <code>a</code> e lăsată într-o stare validă-dar-goală (<code>nullptr</code>), ca destructorul ei să nu elibereze bufferul furat. Un singur proprietar = fără double free.",
+        cells:{ stack:[ {id:"a", label:"MemoryBuff a", val:"buf → nullptr", addr:"0x7ffe00", points:"VOID", hot:true},
+                        {id:"b", label:"MemoryBuff b", val:"buf → 0x80", addr:"0x7ffe10", points:"buf1"} ],
+                heap:[ {id:"buf1", label:"char[1024]", val:"date (al lui b)", addr:"0x80"} ] } }
     ]
   }
-];
 
-if (typeof window !== "undefined") window.OOP_SCENARII = OOP_SCENARII;
-if (typeof module !== "undefined") module.exports = { OOP_SCENARII };
+];

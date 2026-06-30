@@ -267,61 +267,27 @@ pre.code{font-family:var(--mono); font-size:13px; line-height:1.55; background:v
 
   <header class="bar">
     <div class="brand">OOP <span>· C++</span></div>
-    <div class="sub">Vizualizatoare de memorie — pointeri &amp; referințe, layout de obiecte, vtable, copy / move, template-uri</div>
+    <div class="sub">Curs complet după programa de facultate — teorie, joculețe animate și exerciții, de la clase și constructori la moștenire, polimorfism, template-uri și C++11</div>
   </header>
 
   <nav class="tabs" id="tabs">
     <button data-tab="teorie" class="active">Teorie</button>
-    <button data-tab="memorie">Memorie vizuală</button>
-    <button data-tab="anatomie">Anatomie obiect</button>
-    <button data-tab="scenarii">Scenarii animate</button>
+    <button data-tab="scenarii">Joculețe</button>
     <button data-tab="exercitii">Exerciții &amp; quiz</button>
   </nav>
 
   <!-- ============ TEORIE ============ -->
   <section class="page active" id="page-teorie">
     <h2>Teorie</h2>
-    <p class="lead">Materialele complete, cu nuanțele și capcanele de interviu exemplificate, plus diagramele recreate curat. Alege un capitol și citește; diagramele folosesc aceleași hărți de memorie ca restul modulului.</p>
+    <p class="lead">Cele 12 capitole ale cursului, cu definiții, exemplele de cod din curs, tabele și diagrame de memorie. Capcanele de examen sunt marcate distinct. Alege un capitol și citește; frazele evidențiate deschid joculețul corespunzător.</p>
     <div class="chips" id="teoNav"></div>
     <div id="teoBody"></div>
   </section>
 
-  <!-- ============ MEMORIE ============ -->
-  <section class="page" id="page-memorie">
-    <h2>Memorie vizuală</h2>
-    <p class="lead">Cum trăiesc valorile în memorie: <b>stiva</b> și <b>heap-ul</b>, distincția pointer / referință, și ce se întâmplă la copy, move și la o referință care atârnă. Alege un demo și parcurge-l pas cu pas.</p>
-    <div class="chips" id="memChips"></div>
-    <div class="rezumat" id="memRez"></div>
-    <div class="controls" id="memCtl">
-      <button class="btn" id="memPlay">Pornește</button>
-      <button class="btn ghost" id="memPrev">Înapoi</button>
-      <button class="btn ghost" id="memNext">Pas</button>
-      <button class="btn ghost" id="memReset">Reset</button>
-      <span class="prog" id="memProg"></span>
-    </div>
-    <div class="stage" id="memStage"></div>
-    <div class="cols">
-      <pre class="code cpp" id="memCode"></pre>
-      <div class="info">
-        <div class="log-h">Ce se întâmplă la fiecare pas</div>
-        <div class="steplog" id="memLog"></div>
-        <div class="console" id="memOut"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ ANATOMIE ============ -->
-  <section class="page" id="page-anatomie">
-    <h2>Anatomie obiect</h2>
-    <p class="lead">Structura statică a tipurilor: layout-ul în memorie (vptr, membri, padding), tabela virtuală și apelul virtual, name mangling-ul de la overloading și instanțierea template-urilor.</p>
-    <div class="chips" id="anatNav"></div>
-    <div id="anatBody"></div>
-  </section>
-
-  <!-- ============ SCENARII ============ -->
+  <!-- ============ JOCULEȚE (SCENARII) ============ -->
   <section class="page" id="page-scenarii">
-    <h2>Scenarii animate</h2>
-    <p class="lead">Procese în timp — ciclul de viață al obiectelor: ordinea de construcție / distrugere, apelul virtual din constructor, slicing, destructor virtual, <code>std::move</code> și copy elision. Output-ul programului apare pe măsură ce avansezi.</p>
+    <h2>Joculețe</h2>
+    <p class="lead">Concepte-cheie explicate pas cu pas, ca un mic film în memorie: instanțiere, ordinea constructorilor și destructorilor, copy shallow vs deep, dispatch virtual prin vtable, supraîncărcarea operatorilor, template-uri, excepții și move. Alege un joc, apasă <b>Pornește</b> sau avansează cu <b>Pas</b>; output-ul programului apare pe măsură ce înaintezi.</p>
     <div class="chips" id="scenChips"></div>
     <div class="rezumat" id="scenRez"></div>
     <div class="controls" id="scenCtl">
@@ -354,8 +320,6 @@ pre.code{font-family:var(--mono); font-size:13px; line-height:1.55; background:v
 
 <script src="teorie.js"></script>
 <script src="exercitii.js"></script>
-<script src="memorie.js"></script>
-<script src="anatomie.js"></script>
 <script src="scenarii.js"></script>
 <script>
 "use strict";
@@ -532,179 +496,24 @@ MapPlayer.prototype.render=function(){
   if(this.bNext) this.bNext.disabled=(this.idx>=sc.steps.length-1);
 };
 
-/* ---------- name mangling (subset ABI Itanium) ---------- */
-var MANGLE_BASE={ "void":"v","bool":"b","char":"c","signed char":"a","unsigned char":"h",
-  "short":"s","unsigned short":"t","int":"i","unsigned":"j","unsigned int":"j",
-  "long":"l","unsigned long":"m","long long":"x","unsigned long long":"y",
-  "float":"f","double":"d","long double":"e","wchar_t":"w" };
-function mangleType(t){
-  t=t.trim(); var pre="";
-  if(/&&$/.test(t)){ pre="O"; t=t.replace(/&&$/,"").trim(); }
-  else if(/&$/.test(t)){ pre="R"; t=t.replace(/&$/,"").trim(); }
-  while(/\*$/.test(t)){ pre+="P"; t=t.replace(/\*$/,"").trim(); }
-  var isConst=false;
-  if(/^const\b/.test(t)){ isConst=true; t=t.replace(/^const\b/,"").trim(); }
-  if(/\bconst$/.test(t)){ isConst=true; t=t.replace(/\bconst$/,"").trim(); }
-  var base=MANGLE_BASE[t]; if(base===undefined) base="?";
-  return pre+(isConst?"K":"")+base;
-}
-function mangleFn(sig){
-  sig=sig.trim();
-  var m=sig.match(/([A-Za-z_]\w*)\s*\(([^)]*)\)/);
-  if(!m) return null;
-  return { name:m[1], params:m[2].trim() };
-}
-
-/* ---------- ANATOMIE ---------- */
-var ANAT_VIEWS=[
-  {k:"layout",   n:"Layout obiect"},
-  {k:"dispatch", n:"vtable & dispatch virtual"},
-  {k:"mangling", n:"Overload & name mangling"},
-  {k:"templates",n:"Template = generator de cod"}
-];
-var anatState={view:"layout", layoutIdx:0};
-var anatDisp=null;
-
-function renderAnat(){
-  if(anatDisp){ anatDisp.stop(); anatDisp=null; }
-  var v=anatState.view;
-  if(v==="layout") anatLayout();
-  else if(v==="dispatch") anatDispatch();
-  else if(v==="mangling") anatMangling();
-  else if(v==="templates") anatTemplates();
-}
-function anatLayout(){
-  var L=ANATOMY.layouts, i=anatState.layoutIdx||0;
-  var html='<div class="sub-chips">'
-    + L.map(function(l,k){ return '<button class="chip'+(k===i?" active":"")+'" data-k="'+k+'">'+esc(l.nume)+'</button>'; }).join("")
-    + '</div><div class="stage" id="anatStage"></div>'
-    + '<div class="cols"><pre class="code cpp" id="anatCode"></pre>'
-    + '<div class="info"><div class="sizeof"><b>sizeof:</b> '+esc(L[i].sizeofTxt)+'</div>'
-    + '<div class="step-note">'+L[i].note+'</div></div></div>';
-  var body=document.getElementById("anatBody"); body.innerHTML=html;
-  document.getElementById("anatCode").innerHTML=highlightCpp(L[i].cod);
-  renderStep(document.getElementById("anatStage"), L[i].scene, 0);
-  body.querySelectorAll(".sub-chips .chip").forEach(function(b){
-    b.onclick=function(){ anatState.layoutIdx=+b.dataset.k; anatLayout(); };
-  });
-}
-function anatDispatch(){
-  var d=ANATOMY.dispatch;
-  var html='<div class="controls" id="adCtl">'
-    + '<button class="btn" id="adPlay">Pornește</button>'
-    + '<button class="btn ghost" id="adPrev">Înapoi</button>'
-    + '<button class="btn ghost" id="adNext">Pas</button>'
-    + '<button class="btn ghost" id="adReset">Reset</button>'
-    + '<span class="prog" id="adProg"></span></div>'
-    + '<div class="stage" id="anatStage"></div>'
-    + '<div class="cols"><pre class="code cpp" id="anatCode"></pre>'
-    + '<div class="info"><div class="log-h">Ce se întâmplă la fiecare pas</div><div class="steplog" id="adLog"></div></div></div>'
-    + '<p class="muted small" style="margin-top:12px">'+d.note+'</p>';
-  document.getElementById("anatBody").innerHTML=html;
-  anatDisp=new MapPlayer({stage:"anatStage",code:"anatCode",log:"adLog",
-    prog:"adProg",ctl:"adCtl",play:"adPlay",next:"adNext",prev:"adPrev",reset:"adReset"});
-  anatDisp.load(d.scene);
-}
-function anatMangling(){
-  var m=ANATOMY.mangling;
-  var types=m.types.map(function(t){ return '<tr><td class="mono">'+esc(t[0])+'</td><td class="mono accentc">'+esc(t[1])+'</td></tr>'; }).join("");
-  var ex=m.examples.map(function(e){ return '<tr><td class="mono">'+esc(e.sig)+'</td><td class="mono accentc">'+esc(e.mangled)+'</td></tr>'; }).join("");
-  var html='<p>'+m.intro+'</p>'
-    + '<div class="cols2">'
-    + '<div class="card"><h4>Coduri de tip (Itanium ABI)</h4><table class="tbl"><tr><th>Tip</th><th>Cod</th></tr>'+types+'</table></div>'
-    + '<div class="card"><h4>Exemple</h4><table class="tbl"><tr><th>Semnătură</th><th>Simbol</th></tr>'+ex+'</table></div>'
-    + '</div>'
-    + '<div class="card"><h4>Decodor live</h4>'
-    + '<div class="decoder"><input id="mgIn" type="text" value="void f(int, char)" spellcheck="false">'
-    + '<button class="btn" id="mgBtn">Mangle</button></div><div id="mgOut" class="mg-out"></div></div>';
-  document.getElementById("anatBody").innerHTML=html;
-  var run=function(){ renderMangle(document.getElementById("mgIn").value); };
-  document.getElementById("mgBtn").onclick=run;
-  document.getElementById("mgIn").addEventListener("keyup", run);
-  run();
-}
-function renderMangle(sig){
-  var o=document.getElementById("mgOut"); if(!o)return;
-  var r=mangleFn(sig);
-  if(!r){ o.innerHTML='<span class="bad">Format așteptat: <code>nume(tip, tip, ...)</code></span>'; return; }
-  var codes;
-  if(r.params==="" || r.params==="void") codes=[["(niciun parametru)","v"]];
-  else codes=r.params.split(",").map(function(p){ return [p.trim(), mangleType(p)]; });
-  var codeStr=(r.params==="" || r.params==="void") ? "v" : codes.map(function(c){return c[1];}).join("");
-  var bd=codes.map(function(c){ return '<tr><td class="mono">'+esc(c[0])+'</td><td class="mono accentc">'+esc(c[1])+'</td></tr>'; }).join("");
-  o.innerHTML='<div class="mg-sym mono"><span class="mg-pref">_Z</span><span class="mg-name">'+r.name.length+esc(r.name)+'</span><span class="mg-codes">'+esc(codeStr)+'</span></div>'
-    + '<table class="tbl small"><tr><th>Parametru</th><th>Cod</th></tr>'+bd+'</table>'
-    + '<p class="muted small" style="margin-top:8px"><code>_Z</code> = prefix „mangled”; <code>'+r.name.length+esc(r.name)+'</code> = lungime + nume; apoi codurile parametrilor.</p>';
-}
-var tplState=null;
-function anatTemplates(){
-  var t=ANATOMY.templates;
-  tplState={text:[],types:[],data:[],done:{},msg:""};
-  var btns=t.items.map(function(it,i){ return '<button class="btn ghost" data-i="'+i+'">'+esc(it.label)+'</button>'; }).join("");
-  var html='<p>'+t.intro+'</p>'
-    + '<pre class="code cpp" id="tplDefs"></pre>'
-    + '<div class="tpl-bar"><span class="muted small">Instanțiază:</span> '+btns+'</div>'
-    + '<div class="cols2" id="tplOut"></div>'
-    + '<div id="tplMsg" class="mg-out"></div>'
-    + '<p class="muted small" style="margin-top:12px">'+t.note+'</p>';
-  document.getElementById("anatBody").innerHTML=html;
-  document.getElementById("tplDefs").innerHTML=highlightCpp(t.defs);
-  document.querySelectorAll(".tpl-bar .btn").forEach(function(b){
-    b.onclick=function(){ tplAdd(ANATOMY.templates.items[+b.dataset.i]); };
-  });
-  renderTpl();
-}
-function tplAdd(it){
-  if(tplState.done[it.label]){
-    tplState.msg="<b>"+esc(it.label)+"</b> e deja instanțiat. Linkerul vede simboluri <b>weak/COMDAT</b> și păstrează o singură copie (COMDAT folding) — binarul final nu se umflă cu duplicate.";
-    renderTpl(); return;
-  }
-  tplState.done[it.label]=true; tplState.msg="";
-  if(it.kind==="fn") tplState.text.push(it);
-  else if(it.kind==="class") tplState.types.push(it);
-  else if(it.kind==="static") tplState.data.push(it);
-  renderTpl();
-}
-function tplCell(r, withAddr){
-  return '<div class="cell">'
-    + (withAddr && r.addr ? '<span class="addr">'+esc(r.addr)+'</span>' : '')
-    + '<span class="cbody"><span class="cname">'+esc(r.sym)+'</span><span class="cval">'+esc(r.desc)+'</span></span></div>';
-}
-function renderTpl(){
-  var s=tplState;
-  var textHtml=(s.text.length||s.types.length)
-    ? s.text.map(function(r){return tplCell(r,true);}).join("")+s.types.map(function(r){return tplCell(r,false);}).join("")
-    : '<span class="empty">— nimic generat încă —</span>';
-  var dataHtml=s.data.length ? s.data.map(function(r){return tplCell(r,true);}).join("") : '<span class="empty">— niciun membru static —</span>';
-  var bloat=s.text.length+s.types.length;
-  document.getElementById("tplOut").innerHTML=
-      '<div class="region"><div class="region-h">.text · cod generat <span class="cnt">'+bloat+'</span></div><div class="cells">'+textHtml+'</div></div>'
-    + '<div class="region"><div class="region-h">.data · membri statici</div><div class="cells">'+dataHtml+'</div></div>';
-  var msg=document.getElementById("tplMsg");
-  if(msg) msg.innerHTML=s.msg?('<span class="warnc small">'+s.msg+'</span>'):"";
-}
-
 /* ---------- TEORIE ---------- */
 var teoState={idx:0};
 function coLabel(k){ return k==="capcana"?"Capcană":(k==="nuanta"?"Nuanță":"Notă"); }
 /* link-uri din teorie spre vizualizatoare */
+/* link-uri din teorie spre Joculețe: dacă o frază bold de mai jos apare în
+   text, devine un link care deschide jocul respectiv. */
 var XREF=[
-  ["Memorie vizuală → Dangling","memorie","dangling"],
-  ["Scenarii → Ordinea de construcție și distrugere","scenarii","ctor-dtor"],
-  ["Scenarii → Apel virtual în constructor","scenarii","vptr-ctor"],
-  ["Scenarii → Destructor virtual","scenarii","virtual-dtor"],
-  ["Memorie vizuală → Copy shallow / deep","memorie","copy-shallow"],
-  ["Scenarii → std::move este doar un cast","scenarii","stdmove-cast"],
-  ["Scenarii → RVO / copy elision","scenarii","rvo"],
-  ["Scenarii → Object slicing","scenarii","slicing"],
-  ["Anatomie → Overload &amp; name mangling","anatomie","mangling"],
-  ["Anatomie → vtable &amp; dispatch virtual","anatomie","dispatch"],
-  ["Anatomie → Template = generator","anatomie","templates"],
-  ["Scenarii → O rvalue reference cu nume este lvalue","scenarii","named-rvalue-lvalue"],
-  ["Scenarii → Lifetime extension cu const&amp;","scenarii","lifetime-ext"],
-  ["Scenarii → Self-assignment &amp; copy-and-swap","scenarii","self-assign"],
-  ["Scenarii → Tip move-only (unique_ptr)","scenarii","move-only"],
-  ["Scenarii → Use-after-move","scenarii","use-after-move"]
+  ["Joculețe → Instanțiere","scenarii","instantiere"],
+  ["Joculețe → Constructor: membrii întâi","scenarii","ctor-membri-corp"],
+  ["Joculețe → Copy shallow vs deep","scenarii","copy-shallow"],
+  ["Joculețe → Distrugere LIFO","scenarii","dtor-lifo"],
+  ["Joculețe → Ordinea pe ierarhie","scenarii","ierarhie-ctor"],
+  ["Joculețe → Dispatch virtual prin vtable","scenarii","vtable-dispatch"],
+  ["Joculețe → Destructor virtual","scenarii","dtor-virtual"],
+  ["Joculețe → Supraîncărcarea operatorului +","scenarii","operator-plus"],
+  ["Joculețe → Template = generator","scenarii","template-instantiere"],
+  ["Joculețe → Excepții și stack unwinding","scenarii","exceptii-unwinding"],
+  ["Joculețe → Move semantics","scenarii","move"]
 ];
 function linkifyXref(html){
   for(var i=0;i<XREF.length;i++){
@@ -715,24 +524,20 @@ function linkifyXref(html){
 }
 function goTo(tab, target){
   activateTab(tab);
-  if(tab==="memorie" || tab==="scenarii"){
-    var list=(tab==="memorie")?MEM_DEMOS:OOP_SCENARII, player=(tab==="memorie")?memPlayer:scenPlayer, idx=-1;
+  if(tab==="scenarii"){
+    var list=OOP_SCENARII, idx=-1;
     for(var i=0;i<list.length;i++){ if(list[i].id===target){ idx=i; break; } }
-    if(idx>=0 && player){
-      var c=document.getElementById((tab==="memorie")?"memChips":"scenChips");
+    if(idx>=0 && scenPlayer){
+      var c=document.getElementById("scenChips");
       if(c) c.querySelectorAll(".chip").forEach(function(x,ci){ x.classList.toggle("active", ci===idx); });
-      var rez=document.getElementById((tab==="memorie")?"memRez":"scenRez"); if(rez) rez.textContent=list[idx].rezumat||"";
-      player.load(list[idx]);
+      var rez=document.getElementById("scenRez"); if(rez) rez.textContent=list[idx].rezumat||"";
+      scenPlayer.load(list[idx]);
     }
-  } else if(tab==="anatomie"){
-    anatState.view=target;
-    var nav=document.getElementById("anatNav"); if(nav) nav.querySelectorAll(".chip").forEach(function(x){ x.classList.toggle("active", x.dataset.k===target); });
-    renderAnat();
   }
   window.scrollTo({top:0, behavior:"smooth"});
 }
 function renderTeorie(idx){
-  if(!window.OOP_TEORIE) return;
+  if(typeof OOP_TEORIE==="undefined") return;
   var ch=OOP_TEORIE[idx]; if(!ch) return;
   teoState.idx=idx;
   var diagrams=[], html='<div class="teo">';
@@ -770,7 +575,7 @@ function shuffleArr(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.f
 var exState={view:"quiz"};
 var EX_VIEWS=[{k:"quiz",n:"Quiz grilă"},{k:"capcane",n:"Găsește capcana"},{k:"ordine",n:"Ordonează"},{k:"match",n:"Împerechere"}];
 function renderEx(){
-  if(!window.OOP_QUIZ) return;
+  if(typeof OOP_QUIZ==="undefined") return;
   var v=exState.view;
   if(v==="quiz") renderMCQ(OOP_QUIZ);
   else if(v==="capcane") renderMCQ(OOP_CAPCANE.map(function(c){ return {id:c.id,tema:"Găsește capcana",multi:false,enunt:c.intrebare,cod:c.cod,optiuni:c.optiuni,corecte:[c.corect],explicatie:c.explicatie}; }));
@@ -885,14 +690,12 @@ function buildChips(id, list, pick){
 }
 
 /* ---------- player-e ---------- */
-var memPlayer=null, scenPlayer=null;
+var scenPlayer=null;
 
 /* ---------- tab-uri + temă (compatibil cu gazda) ---------- */
 function onTabShown(tab){
   if(tab==="teorie") renderTeorie(teoState.idx);
-  else if(tab==="memorie" && memPlayer) memPlayer.redraw();
   else if(tab==="scenarii" && scenPlayer) scenPlayer.redraw();
-  else if(tab==="anatomie") renderAnat();
 }
 function activateTab(tab){
   var p=document.getElementById("page-"+tab); if(!p)return;
@@ -928,25 +731,15 @@ function redrawActive(){
 
 /* ---------- bootstrap ---------- */
 document.addEventListener("DOMContentLoaded", function(){
-  memPlayer=new MapPlayer({stage:"memStage",code:"memCode",log:"memLog",out:"memOut",
-    prog:"memProg",ctl:"memCtl",play:"memPlay",next:"memNext",prev:"memPrev",reset:"memReset"});
   scenPlayer=new MapPlayer({stage:"scenStage",code:"scenCode",log:"scenLog",out:"scenOut",
     prog:"scenProg",ctl:"scenCtl",play:"scenPlay",next:"scenNext",prev:"scenPrev",reset:"scenReset"});
 
-  buildChips("memChips", MEM_DEMOS, function(d){ document.getElementById("memRez").textContent=d.rezumat||""; memPlayer.load(d); });
   buildChips("scenChips", OOP_SCENARII, function(d){
     document.getElementById("scenRez").textContent=d.rezumat||""; scenPlayer.load(d);
   });
 
-  var nav=document.getElementById("anatNav");
-  nav.innerHTML=ANAT_VIEWS.map(function(v,i){ return '<button class="chip'+(i===0?" active":"")+'" data-k="'+v.k+'">'+esc(v.n)+'</button>'; }).join("");
-  nav.querySelectorAll(".chip").forEach(function(b){
-    b.onclick=function(){ nav.querySelectorAll(".chip").forEach(function(x){x.classList.remove("active");}); b.classList.add("active"); anatState.view=b.dataset.k; renderAnat(); };
-  });
-  renderAnat();
-
   var tnav=document.getElementById("teoNav");
-  if(window.OOP_TEORIE && tnav){
+  if(typeof OOP_TEORIE!=="undefined" && tnav){
     tnav.innerHTML=OOP_TEORIE.map(function(c,i){ return '<button class="chip'+(i===0?" active":"")+'" data-i="'+i+'">'+esc(c.nume)+'</button>'; }).join("");
     tnav.querySelectorAll(".chip").forEach(function(b){
       b.onclick=function(){ tnav.querySelectorAll(".chip").forEach(function(x){x.classList.remove("active");}); b.classList.add("active"); renderTeorie(+b.dataset.i); };
@@ -955,7 +748,7 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
   var enav=document.getElementById("exNav");
-  if(window.OOP_QUIZ && enav){
+  if(typeof OOP_QUIZ!=="undefined" && enav){
     enav.innerHTML=EX_VIEWS.map(function(v,i){ return '<button class="chip'+(i===0?" active":"")+'" data-k="'+v.k+'">'+esc(v.n)+'</button>'; }).join("");
     enav.querySelectorAll(".chip").forEach(function(b){
       b.onclick=function(){ enav.querySelectorAll(".chip").forEach(function(x){x.classList.remove("active");}); b.classList.add("active"); exState.view=b.dataset.k; renderEx(); };

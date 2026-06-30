@@ -6,10 +6,66 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: floreagabriel/ez_learn_ez_exam 
+  IMAGE_NAME: floreagabriel/ez_learn_ez_exam
 
 jobs:
+  # ── Pas 1: detectează CE s-a modificat la acest push ────────────────────────
+  # Setează un flag true/false pentru fiecare imagine. Build-ul de mai jos
+  # construiește DOAR imaginile cu flag true => push-uri mult mai rapide.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      site:         ${{ steps.filter.outputs.site }}
+      counter:      ${{ steps.filter.outputs.counter }}
+      sqlrunner:    ${{ steps.filter.outputs.sqlrunner }}
+      conquistador: ${{ steps.filter.outputs.conquistador }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # istoric complet ca să putem face diff cu commitul anterior
+
+      - name: Detect changed paths
+        id: filter
+        run: |
+          set -euo pipefail
+          BEFORE='${{ github.event.before }}'
+          ZERO='0000000000000000000000000000000000000000'
+
+          # Prima dată / base necunoscut / force-push: construim TOT (fallback sigur).
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "$ZERO" ] || ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            echo "Base indisponibil ($BEFORE) — construiesc toate imaginile."
+            FILES=$(git ls-files)
+          else
+            FILES=$(git diff --name-only "$BEFORE" '${{ github.sha }}')
+          fi
+
+          echo "── Fișiere modificate ──"
+          echo "$FILES"
+          echo "────────────────────────"
+
+          # Backend-uri: imaginea se reface doar dacă s-a atins directorul ei.
+          grep -qE '^counter/'      <<< "$FILES" && counter=true      || counter=false
+          grep -qE '^sqlrunner/'    <<< "$FILES" && sqlrunner=true    || sqlrunner=false
+          grep -qE '^conquistador/' <<< "$FILES" && conquistador=true || conquistador=false
+
+          # Site static (context "."): se reface la ORICE modificare care NU e
+          # exclusiv în cele trei directoare de backend (acelea sunt excluse din
+          # imaginea statică prin .dockerignore). Mai sigur: rebuild dacă e dubiu.
+          grep -qvE '^(counter|sqlrunner|conquistador)/' <<< "$FILES" && site=true || site=false
+
+          {
+            echo "site=$site"
+            echo "counter=$counter"
+            echo "sqlrunner=$sqlrunner"
+            echo "conquistador=$conquistador"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Rezultat => site=$site counter=$counter sqlrunner=$sqlrunner conquistador=$conquistador"
+
+  # ── Pas 2: build & push — fiecare imagine doar dacă flag-ul ei e true ───────
   build-and-push:
+    needs: changes
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -37,6 +93,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push image (site static)
+        if: needs.changes.outputs.site == 'true'
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -50,6 +107,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Build and push image (counter — backend live/total)
+        if: needs.changes.outputs.counter == 'true'
         uses: docker/build-push-action@v6
         with:
           context: ./counter
@@ -61,6 +119,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_counter:${{ github.sha }}
 
       - name: Build and push image (sqlrunner — backend Interogare Live)
+        if: needs.changes.outputs.sqlrunner == 'true'
         uses: docker/build-push-action@v6
         with:
           context: ./sqlrunner
@@ -72,6 +131,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_sqlrunner:${{ github.sha }}
 
       - name: Build and push image (conquistador — joc multiplayer)
+        if: needs.changes.outputs.conquistador == 'true'
         uses: docker/build-push-action@v6
         with:
           context: ./conquistador
