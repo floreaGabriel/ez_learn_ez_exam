@@ -128,6 +128,10 @@ td code{font-size:12.5px}
 .avl-embed-bar a{color:var(--accent); font-weight:600; text-decoration:none}
 .avl-embed-bar a:hover{text-decoration:underline}
 @media (max-width:760px){ .avl-embed iframe{height:460px} }
+
+/* ============ VIDEO INTRO ============ */
+.intro-video{position:relative; width:100%; aspect-ratio:16/9; margin:0 0 24px; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#000}
+.intro-video iframe{position:absolute; inset:0; width:100%; height:100%; border:0; display:block}
 </style>
 </head>
 <body>
@@ -135,6 +139,9 @@ td code{font-size:12.5px}
 
 <!-- ============ COMPLEXITATE ============ -->
 <section class="page active" id="page-complexitate">
+  <div class="intro-video">
+    <iframe src="https://docs.google.com/file/d/19nQ6PP4R9UiiYlqs4HdRYD0nn3MMz7u2/preview?autoplay=1" allow="autoplay" allowfullscreen></iframe>
+  </div>
   <h1>Analiza complexității</h1>
   <p class="lead">Cum măsurăm timpul și spațiul unui algoritm independent de mașină: notațiile asimptotice, regulile de analiză a buclelor și Teorema Master.</p>
 
