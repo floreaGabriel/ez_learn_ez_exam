@@ -38,11 +38,6 @@ y++;              // modifică x prin alias
 
 const int a = 10;
 const int& b = a; // referință constantă: b++ ar fi eroare de compilare`},
-  {t:"diagram", cap:`y nu are celulă proprie: e doar o etichetă lipită pe celula lui x. Orice scriere prin y schimbă chiar x.`,
-   scene:{regions:["stack"], steps:[{cells:{stack:[
-     {id:"x", label:"int x", val:"5", addr:"0x1000", hot:true},
-     {id:"a", label:"const int a", val:"10", addr:"0x1008"}
-   ]}, aliases:[{name:"int& y", target:"x"}, {name:"const int& b", target:"a"}]}]}},
   {t:"h4", html:`Transmiterea prin referință`},
   {t:"p", html:`Cea mai folosită utilizare: o funcție modifică direct argumentele apelantului, fără pointeri și fără copii.`},
   {t:"code", cod:`void schimba(int &x, int &y) {
@@ -55,6 +50,7 @@ int a = 10, b = 20;
 schimba(a, b);    // acum a == 20, b == 10`},
   {t:"note", kind:"nuanta", html:`Pentru obiecte mari, transmite prin <code>const&amp;</code>: eviți copierea (se trece doar adresa, ca la pointer) dar păstrezi protecția la modificare și lizibilitatea — <b>optimizare + protecție + lizibilitate</b>. Capcană clasică: nu întoarce o referință către o variabilă <b>locală</b> a funcției (dispare la return).`},
 
+  {t:"joc", ref:"ref-valoare"},
   {t:"h", html:`Alocatorul <code>new</code> / <code>delete</code>`},
   {t:"p", html:`Echivalentul C++ pentru <code>malloc</code>/<code>free</code>. Spre deosebire de ele, <code>new</code>/<code>delete</code> sunt integrate cu restul limbajului: <b>apelează automat constructorii și destructorii</b> obiectelor și nu cer cast.`},
   {t:"cmp",
@@ -230,19 +226,8 @@ void main ()
   {t:"note", kind:"capcana", html:`<b>S5 = crash.</b> <code>Student *S5;</code> declară doar un pointer — <b>nu alocă încă niciun obiect</b>. Dereferențierea lui (<code>S5-&gt;id = 103;</code>) scrie la o adresă-gunoi &rarr; crash. Corect: întâi <code>S5 = new Student;</code>, apoi <code>S5-&gt;setId(103);</code>.`},
   {t:"note", kind:"nuanta", html:`O <b>referință</b> (S3, S4) <b>nu</b> creează un obiect nou și nu alocă memorie suplimentară: e un <i>alias</i> pentru un obiect existent. A modifica <code>S3</code> înseamnă a modifica <code>S1</code>.`},
 
-  {t:"diagram", cap:`Trei instanțe Std1/Std2/Std3 — fiecare clasă-obiect are spațiul ei propriu de memorie și setul ei propriu de câmpuri (id, nume, medie), neinițializate la declarare.`,
-   scene:{regions:["obj"], steps:[{cells:{ obj:[
-     {id:"s1id", label:"Std1 :: id", val:"= ?", addr:"+0", hot:true},
-     {id:"s1nume", label:"Std1 :: nume", val:"= ?", addr:"+4"},
-     {id:"s1medie", label:"Std1 :: medie", val:"= ?", addr:"+260"},
-     {id:"s2id", label:"Std2 :: id", val:"= ?", addr:"+0"},
-     {id:"s2nume", label:"Std2 :: nume", val:"= ?", addr:"+4"},
-     {id:"s2medie", label:"Std2 :: medie", val:"= ?", addr:"+260"},
-     {id:"s3id", label:"Std3 :: id", val:"= ?", addr:"+0"},
-     {id:"s3nume", label:"Std3 :: nume", val:"= ?", addr:"+4"},
-     {id:"s3medie", label:"Std3 :: medie", val:"= ?", addr:"+260"}
-   ]}}]}},
 
+  {t:"joc", ref:"instantiere"},
   {t:"h", html:`Membrii clasei: date + metode`},
   {t:"p", html:`<b>Membrii</b> unei clase = <b>datele membre</b> (câmpurile, structura) + <b>metodele</b> (funcțiile membre, comportamentul). Adăugăm la <code>Student</code> metode care lucrează cu datele, în loc să le atingem direct din exterior.`},
   {t:"code", cod:`class Student {
@@ -500,6 +485,7 @@ Vector::Vector (const char *nume, int xs, int ys, int xe, int ye)
   {t:"note", kind:"nuanta", html:`<b>Ordinea de apel (construcție):</b> mai întâi se construiesc <b>obiectele încuibărite</b> (<code>start</code>, apoi <code>end</code>), prin constructorii lor specifici; <b>în final</b> rulează corpul constructorului obiectului „mare" (<code>Vector</code>). Pe scurt: construcția pleacă <b>din interior spre exterior</b>.`},
   {t:"note", kind:"capcana", html:`Dacă o clasă încuibărită <b>nu are constructor implicit</b> (ai scris doar <code>Point(int,int)</code>), atunci <b>trebuie</b> să apelezi explicit constructorul cu parametri din lista de inițializare a clasei mari: <code>Vector::Vector() : start(0,0), end(0,0) { ... }</code>. Altfel apare aceeași eroare <code>C2512</code> la compilarea constructorului lui <code>Vector</code>.`},
 
+  {t:"joc", ref:"ctor-membri-corp"},
   {t:"h", html:`Constructorul de copiere (shallow / bitwise copy)`},
   {t:"p", html:`Schimbăm <code>nume</code> din <code>char[32]</code> în <code>char *nume</code> (alocat dinamic). Acum apare o problemă subtilă la <b>clonarea</b> unui obiect: <code>Vector V2 = V1;</code>.`},
   {t:"code", cod:`class Vector {
@@ -523,19 +509,6 @@ void main ()
 }`},
   {t:"note", kind:"capcana", html:`<b>Bitwise copy (shallow copy).</b> Constructorul de copiere <b>implicit (default)</b> copiază obiectul <b>bit-cu-bit</b>. Pentru <code>V2 = V1</code> asta înseamnă că se copiază și valoarea pointerului <code>nume</code> — deci <b>V1 și V2 împart aceeași zonă de memorie din heap</b>. Dacă unul o eliberează, celălalt rămâne cu un pointer invalid (și la destructor &rarr; dublă eliberare / crash).`},
 
-  {t:"diagram", cap:`Clonare prin copy ctor: V1 (0012FF14) construit explicit, apoi V2 (0012FEF8) prin copiere. Un copy ctor EXPLICIT alocă heap nou pentru nume (deep copy) — V1 și V2 au copii separate.`,
-   scene:{regions:["stack","heap"], steps:[{cells:{
-     stack:[
-       {id:"v1n", label:"V1.nume", val:"ptr", addr:"0012FF14", points:"h1", hot:true},
-       {id:"v1s", label:"V1.start/end", val:"(1,2)->(3,4)", addr:"0012FF18"},
-       {id:"v2n", label:"V2.nume", val:"ptr", addr:"0012FEF8", points:"h2", hot:true},
-       {id:"v2s", label:"V2.start/end", val:"(1,2)->(3,4)", addr:"0012FEFC"}
-     ],
-     heap:[
-       {id:"h1", label:`copie proprie "V1"`, val:"new char[]", addr:"0x00A1"},
-       {id:"h2", label:`copie proprie "V1"`, val:"new char[]", addr:"0x00B7"}
-     ]
-   }}]}},
 
   {t:"p", html:`Soluția: scriem un <b>constructor de copiere explicit</b> care face <b>deep copy</b> (alocă heap nou pentru <code>nume</code>). El îl anulează pe cel default și rulează la fiecare clonare.`},
   {t:"code", cod:`Vector (const Vector &V);     // declaratia constructorului de copiere
@@ -570,6 +543,7 @@ Vector &V5 = V1;  // doar o REFERINTA -> nu se creeaza obiect, niciun constructo
   {t:"note", kind:"info", html:`<b>Transmitere/return prin valoare.</b> <code>bool compareVector(Vector V)</code> creează o clonă a argumentului pe stivă (copy ctor). <code>Vector makeCopy()</code> creează o clonă la return. Dacă schimbi semnătura în <code>Vector&amp; compareVector(Vector&amp; V)</code> sau întorci <code>Vector*</code>, <b>nu</b> se mai face copiere — se transmite referință/pointer.`},
   {t:"note", kind:"nuanta", html:`<b>Tipurile simple sunt și ele „clase".</b> În C++, <code>int x = 1;</code> sau <code>int x(2);</code>, <code>double y(2.5);</code> — toate apelează „constructorul de copiere (implicit) al clasei int / double". Tipurile de bază sunt tratate de compilator ca niște clase.`},
 
+  {t:"joc", ref:"copy-shallow"},
   {t:"h", html:`Destructori (ordine inversă, LIFO)`},
   {t:"ul", items:[
     `Metodă specială apelată <b>automat la distrugerea</b> obiectului, chiar înainte ca el să dispară din memorie.`,
@@ -594,12 +568,8 @@ Vector &V5 = V1;  // doar o REFERINTA -> nu se creeaza obiect, niciun constructo
 // Distrugere (ordine INVERSA, LIFO):
 //   Facem cleanup obiectului 0012FEF8   <- V2 distrus PRIMUL
 //   Facem cleanup obiectului 0012FF14   <- V1 distrus AL DOILEA`},
-  {t:"diagram", cap:`Ordinea INVERSĂ de distrugere (LIFO): V1 (0012FF14) construit primul, V2 (0012FEF8) al doilea — la cleanup se distruge întâi V2, apoi V1. Pentru obiecte încuibărite: construcția din interior, cleanup-ul din exterior.`,
-   scene:{regions:["stack"], steps:[{cells:{ stack:[
-     {id:"d2", label:"V2  (0012FEF8)", val:"distrus #1  (ultimul construit)", addr:"top", hot:true, dead:true},
-     {id:"d1", label:"V1  (0012FF14)", val:"distrus #2  (primul construit)", addr:"bottom", dead:true}
-   ]}}]}},
 
+  {t:"joc", ref:"dtor-lifo"},
   {t:"h", html:`new / delete vs. malloc / free`},
   {t:"p", html:`<b>new</b> alocă memorie în heap <b>și</b> apelează constructorul (obiectul se construiește corect). <b>delete</b> apelează destructorul (clean-up) <b>și apoi</b> eliberează memoria. <code>malloc</code>/<code>free</code> doar mută octeți — nu apelează constructori/destructori.`},
   {t:"code", cod:`Vector *pV1 = new Vector;                    // aloca + apel constructor implicit
@@ -694,21 +664,6 @@ void main () {
      delete V3;
      Get_ActiveVectorInstances ();   // afiseaza 2
 }`},
-  {t:"diagram", cap:`Membru static = O SINGURĂ copie, partajată: toate obiectele V1, V2, V3 referă același Vector::counter din segmentul de date.`,
-   scene:{regions:["obj","data"], steps:[{cells:{
-     obj:[
-       {id:"v1", label:"V1 (obiect)", val:"nume,start,end"},
-       {id:"v2", label:"V2 (obiect)", val:"nume,start,end"},
-       {id:"v3", label:"*V3 (obiect)", val:"nume,start,end"}
-     ],
-     data:[
-       {id:"cnt", label:"Vector::counter", val:"int = 3", addr:"0x0040A0", hot:true}
-     ]
-   }, aliases:[
-     {name:"V1.counter", target:"cnt"},
-     {name:"V2.counter", target:"cnt"},
-     {name:"V3->counter", target:"cnt"}
-   ]}]}},
   {t:"ul", items:[
     `O variabilă membră statică <b>nu aparține niciunui obiect</b> — aparține clasei.`,
     `Există alocată chiar dacă nu s-a instanțiat niciun obiect.`,
@@ -745,6 +700,7 @@ int Get_ActiveVectorInstances () {
   ]},
   {t:"note", kind:"capcana", html:`O metodă statică <b>nu poate accesa membri non-statici</b> ai clasei (date sau metode care depind de un obiect), pentru că nu are <code>this</code>. Poate folosi doar membri statici.`},
 
+  {t:"joc", ref:"static-partajat"},
   {t:"h", html:`Constructori și destructori private. Singleton`},
   {t:"p", html:`Dacă facem constructorul <code>private</code>, clasa nu mai poate fi instanțiată din exterior — controlăm cum se creează obiectele. Aplicația clasică e pattern-ul <b>Singleton</b>: o singură instanță, accesată printr-o metodă statică <code>GetInstance()</code>.`},
   {t:"code", cod:`class Singleton {
@@ -913,6 +869,7 @@ public:
 };`},
   {t:"note", kind:"info", html:`Deși crește numărul de clase, rezultatul e mai eficient: distingem clar entitățile (avantajul V1) și nu duplicăm codul (avantajul V2).`},
 
+  {t:"joc", ref:"de-ce-mostenire"},
   {t:"h", html:`Terminologie`},
   {t:"ul", items:[
     `<b>Clasa de bază</b> (din care se derivă): mai e numită clasă <i>părinte</i> sau <i>super-clasă</i>.`,
@@ -1032,15 +989,9 @@ class A : public B;     // B este baza cea mai indepartata
 D d;
 // Constructori (baza --> derivat):  A(), B(), C(), D()
 // Destructori  (invers):            ~D(), ~C(), ~B(), ~A()`},
-  {t:"diagram", cap:`Lanțul de construcție: baza cea mai îndepărtată (B) se construiește prima, derivata (D) ultima; destructorii rulează în ordine inversă.`,
-   scene:{regions:["obj"], steps:[{cells:{ obj:[
-     {id:"b", label:"B (baza, subobiect)", val:"construit 1-ul", addr:"+0", hot:true},
-     {id:"a", label:"A : public B", val:"construit al 2-lea", addr:"+k"},
-     {id:"c", label:"C : public A", val:"construit al 3-lea", addr:"+m"},
-     {id:"d", label:"D : public C", val:"construit ultimul", addr:"+n"}
-   ]}}]}},
   {t:"note", kind:"nuanta", html:`Fidel cursului: pentru <code>D:C, C:A, A:B</code>, baza finală e <b>B</b>, deci ordinea constructorilor e <code>A(), B(), C(), D()</code> — adică se urcă pe lanț de la bază spre derivat, iar B (baza lui A) se construiește înaintea restului lanțului A→C→D.`},
 
+  {t:"joc", ref:"ierarhie-ctor"},
   {t:"h", html:`Conversii de tip între pointeri`},
   {t:"p", html:`Un pointer la derivat poate fi atribuit unui pointer la bază <b>automat și implicit</b>, dar <b>doar dacă derivarea e public</b>. Invers (bază → derivat) NU se face automat; forțarea cu cast e periculoasă.`},
   {t:"code", cod:`Student      S  ("101,Ionescu Vasile,8,9,5,10,8,9");
@@ -1123,13 +1074,6 @@ class Car : public Vehicle, public InsuredItem { /* ... */ };`},
 
   {t:"h4", html:`Problema diamond și moștenirea virtual`},
   {t:"p", html:`Dacă <code>B2</code> și <code>B3</code> derivă ambele din <code>L</code>, iar <code>D</code> derivă din ambele, atunci <code>D</code> conține <b>două instanțe distincte</b> ale lui <code>L</code> — accesul direct la <code>x</code> e ambiguu. Soluția: moștenire <code>virtual</code> a lui <code>L</code>, care lasă <b>o singură instanță</b> partajată.`},
-  {t:"diagram", cap:`Diamond: L este bază indirectă pentru D via B2 și via B3. Fără virtual, D are 2 copii ale lui L; cu virtual, una singură.`,
-   scene:{regions:["obj"], steps:[{cells:{ obj:[
-     {id:"l", label:"L (baza indirecta)", val:"int x", addr:"varf", hot:true},
-     {id:"b2", label:"B2 : virtual public L", val:"", addr:"stanga"},
-     {id:"b3", label:"B3 : virtual public L", val:"", addr:"dreapta"},
-     {id:"d", label:"D : public B2, public B3", val:"", addr:"baza", points:"l"}
-   ]}}]}},
   {t:"code", cod:`class L {              // indirect base class
  public:
      int x;
@@ -1382,21 +1326,9 @@ F2 din clasa derivata`},
     `Secvența 2 (<code>pBaza = &amp;D</code>): <code>__vfptr</code> = v-table <code>Derivata</code> &rarr; <code>[0]</code> = <code>Derivat::F2</code>.`,
     `Secvența 3 (<code>Baza &amp;rBaza = D</code>): referința „vede" tot v-table-ul <code>Derivata</code> &rarr; <code>[0]</code> = <code>Derivat::F2</code>.`,
   ]},
-  {t:"diagram", cap:`Apel virtual = dublă indirectare: obiectul ține un vptr ascuns spre v-table-ul clasei reale; intrarea [0] din tabel dă adresa lui F2. pBaza→D folosește v-table Derivata, deci F2 → Derivat::F2.`,
-   scene:{regions:["stack","rodata"], steps:[{cells:{
-     stack:[
-       {id:"pb", label:"pBaza (Baza*)", val:"&D", points:"objD", addr:"0x12ff48"},
-       {id:"objD", label:"D : Derivat", val:"vptr ascuns", points:"vtD", addr:"0x...", hot:true}
-     ],
-     rodata:[
-       {id:"vtB", label:"vftable Baza", val:"[0] = &Baza::F2", points:"fB", addr:"0x417718"},
-       {id:"vtD", label:"vftable Derivata", val:"[0] = &Derivat::F2", points:"fD", addr:"0x41773c", hot:true},
-       {id:"fB", label:"Baza::F2", val:"cod", addr:"0x41114a"},
-       {id:"fD", label:"Derivat::F2", val:"cod", addr:"0x41128f", hot:true}
-     ]
-   }, aliases:[{name:"Baza& rBaza", target:"objD"}]}]}},
   {t:"note", kind:"nuanta", html:`Dynamic binding înseamnă „urmărește <code>__vfptr</code>-ul <b>obiectului real</b>, nu tipul static al pointerului/referinței". De aceea costul unui apel virtual este o indirectare în plus față de un apel obișnuit.`},
 
+  {t:"joc", ref:"vtable-dispatch"},
   {t:"h", html:`Destructor virtual — de ce e obligatoriu`},
   {t:"p", html:`Știm deja: constructorii și destructorii <b>nu se moștenesc</b>, dar la instanțierea unei derivate se apelează automat și constructorul/destructorul bazei. La un obiect normal ordinea este corectă:`},
   {t:"code", cod:`class Baza {
@@ -1436,6 +1368,7 @@ void main ()
 };`},
   {t:"note", kind:"capcana", html:`Regulă de aur: orice clasă <b>de bază polimorfică</b> (care are măcar o metodă virtuală și e folosită prin <code>Baza*</code>) <b>trebuie</b> să aibă destructor virtual. <code>delete</code> prin <code>Baza*</code> fără <code>~virtual</code> = rulează doar <code>~Baza</code> &rarr; leak / UB.`},
 
+  {t:"joc", ref:"dtor-virtual"},
   {t:"h", html:`Metode virtuale pure, clase abstracte, interfețe`},
   {t:"p", html:`O <b>metodă virtuală pură</b> este o metodă virtuală fără implementare, marcată cu <code>= 0</code>. Ea spune „derivata <i>trebuie</i> să mă implementeze".`},
   {t:"code", cod:`class Forma {            // clasa abstracta
@@ -1509,6 +1442,7 @@ void main ()
 Press any key to continue . . .`},
   {t:"note", kind:"info", html:`Fără operator, am fi scris o metodă dedicată <code>Complex Add(const Complex&amp; C);</code> apelată ca <code>Complex c = a.Add(b);</code>. Funcțional identic — singura diferență e claritatea. <code>a + b</code> e mai intuitiv.`},
 
+  {t:"joc", ref:"operator-plus"},
   {t:"h", html:`Variante cu liste de parametri diferite`},
   {t:"p", html:`Același operator poate fi supraîncărcat în mai multe variante, schimbând lista de parametri. Aici adăugăm <code>operator+(int)</code> pe lângă <code>operator+(const Complex&amp;)</code>.`},
   {t:"code", cod:`class Complex
@@ -1800,18 +1734,8 @@ Press any key to continue . . .`},
 
   {t:"h", html:`Template = generator de cod`},
   {t:"p", html:`Compilatorul tratează șablonul <code>maxim&lt;T&gt;</code> ca o rețetă. La fiecare utilizare cu un tip concret, generează o funcție reală separată în <code>.text</code>: <code>maxim&lt;int&gt;</code>, <code>maxim&lt;float&gt;</code>, <code>maxim&lt;double&gt;</code> sunt trei funcții distincte produse din același șablon.`},
-  {t:"diagram", cap:`Un singur șablon template &lt;T&gt; produce, la instanțiere, mai multe funcții concrete în secțiunea .text — câte una per tip efectiv folosit.`,
-   scene:{regions:["src","text"], steps:[{cells:{
-     src:[
-       {id:"tpl", label:"template<class T>\\nT maxim(T V[], int n)", val:"șablon (nu e cod)", hot:true}
-     ],
-     text:[
-       {id:"mi", label:"maxim<int>", val:"cod generat", addr:"0x.."},
-       {id:"mf", label:"maxim<float>", val:"cod generat", addr:"0x.."},
-       {id:"md", label:"maxim<double>", val:"cod generat", addr:"0x.."}
-     ]
-   }, aliases:[{name:"instanțiere per tip", target:"tpl"}]}]}},
 
+  {t:"joc", ref:"template-instantiere"},
   {t:"h", html:`Problema II: clase Vector`},
   {t:"p", html:`Vrem o colecție de tip vector pentru orice tip. Fără template, scriem o clasă <code>VectorInt</code> completă, apoi o <b>clonăm</b> pentru fiecare tip (<code>VectorFloat</code>, <code>VectorComplex</code>, <code>VectorStudent</code> ...).`},
   {t:"code", cod:`class VectorInt {
@@ -2243,14 +2167,9 @@ int main(void)
     return 0;
 }`},
   {t:"note", kind:"capcana", html:`La primul apel <code>my_func(1)</code> se face <code>throw</code> → excepția propagă spre <code>catch</code> din <code>main</code>. Apelurile următoare <code>my_func(2)</code> și <code>my_func(0)</code> <b>NU se mai execută</b> deloc: throw-ul abandonează tot restul blocului try. Ieșire: <code>...test is:1</code> apoi <code>Caught... Value is: 1</code>, apoi <code>End</code>.`},
+  {t:"joc", ref:"exceptii-unwinding"},
   {t:"h", html:`Diagrama: stack unwinding`},
   {t:"p", html:`La <code>throw</code> stiva de apeluri se <b>derulează</b> (unwinds) din vârf în jos: se ies din cadrele <code>f3</code>, <code>f2</code> până la cadrul care are <code>catch</code>-ul potrivit (<code>f1</code>). Pentru fiecare <b>obiect local</b> distrus pe drum se apelează <b>destructorul</b> lui.`},
-  {t:"diagram", cap:`Stack unwinding: throw în f3 derulează stiva în sus până la catch-ul din f1; obiectele locale din f3 și f2 sunt distruse (destructori apelați).`,
-   scene:{regions:["stack"], steps:[{cells:{ stack:[
-     {id:"f3", label:"f3()  — throw", val:"obiecte locale → destructori", addr:"vârf stivă", hot:true},
-     {id:"f2", label:"f2()  — apelat de f1", val:"obiecte locale → destructori", dead:true},
-     {id:"f1", label:"f1()  — try { ... } catch", val:"prinde excepția AICI", points:"f3"}
-   ]}}]}},
   {t:"h", html:`catch(...) — prinde orice`},
   {t:"p", html:`Un bloc <code>catch (...)</code> (cu trei puncte) e handler-ul <b>implicit</b>: prinde <b>orice</b> tip de excepție care nu s-a potrivit cu un catch explicit. Poate exista un singur <code>catch(...)</code> per try și se pune ultimul.`},
   {t:"code", cod:`void my_func(int test)
@@ -2519,17 +2438,8 @@ myvector.push_back (std::move(bar));     // moves
 }`},
   {t:"h4", html:`Diagrama: move „fură" pointerul`},
   {t:"p", html:`Două obiecte au pointeri spre buffere pe heap. La move, <b>dst</b> preia bufferul lui <b>src</b>, iar <b>src</b> e setat pe <code>nullptr</code> (nu mai deține nimic). NU se copiază bufferul — doar se mută pointerul.`},
-  {t:"diagram", cap:`Move constructor: dst fură pointerul buffer-ului; src devine nullptr. Bufferul de pe heap NU e copiat, doar reatribuit.`,
-   scene:{regions:["obj","heap"], steps:[{cells:{
-     obj:[
-       {id:"src", label:"src.mpData", val:"nullptr (golit)", dead:true},
-       {id:"dst", label:"dst.mpData", val:"int*", points:"buf", hot:true}
-     ],
-     heap:[
-       {id:"buf", label:"buffer", val:"int[mSize]", addr:"0x0036F644"}
-     ]
-   }}]}},
   {t:"note", kind:"capcana", html:`NU există move-constructor <b>implicit</b> generat de compilator (spre deosebire de copy-constructor). Dacă nu-l implementezi, situațiile cu rvalue cad pe copy-constructor. Periculos: ai <b>move-constructor dar fără copy-constructor explicit</b> → clonarea lvalue folosește bitwise-copy → mai multe obiecte indică spre <b>același</b> buffer → <b>dublă dezalocare</b> / corupere heap (Debug Assertion Failed: <code>_BLOCK_TYPE_IS_VALID</code>).`},
+  {t:"joc", ref:"move"},
   {t:"h", html:`Move assignment`},
   {t:"p", html:`La fel ca la constructor, operatorul de asignare poate avea o variantă <b>move</b> cu parametru <code>T&amp;&amp;</code>: verifică self-assignment, fură resursele, golește sursa.`},
   {t:"code", cod:`MemoryBuff& MemoryBuff::operator= (MemoryBuff&& other)

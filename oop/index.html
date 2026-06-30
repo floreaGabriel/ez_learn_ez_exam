@@ -200,6 +200,25 @@ pre.code{font-family:var(--mono); font-size:13px; line-height:1.55; background:v
 .teo-nav{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:28px; padding-top:16px; border-top:1px solid var(--line)}
 .teo-nav .btn{font-size:12.5px}
 
+/* ---- joculeț inline (cod stânga / ce+de ce dreapta) ---- */
+.joc{margin:18px 0 22px; border:1px solid var(--line2); border-radius:11px; overflow:hidden; background:var(--panel)}
+.joc-h{display:flex; align-items:center; gap:9px; padding:10px 14px; background:var(--panel2); border-bottom:1px solid var(--line)}
+.joc-tag{flex:0 0 auto; font-size:10px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; padding:2px 8px; border-radius:6px; background:var(--accent); color:var(--bg)}
+.joc-h b{font-size:14px; color:var(--ink)}
+.joc-body{display:grid; grid-template-columns:1.05fr .95fr}
+@media(max-width:720px){ .joc-body{grid-template-columns:1fr} }
+.joc-code{margin:0; border:0; border-radius:0; border-right:1px solid var(--line); background:var(--code-bg); white-space:pre; overflow:auto; padding:12px 0; font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--ink-soft); tab-size:4}
+@media(max-width:720px){ .joc-code{border-right:0; border-bottom:1px solid var(--line)} }
+.joc-code .jl{display:block; padding:0 14px; min-height:1.6em}
+.joc-code .jl.on{background:color-mix(in srgb, var(--accent) 15%, transparent); box-shadow:inset 3px 0 0 var(--accent)}
+.joc-info{padding:14px 16px; display:flex; flex-direction:column; gap:11px}
+.joc-stepn{font-size:11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--accent); font-family:var(--mono)}
+.joc-lbl{font-size:10.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--muted); margin-bottom:3px}
+.joc-what-t,.joc-why-t{font-size:13.5px; line-height:1.55; color:var(--ink-soft)}
+.joc-why{padding-top:10px; border-top:1px dashed var(--line2)}
+.joc-ctl{display:flex; gap:8px; margin-top:4px}
+.joc-ctl .btn{font-size:12.5px}
+
 /* ---- exerciții ---- */
 .scorebar{display:flex; align-items:center; gap:12px; margin:4px 0 16px; font-size:13px; color:var(--muted)}
 .scorebar .bar{flex:1; height:7px; border-radius:4px; background:var(--panel2); overflow:hidden; max-width:280px}
@@ -267,60 +286,17 @@ pre.code{font-family:var(--mono); font-size:13px; line-height:1.55; background:v
 
   <header class="bar">
     <div class="brand">OOP <span>· C++</span></div>
-    <div class="sub">Curs complet după programa de facultate — teorie, joculețe animate și exerciții, de la clase și constructori la moștenire, polimorfism, template-uri și C++11</div>
+    <div class="sub">Curs după programa de facultate — fiecare capitol cu joculețul lui (cod ⟶ ce se întâmplă ⟶ de ce) și exerciții de examen</div>
   </header>
 
-  <nav class="tabs" id="tabs">
-    <button data-tab="teorie" class="active">Teorie</button>
-    <button data-tab="scenarii">Joculețe</button>
-    <button data-tab="exercitii">Exerciții &amp; quiz</button>
-  </nav>
-
-  <!-- ============ TEORIE ============ -->
-  <section class="page active" id="page-teorie">
-    <h2>Teorie</h2>
-    <p class="lead">Cele 12 capitole ale cursului, cu definiții, exemplele de cod din curs, tabele și diagrame de memorie. Capcanele de examen sunt marcate distinct. Alege un capitol și citește; frazele evidențiate deschid joculețul corespunzător.</p>
-    <div class="chips" id="teoNav"></div>
-    <div id="teoBody"></div>
-  </section>
-
-  <!-- ============ JOCULEȚE (SCENARII) ============ -->
-  <section class="page" id="page-scenarii">
-    <h2>Joculețe</h2>
-    <p class="lead">Concepte-cheie explicate pas cu pas, ca un mic film în memorie: instanțiere, ordinea constructorilor și destructorilor, copy shallow vs deep, dispatch virtual prin vtable, supraîncărcarea operatorilor, template-uri, excepții și move. Alege un joc, apasă <b>Pornește</b> sau avansează cu <b>Pas</b>; output-ul programului apare pe măsură ce înaintezi.</p>
-    <div class="chips" id="scenChips"></div>
-    <div class="rezumat" id="scenRez"></div>
-    <div class="controls" id="scenCtl">
-      <button class="btn" id="scenPlay">Pornește</button>
-      <button class="btn ghost" id="scenPrev">Înapoi</button>
-      <button class="btn ghost" id="scenNext">Pas</button>
-      <button class="btn ghost" id="scenReset">Reset</button>
-      <span class="prog" id="scenProg"></span>
-    </div>
-    <div class="stage" id="scenStage"></div>
-    <div class="cols">
-      <pre class="code cpp" id="scenCode"></pre>
-      <div class="info">
-        <div class="log-h">Ce se întâmplă la fiecare pas</div>
-        <div class="steplog" id="scenLog"></div>
-        <div class="console" id="scenOut"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ EXERCIȚII ============ -->
-  <section class="page" id="page-exercitii">
-    <h2>Exerciții &amp; quiz</h2>
-    <p class="lead">Verifică-ți înțelegerea: grilă cu „prezice output-ul”, găsește capcana din cod, ordonează secvențe și împerechează termeni. Fiecare răspuns are explicație.</p>
-    <div class="chips" id="exNav"></div>
-    <div id="exBody"></div>
-  </section>
+  <nav class="chips" id="topNav"></nav>
+  <div id="content"></div>
 
 </div>
 
 <script src="teorie.js"></script>
+<script src="jocuri.js"></script>
 <script src="exercitii.js"></script>
-<script src="scenarii.js"></script>
 <script>
 "use strict";
 
@@ -522,50 +498,76 @@ function linkifyXref(html){
   }
   return html;
 }
-function goTo(tab, target){
-  activateTab(tab);
-  if(tab==="scenarii"){
-    var list=OOP_SCENARII, idx=-1;
-    for(var i=0;i<list.length;i++){ if(list[i].id===target){ idx=i; break; } }
-    if(idx>=0 && scenPlayer){
-      var c=document.getElementById("scenChips");
-      if(c) c.querySelectorAll(".chip").forEach(function(x,ci){ x.classList.toggle("active", ci===idx); });
-      var rez=document.getElementById("scenRez"); if(rez) rez.textContent=list[idx].rezumat||"";
-      scenPlayer.load(list[idx]);
-    }
+/* ---------- joculeț inline: cod stânga (linia activă) / ce+de ce dreapta ---------- */
+function renderJoc(fig, joc){
+  if(!fig || !joc) return;
+  var lines=highlightCpp(joc.cod).split("\n");
+  var pasi=joc.pasi||[], N=pasi.length, k=0;
+  var codeEl=fig.querySelector(".joc-code"),
+      stepEl=fig.querySelector(".joc-stepn"),
+      whatEl=fig.querySelector(".joc-what-t"),
+      whyEl =fig.querySelector(".joc-why-t"),
+      bPrev =fig.querySelector(".jprev"),
+      bNext =fig.querySelector(".jnext");
+  function draw(){
+    var on=(pasi[k]&&pasi[k].linii)||[];
+    codeEl.innerHTML=lines.map(function(ln,i){
+      return '<span class="jl'+(on.indexOf(i+1)>=0?" on":"")+'">'+(ln.length?ln:" ")+'</span>';
+    }).join("\n");
+    if(stepEl) stepEl.textContent="Pasul "+(k+1)+" / "+N;
+    if(whatEl) whatEl.innerHTML=(pasi[k]&&pasi[k].ce)||"";
+    if(whyEl)  whyEl.innerHTML=(pasi[k]&&pasi[k].dece)||"";
+    if(bPrev) bPrev.disabled=(k===0);
+    if(bNext) bNext.disabled=(k>=N-1);
   }
-  window.scrollTo({top:0, behavior:"smooth"});
+  if(bPrev) bPrev.onclick=function(){ if(k>0){ k--; draw(); } };
+  if(bNext) bNext.onclick=function(){ if(k<N-1){ k++; draw(); } };
+  draw();
 }
-function renderTeorie(idx){
+
+/* ---------- randare capitol (lecție + joculețe inline) ---------- */
+function renderChapter(idx){
   if(typeof OOP_TEORIE==="undefined") return;
   var ch=OOP_TEORIE[idx]; if(!ch) return;
   teoState.idx=idx;
-  var diagrams=[], html='<div class="teo">';
+  var diagrams=[], jocs=[], html='<div class="teo"><h2 style="margin-bottom:14px">'+esc(ch.nume)+'</h2>';
   ch.blocks.forEach(function(b,i){
     if(b.t==="h") html+='<h3>'+b.html+'</h3>';
     else if(b.t==="h4") html+='<h4>'+b.html+'</h4>';
-    else if(b.t==="p") html+='<p>'+linkifyXref(b.html)+'</p>';
+    else if(b.t==="p") html+='<p>'+b.html+'</p>';
     else if(b.t==="ul") html+='<ul>'+b.items.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ul>';
     else if(b.t==="code") html+='<pre class="code cpp">'+highlightCpp(b.cod)+'</pre>';
-    else if(b.t==="note") html+='<div class="callout '+(b.kind||"info")+'"><span class="co-tag">'+coLabel(b.kind)+'</span><div>'+linkifyXref(b.html)+'</div></div>';
+    else if(b.t==="note") html+='<div class="callout '+(b.kind||"info")+'"><span class="co-tag">'+coLabel(b.kind)+'</span><div>'+b.html+'</div></div>';
     else if(b.t==="cmp") html+='<div class="cmp"><div class="card"><h4>'+b.left.title+'</h4>'+b.left.html+'</div><div class="card"><h4>'+b.right.title+'</h4>'+b.right.html+'</div></div>';
     else if(b.t==="table") html+='<table class="tbl">'+(b.head?'<tr>'+b.head.map(function(h){return '<th>'+h+'</th>';}).join("")+'</tr>':'')+b.rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>';}).join("")+'</tr>';}).join("")+'</table>';
     else if(b.t==="diagram"){ var did="teoDg"+i; diagrams.push({id:did,scene:b.scene}); html+='<figure class="dgfig"><div class="stage" id="'+did+'"></div>'+(b.cap?'<figcaption>'+b.cap+'</figcaption>':'')+'</figure>'; }
+    else if(b.t==="joc"){
+      var joc=(typeof JOCURI!=="undefined")?JOCURI[b.ref]:null;
+      if(joc){ var ji=jocs.length; jocs.push(joc);
+        html+='<figure class="joc" data-ji="'+ji+'">'
+          +'<div class="joc-h"><span class="joc-tag">Joculeț</span><b>'+esc(joc.titlu)+'</b></div>'
+          +'<div class="joc-body"><pre class="code cpp joc-code"></pre>'
+          +'<div class="joc-info"><div class="joc-stepn"></div>'
+          +'<div><div class="joc-lbl">Ce se întâmplă</div><div class="joc-what-t"></div></div>'
+          +'<div class="joc-why"><div class="joc-lbl">De ce</div><div class="joc-why-t"></div></div>'
+          +'<div class="joc-ctl"><button class="btn ghost jprev">◀ Înapoi</button><button class="btn jnext">Pas ▶</button></div>'
+          +'</div></div></figure>';
+      }
+    }
   });
   html+='<div class="teo-nav">'
-    + (idx>0 ? '<button class="btn ghost" data-teo="'+(idx-1)+'">← '+esc(OOP_TEORIE[idx-1].nume)+'</button>' : '<span></span>')
-    + '<button class="btn ghost" data-teo="top">↑ Sus</button>'
-    + (idx<OOP_TEORIE.length-1 ? '<button class="btn ghost" data-teo="'+(idx+1)+'">'+esc(OOP_TEORIE[idx+1].nume)+' →</button>' : '<span></span>')
+    + (idx>0 ? '<button class="btn ghost" data-go="'+OOP_TEORIE[idx-1].id+'">← '+esc(OOP_TEORIE[idx-1].nume)+'</button>' : '<span></span>')
+    + '<button class="btn ghost" data-go="__top">↑ Sus</button>'
+    + (idx<OOP_TEORIE.length-1 ? '<button class="btn ghost" data-go="'+OOP_TEORIE[idx+1].id+'">'+esc(OOP_TEORIE[idx+1].nume)+' →</button>' : '<button class="btn" data-go="exercitii">Exerciții &amp; quiz →</button>')
     + '</div></div>';
-  var body=document.getElementById("teoBody"); body.innerHTML=html;
+  var body=document.getElementById("content"); body.innerHTML=html;
   diagrams.forEach(function(d){ renderStep(document.getElementById(d.id), d.scene, 0); });
-  body.querySelectorAll("[data-teo]").forEach(function(btn){
+  body.querySelectorAll(".joc[data-ji]").forEach(function(fig){ renderJoc(fig, jocs[+fig.dataset.ji]); });
+  body.querySelectorAll("[data-go]").forEach(function(btn){
     btn.onclick=function(){
-      var v=btn.dataset.teo;
-      if(v==="top"){ window.scrollTo({top:0, behavior:"smooth"}); return; }
-      var i=+v, tnav=document.getElementById("teoNav");
-      if(tnav) tnav.querySelectorAll(".chip").forEach(function(x,ci){ x.classList.toggle("active", ci===i); });
-      renderTeorie(i); window.scrollTo({top:0, behavior:"smooth"});
+      var g=btn.dataset.go;
+      if(g==="__top"){ window.scrollTo({top:0, behavior:"smooth"}); return; }
+      activateTab(g);
     };
   });
 }
@@ -679,33 +681,42 @@ function renderMatch(){
   };
 }
 
-/* ---------- chips selector ---------- */
-function buildChips(id, list, pick){
-  var c=document.getElementById(id); if(!c)return;
-  c.innerHTML=list.map(function(it,i){ return '<button class="chip'+(i===0?" active":"")+'" data-i="'+i+'">'+esc(it.nume)+'</button>'; }).join("");
-  c.querySelectorAll(".chip").forEach(function(b){
-    b.onclick=function(){ c.querySelectorAll(".chip").forEach(function(x){x.classList.remove("active");}); b.classList.add("active"); pick(list[+b.dataset.i]); };
+/* ---------- pagina de exerciții (în același container) ---------- */
+function renderExercitii(){
+  var c=document.getElementById("content"); if(!c) return;
+  c.innerHTML='<div class="teo"><h2 style="margin-bottom:6px">Exerciții &amp; quiz</h2>'
+    +'<p class="lead">Verifică-ți înțelegerea: grilă cu „prezice output-ul", găsește capcana din cod, ordonează secvențe și împerechează termeni. Fiecare răspuns are explicație.</p></div>'
+    +'<div class="chips" id="exNav"></div><div id="exBody"></div>';
+  var enav=document.getElementById("exNav");
+  enav.innerHTML=EX_VIEWS.map(function(v,i){ return '<button class="chip'+(v.k===exState.view?" active":"")+'" data-k="'+v.k+'">'+esc(v.n)+'</button>'; }).join("");
+  enav.querySelectorAll(".chip").forEach(function(b){
+    b.onclick=function(){ enav.querySelectorAll(".chip").forEach(function(x){x.classList.remove("active");}); b.classList.add("active"); exState.view=b.dataset.k; renderEx(); };
   });
-  if(list.length) pick(list[0]);
+  renderEx();
 }
 
-/* ---------- player-e ---------- */
-var scenPlayer=null;
-
-/* ---------- tab-uri + temă (compatibil cu gazda) ---------- */
-function onTabShown(tab){
-  if(tab==="teorie") renderTeorie(teoState.idx);
-  else if(tab==="scenarii" && scenPlayer) scenPlayer.redraw();
+/* ---------- navigare: fiecare capitol + Exerciții = o secțiune ---------- */
+function chapterIndexById(id){
+  if(typeof OOP_TEORIE==="undefined") return -1;
+  for(var i=0;i<OOP_TEORIE.length;i++){ if(OOP_TEORIE[i].id===id) return i; }
+  return -1;
 }
-function activateTab(tab){
-  var p=document.getElementById("page-"+tab); if(!p)return;
-  document.querySelectorAll(".page").forEach(function(x){ x.classList.remove("active"); });
-  p.classList.add("active");
-  document.querySelectorAll("#tabs button").forEach(function(b){ b.classList.toggle("active", b.dataset.tab===tab); });
+function setActiveNav(id){
+  var nav=document.getElementById("topNav"); if(!nav) return;
+  nav.querySelectorAll(".chip").forEach(function(x){ x.classList.toggle("active", x.dataset.tab===id); });
+}
+function activateTab(id){
+  var idx=chapterIndexById(id);
+  if(idx>=0){ setActiveNav(id); renderChapter(idx); }
+  else if(id==="exercitii"){ setActiveNav("exercitii"); renderExercitii(); }
+  else if(typeof OOP_TEORIE!=="undefined" && OOP_TEORIE.length){ setActiveNav(OOP_TEORIE[0].id); renderChapter(0); }
   window.scrollTo({top:0, behavior:"smooth"});
-  onTabShown(tab);
 }
-function tabFromHash(){ var t=location.hash.replace("#",""); if(t && document.getElementById("page-"+t)) activateTab(t); }
+function tabFromHash(){
+  var t=location.hash.replace("#","");
+  if(t && (chapterIndexById(t)>=0 || t==="exercitii")){ activateTab(t); return true; }
+  return false;
+}
 window.addEventListener("hashchange", tabFromHash);
 
 function setTheme(t){ document.documentElement.dataset.theme=t; try{ localStorage.setItem("oop-theme",t); }catch(e){} }
@@ -722,48 +733,23 @@ window.addEventListener("message", function(e){
   else if(d.type==="tab" && d.tab) activateTab(d.tab);
 });
 
-/* ---------- resize: redesenează doar firele ---------- */
+/* ---------- resize: redesenează firele diagramelor din teorie ---------- */
 var rzT;
 window.addEventListener("resize", function(){ clearTimeout(rzT); rzT=setTimeout(redrawActive, 150); });
 function redrawActive(){
-  document.querySelectorAll(".page.active .stage").forEach(function(s){ if(s.__step) drawWires(s, s.__step); });
+  document.querySelectorAll("#content .stage").forEach(function(s){ if(s.__step) drawWires(s, s.__step); });
 }
 
 /* ---------- bootstrap ---------- */
 document.addEventListener("DOMContentLoaded", function(){
-  scenPlayer=new MapPlayer({stage:"scenStage",code:"scenCode",log:"scenLog",out:"scenOut",
-    prog:"scenProg",ctl:"scenCtl",play:"scenPlay",next:"scenNext",prev:"scenPrev",reset:"scenReset"});
-
-  buildChips("scenChips", OOP_SCENARII, function(d){
-    document.getElementById("scenRez").textContent=d.rezumat||""; scenPlayer.load(d);
-  });
-
-  var tnav=document.getElementById("teoNav");
-  if(typeof OOP_TEORIE!=="undefined" && tnav){
-    tnav.innerHTML=OOP_TEORIE.map(function(c,i){ return '<button class="chip'+(i===0?" active":"")+'" data-i="'+i+'">'+esc(c.nume)+'</button>'; }).join("");
-    tnav.querySelectorAll(".chip").forEach(function(b){
-      b.onclick=function(){ tnav.querySelectorAll(".chip").forEach(function(x){x.classList.remove("active");}); b.classList.add("active"); renderTeorie(+b.dataset.i); };
-    });
-    renderTeorie(0);
+  var nav=document.getElementById("topNav");
+  if(nav && typeof OOP_TEORIE!=="undefined"){
+    var items=OOP_TEORIE.map(function(c){ return '<button class="chip" data-tab="'+c.id+'">'+esc(c.nume)+'</button>'; });
+    items.push('<button class="chip" data-tab="exercitii">📝 Exerciții &amp; quiz</button>');
+    nav.innerHTML=items.join("");
+    nav.querySelectorAll(".chip").forEach(function(b){ b.onclick=function(){ activateTab(b.dataset.tab); }; });
   }
-
-  var enav=document.getElementById("exNav");
-  if(typeof OOP_QUIZ!=="undefined" && enav){
-    enav.innerHTML=EX_VIEWS.map(function(v,i){ return '<button class="chip'+(i===0?" active":"")+'" data-k="'+v.k+'">'+esc(v.n)+'</button>'; }).join("");
-    enav.querySelectorAll(".chip").forEach(function(b){
-      b.onclick=function(){ enav.querySelectorAll(".chip").forEach(function(x){x.classList.remove("active");}); b.classList.add("active"); exState.view=b.dataset.k; renderEx(); };
-    });
-    renderEx();
-  }
-
-  document.querySelectorAll("#tabs button").forEach(function(b){ b.onclick=function(){ activateTab(b.dataset.tab); }; });
-
-  document.addEventListener("click", function(e){
-    var a=e.target.closest ? e.target.closest(".xref") : null;
-    if(a){ e.preventDefault(); goTo(a.dataset.tab, a.dataset.scene); }
-  });
-
-  tabFromHash();
+  if(!tabFromHash()) activateTab((typeof OOP_TEORIE!=="undefined" && OOP_TEORIE.length)?OOP_TEORIE[0].id:"exercitii");
 });
 </script>
 </body>

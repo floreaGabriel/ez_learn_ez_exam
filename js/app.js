@@ -124,14 +124,22 @@ const MATERII = [
   {
     id:"oop", nume:"OOP C++", icon:"🧩",
     sub:"Programare orientată pe obiecte (C++)",
-    descriere:"Vizualizatoare de memorie pentru OOP în C++: pointeri vs referințe, layout de obiecte (vptr / vtable), copy vs move, object slicing, destructor virtual și instanțierea template-urilor — hărți de memorie animate (stivă / heap / .text / .data / .rodata), explorator de anatomie a obiectului și scenarii pas cu pas cu output.",
+    descriere:"Cursul complet de OOP în C++ după programa de facultate, capitol cu capitol: de la clase, constructori și destructori la moștenire, polimorfism (metode virtuale, vtable), supraîncărcarea operatorilor, template-uri, STL, excepții și C++11. Fiecare concept-cheie are un joculeț conceptual integrat — cod în stânga, ce se întâmplă și de ce în dreapta, pas cu pas — plus exerciții de tip examen.",
     tip:"embed", src:"oop/index.html",
     sectiuni:[
-      {id:"teorie",   nume:"Teorie",            icon:"📘"},
-      {id:"memorie",  nume:"Memorie vizuală",  icon:"🧠"},
-      {id:"anatomie", nume:"Anatomie obiect",  icon:"🧬"},
-      {id:"scenarii", nume:"Scenarii animate", icon:"🎬"},
-      {id:"exercitii",nume:"Exerciții & quiz", icon:"📝"}
+      {id:"elemente-introductive",   nume:"1 · Introductiv",                icon:"📘"},
+      {id:"clase-obiecte",           nume:"2 · Clase & obiecte",            icon:"🧱"},
+      {id:"constructori-destructori",nume:"3 · Constructori & destructori", icon:"🏗️"},
+      {id:"statice-friend",          nume:"4 · Statice & friend",           icon:"🔗"},
+      {id:"mostenire-1",             nume:"5 · Moștenire (1)",              icon:"🧬"},
+      {id:"mostenire-2",             nume:"6 · Moștenire (2)",              icon:"🌿"},
+      {id:"polimorfism",             nume:"7 · Polimorfism",                icon:"🎭"},
+      {id:"operatori",               nume:"8 · Operatori",                  icon:"➕"},
+      {id:"template",                nume:"9 · Template",                   icon:"🧩"},
+      {id:"stl",                     nume:"10 · STL",                       icon:"📦"},
+      {id:"exceptii",                nume:"12 · Excepții",                  icon:"🚨"},
+      {id:"cpp11",                   nume:"13 · C++11",                     icon:"✨"},
+      {id:"exercitii",               nume:"Exerciții & quiz",               icon:"📝"}
     ]
   },
   {
