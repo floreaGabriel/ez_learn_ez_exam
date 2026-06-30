@@ -289,7 +289,6 @@ pre.code{font-family:var(--mono); font-size:13px; line-height:1.55; background:v
     <div class="sub">Curs după programa de facultate — fiecare capitol cu joculețul lui (cod ⟶ ce se întâmplă ⟶ de ce) și exerciții de examen</div>
   </header>
 
-  <nav class="chips" id="topNav"></nav>
   <div id="content"></div>
 
 </div>
@@ -555,21 +554,10 @@ function renderChapter(idx){
       }
     }
   });
-  html+='<div class="teo-nav">'
-    + (idx>0 ? '<button class="btn ghost" data-go="'+OOP_TEORIE[idx-1].id+'">← '+esc(OOP_TEORIE[idx-1].nume)+'</button>' : '<span></span>')
-    + '<button class="btn ghost" data-go="__top">↑ Sus</button>'
-    + (idx<OOP_TEORIE.length-1 ? '<button class="btn ghost" data-go="'+OOP_TEORIE[idx+1].id+'">'+esc(OOP_TEORIE[idx+1].nume)+' →</button>' : '<button class="btn" data-go="exercitii">Exerciții &amp; quiz →</button>')
-    + '</div></div>';
+  html+='</div>';
   var body=document.getElementById("content"); body.innerHTML=html;
   diagrams.forEach(function(d){ renderStep(document.getElementById(d.id), d.scene, 0); });
   body.querySelectorAll(".joc[data-ji]").forEach(function(fig){ renderJoc(fig, jocs[+fig.dataset.ji]); });
-  body.querySelectorAll("[data-go]").forEach(function(btn){
-    btn.onclick=function(){
-      var g=btn.dataset.go;
-      if(g==="__top"){ window.scrollTo({top:0, behavior:"smooth"}); return; }
-      activateTab(g);
-    };
-  });
 }
 
 /* ---------- EXERCIȚII ---------- */
@@ -742,13 +730,8 @@ function redrawActive(){
 
 /* ---------- bootstrap ---------- */
 document.addEventListener("DOMContentLoaded", function(){
-  var nav=document.getElementById("topNav");
-  if(nav && typeof OOP_TEORIE!=="undefined"){
-    var items=OOP_TEORIE.map(function(c){ return '<button class="chip" data-tab="'+c.id+'">'+esc(c.nume)+'</button>'; });
-    items.push('<button class="chip" data-tab="exercitii">📝 Exerciții &amp; quiz</button>');
-    nav.innerHTML=items.join("");
-    nav.querySelectorAll(".chip").forEach(function(b){ b.onclick=function(){ activateTab(b.dataset.tab); }; });
-  }
+  /* Navigarea se face exclusiv din bara din stânga a aplicației-gazdă
+     (postMessage {type:"tab"}) sau din hash. Nicio bară de tab-uri în pagină. */
   if(!tabFromHash()) activateTab((typeof OOP_TEORIE!=="undefined" && OOP_TEORIE.length)?OOP_TEORIE[0].id:"exercitii");
 });
 </script>
