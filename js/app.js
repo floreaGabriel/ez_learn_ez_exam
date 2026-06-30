@@ -122,6 +122,19 @@ const MATERII = [
     ]
   },
   {
+    id:"oop", nume:"OOP C++", icon:"🧩",
+    sub:"Programare orientată pe obiecte (C++)",
+    descriere:"Vizualizatoare de memorie pentru OOP în C++: pointeri vs referințe, layout de obiecte (vptr / vtable), copy vs move, object slicing, destructor virtual și instanțierea template-urilor — hărți de memorie animate (stivă / heap / .text / .data / .rodata), explorator de anatomie a obiectului și scenarii pas cu pas cu output.",
+    tip:"embed", src:"oop/index.html",
+    sectiuni:[
+      {id:"teorie",   nume:"Teorie",            icon:"📘"},
+      {id:"memorie",  nume:"Memorie vizuală",  icon:"🧠"},
+      {id:"anatomie", nume:"Anatomie obiect",  icon:"🧬"},
+      {id:"scenarii", nume:"Scenarii animate", icon:"🎬"},
+      {id:"exercitii",nume:"Exerciții & quiz", icon:"📝"}
+    ]
+  },
+  {
     id:"subiecte", nume:"Subiecte Generate", icon:"📄",
     sub:"Modele de examen de licență",
     descriere:"Modele complete de examen (3 subiecte / 3 ore) generate în stilul subiectelor reale ATM 2017–2024 și pe baza cursurilor: Programare/OOP/SDA + o problemă de arhitecturi, Rețele & protocoale, Baze de date și PSO (cod lung + întrebări, formatul 2024). Fiecare subiect are rezolvarea/baremul ascuns, pentru autoevaluare.",

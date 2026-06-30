@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OOP — C++ (Programare orientată pe obiecte)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+/* aplică tema salvată înainte de paint (fără flash) */
+(function(){try{
+  var m=localStorage.getItem('oop-theme')||localStorage.getItem('app-theme-mode')||'dark';
+  document.documentElement.dataset.theme=m;
+  var v=localStorage.getItem('app-theme-vars');
+  if(v){ var o=JSON.parse(v), s=document.documentElement.style; for(var k in o) s.setProperty(k,o[k]); }
+}catch(e){}})();
+</script>
+<style>
+:root{
+  --bg:#1a1714; --panel:#221e1a; --panel2:#2a2521; --topbar:#1d1916;
+  --ink:#ece3d2; --ink-soft:#d6cbb6; --muted:#a8997f; --line:#352f28; --line2:#403930;
+  --accent:#e9b143; --accent-2:#d8843f; --blue:#83a598; --green:#b8bb26; --red:#fb4934;
+  --purple:#d3869b; --aqua:#8ec07c; --code-bg:#14110d;
+  --mono:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+html[data-theme="light"]{
+  --bg:#f3ecdd; --panel:#fbf6ea; --panel2:#f1e8d6; --topbar:#f7f1e3;
+  --ink:#2a2118; --ink-soft:#4a3f30; --muted:#8a7a5f; --line:#ddd0b8; --line2:#cdbf9f;
+  --accent:#bf8b1d; --accent-2:#c46a2a; --blue:#076678; --green:#79740e; --red:#c23a2e;
+  --purple:#8f3f71; --aqua:#427b58; --code-bg:#efe6d2;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans); color:var(--ink); background:var(--bg); line-height:1.6; font-size:15px; -webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px; margin:0 auto; padding:24px 30px 120px}
+
+/* ---- header sobru ---- */
+.bar{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; padding-bottom:14px; border-bottom:1px solid var(--line)}
+.brand{font-size:21px; font-weight:700; letter-spacing:.3px; color:var(--ink)}
+.brand span{color:var(--muted); font-weight:500}
+.bar .sub{color:var(--muted); font-size:13px}
+
+/* ---- tab-uri ---- */
+.tabs{display:flex; gap:4px; flex-wrap:wrap; margin:16px 0 22px; border-bottom:1px solid var(--line)}
+.tabs button{appearance:none; border:none; background:none; color:var(--muted); font-family:var(--sans);
+  font-size:14px; font-weight:600; padding:9px 14px; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px}
+.tabs button:hover{color:var(--ink-soft)}
+.tabs button.active{color:var(--accent); border-bottom-color:var(--accent)}
+
+.page{display:none; animation:fade .25s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:0; transform:translateY(5px)}to{opacity:1; transform:none}}
+
+h2{font-size:19px; color:var(--ink); margin-bottom:4px; font-weight:700}
+.lead{color:var(--muted); font-size:13.5px; margin-bottom:16px; max-width:78ch}
+p{margin:0 0 10px}
+.small{font-size:12.5px}
+.muted{color:var(--muted)}
+.accentc{color:var(--accent)}
+.warnc{color:var(--accent-2)}
+.bad{color:var(--red)}
+code{font-family:var(--mono); font-size:.9em; background:var(--panel2); padding:1px 5px; border-radius:4px; color:var(--ink-soft)}
+
+/* ---- chips (selectoare) ---- */
+.chips,.sub-chips{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px}
+.chip{appearance:none; font-family:var(--sans); font-size:12.5px; font-weight:600; cursor:pointer;
+  border:1px solid var(--line2); background:var(--panel); color:var(--ink-soft); padding:6px 12px; border-radius:7px}
+.chip:hover{border-color:var(--accent); color:var(--ink)}
+.chip.active{background:var(--accent); border-color:var(--accent); color:var(--bg)}
+.rezumat{color:var(--muted); font-size:13px; margin:2px 0 14px; max-width:80ch}
+
+/* ---- controale player ---- */
+.controls{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:14px}
+.btn{appearance:none; font-family:var(--sans); font-size:13px; font-weight:600; cursor:pointer;
+  border:1px solid var(--accent); background:var(--accent); color:var(--bg); padding:7px 14px; border-radius:7px}
+.btn:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent; color:var(--ink-soft); border-color:var(--line2)}
+.btn.ghost:hover{border-color:var(--accent); color:var(--ink)}
+.btn:disabled{opacity:.4; cursor:default; filter:none}
+.prog{color:var(--muted); font-size:12.5px; font-family:var(--mono); margin-left:4px}
+
+/* ---- harta de memorie ---- */
+.stage{position:relative; display:flex; gap:38px; flex-wrap:wrap; align-items:flex-start;
+  padding:22px 20px; background:var(--panel2); border:1px solid var(--line); border-radius:12px; min-height:140px}
+.region{border:1px solid var(--line2); border-radius:10px; background:var(--panel); min-width:215px; flex:0 1 auto; overflow:hidden}
+.region-h{font-size:11px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--muted);
+  padding:8px 12px; border-bottom:1px solid var(--line); background:var(--topbar)}
+.region-h .cnt{display:inline-block; min-width:18px; text-align:center; margin-left:6px; padding:0 6px;
+  border-radius:10px; background:var(--accent); color:var(--bg); font-size:11px}
+.cells{padding:8px; display:flex; flex-direction:column; gap:6px}
+.cell{display:flex; gap:10px; align-items:center; font-family:var(--mono); font-size:12.5px;
+  padding:7px 9px; border:1px solid var(--line); border-radius:7px; background:var(--bg); position:relative}
+.cell.has-ptr{border-left:3px solid var(--accent)}
+.cell .addr{color:var(--muted); font-size:11px; min-width:54px; white-space:nowrap}
+.cell .cbody{display:flex; flex-direction:column; gap:1px; min-width:0}
+.cell .cname{color:var(--ink); font-weight:600}
+.cell .cval{color:var(--blue); font-size:11.5px; word-break:break-word}
+.cell.hot{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); animation:hot 1.1s ease}
+@keyframes hot{0%{background:var(--accent); color:var(--bg)} 100%{background:var(--bg)}}
+.cell.dead{opacity:.55}
+.cell.dead::after{content:""; position:absolute; inset:0; border-radius:7px; pointer-events:none;
+  background:linear-gradient(to top right, transparent calc(50% - 1px), color-mix(in srgb,var(--red) 55%, transparent) calc(50% - 1px), color-mix(in srgb,var(--red) 55%, transparent) calc(50% + 1px), transparent calc(50% + 1px))}
+.cell.dead .cname{text-decoration:line-through; color:var(--muted)}
+.cell.dead .cval{color:var(--red)}
+.alias{margin-left:auto; font-family:var(--mono); font-size:11px; color:var(--accent);
+  border:1px dashed var(--accent); border-radius:6px; padding:1px 7px; white-space:nowrap}
+.empty{color:var(--muted); font-size:12px; font-style:italic; padding:4px}
+
+/* SVG fire (pointeri) */
+svg.wires{position:absolute; inset:0; pointer-events:none; z-index:5; overflow:visible}
+svg.wires .wire{fill:none; stroke:var(--accent); stroke-width:2; stroke-dasharray:1; stroke-dashoffset:1; animation:wdraw .5s ease forwards}
+svg.wires .wire.hot{stroke-width:2.6}
+svg.wires .wire.dead{stroke:var(--red); stroke-dasharray:.05 .035; stroke-dashoffset:0; animation:none}
+@keyframes wdraw{to{stroke-dashoffset:0}}
+svg.wires marker#ah path{fill:var(--accent)}
+svg.wires marker#ahd path{fill:var(--red)}
+svg.wires text.wvoid{fill:var(--red); font-family:var(--mono); font-size:10px}
+
+/* ---- cod + info ---- */
+.cols{display:grid; grid-template-columns:1.15fr 1fr; gap:18px; margin-top:16px}
+@media(max-width:760px){ .cols{grid-template-columns:1fr} .cols2{grid-template-columns:1fr!important} }
+pre.code{font-family:var(--mono); font-size:13px; line-height:1.55; background:var(--code-bg); color:var(--ink-soft);
+  border:1px solid var(--line); border-radius:10px; padding:14px 16px; overflow:auto; white-space:pre; tab-size:4}
+.tok-key{color:var(--accent); font-weight:600}
+.tok-fn{color:var(--blue,#83a598)}
+.tok-str{color:var(--green,#b8bb26)}
+.tok-com{color:var(--muted); font-style:italic}
+.tok-num{color:var(--purple,#d3869b)}
+.tok-pre{color:var(--aqua,#8ec07c)}
+.info{display:flex; flex-direction:column; gap:10px}
+.step-title{font-weight:700; color:var(--accent); font-size:14.5px}
+.step-note{color:var(--ink-soft); font-size:13.5px; line-height:1.55}
+.sizeof{font-size:13px; color:var(--ink-soft); background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 11px; font-family:var(--mono)}
+.console{display:none; background:var(--code-bg); border:1px solid var(--line); border-radius:10px; padding:10px 12px}
+.console .con-h{font-size:11px; letter-spacing:.6px; text-transform:uppercase; color:var(--muted); margin-bottom:5px}
+.console pre{font-family:var(--mono); font-size:12.5px; color:var(--green,#b8bb26); white-space:pre-wrap}
+.log-h{font-size:11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--muted); margin-bottom:4px}
+.steplog{display:flex; flex-direction:column; gap:8px}
+.logstep{display:flex; gap:9px; align-items:flex-start; opacity:.55; transition:opacity .2s ease}
+.logstep .ln{flex:0 0 auto; width:21px; height:21px; border-radius:50%; background:var(--panel2); color:var(--muted);
+  font-family:var(--mono); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-top:1px}
+.logstep .lgbody{font-size:13px; line-height:1.5}
+.logstep .lgbody b{display:block; color:var(--ink-soft); font-weight:600}
+.logstep .lgbody span{color:var(--muted)}
+.logstep.active{opacity:1}
+.logstep.active .ln{background:var(--accent); color:var(--bg)}
+.logstep.active .lgbody b{color:var(--accent)}
+.logstep.active .lgbody span{color:var(--ink-soft)}
+
+/* ---- anatomie: carduri/tabele/decodor ---- */
+.cols2{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:14px 0}
+.card{background:var(--panel); border:1px solid var(--line2); border-radius:10px; padding:14px 16px}
+.card h4{font-size:13.5px; color:var(--ink); margin-bottom:9px}
+.tbl{width:100%; border-collapse:collapse; font-size:12.5px}
+.tbl th{text-align:left; color:var(--muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.4px; padding:4px 8px; border-bottom:1px solid var(--line)}
+.tbl td{padding:4px 8px; border-bottom:1px solid var(--line)}
+.tbl tr:last-child td{border-bottom:none}
+.mono{font-family:var(--mono)}
+.decoder{display:flex; gap:8px; flex-wrap:wrap; margin:6px 0 12px}
+.decoder input{flex:1; min-width:200px; font-family:var(--mono); font-size:13px; padding:8px 11px;
+  background:var(--code-bg); color:var(--ink); border:1px solid var(--line2); border-radius:7px}
+.decoder input:focus{outline:none; border-color:var(--accent)}
+.mg-out{margin-top:8px}
+.mg-sym{font-size:18px; padding:10px 12px; background:var(--code-bg); border:1px solid var(--line); border-radius:8px; margin-bottom:10px; letter-spacing:.5px}
+.mg-pref{color:var(--muted)}
+.mg-name{color:var(--accent); font-weight:700}
+.mg-codes{color:var(--blue,#83a598); font-weight:700}
+.tpl-bar{display:flex; gap:7px; flex-wrap:wrap; align-items:center; margin:12px 0}
+.region .cell{font-size:12px}
+
+/* ---- teorie ---- */
+.teo{max-width:78ch}
+.teo h3{font-size:17px; color:var(--accent); margin:26px 0 8px; padding-bottom:5px; border-bottom:1px solid var(--line)}
+.teo h3:first-child{margin-top:6px}
+.teo h4{font-size:14.5px; color:var(--ink); margin:18px 0 6px}
+.teo p{font-size:14px; color:var(--ink-soft); line-height:1.68; margin:0 0 11px}
+.teo ul{margin:0 0 12px 20px} .teo li{font-size:14px; color:var(--ink-soft); line-height:1.6; margin-bottom:4px}
+.teo pre.code{margin:6px 0 14px}
+.teo .tbl{margin:8px 0 16px}
+.callout{display:flex; gap:11px; align-items:flex-start; margin:13px 0; padding:11px 14px; border-radius:9px;
+  border:1px solid var(--line2); border-left:3px solid var(--accent); background:var(--panel); font-size:13.5px; line-height:1.6; color:var(--ink-soft)}
+.callout .co-tag{flex:0 0 auto; font-size:10.5px; font-weight:700; letter-spacing:.6px; text-transform:uppercase;
+  padding:2px 8px; border-radius:6px; background:var(--accent); color:var(--bg); white-space:nowrap; margin-top:1px}
+.callout.capcana{border-left-color:var(--red)} .callout.capcana .co-tag{background:var(--red)}
+.callout.nuanta{border-left-color:var(--accent-2)} .callout.nuanta .co-tag{background:var(--accent-2)}
+.callout.info{border-left-color:var(--blue,#83a598)} .callout.info .co-tag{background:var(--blue,#83a598)}
+.callout code{background:var(--code-bg)}
+.cmp{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0}
+@media(max-width:680px){ .cmp{grid-template-columns:1fr} }
+.cmp .card{font-size:13.5px} .cmp .card p{font-size:13.5px; color:var(--ink-soft)}
+.cmp .card ul{margin:6px 0 0 18px}
+.dgfig{margin:14px 0 18px}
+.dgfig .stage{min-height:0; padding:18px 16px}
+.dgfig figcaption{font-size:12px; color:var(--muted); margin-top:7px; font-style:italic; text-align:center}
+.teo .xref{color:var(--accent); cursor:pointer; text-decoration:none; border-bottom:1px dashed var(--accent)}
+.teo .xref:hover{border-bottom-style:solid}
+.teo .xref b{font-weight:600; color:var(--accent)}
+.teo-nav{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:28px; padding-top:16px; border-top:1px solid var(--line)}
+.teo-nav .btn{font-size:12.5px}
+
+/* ---- exerciții ---- */
+.scorebar{display:flex; align-items:center; gap:12px; margin:4px 0 16px; font-size:13px; color:var(--muted)}
+.scorebar .bar{flex:1; height:7px; border-radius:4px; background:var(--panel2); overflow:hidden; max-width:280px}
+.scorebar .fill{height:100%; width:0; background:var(--accent); transition:width .35s ease}
+.scorebar b{color:var(--accent)}
+.q-card{background:var(--panel); border:1px solid var(--line2); border-radius:11px; padding:15px 17px; margin-bottom:14px}
+.q-top{display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:8px}
+.q-tema{font-size:10.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--muted); white-space:nowrap}
+.q-en{font-size:14px; color:var(--ink); font-weight:600; line-height:1.5}
+.q-card pre.code{margin:10px 0 4px}
+.q-hint{font-size:11.5px; color:var(--muted); margin-bottom:8px}
+.opts{display:flex; flex-direction:column; gap:7px; margin-top:10px}
+.opt{display:flex; gap:10px; align-items:center; text-align:left; width:100%; cursor:pointer; font-family:var(--sans);
+  font-size:13.5px; color:var(--ink-soft); background:var(--bg); border:1px solid var(--line2); border-radius:8px; padding:9px 12px}
+.opt:hover:not(.locked){border-color:var(--accent)}
+.opt .mark{flex:0 0 auto; width:16px; height:16px; border:1.5px solid var(--line2); border-radius:50%; display:inline-block}
+.opt.multi .mark{border-radius:4px}
+.opt.sel{border-color:var(--accent); color:var(--ink)}
+.opt.sel .mark{background:var(--accent); border-color:var(--accent)}
+.opt.locked{cursor:default}
+.opt.ok{border-color:var(--green,#b8bb26); background:color-mix(in srgb,var(--green,#b8bb26) 14%,transparent)}
+.opt.ok .mark{background:var(--green,#b8bb26); border-color:var(--green,#b8bb26)}
+.opt.bad{border-color:var(--red); background:color-mix(in srgb,var(--red) 14%,transparent)}
+.opt.bad .mark{background:var(--red); border-color:var(--red)}
+.opt.miss{border-color:var(--green,#b8bb26); border-style:dashed}
+.q-act{display:flex; align-items:center; gap:12px; margin-top:12px; flex-wrap:wrap}
+.q-verdict{font-size:13px; font-weight:600}
+.q-verdict.ok{color:var(--green,#b8bb26)} .q-verdict.bad{color:var(--red)}
+.q-exp{margin-top:10px; font-size:13px; line-height:1.55; color:var(--ink-soft);
+  border-left:3px solid var(--accent); background:var(--panel2); border-radius:8px; padding:9px 12px; display:none}
+.q-exp.show{display:block}
+/* ordering */
+.ord-bank{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 14px}
+.ord-item{cursor:pointer; font-size:13px; font-family:var(--mono); border:1px solid var(--line2); background:var(--bg); color:var(--ink-soft); padding:7px 11px; border-radius:8px}
+.ord-item:hover{border-color:var(--accent); color:var(--ink)}
+.ord-item.used{opacity:.35; cursor:default; pointer-events:none}
+.ord-slots{display:flex; flex-direction:column; gap:7px; margin-bottom:12px}
+.slot{display:flex; align-items:center; gap:10px; min-height:40px; border:1px dashed var(--line2); border-radius:8px; padding:7px 11px; font-family:var(--mono); font-size:13px}
+.slot .num{color:var(--muted); font-size:11px; min-width:18px}
+.slot.filled{border-style:solid; cursor:pointer}
+.slot.ok{border-color:var(--green,#b8bb26)} .slot.bad{border-color:var(--red)}
+.slot .txt{color:var(--ink)}
+/* match */
+.match-row{display:grid; grid-template-columns:minmax(120px,1fr) 1.4fr; gap:10px; align-items:center; margin-bottom:9px}
+.match-row .term{font-family:var(--mono); font-size:13.5px; color:var(--ink); font-weight:600}
+.match-row select{font-family:var(--sans); font-size:13px; padding:8px 10px; background:var(--code-bg); color:var(--ink); border:1px solid var(--line2); border-radius:8px}
+.match-row select:focus{outline:none; border-color:var(--accent)}
+.match-row.ok select{border-color:var(--green,#b8bb26)} .match-row.bad select{border-color:var(--red)}
+
+@media(max-width:680px){
+  .tabs{flex-wrap:nowrap; overflow-x:auto}
+  .tabs button{white-space:nowrap}
+  .wrap{padding:18px 16px 90px}
+  .stage{gap:24px; padding:16px 12px}
+}
+@media(max-width:520px){
+  .match-row{grid-template-columns:1fr; gap:5px}
+  .q-top{flex-direction:column; align-items:flex-start; gap:3px}
+  .teo-nav{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="bar">
+    <div class="brand">OOP <span>· C++</span></div>
+    <div class="sub">Vizualizatoare de memorie — pointeri &amp; referințe, layout de obiecte, vtable, copy / move, template-uri</div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-tab="teorie" class="active">Teorie</button>
+    <button data-tab="memorie">Memorie vizuală</button>
+    <button data-tab="anatomie">Anatomie obiect</button>
+    <button data-tab="scenarii">Scenarii animate</button>
+    <button data-tab="exercitii">Exerciții &amp; quiz</button>
+  </nav>
+
+  <!-- ============ TEORIE ============ -->
+  <section class="page active" id="page-teorie">
+    <h2>Teorie</h2>
+    <p class="lead">Materialele complete, cu nuanțele și capcanele de interviu exemplificate, plus diagramele recreate curat. Alege un capitol și citește; diagramele folosesc aceleași hărți de memorie ca restul modulului.</p>
+    <div class="chips" id="teoNav"></div>
+    <div id="teoBody"></div>
+  </section>
+
+  <!-- ============ MEMORIE ============ -->
+  <section class="page" id="page-memorie">
+    <h2>Memorie vizuală</h2>
+    <p class="lead">Cum trăiesc valorile în memorie: <b>stiva</b> și <b>heap-ul</b>, distincția pointer / referință, și ce se întâmplă la copy, move și la o referință care atârnă. Alege un demo și parcurge-l pas cu pas.</p>
+    <div class="chips" id="memChips"></div>
+    <div class="rezumat" id="memRez"></div>
+    <div class="controls" id="memCtl">
+      <button class="btn" id="memPlay">Pornește</button>
+      <button class="btn ghost" id="memPrev">Înapoi</button>
+      <button class="btn ghost" id="memNext">Pas</button>
+      <button class="btn ghost" id="memReset">Reset</button>
+      <span class="prog" id="memProg"></span>
+    </div>
+    <div class="stage" id="memStage"></div>
+    <div class="cols">
+      <pre class="code cpp" id="memCode"></pre>
+      <div class="info">
+        <div class="log-h">Ce se întâmplă la fiecare pas</div>
+        <div class="steplog" id="memLog"></div>
+        <div class="console" id="memOut"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ANATOMIE ============ -->
+  <section class="page" id="page-anatomie">
+    <h2>Anatomie obiect</h2>
+    <p class="lead">Structura statică a tipurilor: layout-ul în memorie (vptr, membri, padding), tabela virtuală și apelul virtual, name mangling-ul de la overloading și instanțierea template-urilor.</p>
+    <div class="chips" id="anatNav"></div>
+    <div id="anatBody"></div>
+  </section>
+
+  <!-- ============ SCENARII ============ -->
+  <section class="page" id="page-scenarii">
+    <h2>Scenarii animate</h2>
+    <p class="lead">Procese în timp — ciclul de viață al obiectelor: ordinea de construcție / distrugere, apelul virtual din constructor, slicing, destructor virtual, <code>std::move</code> și copy elision. Output-ul programului apare pe măsură ce avansezi.</p>
+    <div class="chips" id="scenChips"></div>
+    <div class="rezumat" id="scenRez"></div>
+    <div class="controls" id="scenCtl">
+      <button class="btn" id="scenPlay">Pornește</button>
+      <button class="btn ghost" id="scenPrev">Înapoi</button>
+      <button class="btn ghost" id="scenNext">Pas</button>
+      <button class="btn ghost" id="scenReset">Reset</button>
+      <span class="prog" id="scenProg"></span>
+    </div>
+    <div class="stage" id="scenStage"></div>
+    <div class="cols">
+      <pre class="code cpp" id="scenCode"></pre>
+      <div class="info">
+        <div class="log-h">Ce se întâmplă la fiecare pas</div>
+        <div class="steplog" id="scenLog"></div>
+        <div class="console" id="scenOut"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EXERCIȚII ============ -->
+  <section class="page" id="page-exercitii">
+    <h2>Exerciții &amp; quiz</h2>
+    <p class="lead">Verifică-ți înțelegerea: grilă cu „prezice output-ul”, găsește capcana din cod, ordonează secvențe și împerechează termeni. Fiecare răspuns are explicație.</p>
+    <div class="chips" id="exNav"></div>
+    <div id="exBody"></div>
+  </section>
+
+</div>
+
+<script src="teorie.js"></script>
+<script src="exercitii.js"></script>
+<script src="memorie.js"></script>
+<script src="anatomie.js"></script>
+<script src="scenarii.js"></script>
+<script>
+"use strict";
+
+/* ---------- utilitare ---------- */
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+/* ---------- highlighter C++ (autonom, fără bibliotecă) ---------- */
+var CPP_KW = ["int","char","void","bool","const","constexpr","static","struct","class","public","private",
+"protected","return","if","else","for","while","do","unsigned","signed","long","short","float","double","new",
+"delete","virtual","override","final","switch","case","break","continue","default","true","false","nullptr",
+"NULL","sizeof","typedef","using","namespace","template","typename","operator","this","friend","explicit",
+"mutable","noexcept","decltype","auto","throw","try","catch","enum","union","size_t","wchar_t","static_cast",
+"dynamic_cast","reinterpret_cast","const_cast","inline","extern","volatile"];
+function highlightCpp(text){
+  var store=[];
+  function hold(cls,val){ store.push('<span class="'+cls+'">'+esc(val)+'</span>'); return String.fromCharCode(0xE000+store.length-1); }
+  var s=text;
+  s=s.replace(/\/\*[\s\S]*?\*\//g, function(m){ return hold("tok-com",m); });
+  s=s.replace(/\/\/[^\n]*/g,        function(m){ return hold("tok-com",m); });
+  s=s.replace(/"(?:[^"\\]|\\.)*"/g, function(m){ return hold("tok-str",m); });
+  s=s.replace(/'(?:[^'\\]|\\.)*'/g, function(m){ return hold("tok-str",m); });
+  s=s.replace(/^\s*#[^\n]*/gm,      function(m){ return hold("tok-pre",m); });
+  s=esc(s);
+  s=s.replace(/([A-Za-z_]\w*)([ \t]*\()?|0x[0-9A-Fa-f]+|\b\d+\b/g, function(m, ident, paren){
+    if(ident===undefined) return '<span class="tok-num">'+m+'</span>';
+    if(CPP_KW.indexOf(ident)>=0) return '<span class="tok-key">'+ident+'</span>'+(paren||"");
+    if(paren) return '<span class="tok-fn">'+ident+'</span>'+paren;
+    return ident;
+  });
+  s=s.replace(/[-]/g, function(ch){ return store[ch.charCodeAt(0)-0xE000]; });
+  return s;
+}
+
+/* ---------- catalog regiuni ---------- */
+var MAP_REGIONS = {
+  stack:  {label:"STACK · cadru de funcție"},
+  heap:   {label:"HEAP"},
+  obj:    {label:"OBIECT"},
+  text:   {label:".text · cod"},
+  data:   {label:".data / .bss · statice"},
+  rodata: {label:".rodata · vtable"},
+  src:    {label:"Cod sursă"},
+  reg:    {label:"Registru CPU (ABI)"}
+};
+
+/* ---------- randare hartă ---------- */
+function regionHTML(rid, cells, aliases){
+  var meta=MAP_REGIONS[rid]||{label:rid};
+  var inner=(cells.length? cells.map(function(c){
+    var cls="cell"+(c.hot?" hot":"")+(c.dead?" dead":"")+(c.points?" has-ptr":"");
+    var tags=(aliases||[]).filter(function(a){return a.target===c.id;})
+              .map(function(a){return '<span class="alias">'+esc(a.name)+'</span>';}).join("");
+    return '<div class="'+cls+'" data-cid="'+rid+':'+c.id+'">'
+      + (c.addr!=null?'<span class="addr">'+esc(c.addr)+'</span>':'')
+      + '<span class="cbody"><span class="cname">'+esc(c.label||"")+'</span>'
+      + (c.val!=null?'<span class="cval">'+esc(c.val)+'</span>':'')+'</span>'
+      + tags + '</div>';
+  }).join("") : '<span class="empty">—</span>');
+  return '<div class="region r-'+rid+'"><div class="region-h">'+meta.label+'</div><div class="cells">'+inner+'</div></div>';
+}
+function renderStep(stageEl, scene, idx){
+  if(!stageEl) return;
+  var st=scene.steps[idx];
+  var html='<svg class="wires" xmlns="http://www.w3.org/2000/svg"></svg>';
+  (scene.regions||["stack"]).forEach(function(rid){
+    var cells=(st.cells && st.cells[rid]) || [];
+    html+=regionHTML(rid, cells, st.aliases||[]);
+  });
+  stageEl.innerHTML=html;
+  stageEl.__step=st;
+  requestAnimationFrame(function(){ drawWires(stageEl, st); });
+}
+function drawWires(stageEl, st){
+  var svg=stageEl.querySelector("svg.wires"); if(!svg) return;
+  var box=stageEl.getBoundingClientRect(); if(box.width<4){ svg.innerHTML=""; return; }
+  var byId={}, ptrs=[];
+  Object.keys(st.cells||{}).forEach(function(rid){
+    (st.cells[rid]||[]).forEach(function(c){ byId[c.id]=c; if(c.points) ptrs.push({rid:rid,c:c}); });
+  });
+  var parts=['<defs>'
+    +'<marker id="ah" markerWidth="9" markerHeight="7" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z"/></marker>'
+    +'<marker id="ahd" markerWidth="9" markerHeight="7" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z"/></marker>'
+    +'</defs>'];
+  ptrs.forEach(function(p){
+    var fromEl=stageEl.querySelector('[data-cid="'+p.rid+':'+p.c.id+'"]'); if(!fromEl) return;
+    var fr=fromEl.getBoundingClientRect();
+    var y1=fr.top+fr.height/2-box.top;
+    var dead=!!p.c.dead;
+    if(p.c.points==="VOID"){
+      var x1=fr.right-box.left, vx=x1+74, vy=y1+30;
+      parts.push('<path class="wire dead" d="M'+x1+' '+y1+' C'+(x1+42)+' '+y1+','+(vx-22)+' '+vy+','+vx+' '+vy+'" marker-end="url(#ahd)"/>');
+      parts.push('<text class="wvoid" x="'+(vx+5)+'" y="'+(vy+4)+'">memorie eliberată</text>');
+      return;
+    }
+    var toEl=stageEl.querySelector('[data-cid$=":'+p.c.points+'"]'); if(!toEl) return;
+    var tr=toEl.getBoundingClientRect();
+    var tc=byId[p.c.points]; if(tc && tc.dead) dead=true;
+    var y2=tr.top+tr.height/2-box.top, d;
+    if(Math.abs(fr.left-tr.left)<24){
+      /* aceeași coloană -> buclă curată pe partea dreaptă */
+      var sx=fr.right-box.left, ex=tr.right-box.left, rx=Math.max(fr.right,tr.right)-box.left+30;
+      d='M'+sx+' '+y1+' C'+rx+' '+y1+','+rx+' '+y2+','+ex+' '+y2;
+    } else {
+      var fx=fr.right-box.left, x2=tr.left-box.left;
+      if(tr.left<fr.left) x2=tr.right-box.left;
+      var dx=Math.max(26, Math.abs(x2-fx)/2);
+      d='M'+fx+' '+y1+' C'+(fx+dx)+' '+y1+','+(x2-dx)+' '+y2+','+x2+' '+y2;
+    }
+    parts.push('<path class="wire'+(dead?" dead":"")+(p.c.hot?" hot":"")+'" d="'+d+'" marker-end="url(#'+(dead?"ahd":"ah")+')" pathLength="1"/>');
+  });
+  svg.setAttribute("viewBox","0 0 "+box.width+" "+box.height);
+  svg.style.width=box.width+"px"; svg.style.height=box.height+"px";
+  svg.innerHTML=parts.join("");
+}
+
+/* ---------- player generic ---------- */
+function MapPlayer(p){
+  this.stage=document.getElementById(p.stage);
+  this.code=p.code?document.getElementById(p.code):null;
+  this.title=p.title?document.getElementById(p.title):null;
+  this.note=p.note?document.getElementById(p.note):null;
+  this.log=p.log?document.getElementById(p.log):null;
+  this.out=p.out?document.getElementById(p.out):null;
+  this.prog=p.prog?document.getElementById(p.prog):null;
+  this.ctl=p.ctl?document.getElementById(p.ctl):null;
+  this.bPlay=p.play?document.getElementById(p.play):null;
+  this.bNext=p.next?document.getElementById(p.next):null;
+  this.bPrev=p.prev?document.getElementById(p.prev):null;
+  this.bReset=p.reset?document.getElementById(p.reset):null;
+  this.scene=null; this.idx=0; this.timer=null;
+  var self=this;
+  if(this.bPlay) this.bPlay.onclick=function(){ self.toggle(); };
+  if(this.bNext) this.bNext.onclick=function(){ self.stop(); self.go(self.idx+1); };
+  if(this.bPrev) this.bPrev.onclick=function(){ self.stop(); self.go(self.idx-1); };
+  if(this.bReset)this.bReset.onclick=function(){ self.stop(); self.go(0); };
+}
+MapPlayer.prototype.load=function(scene){ this.stop(); this.scene=scene; this.idx=0; this.render(); };
+MapPlayer.prototype.go=function(i){ if(!this.scene)return; var n=this.scene.steps.length; this.idx=Math.max(0,Math.min(n-1,i)); this.render(); };
+MapPlayer.prototype.toggle=function(){ if(this.timer)this.stop(); else this.play(); };
+MapPlayer.prototype.play=function(){ if(!this.scene)return; var self=this;
+  if(this.idx>=this.scene.steps.length-1) this.idx=0;
+  this.setPlaying(true); this.render();
+  this.timer=setInterval(function(){
+    if(self.idx>=self.scene.steps.length-1){ self.stop(); return; }
+    self.idx++; self.render();
+  },1700);
+};
+MapPlayer.prototype.stop=function(){ if(this.timer){ clearInterval(this.timer); this.timer=null; } this.setPlaying(false); };
+MapPlayer.prototype.setPlaying=function(on){ if(this.bPlay) this.bPlay.textContent=on?"Pauză":"Pornește"; };
+MapPlayer.prototype.redraw=function(){ if(this.scene) renderStep(this.stage, this.scene, this.idx); };
+MapPlayer.prototype.render=function(){
+  var sc=this.scene; if(!sc)return; var st=sc.steps[this.idx];
+  if(this.code) this.code.innerHTML=highlightCpp(sc.cod||"");
+  renderStep(this.stage, sc, this.idx);
+  if(this.title) this.title.textContent=(this.idx+1)+". "+(st.title||"");
+  if(this.note)  this.note.innerHTML=st.note||"";
+  if(this.log){
+    var lg="";
+    for(var j=0;j<=this.idx;j++){ var s=sc.steps[j];
+      lg+='<div class="logstep'+(j===this.idx?" active":"")+'"><span class="ln">'+(j+1)+'</span>'
+        + '<div class="lgbody"><b>'+esc(s.title||"")+'</b>'+(s.note?'<span>'+s.note+'</span>':'')+'</div></div>';
+    }
+    this.log.innerHTML=lg;
+  }
+  if(this.out){
+    var lines=[]; for(var k=0;k<=this.idx;k++){ if(sc.steps[k].out) lines.push(sc.steps[k].out); }
+    if(lines.length){ this.out.style.display="block"; this.out.innerHTML='<div class="con-h">Output</div><pre>'+esc(lines.join("\n"))+'</pre>'; }
+    else { this.out.style.display="none"; this.out.innerHTML=""; }
+  }
+  if(this.prog) this.prog.textContent="Pas "+(this.idx+1)+" / "+sc.steps.length;
+  if(this.ctl)  this.ctl.style.display=(sc.steps.length>1)?"":"none";
+  if(this.bPrev) this.bPrev.disabled=(this.idx===0);
+  if(this.bNext) this.bNext.disabled=(this.idx>=sc.steps.length-1);
+};
+
+/* ---------- name mangling (subset ABI Itanium) ---------- */
+var MANGLE_BASE={ "void":"v","bool":"b","char":"c","signed char":"a","unsigned char":"h",
+  "short":"s","unsigned short":"t","int":"i","unsigned":"j","unsigned int":"j",
+  "long":"l","unsigned long":"m","long long":"x","unsigned long long":"y",
+  "float":"f","double":"d","long double":"e","wchar_t":"w" };
+function mangleType(t){
+  t=t.trim(); var pre="";
+  if(/&&$/.test(t)){ pre="O"; t=t.replace(/&&$/,"").trim(); }
+  else if(/&$/.test(t)){ pre="R"; t=t.replace(/&$/,"").trim(); }
+  while(/\*$/.test(t)){ pre+="P"; t=t.replace(/\*$/,"").trim(); }
+  var isConst=false;
+  if(/^const\b/.test(t)){ isConst=true; t=t.replace(/^const\b/,"").trim(); }
+  if(/\bconst$/.test(t)){ isConst=true; t=t.replace(/\bconst$/,"").trim(); }
+  var base=MANGLE_BASE[t]; if(base===undefined) base="?";
+  return pre+(isConst?"K":"")+base;
+}
+function mangleFn(sig){
+  sig=sig.trim();
+  var m=sig.match(/([A-Za-z_]\w*)\s*\(([^)]*)\)/);
+  if(!m) return null;
+  return { name:m[1], params:m[2].trim() };
+}
+
+/* ---------- ANATOMIE ---------- */
+var ANAT_VIEWS=[
+  {k:"layout",   n:"Layout obiect"},
+  {k:"dispatch", n:"vtable & dispatch virtual"},
+  {k:"mangling", n:"Overload & name mangling"},
+  {k:"templates",n:"Template = generator de cod"}
+];
+var anatState={view:"layout", layoutIdx:0};
+var anatDisp=null;
+
+function renderAnat(){
+  if(anatDisp){ anatDisp.stop(); anatDisp=null; }
+  var v=anatState.view;
+  if(v==="layout") anatLayout();
+  else if(v==="dispatch") anatDispatch();
+  else if(v==="mangling") anatMangling();
+  else if(v==="templates") anatTemplates();
+}
+function anatLayout(){
+  var L=ANATOMY.layouts, i=anatState.layoutIdx||0;
+  var html='<div class="sub-chips">'
+    + L.map(function(l,k){ return '<button class="chip'+(k===i?" active":"")+'" data-k="'+k+'">'+esc(l.nume)+'</button>'; }).join("")
+    + '</div><div class="stage" id="anatStage"></div>'
+    + '<div class="cols"><pre class="code cpp" id="anatCode"></pre>'
+    + '<div class="info"><div class="sizeof"><b>sizeof:</b> '+esc(L[i].sizeofTxt)+'</div>'
+    + '<div class="step-note">'+L[i].note+'</div></div></div>';
+  var body=document.getElementById("anatBody"); body.innerHTML=html;
+  document.getElementById("anatCode").innerHTML=highlightCpp(L[i].cod);
+  renderStep(document.getElementById("anatStage"), L[i].scene, 0);
+  body.querySelectorAll(".sub-chips .chip").forEach(function(b){
+    b.onclick=function(){ anatState.layoutIdx=+b.dataset.k; anatLayout(); };
+  });
+}
+function anatDispatch(){
+  var d=ANATOMY.dispatch;
+  var html='<div class="controls" id="adCtl">'
+    + '<button class="btn" id="adPlay">Pornește</button>'
+    + '<button class="btn ghost" id="adPrev">Înapoi</button>'
+    + '<button class="btn ghost" id="adNext">Pas</button>'
+    + '<button class="btn ghost" id="adReset">Reset</button>'
+    + '<span class="prog" id="adProg"></span></div>'
+    + '<div class="stage" id="anatStage"></div>'
+    + '<div class="cols"><pre class="code cpp" id="anatCode"></pre>'
+    + '<div class="info"><div class="log-h">Ce se întâmplă la fiecare pas</div><div class="steplog" id="adLog"></div></div></div>'
+    + '<p class="muted small" style="margin-top:12px">'+d.note+'</p>';
+  document.getElementById("anatBody").innerHTML=html;
+  anatDisp=new MapPlayer({stage:"anatStage",code:"anatCode",log:"adLog",
+    prog:"adProg",ctl:"adCtl",play:"adPlay",next:"adNext",prev:"adPrev",reset:"adReset"});
+  anatDisp.load(d.scene);
+}
+function anatMangling(){
+  var m=ANATOMY.mangling;
+  var types=m.types.map(function(t){ return '<tr><td class="mono">'+esc(t[0])+'</td><td class="mono accentc">'+esc(t[1])+'</td></tr>'; }).join("");
+  var ex=m.examples.map(function(e){ return '<tr><td class="mono">'+esc(e.sig)+'</td><td class="mono accentc">'+esc(e.mangled)+'</td></tr>'; }).join("");
+  var html='<p>'+m.intro+'</p>'
+    + '<div class="cols2">'
+    + '<div class="card"><h4>Coduri de tip (Itanium ABI)</h4><table class="tbl"><tr><th>Tip</th><th>Cod</th></tr>'+types+'</table></div>'
+    + '<div class="card"><h4>Exemple</h4><table class="tbl"><tr><th>Semnătură</th><th>Simbol</th></tr>'+ex+'</table></div>'
+    + '</div>'
+    + '<div class="card"><h4>Decodor live</h4>'
+    + '<div class="decoder"><input id="mgIn" type="text" value="void f(int, char)" spellcheck="false">'
+    + '<button class="btn" id="mgBtn">Mangle</button></div><div id="mgOut" class="mg-out"></div></div>';
+  document.getElementById("anatBody").innerHTML=html;
+  var run=function(){ renderMangle(document.getElementById("mgIn").value); };
+  document.getElementById("mgBtn").onclick=run;
+  document.getElementById("mgIn").addEventListener("keyup", run);
+  run();
+}
+function renderMangle(sig){
+  var o=document.getElementById("mgOut"); if(!o)return;
+  var r=mangleFn(sig);
+  if(!r){ o.innerHTML='<span class="bad">Format așteptat: <code>nume(tip, tip, ...)</code></span>'; return; }
+  var codes;
+  if(r.params==="" || r.params==="void") codes=[["(niciun parametru)","v"]];
+  else codes=r.params.split(",").map(function(p){ return [p.trim(), mangleType(p)]; });
+  var codeStr=(r.params==="" || r.params==="void") ? "v" : codes.map(function(c){return c[1];}).join("");
+  var bd=codes.map(function(c){ return '<tr><td class="mono">'+esc(c[0])+'</td><td class="mono accentc">'+esc(c[1])+'</td></tr>'; }).join("");
+  o.innerHTML='<div class="mg-sym mono"><span class="mg-pref">_Z</span><span class="mg-name">'+r.name.length+esc(r.name)+'</span><span class="mg-codes">'+esc(codeStr)+'</span></div>'
+    + '<table class="tbl small"><tr><th>Parametru</th><th>Cod</th></tr>'+bd+'</table>'
+    + '<p class="muted small" style="margin-top:8px"><code>_Z</code> = prefix „mangled”; <code>'+r.name.length+esc(r.name)+'</code> = lungime + nume; apoi codurile parametrilor.</p>';
+}
+var tplState=null;
+function anatTemplates(){
+  var t=ANATOMY.templates;
+  tplState={text:[],types:[],data:[],done:{},msg:""};
+  var btns=t.items.map(function(it,i){ return '<button class="btn ghost" data-i="'+i+'">'+esc(it.label)+'</button>'; }).join("");
+  var html='<p>'+t.intro+'</p>'
+    + '<pre class="code cpp" id="tplDefs"></pre>'
+    + '<div class="tpl-bar"><span class="muted small">Instanțiază:</span> '+btns+'</div>'
+    + '<div class="cols2" id="tplOut"></div>'
+    + '<div id="tplMsg" class="mg-out"></div>'
+    + '<p class="muted small" style="margin-top:12px">'+t.note+'</p>';
+  document.getElementById("anatBody").innerHTML=html;
+  document.getElementById("tplDefs").innerHTML=highlightCpp(t.defs);
+  document.querySelectorAll(".tpl-bar .btn").forEach(function(b){
+    b.onclick=function(){ tplAdd(ANATOMY.templates.items[+b.dataset.i]); };
+  });
+  renderTpl();
+}
+function tplAdd(it){
+  if(tplState.done[it.label]){
+    tplState.msg="<b>"+esc(it.label)+"</b> e deja instanțiat. Linkerul vede simboluri <b>weak/COMDAT</b> și păstrează o singură copie (COMDAT folding) — binarul final nu se umflă cu duplicate.";
+    renderTpl(); return;
+  }
+  tplState.done[it.label]=true; tplState.msg="";
+  if(it.kind==="fn") tplState.text.push(it);
+  else if(it.kind==="class") tplState.types.push(it);
+  else if(it.kind==="static") tplState.data.push(it);
+  renderTpl();
+}
+function tplCell(r, withAddr){
+  return '<div class="cell">'
+    + (withAddr && r.addr ? '<span class="addr">'+esc(r.addr)+'</span>' : '')
+    + '<span class="cbody"><span class="cname">'+esc(r.sym)+'</span><span class="cval">'+esc(r.desc)+'</span></span></div>';
+}
+function renderTpl(){
+  var s=tplState;
+  var textHtml=(s.text.length||s.types.length)
+    ? s.text.map(function(r){return tplCell(r,true);}).join("")+s.types.map(function(r){return tplCell(r,false);}).join("")
+    : '<span class="empty">— nimic generat încă —</span>';
+  var dataHtml=s.data.length ? s.data.map(function(r){return tplCell(r,true);}).join("") : '<span class="empty">— niciun membru static —</span>';
+  var bloat=s.text.length+s.types.length;
+  document.getElementById("tplOut").innerHTML=
+      '<div class="region"><div class="region-h">.text · cod generat <span class="cnt">'+bloat+'</span></div><div class="cells">'+textHtml+'</div></div>'
+    + '<div class="region"><div class="region-h">.data · membri statici</div><div class="cells">'+dataHtml+'</div></div>';
+  var msg=document.getElementById("tplMsg");
+  if(msg) msg.innerHTML=s.msg?('<span class="warnc small">'+s.msg+'</span>'):"";
+}
+
+/* ---------- TEORIE ---------- */
+var teoState={idx:0};
+function coLabel(k){ return k==="capcana"?"Capcană":(k==="nuanta"?"Nuanță":"Notă"); }
+/* link-uri din teorie spre vizualizatoare */
+var XREF=[
+  ["Memorie vizuală → Dangling","memorie","dangling"],
+  ["Scenarii → Ordinea de construcție și distrugere","scenarii","ctor-dtor"],
+  ["Scenarii → Apel virtual în constructor","scenarii","vptr-ctor"],
+  ["Scenarii → Destructor virtual","scenarii","virtual-dtor"],
+  ["Memorie vizuală → Copy shallow / deep","memorie","copy-shallow"],
+  ["Scenarii → std::move este doar un cast","scenarii","stdmove-cast"],
+  ["Scenarii → RVO / copy elision","scenarii","rvo"],
+  ["Scenarii → Object slicing","scenarii","slicing"],
+  ["Anatomie → Overload &amp; name mangling","anatomie","mangling"],
+  ["Anatomie → vtable &amp; dispatch virtual","anatomie","dispatch"],
+  ["Anatomie → Template = generator","anatomie","templates"],
+  ["Scenarii → O rvalue reference cu nume este lvalue","scenarii","named-rvalue-lvalue"],
+  ["Scenarii → Lifetime extension cu const&amp;","scenarii","lifetime-ext"],
+  ["Scenarii → Self-assignment &amp; copy-and-swap","scenarii","self-assign"],
+  ["Scenarii → Tip move-only (unique_ptr)","scenarii","move-only"],
+  ["Scenarii → Use-after-move","scenarii","use-after-move"]
+];
+function linkifyXref(html){
+  for(var i=0;i<XREF.length;i++){
+    var n="<b>"+XREF[i][0]+"</b>";
+    html=html.split(n).join('<a class="xref" data-tab="'+XREF[i][1]+'" data-scene="'+XREF[i][2]+'">'+n+'</a>');
+  }
+  return html;
+}
+function goTo(tab, target){
+  activateTab(tab);
+  if(tab==="memorie" || tab==="scenarii"){
+    var list=(tab==="memorie")?MEM_DEMOS:OOP_SCENARII, player=(tab==="memorie")?memPlayer:scenPlayer, idx=-1;
+    for(var i=0;i<list.length;i++){ if(list[i].id===target){ idx=i; break; } }
+    if(idx>=0 && player){
+      var c=document.getElementById((tab==="memorie")?"memChips":"scenChips");
+      if(c) c.querySelectorAll(".chip").forEach(function(x,ci){ x.classList.toggle("active", ci===idx); });
+      var rez=document.getElementById((tab==="memorie")?"memRez":"scenRez"); if(rez) rez.textContent=list[idx].rezumat||"";
+      player.load(list[idx]);
+    }
+  } else if(tab==="anatomie"){
+    anatState.view=target;
+    var nav=document.getElementById("anatNav"); if(nav) nav.querySelectorAll(".chip").forEach(function(x){ x.classList.toggle("active", x.dataset.k===target); });
+    renderAnat();
+  }
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+function renderTeorie(idx){
+  if(!window.OOP_TEORIE) return;
+  var ch=OOP_TEORIE[idx]; if(!ch) return;
+  teoState.idx=idx;
+  var diagrams=[], html='<div class="teo">';
+  ch.blocks.forEach(function(b,i){
+    if(b.t==="h") html+='<h3>'+b.html+'</h3>';
+    else if(b.t==="h4") html+='<h4>'+b.html+'</h4>';
+    else if(b.t==="p") html+='<p>'+linkifyXref(b.html)+'</p>';
+    else if(b.t==="ul") html+='<ul>'+b.items.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ul>';
+    else if(b.t==="code") html+='<pre class="code cpp">'+highlightCpp(b.cod)+'</pre>';
+    else if(b.t==="note") html+='<div class="callout '+(b.kind||"info")+'"><span class="co-tag">'+coLabel(b.kind)+'</span><div>'+linkifyXref(b.html)+'</div></div>';
+    else if(b.t==="cmp") html+='<div class="cmp"><div class="card"><h4>'+b.left.title+'</h4>'+b.left.html+'</div><div class="card"><h4>'+b.right.title+'</h4>'+b.right.html+'</div></div>';
+    else if(b.t==="table") html+='<table class="tbl">'+(b.head?'<tr>'+b.head.map(function(h){return '<th>'+h+'</th>';}).join("")+'</tr>':'')+b.rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>';}).join("")+'</tr>';}).join("")+'</table>';
+    else if(b.t==="diagram"){ var did="teoDg"+i; diagrams.push({id:did,scene:b.scene}); html+='<figure class="dgfig"><div class="stage" id="'+did+'"></div>'+(b.cap?'<figcaption>'+b.cap+'</figcaption>':'')+'</figure>'; }
+  });
+  html+='<div class="teo-nav">'
+    + (idx>0 ? '<button class="btn ghost" data-teo="'+(idx-1)+'">← '+esc(OOP_TEORIE[idx-1].nume)+'</button>' : '<span></span>')
+    + '<button class="btn ghost" data-teo="top">↑ Sus</button>'
+    + (idx<OOP_TEORIE.length-1 ? '<button class="btn ghost" data-teo="'+(idx+1)+'">'+esc(OOP_TEORIE[idx+1].nume)+' →</button>' : '<span></span>')
+    + '</div></div>';
+  var body=document.getElementById("teoBody"); body.innerHTML=html;
+  diagrams.forEach(function(d){ renderStep(document.getElementById(d.id), d.scene, 0); });
+  body.querySelectorAll("[data-teo]").forEach(function(btn){
+    btn.onclick=function(){
+      var v=btn.dataset.teo;
+      if(v==="top"){ window.scrollTo({top:0, behavior:"smooth"}); return; }
+      var i=+v, tnav=document.getElementById("teoNav");
+      if(tnav) tnav.querySelectorAll(".chip").forEach(function(x,ci){ x.classList.toggle("active", ci===i); });
+      renderTeorie(i); window.scrollTo({top:0, behavior:"smooth"});
+    };
+  });
+}
+
+/* ---------- EXERCIȚII ---------- */
+function shuffleArr(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
+var exState={view:"quiz"};
+var EX_VIEWS=[{k:"quiz",n:"Quiz grilă"},{k:"capcane",n:"Găsește capcana"},{k:"ordine",n:"Ordonează"},{k:"match",n:"Împerechere"}];
+function renderEx(){
+  if(!window.OOP_QUIZ) return;
+  var v=exState.view;
+  if(v==="quiz") renderMCQ(OOP_QUIZ);
+  else if(v==="capcane") renderMCQ(OOP_CAPCANE.map(function(c){ return {id:c.id,tema:"Găsește capcana",multi:false,enunt:c.intrebare,cod:c.cod,optiuni:c.optiuni,corecte:[c.corect],explicatie:c.explicatie}; }));
+  else if(v==="ordine") renderOrder();
+  else if(v==="match") renderMatch();
+}
+function renderMCQ(list){
+  var body=document.getElementById("exBody");
+  var total=list.length, answered=0, correct=0;
+  body.innerHTML='<div class="scorebar"><span>Scor: <b id="exScore">0</b> / '+total+'</span><span class="bar"><span class="fill" id="exFill"></span></span><span id="exDone" class="muted"></span></div><div id="exCards"></div>';
+  var cont=document.getElementById("exCards");
+  list.forEach(function(q,qi){
+    var card=document.createElement("div"); card.className="q-card";
+    var inner='<div class="q-top"><span class="q-en">'+(qi+1)+'. '+q.enunt+'</span><span class="q-tema">'+esc(q.tema)+'</span></div>';
+    if(q.cod) inner+='<pre class="code cpp">'+highlightCpp(q.cod)+'</pre>';
+    if(q.multi) inner+='<div class="q-hint">(răspuns multiplu — alege tot ce se aplică)</div>';
+    inner+='<div class="opts"></div><div class="q-act"><button class="btn">Verifică</button><span class="q-verdict"></span></div><div class="q-exp">'+(q.explicatie||"")+'</div>';
+    card.innerHTML=inner;
+    var optsEl=card.querySelector(".opts"), sel={}, locked=false;
+    q.optiuni.forEach(function(o,oi){
+      var b=document.createElement("button");
+      b.className="opt"+(q.multi?" multi":"");
+      b.innerHTML='<span class="mark"></span><span>'+esc(o)+'</span>';
+      b.onclick=function(){
+        if(locked) return;
+        if(q.multi){ if(sel[oi]){delete sel[oi]; b.classList.remove("sel");} else {sel[oi]=1; b.classList.add("sel");} }
+        else { optsEl.querySelectorAll(".opt").forEach(function(x){x.classList.remove("sel");}); sel={}; sel[oi]=1; b.classList.add("sel"); }
+      };
+      optsEl.appendChild(b);
+    });
+    var verdict=card.querySelector(".q-verdict"), exp=card.querySelector(".q-exp"), btn=card.querySelector(".q-act .btn");
+    btn.onclick=function(){
+      if(locked) return;
+      var chosen=Object.keys(sel).map(Number).sort(function(a,b){return a-b;});
+      if(!chosen.length){ verdict.textContent="Alege un răspuns."; verdict.className="q-verdict bad"; return; }
+      locked=true;
+      var corr=q.corecte.slice().sort(function(a,b){return a-b;});
+      var isOk=chosen.length===corr.length && chosen.every(function(x,i){return x===corr[i];});
+      optsEl.querySelectorAll(".opt").forEach(function(x,oi){
+        x.classList.add("locked");
+        if(corr.indexOf(oi)>=0) x.classList.add(sel[oi]?"ok":"miss");
+        else if(sel[oi]) x.classList.add("bad");
+      });
+      verdict.textContent=isOk?"Corect":"Greșit"; verdict.className="q-verdict "+(isOk?"ok":"bad");
+      exp.classList.add("show"); btn.disabled=true;
+      answered++; if(isOk) correct++;
+      document.getElementById("exScore").textContent=correct;
+      document.getElementById("exFill").style.width=Math.round(correct/total*100)+"%";
+      document.getElementById("exDone").textContent=answered+" / "+total+" răspunse";
+    };
+    cont.appendChild(card);
+  });
+}
+function renderOrder(){
+  var body=document.getElementById("exBody"); body.innerHTML="";
+  OOP_ORDER.forEach(function(prob){
+    var card=document.createElement("div"); card.className="q-card";
+    card.innerHTML='<div class="q-en" style="margin-bottom:8px">'+prob.sarcina+'</div><div class="ord-bank"></div><div class="ord-slots"></div><div class="q-act"><button class="btn" data-a="check">Verifică</button><button class="btn ghost" data-a="reset">Reset</button><span class="q-verdict"></span></div>';
+    var bank=card.querySelector(".ord-bank"), slots=card.querySelector(".ord-slots"), verdict=card.querySelector(".q-verdict");
+    var n=prob.pasi.length, order=shuffleArr(prob.pasi), placed=[];
+    function draw(){
+      bank.innerHTML=""; slots.innerHTML="";
+      order.forEach(function(val){
+        var it=document.createElement("button"); it.className="ord-item"+(placed.indexOf(val)>=0?" used":""); it.textContent=val;
+        it.onclick=function(){ if(placed.indexOf(val)<0 && placed.length<n){ placed.push(val); draw(); } };
+        bank.appendChild(it);
+      });
+      for(var i=0;i<n;i++){
+        var s=document.createElement("div"); s.className="slot"+(placed[i]!=null?" filled":"");
+        s.innerHTML='<span class="num">'+(i+1)+'</span><span class="txt">'+(placed[i]!=null?esc(placed[i]):"—")+'</span>';
+        if(placed[i]!=null){ s.onclick=(function(idx){ return function(){ placed.splice(idx,1); draw(); }; })(i); }
+        slots.appendChild(s);
+      }
+    }
+    draw();
+    card.querySelector('[data-a="check"]').onclick=function(){
+      if(placed.length<n){ verdict.textContent="Completează toate pozițiile."; verdict.className="q-verdict bad"; return; }
+      var allOk=true;
+      slots.querySelectorAll(".slot").forEach(function(s,i){ var ok=placed[i]===prob.pasi[i]; s.classList.add(ok?"ok":"bad"); if(!ok) allOk=false; });
+      verdict.textContent=allOk?"Ordine corectă":"Mai încearcă"; verdict.className="q-verdict "+(allOk?"ok":"bad");
+    };
+    card.querySelector('[data-a="reset"]').onclick=function(){ placed=[]; verdict.textContent=""; verdict.className="q-verdict"; draw(); };
+    body.appendChild(card);
+  });
+}
+function renderMatch(){
+  var body=document.getElementById("exBody"), m=OOP_MATCH;
+  var defs=shuffleArr(m.perechi.map(function(p){return p[1];}));
+  var html='<div class="q-card"><div class="q-en" style="margin-bottom:12px">'+m.intro+'</div>';
+  m.perechi.forEach(function(p){
+    var opts='<option value="">— alege —</option>'+defs.map(function(d){return '<option value="'+esc(d)+'">'+esc(d)+'</option>';}).join("");
+    html+='<div class="match-row" data-correct="'+esc(p[1])+'"><span class="term">'+esc(p[0])+'</span><select>'+opts+'</select></div>';
+  });
+  html+='<div class="q-act"><button class="btn">Verifică</button><span class="q-verdict"></span></div></div>';
+  body.innerHTML=html;
+  var card=body.querySelector(".q-card");
+  card.querySelector(".btn").onclick=function(){
+    var rows=card.querySelectorAll(".match-row"), ok=0;
+    rows.forEach(function(r){ var sel=r.querySelector("select"); r.classList.remove("ok","bad"); var good=sel.value===r.getAttribute("data-correct"); r.classList.add(good?"ok":"bad"); if(good) ok++; });
+    var v=card.querySelector(".q-verdict"); v.textContent=ok+" / "+rows.length+" corecte"; v.className="q-verdict "+(ok===rows.length?"ok":"bad");
+  };
+}
+
+/* ---------- chips selector ---------- */
+function buildChips(id, list, pick){
+  var c=document.getElementById(id); if(!c)return;
+  c.innerHTML=list.map(function(it,i){ return '<button class="chip'+(i===0?" active":"")+'" data-i="'+i+'">'+esc(it.nume)+'</button>'; }).join("");
+  c.querySelectorAll(".chip").forEach(function(b){
+    b.onclick=function(){ c.querySelectorAll(".chip").forEach(function(x){x.classList.remove("active");}); b.classList.add("active"); pick(list[+b.dataset.i]); };
+  });
+  if(list.length) pick(list[0]);
+}
+
+/* ---------- player-e ---------- */
+var memPlayer=null, scenPlayer=null;
+
+/* ---------- tab-uri + temă (compatibil cu gazda) ---------- */
+function onTabShown(tab){
+  if(tab==="teorie") renderTeorie(teoState.idx);
+  else if(tab==="memorie" && memPlayer) memPlayer.redraw();
+  else if(tab==="scenarii" && scenPlayer) scenPlayer.redraw();
+  else if(tab==="anatomie") renderAnat();
+}
+function activateTab(tab){
+  var p=document.getElementById("page-"+tab); if(!p)return;
+  document.querySelectorAll(".page").forEach(function(x){ x.classList.remove("active"); });
+  p.classList.add("active");
+  document.querySelectorAll("#tabs button").forEach(function(b){ b.classList.toggle("active", b.dataset.tab===tab); });
+  window.scrollTo({top:0, behavior:"smooth"});
+  onTabShown(tab);
+}
+function tabFromHash(){ var t=location.hash.replace("#",""); if(t && document.getElementById("page-"+t)) activateTab(t); }
+window.addEventListener("hashchange", tabFromHash);
+
+function setTheme(t){ document.documentElement.dataset.theme=t; try{ localStorage.setItem("oop-theme",t); }catch(e){} }
+try{ setTheme(localStorage.getItem("oop-theme")||"dark"); }catch(e){}
+function applyThemeVars(v){
+  var ds=document.documentElement.style, K=["--bg","--bg2","--bg3","--sidebar","--panel","--panel2","--topbar","--ink","--ink-soft","--txt","--muted","--line","--line2","--border","--accent","--accent-2","--accent2","--green","--good","--red","--bad","--blue","--purple","--aqua","--warn","--code-bg","--code-ink","--on-accent"];
+  K.forEach(function(k){ ds.removeProperty(k); });
+  if(v){ for(var k in v){ ds.setProperty(k, v[k]); } }
+  redrawActive();
+}
+window.addEventListener("message", function(e){
+  var d=e.data||{};
+  if(d.type==="theme" && d.theme){ setTheme(d.theme); applyThemeVars(d.vars); }
+  else if(d.type==="tab" && d.tab) activateTab(d.tab);
+});
+
+/* ---------- resize: redesenează doar firele ---------- */
+var rzT;
+window.addEventListener("resize", function(){ clearTimeout(rzT); rzT=setTimeout(redrawActive, 150); });
+function redrawActive(){
+  document.querySelectorAll(".page.active .stage").forEach(function(s){ if(s.__step) drawWires(s, s.__step); });
+}
+
+/* ---------- bootstrap ---------- */
+document.addEventListener("DOMContentLoaded", function(){
+  memPlayer=new MapPlayer({stage:"memStage",code:"memCode",log:"memLog",out:"memOut",
+    prog:"memProg",ctl:"memCtl",play:"memPlay",next:"memNext",prev:"memPrev",reset:"memReset"});
+  scenPlayer=new MapPlayer({stage:"scenStage",code:"scenCode",log:"scenLog",out:"scenOut",
+    prog:"scenProg",ctl:"scenCtl",play:"scenPlay",next:"scenNext",prev:"scenPrev",reset:"scenReset"});
+
+  buildChips("memChips", MEM_DEMOS, function(d){ document.getElementById("memRez").textContent=d.rezumat||""; memPlayer.load(d); });
+  buildChips("scenChips", OOP_SCENARII, function(d){
+    document.getElementById("scenRez").textContent=d.rezumat||""; scenPlayer.load(d);
+  });
+
+  var nav=document.getElementById("anatNav");
+  nav.innerHTML=ANAT_VIEWS.map(function(v,i){ return '<button class="chip'+(i===0?" active":"")+'" data-k="'+v.k+'">'+esc(v.n)+'</button>'; }).join("");
+  nav.querySelectorAll(".chip").forEach(function(b){
+    b.onclick=function(){ nav.querySelectorAll(".chip").forEach(function(x){x.classList.remove("active");}); b.classList.add("active"); anatState.view=b.dataset.k; renderAnat(); };
+  });
+  renderAnat();
+
+  var tnav=document.getElementById("teoNav");
+  if(window.OOP_TEORIE && tnav){
+    tnav.innerHTML=OOP_TEORIE.map(function(c,i){ return '<button class="chip'+(i===0?" active":"")+'" data-i="'+i+'">'+esc(c.nume)+'</button>'; }).join("");
+    tnav.querySelectorAll(".chip").forEach(function(b){
+      b.onclick=function(){ tnav.querySelectorAll(".chip").forEach(function(x){x.classList.remove("active");}); b.classList.add("active"); renderTeorie(+b.dataset.i); };
+    });
+    renderTeorie(0);
+  }
+
+  var enav=document.getElementById("exNav");
+  if(window.OOP_QUIZ && enav){
+    enav.innerHTML=EX_VIEWS.map(function(v,i){ return '<button class="chip'+(i===0?" active":"")+'" data-k="'+v.k+'">'+esc(v.n)+'</button>'; }).join("");
+    enav.querySelectorAll(".chip").forEach(function(b){
+      b.onclick=function(){ enav.querySelectorAll(".chip").forEach(function(x){x.classList.remove("active");}); b.classList.add("active"); exState.view=b.dataset.k; renderEx(); };
+    });
+    renderEx();
+  }
+
+  document.querySelectorAll("#tabs button").forEach(function(b){ b.onclick=function(){ activateTab(b.dataset.tab); }; });
+
+  document.addEventListener("click", function(e){
+    var a=e.target.closest ? e.target.closest(".xref") : null;
+    if(a){ e.preventDefault(); goTo(a.dataset.tab, a.dataset.scene); }
+  });
+
+  tabFromHash();
+});
+</script>
+</body>
+</html>
