@@ -1184,3 +1184,439 @@ intrebari:
       planificarea; serviciile (sistem de fișiere, drivere) rulează ca servere
       în user space. Rezultă un TCB mai mic, mai sigur și modular. Dezavantaj:
       mai lent, din cauza comunicării prin IPC între componente."
+
+  # ===== Adăugate din „PSO Course Questions" (răspunsuri compacte) =====
+  # Fișiere & I/O
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce face apelul dup(fd)?"
+    variante:
+      - "Duplică fizic întreg conținutul fișierului deschis într-un alt fișier complet nou creat pe disc"
+      - "Creează un descriptor nou (prima poziție liberă) către aceeași structură de fișier"
+      - "Închide descriptorul primit și îi eliberează poziția din tabelă"
+      - "Mărește tabela de descriptori a procesului"
+    corect: 1
+    explicatie: "dup() întoarce un nou descriptor, în prima poziție liberă, care pointează spre ACEEAȘI structură de fișier deschis ca fd."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care dintre următoarele tipuri de fișiere NU au blocuri de date?"
+    variante:
+      - "Fișierele obișnuite și directoarele"
+      - "Pipe-urile, socket-urile și dispozitivele de tip caracter"
+      - "Doar fișierele executabile aflate în curs de rulare în memorie"
+      - "Legăturile hard (hard link) către fișiere obișnuite"
+    corect: 1
+    explicatie: "Pipe-urile, socket-urile și dispozitivele de tip caracter nu stochează blocuri de date pe disc — sunt mecanisme de comunicare/flux."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce conțin blocurile de date ale unui director?"
+    variante:
+      - "Conținutul propriu-zis (octeții) al fișierelor din director"
+      - "Intrări (nume + inod) ale fișierelor și subdirectoarelor"
+      - "Codul executabil al programelor instalate în acel director"
+      - "O copie de rezervă a tabelei de inoduri"
+    corect: 1
+    explicatie: "Un director este un fișier ale cărui blocuri de date conțin intrări (dentry) — perechi nume → inod — pentru fișierele și subdirectoarele din el."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce poate întoarce un apel read()?"
+    variante:
+      - "Întotdeauna numărul total de octeți ceruți, altfel se blochează la nesfârșit"
+      - "Numărul de octeți citiți, 0 la sfârșitul fișierului, -1 la eroare"
+      - "Doar 0 (succes) sau -1 (eroare)"
+      - "Adresa din memorie unde au fost depuse datele citite"
+    corect: 1
+    explicatie: "read() întoarce numărul de octeți efectiv citiți (poate fi mai mic decât cel cerut), 0 la EOF și -1 în caz de eroare."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este rolul unui device driver?"
+    variante:
+      - "Traduce comenzile SO în comenzi pe care le înțelege echipamentul (și invers)"
+      - "Alocă și gestionează memoria fizică necesară fiecărui proces care folosește dispozitivul"
+      - "Planifică ordinea în care procesele primesc acces la procesor"
+      - "Criptează datele înainte de a fi scrise pe disc"
+    corect: 0
+    explicatie: "Driverul este puntea dintre SO și un dispozitiv: traduce comenzile/semnalele într-un sens și în celălalt."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce rol are mecanismul DMA (Direct Memory Access)?"
+    variante:
+      - "Permite dispozitivelor I/O să transfere date direct cu memoria, fără CPU"
+      - "Mărește frecvența procesorului în momentele de încărcare mare a sistemului"
+      - "Traduce adresele virtuale în adrese fizice pentru fiecare acces la memorie"
+      - "Comprimă datele înainte de a fi trimise pe magistrală"
+    corect: 0
+    explicatie: "DMA permite transferul direct între dispozitiv și memoria principală, fără implicarea CPU-ului, sporind viteza."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Când este preferabil polling-ul în locul întreruperilor?"
+    variante:
+      - "Întotdeauna, fiindcă întreruperile nu mai sunt suportate de procesoarele moderne de astăzi"
+      - "Când ar apărea foarte multe întreruperi (ex. transfer rapid pe placa de rețea)"
+      - "Doar la pornirea sistemului de operare"
+      - "Când procesul rulează în mod utilizator (user mode)"
+    corect: 1
+    explicatie: "Dacă un dispozitiv ar genera foarte multe întreruperi (plăci de rețea rapide), polling-ul evită overhead-ul tratării fiecărei întreruperi."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Cu ce diferă un socket UNIX de un socket de rețea?"
+    variante:
+      - "Socket-ul UNIX comunică pe aceeași mașină (mai rapid); cel de rețea, prin rețea"
+      - "Socket-ul UNIX poate fi folosit doar de procese care rulează cu privilegii de root"
+      - "Nu există nicio diferență funcțională, doar numele"
+      - "Socket-ul UNIX este întotdeauna criptat"
+    corect: 0
+    explicatie: "Socket-ul UNIX comunică între procese de pe aceeași mașină (evită protocoalele de rețea, deci e mai rapid); socket-ul de rețea comunică prin rețea."
+
+  # Memorie
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce rol are tabela de pagini?"
+    variante:
+      - "Ține asocierea dintre paginile virtuale și cele fizice"
+      - "Stochează codul executabil al tuturor proceselor din sistem"
+      - "Reține lista fișierelor deschise de un proces"
+      - "Păstrează ordinea de planificare a proceselor pe procesor"
+    corect: 0
+    explicatie: "Tabela de pagini mapează paginile virtuale ale unui proces la frame-urile fizice corespunzătoare."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce conține, în mod uzual, o intrare din tabela de pagini?"
+    variante:
+      - "Adresa fizică (frame-ul), permisiunile și bitul valid/invalid"
+      - "Numele complet al procesului, prioritatea sa și cuanta de timp alocată"
+      - "Doar adresa virtuală a paginii"
+      - "Conținutul complet al paginii de 4 KiB"
+    corect: 0
+    explicatie: "O intrare reține frame-ul fizic, biții de permisiuni (r/w/x) și bitul valid/invalid (dacă maparea e prezentă)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Când are loc un TLB miss?"
+    variante:
+      - "Când page frame number-ul căutat nu se găsește în TLB"
+      - "Când procesul încearcă să scrie într-o pagină marcată read-only"
+      - "La fiecare schimbare de context între două procese"
+      - "Când memoria fizică este complet ocupată"
+    corect: 0
+    explicatie: "TLB miss = traducerea nu e în cache (TLB); se merge în tabela de pagini, iar intrarea găsită înlocuiește una din TLB."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "De ce NU e nevoie de TLB flush la schimbarea de context între două thread-uri ale aceluiași proces?"
+    variante:
+      - "Pentru că fiecare thread primește un TLB propriu, complet separat de al celorlalte fire"
+      - "Pentru că thread-urile aparțin aceluiași proces, deci au aceeași mapare virtual–fizic"
+      - "Pentru că TLB-ul se golește automat la fiecare instrucțiune executată"
+      - "Pentru că thread-urile nu accesează memoria virtuală"
+    corect: 1
+    explicatie: "Thread-urile unui proces partajează spațiul de adrese (aceeași mapare), deci TLB-ul rămâne valid — nu trebuie golit."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce înseamnă demand paging?"
+    variante:
+      - "O pagină este adusă de pe disc doar în momentul în care e accesată"
+      - "Toate paginile unui proces sunt încărcate în memorie la pornire"
+      - "Paginile sunt scrise pe disc preventiv, înainte de a fi cerute"
+      - "Procesul cere explicit, printr-un apel de sistem, fiecare pagină de care are nevoie"
+    corect: 0
+    explicatie: "La demand paging, o pagină e încărcată (printr-un page fault minor) abia când se face primul acces la ea."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce diferență este între swap in și swap out?"
+    variante:
+      - "Swap in aduce o pagină din swap în memorie; swap out o evacuează pe disc"
+      - "Swap in pornește procesul, swap out îl termină definitiv"
+      - "Sunt sinonime pentru aceeași operație de copiere pe disc"
+      - "Swap in mărește dimensiunea fizică a memoriei RAM, iar swap out o reduce la nivel hardware"
+    corect: 0
+    explicatie: "Swap in = o pagină e adusă din spațiul de swap în memorie; swap out = o pagină e evacuată din memorie în swap."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care sunt principalele secțiuni (zone) din spațiul de adrese al unui proces?"
+    variante:
+      - "Stiva, Heap-ul, segmentul de Date și segmentul de Cod (Text)"
+      - "Doar segmentul de cod și stiva"
+      - "Tabela de pagini, TLB-ul și registrele generale ale procesorului"
+      - "Cache-ul L1, cache-ul L2 și memoria principală"
+    corect: 0
+    explicatie: "Spațiul de adrese al unui proces conține: Text (cod), Data, Heap și Stivă."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care zone din spațiul de adrese al unui proces sunt writable (modificabile)?"
+    variante:
+      - "Stiva, Heap-ul și segmentul de Date"
+      - "Doar segmentul de cod (Text)"
+      - "Toate zonele, inclusiv segmentul de cod, sunt modificabile în timpul rulării"
+      - "Doar Heap-ul"
+    corect: 0
+    explicatie: "Stiva, Heap-ul și segmentul de Date sunt writable; segmentul de Cod (Text) este de regulă read-only."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce este fragmentarea INTERNĂ a memoriei?"
+    variante:
+      - "Spațiu nefolosit în interiorul unei pagini/partiții de mărime fixă"
+      - "Memorie liberă disponibilă, dar împrăștiată în bucăți necontigue"
+      - "Procesul de mutare a paginilor între memorie și disc"
+      - "Pierderea ireversibilă a datelor în urma unei opriri bruște a sistemului de operare"
+    corect: 0
+    explicatie: "Fragmentare internă: o partiție/pagină de dimensiune fixă rămâne parțial nefolosită (ex. pagină 4 KB, dar se cer 5 KB → 2 pagini, 3 KB irosiți). Varianta cu bucăți necontigue descrie fragmentarea externă."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În ce zone se află variabilele globale inițializate și cele neinițializate?"
+    variante:
+      - "Inițializate în .data, neinițializate în .bss"
+      - "Inițializate în .bss, neinițializate în .data"
+      - "Ambele pe stivă, în cadrul stack frame-ului funcției main"
+      - "Ambele în segmentul de cod (Text)"
+    corect: 0
+    explicatie: "Variabilele globale inițializate stau în .data, iar cele neinițializate în .bss."
+
+  # Executabil
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce este entry point-ul unui executabil?"
+    variante:
+      - "Adresa de la care începe execuția (unde se află main-ul)"
+      - "Dimensiunea totală a fișierului executabil pe disc"
+      - "Lista bibliotecilor dinamice de care depinde programul la rulare"
+      - "Numărul de procese pe care le poate crea programul"
+    corect: 0
+    explicatie: "Entry point-ul este adresa de la care pornește execuția — unde se află, de regulă, main-ul."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce înseamnă operația de stripping a unui executabil?"
+    variante:
+      - "Ștergerea informațiilor de debug pentru a reduce dimensiunea"
+      - "Compilarea codului sursă în cod mașină"
+      - "Împărțirea executabilului în mai multe biblioteci dinamice care se încarcă la cerere"
+      - "Criptarea secțiunii de cod pentru protecție"
+    corect: 0
+    explicatie: "Stripping elimină informațiile de debug și alte date inutile la rulare, micșorând executabilul."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce efect are ASLR (Address Space Layout Randomization)?"
+    variante:
+      - "Mapează codul și datele la adrese diferite la fiecare rulare (securitate)"
+      - "Mărește spațiul de adrese virtual disponibil unui proces"
+      - "Dezactivează complet memoria virtuală pentru procesele de sistem"
+      - "Garantează că un program rulează identic, bit cu bit, la fiecare execuție, pe orice sistem"
+    corect: 0
+    explicatie: "ASLR plasează aleator zonele (cod, biblioteci, stivă) la fiecare rulare, ca un atacator să nu poată prezice adresele."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce este un loader?"
+    variante:
+      - "Partea SO care încarcă executabilul (și bibliotecile) în memorie"
+      - "Un program care compilează codul sursă în executabil"
+      - "Componenta hardware care traduce adresele virtuale în fizice"
+      - "Algoritmul care decide ordinea de execuție a proceselor pe procesor"
+    corect: 0
+    explicatie: "Loader-ul este partea SO care încarcă în memorie executabilul și bibliotecile (deseori pagină cu pagină, prin demand paging)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este un avantaj al bibliotecilor dinamice față de cele statice?"
+    variante:
+      - "Codul poate fi partajat de mai multe procese"
+      - "Executabilul rezultat pornește întotdeauna mai repede"
+      - "Programul devine complet independent de orice fișier extern la rulare"
+      - "Elimină nevoia de a folosi memorie virtuală"
+    corect: 0
+    explicatie: "O bibliotecă dinamică e încărcată o dată și partajată de mai multe procese (economisește memorie). Independența de fișiere externe e, de fapt, avantajul celei STATICE."
+
+  # Procese & thread-uri
+  - tip: grila
+    dificultate: licenta
+    enunt: "Câte procese pot fi simultan în starea RUNNING?"
+    variante:
+      - "Atâtea câte nuclee (procesoare) are sistemul"
+      - "Unul singur, indiferent de numărul de procesoare"
+      - "Oricâte, nu există nicio limită impusă de hardware"
+      - "Un număr egal cu numărul total de procese aflate în memorie"
+    corect: 0
+    explicatie: "În RUNNING pot fi cel mult atâtea procese/thread-uri câte nuclee există (unul per nucleu)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce poate cauza o schimbare de context?"
+    variante:
+      - "Expirarea cuantei de timp sau blocarea procesului în așteptarea I/O"
+      - "Citirea unei variabile locale din stivă"
+      - "Apelul unei funcții obișnuite definite în aceeași bibliotecă cu programul apelant"
+      - "Incrementarea unui registru al procesorului"
+    corect: 0
+    explicatie: "Schimbarea de context apare la: yield, expirarea cuantei, sosirea unui proces cu prioritate mai mare, terminare sau blocare în I/O."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce reprezintă waiting time-ul (timpul de așteptare) în planificare?"
+    variante:
+      - "Timpul total petrecut de proces în starea READY"
+      - "Timpul în care procesul rulează efectiv pe procesor"
+      - "Timpul scurs din momentul sosirii până la terminarea completă a procesului"
+      - "Durata unei singure cuante de timp"
+    corect: 0
+    explicatie: "Waiting time = timpul petrecut de proces în coada READY, așteptând procesorul. (Turnaround = sosire → terminare.)"
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce efect are operatorul & la finalul unei comenzi în shell?"
+    variante:
+      - "Comanda rulează în fundal (background), shell-ul nu o mai așteaptă"
+      - "Comanda rulează cu prioritate maximă pe procesor"
+      - "Output-ul comenzii devine input pentru următoarea comandă"
+      - "Comanda este executată repetat, într-o buclă infinită, până la oprire manuală"
+    corect: 0
+    explicatie: "& pornește comanda în background: părintele (shell-ul) nu o mai așteaptă; procesul poate deveni zombie/adoptat de init."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "În ce situație este utilă zona TLS (Thread Local Storage)?"
+    variante:
+      - "Când vrem o instanță separată a unei variabile pentru fiecare thread"
+      - "Când vrem ca toate thread-urile să partajeze aceeași variabilă globală"
+      - "Pentru a cripta traficul de rețea al firelor de execuție"
+      - "Pentru a stoca pe disc întreaga stare a tuturor proceselor înainte de swap out"
+    corect: 0
+    explicatie: "TLS dă fiecărui thread propria copie a unei variabile (deși numele e același), evitând partajarea nedorită."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce caracterizează un proces I/O intensive (I/O bound)?"
+    variante:
+      - "Rulează rar pe procesor și face multe operații de intrare/ieșire"
+      - "Folosește procesorul intens, fără a aștepta aproape niciodată I/O"
+      - "Nu folosește deloc memoria, doar procesorul"
+      - "Are întotdeauna prioritate minimă și nu poate fi planificat preemptiv"
+    corect: 0
+    explicatie: "Un proces I/O bound petrece mult timp așteptând I/O și rulează rar pe CPU (opusul lui CPU bound). Planificatorul îi dă deseori cuante mai mari."
+
+  # Sincronizare
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce este un livelock și cum diferă de un deadlock?"
+    variante:
+      - "Procesele sunt complet oprite, fiecare așteptând la nesfârșit o resursă deținută de altul"
+      - "Procesele rulează activ și își schimbă mereu starea, dar niciunul nu progresează"
+      - "O singură eroare de memorie care oprește tot sistemul de operare"
+      - "Starea normală în care toate procesele așteaptă în coada READY"
+    corect: 1
+    explicatie: "La livelock procesele NU sunt blocate — rulează și își schimbă constant starea ca răspuns una la alta, dar niciunul nu avansează. La deadlock procesele sunt blocate (în așteptare)."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce înseamnă TOCTTOU (time of check to time of use)?"
+    variante:
+      - "Eroare cauzată de modificarea stării între verificarea unei condiții și folosirea resursei"
+      - "O tehnică de planificare bazată pe ora exactă a sistemului"
+      - "Un mecanism avansat de sincronizare bazat pe semafoare numărătoare combinate cu cozi de prioritate multiple"
+      - "Verificarea periodică a integrității memoriei la fiecare cuantă de timp"
+    corect: 0
+    explicatie: "TOCTTOU: o condiție e verificată (ex. drept de acces), dar starea se schimbă înainte de folosirea efectivă a resursei — clasă de erori de sincronizare/securitate."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce este o funcție thread-safe?"
+    variante:
+      - "O funcție care poate fi apelată corect din mai multe thread-uri simultan"
+      - "O funcție care rulează doar în kernel mode"
+      - "O funcție care, odată pornită, nu poate fi întreruptă de niciun semnal până nu se termină"
+      - "O funcție care se execută întotdeauna pe un singur procesor"
+    corect: 0
+    explicatie: "Thread-safe = poate fi apelată în siguranță simultan din mai multe fire (prin acces exclusiv, TLS, operații atomice etc.)."
+
+  # IPC & stiva software
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care dintre următoarele este o formă de comunicare inter-proces (IPC)?"
+    variante:
+      - "Memoria partajată (shared memory)"
+      - "Tabela de pagini a procesului"
+      - "Registrul de relocare al MMU"
+      - "Cache-ul de nivel L1 al procesorului, partajat între toate firele"
+    corect: 0
+    explicatie: "Forme IPC: semnale, pipe, memorie partajată, socket-uri, fișiere, cozi de mesaje."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Cum este implementat operatorul | (pipe) din shell?"
+    variante:
+      - "Output-ul primei comenzi devine input-ul celei de-a doua"
+      - "Cele două comenzi rulează complet independent, fără să schimbe date între ele"
+      - "A doua comandă rulează doar dacă prima eșuează"
+      - "Ambele comenzi scriu în același fișier de pe disc"
+    corect: 0
+    explicatie: "| leagă ieșirea standard a primei comenzi la intrarea standard a celei de-a doua."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce este o bibliotecă (library) în contextul programării?"
+    variante:
+      - "O colecție de funcții precompilate, reutilizabile"
+      - "Un proces special care rulează permanent în fundal"
+      - "Zona de memorie în care se stochează variabilele globale ale unui program"
+      - "Un fișier care conține doar codul sursă, necompilat"
+    corect: 0
+    explicatie: "O bibliotecă e o colecție de funcții precompilate; linker-ul/loader-ul leagă funcția cerută de program."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce caracterizează un sistem de operare monolitic?"
+    variante:
+      - "Tot managementul resurselor hardware e într-un singur spațiu de adrese (kernel)"
+      - "Driverele și serviciile rulează în user-space, separat de nucleu"
+      - "Nu permite rularea mai multor procese în paralel"
+      - "Fiecare driver rulează ca un proces izolat, complet separat de restul nucleului"
+    corect: 0
+    explicatie: "La un kernel monolitic, toate componentele de management hardware sunt în același spațiu de adrese (mai eficient, dar suprafață de atac mai mare). Driverele în user-space caracterizează microkernel-ul."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Cum diferă un executabil static-linked de unul dynamic-linked?"
+    variante:
+      - "Cel static include tot codul bibliotecilor în el (mai mare, dar portabil)"
+      - "Cel static încarcă bibliotecile abia la rulare, din memorie"
+      - "Cel dinamic nu poate folosi deloc biblioteci externe"
+      - "Cel dinamic copiază întreg conținutul bibliotecilor în fișierul executabil final"
+    corect: 0
+    explicatie: "La static linking, codul bibliotecilor e copiat în executabil (mai mare, portabil, mai rapid); la dynamic linking, biblioteca e încărcată la rulare."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Care este un exemplu de apel de sistem BLOCANT?"
+    variante:
+      - "Lock pe un mutex care este deja luat"
+      - "Unlock pe un mutex"
+      - "Citire dintr-un buffer care conține deja date"
+      - "Verificarea, fără a aștepta, dacă un mutex este disponibil în acest moment"
+    corect: 0
+    explicatie: "Un lock pe un mutex deja ocupat blochează apelantul până se eliberează. Unlock-ul și citirea dintr-un buffer plin sunt neblocante."
+
+  - tip: grila
+    dificultate: licenta
+    enunt: "Ce semnal este trimis unui proces la o eroare de tip Segmentation fault?"
+    variante:
+      - "SIGSEGV"
+      - "SIGKILL"
+      - "SIGCONT, care reia execuția procesului de unde a rămas"
+      - "SIGCHLD"
+    corect: 0
+    explicatie: "La un acces invalid la memorie, hardware-ul anunță SO, care trimite procesului semnalul SIGSEGV."
