@@ -772,3 +772,37 @@ details.rezolvare>summary:hover{color:var(--accent-2); background:var(--panel2)}
 .conq-chatin:focus{outline:none; background:var(--panel)}
 .conq-chatsend{background:var(--accent); color:var(--on-accent); border:none; padding:0 12px; cursor:pointer; font-size:14px; font-weight:700}
 .conq-chatsend:hover{filter:brightness(1.08)}
+
+/* ============================================================
+   Conquistador — ECRAN DE JOC FULL-SCREEN dedicat (iese din shell-ul app)
+   ============================================================ */
+.conq-game{position:fixed; inset:0; z-index:1000; max-width:none; margin:0; padding:12px 18px;
+  background:var(--bg); display:flex; flex-direction:column; gap:10px}
+.conq-gtop{display:flex; align-items:center; gap:10px; flex-wrap:nowrap}
+.conq-arena{flex:1; min-height:0; display:flex; gap:12px; align-items:stretch}
+.conq-stage{flex:1; min-width:0; position:relative; display:flex; border-radius:18px; overflow:hidden}
+.conq-mapwrap{flex:1; min-width:0; overflow:auto; display:flex; align-items:center; justify-content:center; border-radius:18px}
+.conq-mapzoom{margin:auto; line-height:0}
+.conq-map{display:block; max-height:100%}
+/* panou lateral pe toată înălțimea, cu chat-ul care crește */
+.conq-side{width:290px; flex:0 0 auto; display:flex; flex-direction:column; gap:8px; min-height:0}
+.conq-chat{flex:1; min-height:130px}
+.conq-chatlog{flex:1; height:auto}
+/* banner-ul = bară jos în fereastră, nu lipit de hartă */
+.conq-bottombar{flex:0 0 auto; display:flex; justify-content:center; align-items:center; min-height:46px}
+.conq-banner{position:static; transform:none; max-width:min(960px,96%)}
+/* zoom inline în bara de sus (doar harta) */
+.conq-zoombar.inline{position:static; background:var(--panel2); border:1px solid var(--line); backdrop-filter:none}
+.conq-zoombar.inline .conq-zbtn{background:var(--panel); color:var(--ink)}
+.conq-zoombar.inline .conq-zbtn:hover{background:var(--panel2)}
+.conq-zoombar.inline .conq-zlvl{color:var(--muted)}
+/* modalul de întrebare stă PESTE hartă (în stage) -> chat-ul rămâne accesibil în timpul întrebărilor */
+.conq-modal-back{position:absolute}
+#conq-game:fullscreen{padding:16px 24px}
+@media(max-width:860px){
+  .conq-game{padding:8px}
+  .conq-arena{flex-direction:column}
+  .conq-side{width:100%; flex-direction:row; flex-wrap:wrap; align-items:flex-start; max-height:42vh; overflow:auto}
+  .conq-side .conq-pcard2{flex:1 1 130px}
+  .conq-chat{flex:1 1 100%}
+}

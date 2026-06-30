@@ -618,36 +618,36 @@
     var modal = (pr.kind === "question" || pr.kind === "reveal") ? questionModal(g, pr) : "";
 
     c.innerHTML = ''
-      + '<div class="conq-game">'
+      + '<div class="conq-game" id="conq-game">'
       +   '<div class="conq-gtop">'
       +     '<span class="conq-phase">' + phaseLabel(g.phase) + '</span>'
       +     matchProgress(g)
       +     '<span style="flex:1"></span>'
+      +     '<div class="conq-zoombar inline">'
+      +       '<button class="conq-zbtn" id="conq-zout" title="Micșorează harta">−</button>'
+      +       '<span class="conq-zlvl">' + Math.round((state.mapZoom || 1) * 100) + '%</span>'
+      +       '<button class="conq-zbtn" id="conq-zin" title="Mărește harta">+</button>'
+      +     '</div>'
       +     muteBtn()
+      +     '<button class="conq-btn ghost sm" id="conq-zfs" title="Tot ecranul">⛶</button>'
       +     '<button class="conq-btn ghost sm" id="conq-leave">Ieși</button>'
       +   '</div>'
       +   errBox()
       +   '<div class="conq-arena">'
-      +   '<div class="conq-stage" id="conq-stage">'
-      +     '<div class="conq-mapwrap" id="conq-mapwrap"><div class="conq-mapzoom" style="width:' + Math.round((state.mapZoom || 1) * 100) + '%">' + mapSVG(highlight) + '</div></div>'
-      +     '<div class="conq-zoombar">'
-      +       '<button class="conq-zbtn" id="conq-zout" title="Micșorează">−</button>'
-      +       '<span class="conq-zlvl">' + Math.round((state.mapZoom || 1) * 100) + '%</span>'
-      +       '<button class="conq-zbtn" id="conq-zin" title="Mărește">+</button>'
-      +       '<button class="conq-zbtn" id="conq-zfs" title="Tot ecranul">⛶</button>'
+      +     '<div class="conq-stage" id="conq-stage">'
+      +       '<div class="conq-mapwrap" id="conq-mapwrap"><div class="conq-mapzoom" style="width:' + Math.round((state.mapZoom || 1) * 100) + '%">' + mapSVG(highlight) + '</div></div>'
+      +       modal       /* modalul de întrebare stă PESTE hartă (întunecă doar harta, nu chat-ul) */
       +     '</div>'
-      +     banner(g, pr)
+      +     playersSide(g)
       +   '</div>'
-      +   playersSide(g)
-      +   '</div>'
-      + '</div>'
-      + modal;
+      +   '<div class="conq-bottombar">' + banner(g, pr) + '</div>'
+      + '</div>';
 
     byId("conq-leave", function(b){ b.onclick = doLeave; });
     byId("conq-mute", function(b){ b.onclick = function(){ var m = window.ConqAudio.toggle(); b.textContent = m ? "🔇" : "🔊"; }; });
     byId("conq-zin", function(b){ b.onclick = function(){ state.mapZoom = Math.min(2.6, (state.mapZoom || 1) + 0.2); render(); }; });
     byId("conq-zout", function(b){ b.onclick = function(){ state.mapZoom = Math.max(0.6, (state.mapZoom || 1) - 0.2); render(); }; });
-    byId("conq-zfs", function(b){ b.onclick = function(){ var el = document.getElementById("conq-stage"); if(document.fullscreenElement) document.exitFullscreen(); else if(el && el.requestFullscreen) el.requestFullscreen(); }; });
+    byId("conq-zfs", function(b){ b.onclick = function(){ var el = document.getElementById("conq-game"); if(document.fullscreenElement) document.exitFullscreen(); else if(el && el.requestFullscreen) el.requestFullscreen(); }; });
     c.querySelectorAll(".conq-reg, .conq-marker, .conq-disc, .conq-land").forEach(function(el){ el.onclick = function(){ onRegionClick(el.dataset.id); }; });
     c.querySelectorAll(".conq-emoji-btn").forEach(function(b){ b.onclick = function(){ sendEmoji(b.dataset.e); }; });
     byId("conq-chatsend", function(b){ b.onclick = sendChat; });
