@@ -93,13 +93,16 @@
         state.mode = msg.mode || "romania";
         state.modeNume = msg.modeNume || "România";
         state.hostId = msg.hostId;
-        state.topic = msg.topic;
+        state.topics = msg.topics || [];
+        state.maxTopics = msg.maxTopics || 3;
         state.dificultate = msg.dificultate;
         state.minPlayers = msg.minPlayers || state.minPlayers;
         state.maxPlayers = msg.maxPlayers || state.maxPlayers;
         state.jucatori = msg.jucatori || [];
         break;
       case "game":
+        if(msg.map) state.gameMap = msg.map;             // harta vine o singură dată
+        else if(state.gameMap) msg.map = state.gameMap;  // apoi o refolosim din cache
         var prev = state.game;
         state.game = msg;
         state.faza = msg.phase;
@@ -172,9 +175,9 @@
     sendMsg({ t: "leave" });
     clearSession();
     state.you = null; state.cod = null; state.faza = null; state.jucatori = [];
-    state.topic = null; state.dificultate = null; state.error = null;
+    state.topics = []; state.dificultate = null; state.error = null;
     state.game = null; state.lastQid = null; state.answered = false; state.target = null;
-    state.cells = null; state.cellsKey = null;
+    state.cells = null; state.cellsKey = null; state.gameMap = null;
     if(window.ConqAudio) window.ConqAudio.stopMusic();
     render();
   }
@@ -328,18 +331,19 @@
       }
     }
 
-    // topicuri
+    // topicuri (multi-select, max state.maxTopics)
+    var sel = state.topics || [];
     var topics = state.topicuri.map(function(t){
-      var active = state.topic === t.topic ? ' active' : '';
+      var active = sel.indexOf(t.topic) >= 0 ? ' active' : '';
       var dis = host ? '' : ' disabled';
       return '<button class="conq-topic' + active + '" data-topic="' + esc(t.topic) + '"' + dis + '>'
         + '<b>' + esc(t.nume) + '</b><small>' + t.intrebari + ' întrebări</small></button>';
     }).join("");
 
-    // dificultăți (din topicul ales)
+    // dificultăți (reuniunea materiilor alese)
     var difs = [];
-    var tObj = state.topicuri.filter(function(t){ return t.topic === state.topic; })[0];
-    if(tObj) difs = tObj.dificultati || [];
+    state.topicuri.filter(function(t){ return sel.indexOf(t.topic) >= 0; })
+      .forEach(function(t){ (t.dificultati || []).forEach(function(d){ if(difs.indexOf(d) < 0) difs.push(d); }); });
     var difBtns = difs.map(function(d){
       var active = state.dificultate === d ? ' active' : '';
       var dis = host ? '' : ' disabled';
@@ -348,7 +352,7 @@
 
     var connected = state.jucatori.filter(function(p){ return p.connected; });
     var allReady = connected.length >= state.minPlayers && connected.every(function(p){ return p.ready; });
-    var canStart = host && state.topic && allReady;
+    var canStart = host && sel.length > 0 && allReady;
 
     var modeRow = '<div class="conq-modebar"><span class="conq-modebar-lbl">Mod de joc:</span>'
       + [["romania", "🇷🇴 România", "2–4"], ["europa", "🇪🇺 Europa", "4–8"]].map(function(m){
@@ -373,9 +377,9 @@
       +       '<p class="conq-hint">Trimite codul <b>' + esc(state.cod) + '</b> prietenilor ca să intre.</p>'
       +     '</div>'
       +     '<div class="conq-card">'
-      +       '<h3>Topic ' + (host ? '' : '<small>(alege gazda)</small>') + '</h3>'
+      +       '<h3>Materii <small>(' + sel.length + '/' + (state.maxTopics || 3) + (host ? ' · alege până la ' + (state.maxTopics || 3) : ' · alege gazda') + ')</small></h3>'
       +       '<div class="conq-topics">' + (topics || '<i>Niciun topic încărcat.</i>') + '</div>'
-      +       (state.topic ? '<h3 style="margin-top:14px">Dificultate</h3><div class="conq-difs">' + difBtns + '</div>' : '')
+      +       (sel.length ? '<h3 style="margin-top:14px">Dificultate</h3><div class="conq-difs">' + difBtns + '</div>' : '')
       +     '</div>'
       +   '</div>'
       +   '<div class="conq-foot">'
@@ -397,7 +401,7 @@
   }
 
   function startHint(host, allReady, n){
-    if(!state.topic) return "Alege un topic.";
+    if(!state.topics || !state.topics.length) return "Alege cel puțin o materie.";
     if(n < state.minPlayers) return "Minim " + state.minPlayers + " jucători.";
     if(!allReady) return "Așteptăm ca toți să fie gata.";
     return "";
@@ -437,31 +441,42 @@
 
   function mapSVG(highlight){
     var g = state.game;
-    var hasBorder = !!(g.map.border && g.map.border.length);   // România=Voronoi; Europa=markere/discuri
+    var pathMode = !!(g.map.regions[0] && g.map.regions[0].d);             // Europa = poligoane reale de țări
+    var hasBorder = !pathMode && !!(g.map.border && g.map.border.length);  // România = Voronoi peste imagine
     var cells = hasBorder ? getCells() : null;
     var hl = {}; (highlight || []).forEach(function(id){ hl[id] = 1; });
-    var img = g.map.img || { url: "", w: 700, h: 500 };
-    var svg = '<svg class="conq-map" viewBox="0 0 ' + img.w + ' ' + img.h + '" preserveAspectRatio="xMidYMid meet">';
+    var W = pathMode ? g.map.viewBox.w : ((g.map.img && g.map.img.w) || 700);
+    var H = pathMode ? g.map.viewBox.h : ((g.map.img && g.map.img.h) || 500);
+    var svg = '<svg class="conq-map" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">';
     svg += '<defs><filter id="cqShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="1.4" stdDeviation="1.5" flood-color="rgba(0,0,0,.55)"/></filter></defs>';
-    // FUNDAL: imaginea reală a hărții (href + xlink:href pentru compatibilitate)
-    svg += '<image href="' + img.url + '" xlink:href="' + img.url + '" x="0" y="0" width="' + img.w + '" height="' + img.h + '" preserveAspectRatio="none"></image>';
-    if(hasBorder){
-      // REGIUNI ca poligoane Voronoi (umplere semi-transparentă + delimitări)
+    if(pathMode){
+      // POLIGOANE REALE pe țări (formele țărilor SUNT harta) peste un fundal de mare
+      svg += '<rect class="conq-sea" x="0" y="0" width="' + W + '" height="' + H + '"></rect>';
       g.map.regions.forEach(function(rg){
-        var poly = cells[rg.id]; if(!poly || !poly.length) return;
         var owner = g.owners[rg.id];
         var col = owner ? playerColor(owner) : null;
-        var cls = "conq-reg" + (hl[rg.id] ? " hl" : "") + (owner ? "" : " neutral");
-        svg += '<polygon class="' + cls + '" data-id="' + rg.id + '" points="' + polyStr(poly) + '" style="fill:' + (col || "#ffffff") + ';fill-opacity:' + (col ? "0.42" : "0") + '"></polygon>';
+        var cls = "conq-land" + (hl[rg.id] ? " hl" : "") + (owner ? "" : " neutral");
+        svg += '<path class="' + cls + '" data-id="' + rg.id + '" d="' + rg.d + '" style="fill:' + (col || "#d9cba6") + ';fill-opacity:' + (col ? "0.8" : "1") + '"></path>';
       });
     } else {
-      // EUROPA: disc de proprietar sub fiecare marker (fără contur de țară)
-      g.map.regions.forEach(function(rg){
-        var owner = g.owners[rg.id];
-        var col = owner ? playerColor(owner) : null;
-        var rr = hl[rg.id] ? 28 : 24;
-        svg += '<circle class="conq-disc' + (hl[rg.id] ? " hl" : "") + (owner ? "" : " neutral") + '" data-id="' + rg.id + '" cx="' + rg.cx + '" cy="' + rg.cy + '" r="' + rr + '" style="fill:' + (col || "#d8c9ad") + ';fill-opacity:' + (col ? "0.62" : "0.32") + '"></circle>';
-      });
+      var img = g.map.img || { url: "", w: 700, h: 500 };
+      svg += '<image href="' + img.url + '" xlink:href="' + img.url + '" x="0" y="0" width="' + img.w + '" height="' + img.h + '" preserveAspectRatio="none"></image>';
+      if(hasBorder){
+        g.map.regions.forEach(function(rg){
+          var poly = cells[rg.id]; if(!poly || !poly.length) return;
+          var owner = g.owners[rg.id];
+          var col = owner ? playerColor(owner) : null;
+          var cls = "conq-reg" + (hl[rg.id] ? " hl" : "") + (owner ? "" : " neutral");
+          svg += '<polygon class="' + cls + '" data-id="' + rg.id + '" points="' + polyStr(poly) + '" style="fill:' + (col || "#ffffff") + ';fill-opacity:' + (col ? "0.42" : "0") + '"></polygon>';
+        });
+      } else {
+        g.map.regions.forEach(function(rg){
+          var owner = g.owners[rg.id];
+          var col = owner ? playerColor(owner) : null;
+          var rr = hl[rg.id] ? 28 : 24;
+          svg += '<circle class="conq-disc' + (hl[rg.id] ? " hl" : "") + (owner ? "" : " neutral") + '" data-id="' + rg.id + '" cx="' + rg.cx + '" cy="' + rg.cy + '" r="' + rr + '" style="fill:' + (col || "#d8c9ad") + ';fill-opacity:' + (col ? "0.62" : "0.32") + '"></circle>';
+        });
+      }
     }
     // markere (castel = bază / scut = normal + valoare) la centrul regiunii
     g.map.regions.forEach(function(rg){
@@ -480,13 +495,18 @@
       }
       svg += '</g>';
     });
-    // steaguri de selecție (faza select) — ce a ales fiecare jucător
+    // steaguri de selecție (faza select) — steag desenat în CULOAREA jucătorului
     if(g.selections){
       Object.keys(g.selections).forEach(function(pid){
         var rid = g.selections[pid];
         var rg = g.map.regions.filter(function(x){ return x.id === rid; })[0];
         if(!rid || !rg) return;
-        svg += '<text class="conq-flag" text-anchor="middle" x="' + (rg.cx + 17) + '" y="' + (rg.cy - 20) + '" style="fill:' + playerColor(pid) + '">🚩</text>';
+        var col = playerColor(pid) || "#888";
+        var fx = rg.cx + 13, fy = rg.cy - 8;
+        svg += '<g class="conq-flag2" filter="url(#cqShadow)">'
+          + '<line x1="' + fx + '" y1="' + fy + '" x2="' + fx + '" y2="' + (fy - 22) + '" stroke="#2a1d0e" stroke-width="2"></line>'
+          + '<path d="M' + fx + ' ' + (fy - 22) + ' L' + (fx + 16) + ' ' + (fy - 17.5) + ' L' + fx + ' ' + (fy - 13) + ' Z" fill="' + col + '" stroke="rgba(0,0,0,.45)" stroke-width="0.7"></path>'
+          + '</g>';
       });
     }
     svg += '</svg>';
@@ -548,7 +568,7 @@
 
     byId("conq-leave", function(b){ b.onclick = doLeave; });
     byId("conq-mute", function(b){ b.onclick = function(){ var m = window.ConqAudio.toggle(); b.textContent = m ? "🔇" : "🔊"; }; });
-    c.querySelectorAll(".conq-reg, .conq-marker, .conq-disc").forEach(function(el){ el.onclick = function(){ onRegionClick(el.dataset.id); }; });
+    c.querySelectorAll(".conq-reg, .conq-marker, .conq-disc, .conq-land").forEach(function(el){ el.onclick = function(){ onRegionClick(el.dataset.id); }; });
     wireModal(g, pr);
     startCountdown(pr);
   }
@@ -596,7 +616,13 @@
       body += '<div class="conq-modal-q">' + esc(pr.enunt) + '</div>';
       if(pr.cod) body += '<pre class="conq-code">' + esc(pr.cod) + '</pre>';
       if(!participate){
-        body += '<div class="conq-modal-wait">Duel în desfășurare — privești.</div>';
+        // spectator: vede întrebarea ȘI variantele (read-only), ca să urmărească duelul
+        if(pr.tip === "grila"){
+          body += '<div class="conq-modal-opts">' + pr.variante.map(function(v, i){
+            return '<div class="conq-modal-opt disabled"><span class="conq-opt-k">' + String.fromCharCode(65 + i) + '</span>' + esc(v) + '</div>';
+          }).join("") + '</div>';
+        }
+        body += '<div class="conq-modal-wait">⚔️ Duel în desfășurare — privești.</div>';
       } else if(state.answered){
         body += '<div class="conq-modal-wait">✓ Răspuns trimis. Așteptăm ceilalți…</div>';
       } else if(pr.tip === "grila"){

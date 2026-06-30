@@ -28,6 +28,8 @@ const QUESTIONS_DIR = process.env.QUESTIONS_DIR || path.join(__dirname, "questio
 const MAX_PLAYERS   = parseInt(process.env.MAX_PLAYERS || "8", 10);
 const MIN_PLAYERS   = parseInt(process.env.MIN_PLAYERS || "2", 10);
 
+const MAX_TOPICS = parseInt(process.env.MAX_TOPICS || "3", 10);  // câte materii poți combina
+
 // Moduri de joc: harta + intervalul de jucători
 const MODES = {
   romania: { min: 2, max: 4, nume: "România", map: "./map.js" },
@@ -156,7 +158,8 @@ function lobbyState(room){
     hostId: room.hostId,
     mode: room.mode || "romania",
     modeNume: modeCfg(room).nume,
-    topic: room.topic,
+    topics: room.topics || [],
+    maxTopics: MAX_TOPICS,
     dificultate: room.dificultate,
     minPlayers: modeCfg(room).min,
     maxPlayers: modeCfg(room).max,
@@ -247,7 +250,7 @@ function handleCreate(ws, msg){
     hostId: id,
     faza: "LOBBY",
     mode: (MODES[String(msg.mode)] ? String(msg.mode) : "romania"),
-    topic: null,
+    topics: [],
     dificultate: null,
     createdAt: Date.now(),
     emptyTimer: null
@@ -292,6 +295,7 @@ function handleReconnect(ws, msg){
   ensureHost(room);
   console.log(p.nume, "s-a reconectat la", cod);
   send(ws, { t: "joined", cod, playerId: p.id, topicuri: topicsForClient() });
+  if(room.faza === "GAME" && room.game) room.game.mapDirty = true;   // retrimite harta celui reconectat
   broadcastRoom(room);
 }
 
@@ -304,14 +308,19 @@ function roomOf(ws){
 
 function handleTopic(ws, msg){
   const room = roomOf(ws); if(!room) return;
-  if(ws._playerId !== room.hostId) return sendError(ws, "Doar gazda alege topicul.");
+  if(ws._playerId !== room.hostId) return sendError(ws, "Doar gazda alege materiile.");
   if(room.faza !== "LOBBY") return;
+  if(!room.topics) room.topics = [];
   if(msg.topic != null){
-    if(!TOPICS.has(String(msg.topic))) return sendError(ws, "Topic necunoscut.");
-    room.topic = String(msg.topic);
+    const tp = String(msg.topic);
+    if(!TOPICS.has(tp)) return sendError(ws, "Topic necunoscut.");
+    const i = room.topics.indexOf(tp);
+    if(i >= 0) room.topics.splice(i, 1);                          // deselectează
+    else if(room.topics.length >= MAX_TOPICS) return sendError(ws, "Poți alege maxim " + MAX_TOPICS + " materii.");
+    else room.topics.push(tp);                                    // selectează
   }
   if(msg.dificultate != null) room.dificultate = String(msg.dificultate);
-  // schimbarea topicului resetează "ready" (ca să confirme toți pe noua alegere)
+  // schimbarea materiilor resetează "ready" (ca să confirme toți pe noua alegere)
   for(const p of room.players.values()) p.ready = false;
   broadcast(room, lobbyState(room));
 }
@@ -342,12 +351,12 @@ function handleStart(ws){
   const cfg = modeCfg(room);
   if(room.order.length < cfg.min) return sendError(ws, "Modul " + cfg.nume + " are nevoie de minim " + cfg.min + " jucători.");
   if(!loadMap(room.mode)) return sendError(ws, "Harta pentru modul " + cfg.nume + " nu e gata încă.");
-  if(!room.topic) return sendError(ws, "Alege întâi un topic.");
+  if(!room.topics || !room.topics.length) return sendError(ws, "Alege cel puțin o materie.");
   const connected = room.order.filter(id => room.players.get(id).ws);
   const allReady = connected.every(id => room.players.get(id).ready);
   if(!allReady) return sendError(ws, "Nu toți jucătorii sunt pregătiți.");
 
-  console.log("pornire joc în camera", room.cod, "· topic", room.topic, "· dif", room.dificultate);
+  console.log("pornire joc în camera", room.cod, "· mod", room.mode, "· materii", (room.topics || []).join("+"), "· dif", room.dificultate);
   startGame(room);
 }
 
@@ -364,16 +373,25 @@ function clearGameTimer(room){ if(room.game && room.game.timer){ clearTimeout(ro
 
 // alege o întrebare nefolosită de tipul cerut + dificultatea camerei
 function pickQuestion(room, kinds){
-  const T = TOPICS.get(room.topic); if(!T) return null;
+  const topics = (room.topics && room.topics.length) ? room.topics : (room.topic ? [room.topic] : []);
   const dif = room.dificultate;
-  let pool = T.intrebari.map((q, idx) => ({ q, idx }))
-    .filter(o => kinds.indexOf(o.q.tip) >= 0 && (!dif || (o.q.dificultate || "licenta") === dif));
-  if(!pool.length) pool = T.intrebari.map((q, idx) => ({ q, idx })).filter(o => kinds.indexOf(o.q.tip) >= 0);
+  // pool combinat din TOATE materiile alese; cheie = "topic#idx" (indecșii se repetă între materii)
+  let pool = [];
+  for(const tp of topics){
+    const T = TOPICS.get(tp); if(!T) continue;
+    T.intrebari.forEach((q, idx) => {
+      if(kinds.indexOf(q.tip) >= 0 && (!dif || (q.dificultate || "licenta") === dif)) pool.push({ q, key: tp + "#" + idx });
+    });
+  }
+  if(!pool.length){ // relaxează dificultatea dacă nu sunt destule
+    for(const tp of topics){ const T = TOPICS.get(tp); if(!T) continue;
+      T.intrebari.forEach((q, idx) => { if(kinds.indexOf(q.tip) >= 0) pool.push({ q, key: tp + "#" + idx }); }); }
+  }
   if(!pool.length) return null;
-  let fresh = pool.filter(o => !room.game.usedQ.has(o.idx));
-  if(!fresh.length){ for(const o of pool) room.game.usedQ.delete(o.idx); fresh = pool; }
+  let fresh = pool.filter(o => !room.game.usedQ.has(o.key));
+  if(!fresh.length){ for(const o of pool) room.game.usedQ.delete(o.key); fresh = pool; }
   const pick = fresh[Math.floor(Math.random() * fresh.length)];
-  room.game.usedQ.add(pick.idx);
+  room.game.usedQ.add(pick.key);
   return pick;
 }
 
@@ -431,6 +449,7 @@ function startGame(room){
   room.game = {
     mapData,                    // {border, labels, regions} — trimis clientului
     regions: mapData.regions,   // array intern de regiuni
+    mapDirty: true,             // trimite harta (poligoane mari) o singură dată; clientul o cache-uiește
     order,
     owners: {},                 // regionId -> playerId
     lives: {},                  // regionId -> vieți (doar bazele)
@@ -465,7 +484,7 @@ function snapshot(room){
     t: "game",
     cod: room.cod,
     phase: g.phase,
-    map: g.mapData,
+    map: g.mapDirty ? g.mapData : undefined,   // harta doar prima dată (apoi clientul o refolosește din cache)
     owners: g.owners,
     lives: g.lives,
     bases: g.bases,
@@ -481,7 +500,7 @@ function snapshot(room){
     outcome: g.lastOutcome
   };
 }
-function broadcastGame(room){ broadcast(room, snapshot(room)); }
+function broadcastGame(room){ broadcast(room, snapshot(room)); if(room.game) room.game.mapDirty = false; }
 
 // ---------- BASE_PICK ----------
 function beginBasePick(room){

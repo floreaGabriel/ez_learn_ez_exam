@@ -675,3 +675,14 @@ details.rezolvare>summary:hover{color:var(--accent-2); background:var(--panel2)}
 .conq-mode small{color:var(--muted); font-weight:500; margin-left:4px}
 .conq-mode.active{border-color:var(--accent); background:color-mix(in srgb, var(--accent) 14%, transparent); color:var(--accent)}
 .conq-mode:disabled{cursor:default; opacity:.85}
+
+/* Europa: poligoane reale pe țări (mod path) */
+.conq-sea{fill:#a9cfe0}
+.conq-land{stroke:#5b4a2e; stroke-width:0.8; cursor:default; transition:fill-opacity .12s, stroke .12s}
+.conq-land.neutral{fill:#d9cba6}
+.conq-land.hl{cursor:pointer; stroke:#c98a16; stroke-width:2.2; animation:conqglow 1.1s ease-in-out infinite}
+.conq-land.hl:hover{fill-opacity:.95 !important}
+
+/* variante read-only pentru spectatorul unui duel */
+.conq-modal-opt.disabled{cursor:default; opacity:.85; background:#f4ecda; border-style:dashed}
+.conq-modal-opt.disabled:hover{transform:none; border-color:#d8c7a0; background:#f4ecda}
