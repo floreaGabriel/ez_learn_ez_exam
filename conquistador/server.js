@@ -60,6 +60,8 @@ const BASE_LIVES  = 3;     // o bază rezistă la BASE_LIVES atacuri reușite î
 
 // Culorile jucătorilor (pentru hartă, în ordinea intrării) — până la 8 jucători
 const COLORS = ["#ef4444", "#3b82f6", "#22c55e", "#f59e0b", "#a855f7", "#ec4899", "#14b8a6", "#f97316"];
+const MASCOTS = ["fox", "bear", "cat", "frog", "panda", "owl", "robot", "dragon"];
+const EMOJIS  = ["😂", "😮", "❤️", "👍", "😢", "🔥", "😎", "👏"];
 
 // timpul alocat unei întrebări: dacă YAML are `timp` (secunde), îl folosim (plafonat),
 // altfel implicit. Așa întrebările mai grele (cod/diagrame) primesc mai mult timp.
@@ -145,7 +147,7 @@ function genId(){
 function publicPlayers(room){
   return room.order.map(id => {
     const p = room.players.get(id);
-    return { id: p.id, nume: p.nume, color: p.color, ready: p.ready,
+    return { id: p.id, nume: p.nume, color: p.color, mascot: p.mascot, ready: p.ready,
              host: id === room.hostId, connected: !!p.ws };
   });
 }
@@ -242,7 +244,7 @@ function sanitizeName(s){
 function handleCreate(ws, msg){
   const cod = genCode();
   const id = genId();
-  const player = { id, nume: sanitizeName(msg.nume), color: COLORS[0], ready: false, ws, dcTimer: null };
+  const player = { id, nume: sanitizeName(msg.nume), color: COLORS[0], mascot: MASCOTS[0], ready: false, ws, dcTimer: null };
   const room = {
     cod,
     players: new Map([[id, player]]),
@@ -271,7 +273,7 @@ function handleJoin(ws, msg){
 
   const id = genId();
   const color = COLORS[room.order.length % COLORS.length];
-  const player = { id, nume: sanitizeName(msg.nume), color, ready: false, ws, dcTimer: null };
+  const player = { id, nume: sanitizeName(msg.nume), color, mascot: MASCOTS[room.order.length % MASCOTS.length], ready: false, ws, dcTimer: null };
   room.players.set(id, player);
   room.order.push(id);
   ws._roomCod = cod; ws._playerId = id;
@@ -323,6 +325,38 @@ function handleTopic(ws, msg){
   // schimbarea materiilor resetează "ready" (ca să confirme toți pe noua alegere)
   for(const p of room.players.values()) p.ready = false;
   broadcast(room, lobbyState(room));
+}
+
+function handleMascot(ws, msg){
+  const room = roomOf(ws); if(!room) return;
+  const p = room.players.get(ws._playerId); if(!p) return;
+  if(room.faza !== "LOBBY") return;
+  const mm = String(msg.mascot || "");
+  if(MASCOTS.indexOf(mm) < 0) return;
+  p.mascot = mm;
+  broadcast(room, lobbyState(room));
+}
+
+function handleEmoji(ws, msg){
+  const room = roomOf(ws); if(!room) return;
+  const p = room.players.get(ws._playerId); if(!p) return;
+  const e = String(msg.e || "");
+  if(EMOJIS.indexOf(e) < 0) return;
+  const now = Date.now();
+  if(p._lastEmoji && now - p._lastEmoji < 600) return;   // anti-spam
+  p._lastEmoji = now;
+  broadcast(room, { t: "emoji", from: ws._playerId, e });
+}
+
+function handleChat(ws, msg){
+  const room = roomOf(ws); if(!room) return;
+  const p = room.players.get(ws._playerId); if(!p) return;
+  const text = String(msg.text || "").replace(/\s+/g, " ").trim().slice(0, 200);
+  if(!text) return;
+  const now = Date.now();
+  if(p._lastChat && now - p._lastChat < 400) return;     // anti-spam
+  p._lastChat = now;
+  broadcast(room, { t: "chat", from: p.id, nume: p.nume, color: p.color, text });
 }
 
 function handleMode(ws, msg){
@@ -473,6 +507,7 @@ function startGame(room){
   };
   for(const r of room.game.regions) room.game.owners[r.id] = null;
   for(const id of order) room.game.attacksLeft[id] = ATTACKS_PER_PLAYER;
+  room.game.attacksTotal = order.length * ATTACKS_PER_PLAYER;   // pentru bara de progres a meciului
   beginBasePick(room);
 }
 
@@ -488,12 +523,14 @@ function snapshot(room){
     owners: g.owners,
     lives: g.lives,
     bases: g.bases,
-    players: room.order.map(id => { const p = room.players.get(id); return { id, nume: p.nume, color: p.color, connected: !!p.ws }; }),
+    players: room.order.map(id => { const p = room.players.get(id); return { id, nume: p.nume, color: p.color, mascot: p.mascot, connected: !!p.ws }; }),
     order: g.order,
     turn: g.phase === "BASE_PICK" ? g.order[g.picker]
         : g.phase === "ATTACK" && g.prompt && g.prompt.kind === "attackPick" ? g.order[g.attacker]
         : null,
     attacksLeft: g.attacksLeft,
+    attacksTotal: g.attacksTotal,
+    round: g.expRounds,
     selections: g.prompt && g.prompt.kind === "select" ? g.selections : null,
     scores: computeScores(room),
     prompt: g.prompt,
@@ -568,7 +605,7 @@ function beginExpansionRound(room){
   // participă toți cei care au unde să se extindă (vecin liber SAU, dacă-s încercuiți, orice liber)
   g.answerers = g.order.filter(id => room.players.get(id).ws && selectTargets(room, id).length > 0);
   const deadline = Date.now() + T_SELECT;
-  g.deadline = deadline;
+  g.deadline = deadline; g.qStart = Date.now();
   g.prompt = { kind: "select", deadline, round: g.expRounds };
   g.lastOutcome = { text: "Runda " + g.expRounds + " · Alegeți pe rând ce teritoriu liber vreți să cuceriți." };
   broadcastGame(room);
@@ -609,7 +646,7 @@ function beginExpansionQuestion(room){
   g.mode = "expansion";
   const ms = questionMs(pick.q);
   const deadline = Date.now() + ms;
-  g.deadline = deadline;
+  g.deadline = deadline; g.qStart = Date.now();
   g.prompt = pubQuestion(pick.q, g.qid, "expansion", deadline);
   g.prompt.kind = "question";
   g.prompt.selections = g.selections;   // ca să vadă fiecare ce a ales
@@ -639,7 +676,7 @@ function resolveExpansion(room){
   const results = g.answerers.map(id => {
     const a = g.answers.get(id);
     return { playerId: id, val: a ? a.val : null, correct: a ? isCorrect(q, a.val) : false,
-             chose: g.selections[id] || null, gained: gained[id] || null };
+             ms: a ? (a.time - g.qStart) : null, chose: g.selections[id] || null, gained: gained[id] || null };
   });
   g.prompt = revealPrompt(q, g.qid, "expansion", results, "Teritoriile au fost revendicate de cei mai rapizi corecți.");
   g.lastOutcome = { text: "Rezolvare — vezi cine a cucerit." };
@@ -653,6 +690,7 @@ function revealPrompt(q, qid, mode, results, outcome, extra){
     kind: "reveal", qid, tip: q.tip, mode,
     corect: q.corect,
     corectText: q.tip === "grila" ? (q.variante[q.corect]) : String(q.corect),
+    variante: q.tip === "grila" ? q.variante : undefined,
     explicatie: q.explicatie || "",
     enunt: q.enunt,
     cod: q.cod ? String(q.cod) : "",
@@ -696,6 +734,7 @@ function handleAttackPick(ws, msg){
   const region = String(msg.region || "");
   if(attackTargets(room, atk).indexOf(region) < 0) return sendError(ws, "Țintă invalidă (trebuie vecină cu teritoriul tău).");
   clearGameTimer(room);
+  g.attacksLeft[atk]--;   // un attackPick = un atac consumat (asaltul pe bază nu mai consumă în plus)
   const defender = room.game.owners[region]; // poate fi null (neutru)
   beginDuel(room, atk, defender, region, defender ? "duel-grila" : "duel-solo");
 }
@@ -714,7 +753,7 @@ function beginDuel(room, attacker, defender, region, mode){
   g.mode = mode;
   const ms = questionMs(pick.q);
   const deadline = Date.now() + ms;
-  g.deadline = deadline;
+  g.deadline = deadline; g.qStart = Date.now();
   g.prompt = pubQuestion(pick.q, g.qid, mode, deadline);
   g.prompt.kind = "question";
   g.prompt.region = region;
@@ -738,7 +777,7 @@ function resolveDuel(room){
 
   if(d.mode === "duel-solo"){
     const ok = aA && isCorrect(q, aA.val);
-    const results = [{ playerId: d.attacker, val: aA ? aA.val : null, correct: !!ok }];
+    const results = [{ playerId: d.attacker, val: aA ? aA.val : null, correct: !!ok, ms: aA ? (aA.time - g.qStart) : null }];
     return finishDuel(room, d.attacker, d.defender, d.region, ok,
       ok ? "Cucerit!" : "Răspuns greșit — teritoriul rămâne neutru.", q, results);
   }
@@ -747,8 +786,8 @@ function resolveDuel(room){
     const aC = aA && isCorrect(q, aA.val);
     const dC = aD && isCorrect(q, aD.val);
     const results = [
-      { playerId: d.attacker, val: aA ? aA.val : null, correct: !!aC },
-      { playerId: d.defender, val: aD ? aD.val : null, correct: !!dC }
+      { playerId: d.attacker, val: aA ? aA.val : null, correct: !!aC, ms: aA ? (aA.time - g.qStart) : null },
+      { playerId: d.defender, val: aD ? aD.val : null, correct: !!dC, ms: aD ? (aD.time - g.qStart) : null }
     ];
     if(aC && !dC) return finishDuel(room, d.attacker, d.defender, d.region, true,  "Atacatorul a răspuns corect, apărătorul nu — cucerit!", q, results);
     if(!aC && dC) return finishDuel(room, d.attacker, d.defender, d.region, false, "Apărarea a rezistat!", q, results);
@@ -772,8 +811,8 @@ function resolveDuel(room){
     else if(da === dd) aWin = true;
     else aWin = da < dd;
     const results = [
-      { playerId: d.attacker, val: aA ? aA.val : null, dist: isFinite(da) ? da : null },
-      { playerId: d.defender, val: aD ? aD.val : null, dist: isFinite(dd) ? dd : null }
+      { playerId: d.attacker, val: aA ? aA.val : null, dist: isFinite(da) ? da : null, ms: aA ? (aA.time - g.qStart) : null },
+      { playerId: d.defender, val: aD ? aD.val : null, dist: isFinite(dd) ? dd : null, ms: aD ? (aD.time - g.qStart) : null }
     ];
     const txt = aWin
       ? (da === dd ? "Egalitate perfectă — atacatorul cucerește (apărarea nu mai are avantaj)!" : "Atacatorul s-a apropiat mai mult — cucerit!")
@@ -787,15 +826,19 @@ function finishDuel(room, attacker, defender, region, success, outcomeText, q, r
   let gained = null, lifeLost = false;
   if(success){
     if(defender && g.bases[defender] === region && g.lives[region] > 1){
-      g.lives[region]--; lifeLost = true;      // baza pierde o viață, dar rezistă
-      outcomeText = "Lovitură la bază! A mai pierdut o viață (rămase: " + g.lives[region] + ").";
+      // ASALT PE BAZĂ: baza pierde o viață dar rezistă -> atacatorul CONTINUĂ
+      // imediat cu un nou duel pe aceeași bază (poate s-o doboare din mai multe
+      // lovituri consecutive în aceeași tură). Dacă greșește, asaltul se oprește
+      // și baza rămâne cu viețile câte i-au mai rămas.
+      g.lives[region]--; lifeLost = true;
+      outcomeText = "Lovitură la bază! Vieți rămase: " + g.lives[region] + ". Continuă asaltul!";
     } else {
       g.owners[region] = attacker;
       if(g.bases[defender] === region){ delete g.lives[region]; }  // baza a căzut
       gained = region;
     }
   }
-  g.attacksLeft[attacker]--;
+  // NU mai scădem aici atacurile — un atac (o tură) = un attackPick (vezi handleAttackPick).
   if(q){
     const rev = revealPrompt(q, g.qid, g.duel ? g.duel.mode : "duel", results || [], outcomeText, { region, gained, lifeLost, attacker, defender });
     g.prompt = rev;
@@ -806,7 +849,12 @@ function finishDuel(room, attacker, defender, region, success, outcomeText, q, r
   g.lastOutcome = { text: outcomeText };
   broadcastGame(room);
   const hadWrong = (results || []).some(r => r.correct === false);
-  g.timer = setTimeout(() => nextAttackTurn(room), revealMs(hadWrong) + 800);
+  if(lifeLost){
+    // continuă asaltul pe aceeași bază (nouă rundă de duel), fără a consuma alt atac
+    g.timer = setTimeout(() => beginDuel(room, attacker, defender, region, "duel-grila"), revealMs(false) + 700);
+  } else {
+    g.timer = setTimeout(() => nextAttackTurn(room), revealMs(hadWrong) + 800);
+  }
 }
 
 // ---------- RESULTS ----------
@@ -895,6 +943,9 @@ wss.on("connection", (ws) => {
       case "reconnect": return handleReconnect(ws, msg);
       case "topic":     return handleTopic(ws, msg);
       case "mode":      return handleMode(ws, msg);
+      case "mascot":    return handleMascot(ws, msg);
+      case "emoji":     return handleEmoji(ws, msg);
+      case "chat":      return handleChat(ws, msg);
       case "ready":     return handleReady(ws, msg);
       case "start":     return handleStart(ws);
       case "basePick":  return handleBasePick(ws, msg);

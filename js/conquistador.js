@@ -108,7 +108,7 @@
         state.faza = msg.phase;
         // la o întrebare nouă, resetăm starea locală de răspuns/țintă
         var qid = msg.prompt && msg.prompt.kind === "question" ? msg.prompt.qid : null;
-        if(qid !== state.lastQid){ state.lastQid = qid; state.answered = false; state.target = null; state.numInput = ""; }
+        if(qid !== state.lastQid){ state.lastQid = qid; state.answered = false; state.target = null; state.numInput = ""; state.myAnswer = null; }
         gameSounds(prev, msg);
         // muzica: piesa „întrebări" cât timp e activă o întrebare, altfel cea generală
         if(window.ConqAudio) window.ConqAudio.scene(msg.prompt && msg.prompt.kind === "question" ? "questions" : "adventure");
@@ -120,6 +120,13 @@
         state.error = msg.msg || "Eroare.";
         state.pending = null;
         break;
+      case "emoji": if(isActiveView()) showReaction(msg.from, msg.e); return;
+      case "chat":
+        state.chat = state.chat || [];
+        state.chat.push({ nume: msg.nume, color: msg.color, text: msg.text });
+        if(state.chat.length > 60) state.chat.shift();
+        if(isActiveView()) appendChatMsg(state.chat[state.chat.length - 1]);
+        return;
       case "pong": return;
     }
     if(isActiveView()) render();
@@ -166,6 +173,22 @@
   function pickTopic(topic){ sendMsg({ t: "topic", topic: topic }); }
   function pickDif(dif){ sendMsg({ t: "topic", dificultate: dif }); }
   function pickMode(mode){ snd("select"); sendMsg({ t: "mode", mode: mode }); }
+  function mascotImg(id, size){ return (window.ConqMascots && window.ConqMascots.has(id)) ? window.ConqMascots.svg(id, size || 34) : ""; }
+  function pickMascot(id){ snd("select"); sendMsg({ t: "mascot", mascot: id }); }
+  function sendEmoji(e){ sendMsg({ t: "emoji", e: e }); }
+  function showReaction(pid, e){
+    var el = document.getElementById("conq-pc-" + pid); if(!el) return;
+    var s = document.createElement("span"); s.className = "conq-reaction"; s.textContent = e;
+    el.appendChild(s); setTimeout(function(){ if(s.parentNode) s.parentNode.removeChild(s); }, 2400);
+  }
+  function appendChatMsg(m){
+    var log = document.getElementById("conq-chatlog"); if(!log) return;
+    var d = document.createElement("div"); d.className = "conq-chatmsg";
+    d.innerHTML = '<b style="color:' + (m.color || "#888") + '">' + esc(m.nume) + '</b> ' + esc(m.text);
+    log.appendChild(d); log.scrollTop = log.scrollHeight;
+  }
+  function chatLogHTML(){ return (state.chat || []).map(function(m){ return '<div class="conq-chatmsg"><b style="color:' + (m.color || "#888") + '">' + esc(m.nume) + '</b> ' + esc(m.text) + '</div>'; }).join(""); }
+  function sendChat(){ var i = document.getElementById("conq-chatin"); if(!i) return; var t = i.value.trim(); if(!t) return; sendMsg({ t: "chat", text: t }); i.value = ""; state.chatDraft = ""; }
   function toggleReady(){
     var me = myPlayer();
     sendMsg({ t: "ready", ready: !(me && me.ready) });
@@ -177,7 +200,7 @@
     state.you = null; state.cod = null; state.faza = null; state.jucatori = [];
     state.topics = []; state.dificultate = null; state.error = null;
     state.game = null; state.lastQid = null; state.answered = false; state.target = null;
-    state.cells = null; state.cellsKey = null; state.gameMap = null;
+    state.cells = null; state.cellsKey = null; state.gameMap = null; state.chat = [];
     if(window.ConqAudio) window.ConqAudio.stopMusic();
     render();
   }
@@ -247,13 +270,13 @@
 
   function answerGrila(idx){
     var pr = state.game.prompt; if(!pr || state.answered) return;
-    state.answered = true; snd("click"); sendMsg({ t: "answer", qid: pr.qid, val: idx }); render();
+    state.answered = true; state.myAnswer = idx; snd("click"); sendMsg({ t: "answer", qid: pr.qid, val: idx }); render();
   }
   function answerNumeric(){
     var pr = state.game.prompt; if(!pr || state.answered) return;
     var v = parseFloat(state.numInput);
     if(isNaN(v)){ state.error = "Scrie un număr."; return render(); }
-    state.answered = true; state.error = null; snd("click"); sendMsg({ t: "answer", qid: pr.qid, val: v }); render();
+    state.answered = true; state.myAnswer = v; state.error = null; snd("click"); sendMsg({ t: "answer", qid: pr.qid, val: v }); render();
   }
 
   // ---------- helpers ----------
@@ -320,7 +343,7 @@
       var p = state.jucatori[i];
       if(p){
         slots += '<div class="conq-pl' + (p.connected ? '' : ' off') + '">'
-          + '<span class="conq-dot" style="background:' + p.color + '"></span>'
+          + '<span class="conq-pl-masc" style="background:' + p.color + '">' + mascotImg(p.mascot, 30) + '</span>'
           + '<span class="conq-pl-name">' + esc(p.nume) + (p.id === state.you ? ' <em>(tu)</em>' : '') + '</span>'
           + (p.host ? '<span class="conq-tag host">gazdă</span>' : '')
           + (p.connected ? (p.ready ? '<span class="conq-tag ready">✓ gata</span>' : '<span class="conq-tag wait">așteaptă</span>')
@@ -361,6 +384,12 @@
         }).join("")
       + (host ? "" : '<span class="conq-hint" style="margin-left:8px">(alege gazda)</span>') + '</div>';
 
+    var myMascot = (me && me.mascot) || (window.ConqMascots && window.ConqMascots.DEFAULT);
+    var mascotBar = (window.ConqMascots ? ('<div class="conq-modebar"><span class="conq-modebar-lbl">Mascota ta:</span><div class="conq-mascot-pick">'
+      + window.ConqMascots.LIST.map(function(m){
+          return '<button class="conq-mascot-btn' + (myMascot === m.id ? " active" : "") + '" data-mascot="' + m.id + '" title="' + esc(m.nume) + '">' + window.ConqMascots.svg(m.id, 40) + '</button>';
+        }).join("") + '</div></div>') : "");
+
     c.innerHTML = ''
       + '<div class="conq-lobby">'
       +   '<div class="conq-room-head">'
@@ -370,6 +399,7 @@
       +   '</div>'
       +   errBox()
       +   modeRow
+      +   mascotBar
       +   '<div class="conq-cols">'
       +     '<div class="conq-card">'
       +       '<h3>Jucători <small>' + connected.length + '/' + state.maxPlayers + '</small></h3>'
@@ -396,6 +426,7 @@
     var codeEl = c.querySelector(".conq-code-big");
     if(codeEl) codeEl.onclick = function(){ copyText(state.cod); codeEl.classList.add("copied"); setTimeout(function(){ codeEl.classList.remove("copied"); }, 900); };
     c.querySelectorAll(".conq-mode").forEach(function(b){ b.onclick = function(){ if(!b.disabled) pickMode(b.dataset.mode); }; });
+    c.querySelectorAll(".conq-mascot-btn").forEach(function(b){ b.onclick = function(){ pickMascot(b.dataset.mascot); }; });
     c.querySelectorAll(".conq-topic").forEach(function(b){ b.onclick = function(){ pickTopic(b.dataset.topic); }; });
     c.querySelectorAll(".conq-dif").forEach(function(b){ b.onclick = function(){ pickDif(b.dataset.dif); }; });
   }
@@ -538,6 +569,42 @@
     return '<button class="conq-btn ghost sm" id="conq-mute" title="Sunet">' + (m ? "🔇" : "🔊") + '</button>';
   }
 
+  // progresul meciului (cât mai e): runda de expansiune / atacuri rămase + bară
+  function matchProgress(g){
+    if(g.phase === "EXPANSION") return '<span class="conq-progress">🧭 Expansiune · runda ' + (g.round || 1) + '</span>';
+    if(g.phase === "ATTACK"){
+      var total = g.attacksTotal || 0, rem = 0;
+      if(g.attacksLeft) Object.keys(g.attacksLeft).forEach(function(k){ rem += g.attacksLeft[k]; });
+      var pct = total ? Math.round((total - rem) / total * 100) : 0;
+      return '<span class="conq-progress">⚔️ ' + rem + '/' + total + ' atacuri rămase'
+        + '<span class="conq-progbar"><span class="conq-progfill" style="width:' + pct + '%"></span></span></span>';
+    }
+    if(g.phase === "BASE_PICK") return '<span class="conq-progress">🏰 Alegerea bazelor</span>';
+    return '';
+  }
+
+  // panou lateral: fiecare jucător cu mascota, numele și punctele + bara de emoji
+  var SIDE_EMOJIS = ["😂", "😮", "❤️", "👍", "😢", "🔥", "😎", "👏"];
+  function playersSide(g){
+    var html = '<div class="conq-side">';
+    (g.order || []).forEach(function(id){
+      var p = (g.players || []).filter(function(x){ return x.id === id; })[0] || {};
+      var isTurn = g.turn === id;
+      var sc = (g.scores && g.scores[id]) || 0;
+      var atk = (g.phase === "ATTACK" && g.attacksLeft) ? '<span class="conq-side-atk">⚔ ' + (g.attacksLeft[id] || 0) + '</span>' : "";
+      html += '<div class="conq-pcard2' + (isTurn ? " turn" : "") + (p.connected === false ? " off" : "") + '" id="conq-pc-' + id + '" style="--pc:' + (p.color || "#888") + '">'
+        + '<span class="conq-pcard2-masc">' + mascotImg(p.mascot, 42) + '</span>'
+        + '<span class="conq-pcard2-info"><span class="conq-pcard2-name">' + esc(p.nume || "?") + (id === state.you ? " ·tu" : "") + '</span>'
+        + '<span class="conq-pcard2-pts">' + sc + ' p' + atk + '</span></span>'
+        + '</div>';
+    });
+    html += '<div class="conq-emojibar">' + SIDE_EMOJIS.map(function(e){ return '<button class="conq-emoji-btn" data-e="' + e + '">' + e + '</button>'; }).join("") + '</div>';
+    html += '<div class="conq-chat"><div class="conq-chatlog" id="conq-chatlog">' + chatLogHTML() + '</div>'
+      + '<div class="conq-chatin-row"><input id="conq-chatin" class="conq-chatin" maxlength="200" placeholder="Scrie un mesaj…" value="' + esc(state.chatDraft || "") + '"><button class="conq-chatsend" id="conq-chatsend" title="Trimite">➤</button></div></div>';
+    html += '</div>';
+    return html;
+  }
+
   function renderGame(c){
     var g = state.game, pr = g.prompt || {};
     if(pr.kind === "results") return renderResults(c, pr);
@@ -554,21 +621,38 @@
       + '<div class="conq-game">'
       +   '<div class="conq-gtop">'
       +     '<span class="conq-phase">' + phaseLabel(g.phase) + '</span>'
-      +     scoreStrip()
+      +     matchProgress(g)
+      +     '<span style="flex:1"></span>'
       +     muteBtn()
       +     '<button class="conq-btn ghost sm" id="conq-leave">Ieși</button>'
       +   '</div>'
       +   errBox()
-      +   '<div class="conq-stage">'
-      +     '<div class="conq-mapwrap">' + mapSVG(highlight) + '</div>'
+      +   '<div class="conq-arena">'
+      +   '<div class="conq-stage" id="conq-stage">'
+      +     '<div class="conq-mapwrap" id="conq-mapwrap"><div class="conq-mapzoom" style="width:' + Math.round((state.mapZoom || 1) * 100) + '%">' + mapSVG(highlight) + '</div></div>'
+      +     '<div class="conq-zoombar">'
+      +       '<button class="conq-zbtn" id="conq-zout" title="Micșorează">−</button>'
+      +       '<span class="conq-zlvl">' + Math.round((state.mapZoom || 1) * 100) + '%</span>'
+      +       '<button class="conq-zbtn" id="conq-zin" title="Mărește">+</button>'
+      +       '<button class="conq-zbtn" id="conq-zfs" title="Tot ecranul">⛶</button>'
+      +     '</div>'
       +     banner(g, pr)
+      +   '</div>'
+      +   playersSide(g)
       +   '</div>'
       + '</div>'
       + modal;
 
     byId("conq-leave", function(b){ b.onclick = doLeave; });
     byId("conq-mute", function(b){ b.onclick = function(){ var m = window.ConqAudio.toggle(); b.textContent = m ? "🔇" : "🔊"; }; });
+    byId("conq-zin", function(b){ b.onclick = function(){ state.mapZoom = Math.min(2.6, (state.mapZoom || 1) + 0.2); render(); }; });
+    byId("conq-zout", function(b){ b.onclick = function(){ state.mapZoom = Math.max(0.6, (state.mapZoom || 1) - 0.2); render(); }; });
+    byId("conq-zfs", function(b){ b.onclick = function(){ var el = document.getElementById("conq-stage"); if(document.fullscreenElement) document.exitFullscreen(); else if(el && el.requestFullscreen) el.requestFullscreen(); }; });
     c.querySelectorAll(".conq-reg, .conq-marker, .conq-disc, .conq-land").forEach(function(el){ el.onclick = function(){ onRegionClick(el.dataset.id); }; });
+    c.querySelectorAll(".conq-emoji-btn").forEach(function(b){ b.onclick = function(){ sendEmoji(b.dataset.e); }; });
+    byId("conq-chatsend", function(b){ b.onclick = sendChat; });
+    byId("conq-chatin", function(i){ i.oninput = function(){ state.chatDraft = i.value; }; i.onkeydown = function(e){ if(e.key === "Enter"){ e.preventDefault(); sendChat(); } }; });
+    byId("conq-chatlog", function(l){ l.scrollTop = l.scrollHeight; });
     wireModal(g, pr);
     startCountdown(pr);
   }
@@ -624,7 +708,16 @@
         }
         body += '<div class="conq-modal-wait">⚔️ Duel în desfășurare — privești.</div>';
       } else if(state.answered){
-        body += '<div class="conq-modal-wait">✓ Răspuns trimis. Așteptăm ceilalți…</div>';
+        // cât aștept, văd ce am ales (evidențiat în culoarea mea)
+        if(pr.tip === "grila"){
+          body += '<div class="conq-modal-opts">' + pr.variante.map(function(v, i){
+            var mine = state.myAnswer === i;
+            return '<div class="conq-modal-opt disabled' + (mine ? " mine" : "") + '"' + (mine ? ' style="--pc:' + (playerColor(state.you) || "#888") + '"' : "") + '><span class="conq-opt-k">' + String.fromCharCode(65 + i) + '</span>' + esc(v) + (mine ? ' <span class="conq-yourpick">alegerea ta</span>' : "") + '</div>';
+          }).join("") + '</div>';
+        } else if(state.myAnswer != null){
+          body += '<div class="conq-yourpick-num" style="--pc:' + (playerColor(state.you) || "#888") + '">Ai răspuns: <b>' + esc(state.myAnswer) + '</b></div>';
+        }
+        body += '<div class="conq-modal-wait">✓ Trimis. Așteptăm ceilalți…</div>';
       } else if(pr.tip === "grila"){
         body += '<div class="conq-modal-opts">' + pr.variante.map(function(v, i){
           return '<button class="conq-modal-opt" data-i="' + i + '"><span class="conq-opt-k">' + String.fromCharCode(65 + i) + '</span>' + esc(v) + '</button>';
@@ -633,21 +726,34 @@
         body += '<div class="conq-modal-num"><input id="conq-numin" class="conq-input" type="number" step="any" placeholder="răspunsul tău (număr)" value="' + esc(state.numInput || "") + '"><button class="conq-btn primary" id="conq-numsend">Trimite</button></div>';
       }
     } else { // reveal
+      body += '<div class="conq-modal-tag reveal">💡 Rezolvare</div>';
+      if(pr.enunt) body += '<div class="conq-modal-q small">' + esc(pr.enunt) + '</div>';
+      if(pr.cod) body += '<pre class="conq-code">' + esc(pr.cod) + '</pre>';
+      if(pr.tip === "grila" && pr.variante){
+        // variantele: cea corectă verde + bulinele celor care au ales (în culoarea lor)
+        body += '<div class="conq-modal-opts reveal">' + pr.variante.map(function(v, i){
+          var isC = i === pr.corect;
+          var dots = (pr.results || []).filter(function(r){ return r.val === i; }).map(function(r){
+            return '<span class="conq-pick-dot" title="' + esc(nameOf(g, r.playerId)) + '" style="background:' + (playerColor(r.playerId) || "#888") + '"></span>';
+          }).join("");
+          return '<div class="conq-modal-opt reveal' + (isC ? " ok" : "") + '"><span class="conq-opt-k">' + String.fromCharCode(65 + i) + '</span><span class="conq-opt-txt">' + esc(v) + '</span>'
+            + (isC ? '<span class="conq-opt-ck">✓</span>' : "") + (dots ? '<span class="conq-pick-dots">' + dots + '</span>' : "") + '</div>';
+        }).join("") + '</div>';
+      } else if(pr.corectText != null){
+        body += '<div class="conq-correct">Corect: <b>' + esc(pr.corectText) + '</b></div>';
+      }
+      if(pr.explicatie) body += '<div class="conq-expl">' + esc(pr.explicatie) + '</div>';
       var rows = (pr.results || []).map(function(rr){
         var nm = esc(nameOf(g, rr.playerId));
         var detail;
         if(rr.dist != null) detail = '<span class="conq-rev-val">' + esc(rr.val) + '</span> <small>dist. ' + rr.dist + '</small>';
         else if(rr.val == null) detail = '<i>fără răspuns</i>';
-        else detail = '<span class="conq-rev-val ' + (rr.correct ? 'ok' : 'no') + '">' + (rr.correct ? '✓' : '✗') + ' ' + esc(rr.val) + '</span>';
-        var chose = rr.chose ? ' <small>→ ' + esc(regName(g, rr.chose)) + '</small>' : '';
-        var gain = rr.gained ? ' <span class="conq-gain">+' + esc(regName(g, rr.gained)) + '</span>' : '';
-        return '<div class="conq-rev-row"><b>' + nm + '</b><span>' + detail + chose + gain + '</span></div>';
+        else if(pr.tip === "grila") detail = '<span class="conq-rev-val ' + (rr.correct ? "ok" : "no") + '">' + (rr.correct ? "✓ corect" : "✗ greșit") + '</span>';
+        else detail = '<span class="conq-rev-val ' + (rr.correct ? "ok" : "no") + '">' + (rr.correct ? "✓" : "✗") + ' ' + esc(rr.val) + '</span>';
+        var t = rr.ms != null ? ' <small class="conq-rev-ms">⏱ ' + (rr.ms / 1000).toFixed(1) + 's</small>' : "";
+        var gain = rr.gained ? ' <span class="conq-gain">+' + esc(regName(g, rr.gained)) + '</span>' : "";
+        return '<div class="conq-rev-row"><b><span class="conq-rev-dot" style="background:' + (playerColor(rr.playerId) || "#888") + '"></span>' + nm + '</b><span>' + detail + t + gain + '</span></div>';
       }).join("");
-      body += '<div class="conq-modal-tag reveal">💡 Rezolvare</div>';
-      if(pr.enunt) body += '<div class="conq-modal-q small">' + esc(pr.enunt) + '</div>';
-      if(pr.cod) body += '<pre class="conq-code">' + esc(pr.cod) + '</pre>';
-      if(pr.corectText != null) body += '<div class="conq-correct">Corect: <b>' + esc(pr.corectText) + '</b></div>';
-      if(pr.explicatie) body += '<div class="conq-expl">' + esc(pr.explicatie) + '</div>';
       if(rows) body += '<div class="conq-rev">' + rows + '</div>';
       if(pr.outcome) body += '<div class="conq-outcome">' + esc(pr.outcome) + '</div>';
     }
@@ -685,8 +791,9 @@
   function renderResults(c, pr){
     if(state.tick){ clearInterval(state.tick); state.tick = null; }
     var rows = (pr.board || []).map(function(b, i){
-      var medal = ["🥇", "🥈", "🥉"][i] || (i + 1) + ".";
-      return '<div class="conq-res-row' + (i === 0 ? ' win' : '') + '" style="--pc:' + b.color + '">'
+      var medal = ["🥇", "🥈", "🥉"][i] || "";
+      return '<div class="conq-res-row r' + (i + 1) + (i === 0 ? ' win' : '') + '" style="--pc:' + b.color + '">'
+        + '<span class="conq-rank">' + (i + 1) + '</span>'
         + '<span class="conq-medal">' + medal + '</span>'
         + '<span class="conq-dot" style="background:' + b.color + '"></span>'
         + '<b>' + esc(b.nume) + (b.playerId === state.you ? ' (tu)' : '') + '</b>'

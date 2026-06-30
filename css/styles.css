@@ -686,3 +686,89 @@ details.rezolvare>summary:hover{color:var(--accent-2); background:var(--panel2)}
 /* variante read-only pentru spectatorul unui duel */
 .conq-modal-opt.disabled{cursor:default; opacity:.85; background:#f4ecda; border-style:dashed}
 .conq-modal-opt.disabled:hover{transform:none; border-color:#d8c7a0; background:#f4ecda}
+
+/* ---- zoom + fullscreen hartă ---- */
+.conq-mapwrap{overflow:auto}
+.conq-mapzoom{display:block; margin:0 auto; transition:width .12s}
+.conq-zoombar{position:absolute; top:14px; right:14px; display:flex; gap:4px; align-items:center;
+  background:rgba(20,16,10,.82); border-radius:24px; padding:4px 8px; z-index:6; backdrop-filter:blur(3px)}
+.conq-zbtn{background:rgba(255,255,255,.16); border:none; color:#fff; width:30px; height:30px; border-radius:50%;
+  cursor:pointer; font-size:17px; font-weight:700; display:flex; align-items:center; justify-content:center; line-height:1}
+.conq-zbtn:hover{background:rgba(255,255,255,.32)}
+.conq-zlvl{color:#fff; font-size:12px; font-family:var(--mono); min-width:40px; text-align:center}
+#conq-stage:fullscreen{background:#0d0b08; padding:10px; display:flex; flex-direction:column; justify-content:center}
+#conq-stage:fullscreen .conq-mapwrap{height:calc(100vh - 20px); border-radius:0}
+
+/* ---- clasament cu locuri clare ---- */
+.conq-rank{display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; flex:0 0 auto;
+  border-radius:50%; background:#7a6a50; color:#fff; font-weight:800; font-size:15px}
+.conq-res-row.r1 .conq-rank{background:#e8b923}
+.conq-res-row.r2 .conq-rank{background:#aab2bd; color:#2a2118}
+.conq-res-row.r3 .conq-rank{background:#cd853f}
+.conq-res-row .conq-medal{width:22px}
+
+/* ---- variantele la reveal (corectă verde + cine ce a ales, în culoarea lui) ---- */
+.conq-modal-opt.reveal{display:flex; align-items:center; gap:10px; cursor:default}
+.conq-modal-opt.reveal:hover{transform:none; background:#fff; border-color:#d8c7a0}
+.conq-modal-opt.reveal.ok{border-color:#2e7d32; background:#eaf7ea}
+.conq-opt-txt{flex:1}
+.conq-opt-ck{color:#2e7d32; font-weight:900; font-size:18px}
+.conq-pick-dots{display:flex; gap:3px; margin-left:4px}
+.conq-pick-dot{width:14px; height:14px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+/* răspunsul MEU cât aștept */
+.conq-modal-opt.mine{border-color:var(--pc); box-shadow:0 0 0 2px color-mix(in srgb, var(--pc) 45%, transparent)}
+.conq-yourpick{margin-left:auto; font-size:11px; font-weight:800; color:var(--pc); text-transform:uppercase; letter-spacing:.5px}
+.conq-yourpick-num{padding:12px 16px; border:2px solid var(--pc); border-radius:10px; background:#fff; font-size:17px; margin-bottom:12px; color:#2c2012}
+.conq-rev-dot{display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:7px; vertical-align:middle}
+.conq-rev-ms{color:#8a7a5c; font-family:var(--mono); font-weight:600}
+
+/* ---- mascote: lobby picker + slot ---- */
+.conq-mascot-svg{display:block}
+.conq-mascot-pick{display:flex; gap:6px; flex-wrap:wrap}
+.conq-mascot-btn{background:var(--panel2); border:2px solid var(--line); border-radius:12px; padding:3px; cursor:pointer; line-height:0; transition:transform .1s, border-color .12s}
+.conq-mascot-btn:hover{transform:translateY(-2px)}
+.conq-mascot-btn.active{border-color:var(--accent); background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.conq-pl-masc{display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; flex:0 0 auto; line-height:0; box-shadow:0 0 0 2px rgba(0,0,0,.15) inset}
+
+/* ---- arena: hartă + panou lateral jucători ---- */
+.conq-arena{display:flex; gap:12px; align-items:flex-start}
+.conq-arena .conq-stage{flex:1; min-width:0}
+.conq-side{flex:0 0 auto; width:158px; display:flex; flex-direction:column; gap:8px}
+.conq-pcard2{position:relative; display:flex; align-items:center; gap:9px; background:var(--panel); border:1px solid var(--line);
+  border-left:5px solid var(--pc); border-radius:12px; padding:7px 9px; overflow:visible}
+.conq-pcard2.turn{box-shadow:0 0 0 2px var(--pc), 0 4px 16px color-mix(in srgb,var(--pc) 40%,transparent)}
+.conq-pcard2.off{opacity:.5}
+.conq-pcard2-masc{display:inline-flex; align-items:center; justify-content:center; width:46px; height:46px; border-radius:50%;
+  background:var(--pc); flex:0 0 auto; line-height:0; box-shadow:inset 0 0 0 2px rgba(255,255,255,.25)}
+.conq-pcard2-info{display:flex; flex-direction:column; min-width:0}
+.conq-pcard2-name{font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.conq-pcard2-pts{font-family:var(--mono); font-weight:800; font-size:15px; color:var(--pc)}
+.conq-side-atk{font-size:11px; color:var(--muted); font-weight:700; margin-left:6px}
+
+/* ---- bara de emoji + reacții plutitoare ---- */
+.conq-emojibar{display:grid; grid-template-columns:repeat(4,1fr); gap:4px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:6px; margin-top:2px}
+.conq-emoji-btn{background:var(--panel2); border:1px solid var(--line); border-radius:9px; cursor:pointer; font-size:18px; padding:5px 0; transition:transform .08s}
+.conq-emoji-btn:hover{transform:scale(1.18); background:color-mix(in srgb,var(--accent) 14%,transparent)}
+@keyframes conqfloat{0%{opacity:0; transform:translate(-50%,4px) scale(.5)} 18%{opacity:1; transform:translate(-50%,-12px) scale(1.25)} 100%{opacity:0; transform:translate(-50%,-66px) scale(1)}}
+.conq-reaction{position:absolute; left:50%; top:-6px; font-size:30px; pointer-events:none; z-index:9; animation:conqfloat 2.4s ease-out forwards; filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
+
+/* ---- progres meci ---- */
+.conq-progress{display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; color:var(--ink-soft,var(--ink));
+  background:var(--panel2); border:1px solid var(--line); padding:5px 12px; border-radius:20px; white-space:nowrap}
+.conq-progbar{display:inline-block; width:90px; height:7px; background:var(--line); border-radius:5px; overflow:hidden}
+.conq-progfill{display:block; height:100%; background:var(--accent); transition:width .4s}
+
+@media(max-width:760px){ .conq-arena{flex-direction:column} .conq-side{width:100%; flex-direction:row; flex-wrap:wrap} .conq-emojibar{margin-left:auto} }
+
+/* ---- chat live (panou lateral) ---- */
+.conq-chat{display:flex; flex-direction:column; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden}
+.conq-chatlog{height:150px; overflow-y:auto; padding:8px 10px; display:flex; flex-direction:column; gap:4px; font-size:12.5px; line-height:1.35}
+.conq-chatlog::-webkit-scrollbar{width:7px}
+.conq-chatlog::-webkit-scrollbar-thumb{background:var(--line2); border-radius:5px}
+.conq-chatmsg{word-break:break-word}
+.conq-chatmsg b{font-weight:700; margin-right:3px}
+.conq-chatin-row{display:flex; border-top:1px solid var(--line)}
+.conq-chatin{flex:1; min-width:0; background:var(--panel2); border:none; color:var(--ink); padding:8px 10px; font-size:13px; font-family:var(--sans)}
+.conq-chatin:focus{outline:none; background:var(--panel)}
+.conq-chatsend{background:var(--accent); color:var(--on-accent); border:none; padding:0 12px; cursor:pointer; font-size:14px; font-weight:700}
+.conq-chatsend:hover{filter:brightness(1.08)}
