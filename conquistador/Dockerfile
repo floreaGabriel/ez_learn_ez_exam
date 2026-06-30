@@ -9,7 +9,8 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install --omit=dev
 
-COPY server.js map.js ./
+# toate sursele .js (server + hărți: map.js, map-europa.js, eventuale viitoare)
+COPY *.js ./
 COPY questions ./questions
 
 ENV PORT=3002
