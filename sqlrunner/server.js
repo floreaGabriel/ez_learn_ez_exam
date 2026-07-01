@@ -98,29 +98,40 @@ async function waitForDb(){
   throw new Error("baza nu a pornit la timp");
 }
 
+// erori SQL Server care inseamna "exista deja" -> le ignoram la re-rulare, ca
+// init.sql sa fie idempotent si sa poata adauga scenarii NOI peste baze vechi:
+//   1801 = database exists, 2714 = object (tabel) exists,
+//   2627/2601 = duplicate key (INSERT rulat deja), 15023/15025 = user/login exists.
+const IGNORABLE_INIT_ERRORS = new Set([1801, 2714, 2627, 2601, 15023, 15025]);
+
 async function ensureInitialized(saPool){
-  // deja initializat? (exista tabelul biblioteca..Cititori)
+  // Sentinel = cel mai NOU obiect asteptat. Cand adaugi un scenariu, actualizeaza-l
+  // la un obiect din noua baza, ca init.sql sa se re-ruleze si sa-l creeze.
   const check = await saPool.request().query(
-    "SELECT CASE WHEN DB_ID('biblioteca') IS NOT NULL " +
-    "AND OBJECT_ID('biblioteca.dbo.Cititori') IS NOT NULL THEN 1 ELSE 0 END AS ok");
+    "SELECT CASE WHEN DB_ID('biblioteca_carti') IS NOT NULL " +
+    "AND OBJECT_ID('biblioteca_carti.dbo.Abonati') IS NOT NULL THEN 1 ELSE 0 END AS ok");
   if(check.recordset[0].ok === 1){
-    console.log("bazele exista deja — sar peste init");
+    console.log("bazele exista deja (inclusiv scenariile noi) — sar peste init");
     return;
   }
-  console.log("rulez init.sql (prima initializare)...");
+  console.log("rulez init.sql (aplicare/actualizare scenarii)...");
   let script = fs.readFileSync(path.join(__dirname, "init.sql"), "utf8");
   script = script.split("{{READONLY_PASSWORD}}").join(RO_PASSWORD);
   // batch-urile sunt separate prin linii care contin doar `GO`
   const batches = script.split(/^\s*GO\s*$/im).map(b => b.trim()).filter(Boolean);
+  let aplicate = 0, sarite = 0;
   for(let i=0; i<batches.length; i++){
     try{
       await saPool.request().batch(batches[i]);
+      aplicate++;
     }catch(e){
+      // batch pe o baza deja creata (ex. CREATE TABLE existent) -> il sarim
+      if(IGNORABLE_INIT_ERRORS.has(e.number)){ sarite++; continue; }
       console.error("eroare la batch-ul " + (i+1) + ": " + e.message);
       throw e;
     }
   }
-  console.log("init.sql aplicat cu succes (" + batches.length + " batch-uri)");
+  console.log("init.sql aplicat (" + aplicate + " batch-uri noi, " + sarite + " deja existente)");
 }
 
 // ---------- validarea interogarii (defense-in-depth peste read-only) ----------
