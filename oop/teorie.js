@@ -812,6 +812,37 @@ public:
      friend void fc ();
 };`},
 
+  {t:"h4", html:`Rezumat — cum să înțelegi <code>friend</code> corect`},
+  {t:"note", kind:"info", html:`<b>Ideea-cheie:</b> <code>friend</code> nu face <b>nimic</b> la runtime. Modificatorii <code>private/public/protected</code> <b>nu există în memorie</b> — un obiect e doar câmpurile lui lipite (ex. <code>Point</code> → <code>[x:4B][y:4B]</code>, fără niciun „bit de privat"). Controlul accesului e verificat <b>exclusiv de compilator</b>, înainte să existe un executabil. <code>friend</code> e doar o linie care-i spune compilatorului „relaxează verificarea pentru codul ăsta": zero pointeri, zero câmpuri, zero verificări la execuție — <b>cost exact zero</b> în memorie și viteză.`},
+  {t:"p", html:`De aici decurge totul: fiindcă <code>friend</code> înseamnă reguli despre <i>cine are voie să scrie ce în cod</i> (nu proprietăți ale obiectelor), el nu se moștenește și nu e comutativ.`},
+  {t:"h4", html:`Cele 4 utilizări tipice`},
+  {t:"ul", items:[
+    `<b>Funcție standalone <code>friend</code></b> — o funcție liberă (fără <code>this</code>) care are nevoie de membrii privați a două obiecte: <code>friend double distanta(const Point&amp; a, const Point&amp; b);</code>. Se apelează <code>distanta(p1, p2)</code>, nu <code>p1.distanta(p2)</code> — declarația <code>friend</code> îi dă doar acces, nu o face membru.`,
+    `<b>Supraîncărcarea lui <code>operator&lt;&lt;</code></b> (motivul #1 în practică) — la <code>cout &lt;&lt; p</code>, operandul stâng e un <code>ostream</code>, nu un <code>Point</code>, deci <b>nu poate fi metodă membru</b>; trebuie funcție liberă, dar are nevoie de <code>x, y</code> privați → <code>friend</code>.`,
+    `<b>Clasă <code>friend</code> întreagă</b> — la colaborare foarte strânsă (Listă+Nod): <code>Nod</code> își ține <b>tot</b> privat, inclusiv constructorul, ca nimeni din exterior să nu fabrice noduri rătăcite; doar <code>ListaInlantuita</code> are „cheia". E încapsulare <i>bună</i> prin friend — o rafinezi, nu o încalci.`,
+    `<b>Doar o metodă anume a altei clase</b> — <code>friend void Vector::afiseaza(const Point&amp;);</code> dă acces <b>exclusiv</b> acelei metode (principiul privilegiului minim), nu întregului <code>Vector</code>.`
+  ]},
+  {t:"code", cod:`class Point {
+     int x, y;
+public:
+     Point(int x, int y) : x(x), y(y) {}
+     // operandul stang este ostream -> NU poate fi membru -> friend
+     friend std::ostream& operator<<(std::ostream& os, const Point& p);
+};
+
+std::ostream& operator<<(std::ostream& os, const Point& p) {
+     return os << "(" << p.x << ", " << p.y << ")";
+}
+// cout << Point(3,4);   ->   (3, 4)`},
+  {t:"note", kind:"nuanta", html:`<b><code>friend class Vector</code> vs. <code>friend void Vector::afiseaza(...)</code>:</b> prima dă acces întregii clase, a doua doar unei metode (<code>Vector::altaMetoda()</code> tot NU vede <code>x, y</code>). Capcană: forma cu metodă cere ca <code>Vector</code> să fie <b>deja definit complet</b> înainte de <code>Point</code> — de aici dependențe circulare, rezolvate cu declarație anticipată + separarea declarației de implementare. Cu <code>friend class</code> un simplu forward declaration ajunge.`},
+  {t:"h4", html:`Cele trei „NU"`},
+  {t:"ul", items:[
+    `<b>Nu e comutativ</b> — dacă <code>A</code> îl declară <code>friend</code> pe <code>B</code>, atunci <code>B</code> vede internele lui <code>A</code>, dar <code>A</code> <b>nu</b> le vede pe ale lui <code>B</code> decât dacă <code>B</code> o declară explicit. Prietenia e o cheie dată într-o singură direcție.`,
+    `<b>Nu se moștenește</b> — dacă <code>B</code> e <code>friend</code> cu <code>A</code> și <code>C : public B</code>, atunci <code>C</code> <b>nu</b> e <code>friend</code> cu <code>A</code>. „Prietenii tatălui meu nu sunt automat prietenii mei."`,
+    `<b>Nu e tranzitiv</b> — <code>A</code> friend cu <code>B</code> și <code>B</code> friend cu <code>C</code> nu implică <code>A</code> friend cu <code>C</code>. Prietenul prietenului nu e prieten.`
+  ]},
+  {t:"note", kind:"capcana", html:`<b>Când e potrivit vs. nepotrivit:</b> <code>friend</code> e bun când cele două tipuri sunt <b>proiectate împreună ca o unitate</b> (Listă+Nod, Matrice+Iterator, o clasă și <code>operator&lt;&lt;</code>). E prost când îl folosești ca scurtătură ca să eviți getteri între clase de fapt independente — acolo ascunde un design slab. În plus, fiindcă e verificat la compilare și numele prietenului apare în definiția clasei, <b>adăugarea unui friend cere recompilarea</b> tuturor fișierelor care includ acel header: zero cost la runtime, dar cuplaj strâns și timp de build mai mare.`},
+
   {t:"h", html:`Funcții inline`},
   {t:"p", html:`La o funcție <code>inline</code>, apelul se înlocuiește cu <b>codul obiect al funcției</b> (nu se mai face un apel real). Avantaj: viteză; dezavantaj: crește dimensiunea codului obiect, deci e recomandat doar pentru funcții <b>foarte scurte</b>.`},
   {t:"code", cod:`inline int compare (int a, int b) {
