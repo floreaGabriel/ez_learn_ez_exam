@@ -34,6 +34,8 @@ IF DB_ID('curierat') IS NULL CREATE DATABASE curierat;
 GO
 IF DB_ID('universitate') IS NULL CREATE DATABASE universitate;
 GO
+IF DB_ID('biblioteca_carti') IS NULL CREATE DATABASE biblioteca_carti;
+GO
 
 -- ===================== 2. Login read-only (la nivel de server) =====================
 IF SUSER_ID('readonly') IS NULL
@@ -519,6 +521,66 @@ INSERT INTO Note VALUES
  (101,11,'CS102','2021-06-19','2022-06-19', 7.00,NULL),   -- ultima cifra 2 (par) -> exclus la f
  (102,12,'MA205','2021-09-14','2022-01-01', 8.50,'2021-10-01'),  -- contestata
  (103,13,'CS103','2021-06-15','2021-11-30', 6.00,NULL);
+CREATE USER readonly FOR LOGIN readonly;
+ALTER ROLE db_datareader ADD MEMBER readonly;
+GO
+
+-- ============================================================
+--  BIBLIOTECA_CARTI  (Subiect BD sept. 2022 — Abonati / Carti / Imprumuturi)
+--  Model N—N: un abonat imprumuta mai multe carti, o carte e imprumutata de
+--  mai multi abonati; tabela `Imprumuturi` face legatura si tine datele.
+--  Regula: DataReturnareAsteptata = DataImprumut + 14 zile (2 saptamani).
+--  In subiect PK-urile sunt IDENTITY(1,1) si DataReturnareAsteptata e pusa de
+--  un trigger; aici (doar SELECT) punem valorile direct in seed.
+-- ============================================================
+USE biblioteca_carti;
+CREATE TABLE Abonati (
+    IdAbonat     INT PRIMARY KEY,
+    Nume         VARCHAR(100) NOT NULL,
+    Prenume      VARCHAR(100) NOT NULL,
+    DataAdaugare DATETIME NOT NULL,
+    Telefon      VARCHAR(10) NULL,
+    DataNasterii DATETIME NULL
+);
+CREATE TABLE Carti (
+    IdCarte      INT PRIMARY KEY,
+    Titlu        VARCHAR(150) NOT NULL,
+    Autor        VARCHAR(70)  NOT NULL,
+    ISBN         VARCHAR(20)  NOT NULL,
+    DataAparitiei DATETIME    NOT NULL
+);
+CREATE TABLE Imprumuturi (
+    IdImprumut             INT PRIMARY KEY,
+    IdAbonat               INT NOT NULL,
+    IdCarte                INT NOT NULL,
+    DataImprumut           DATETIME NOT NULL,
+    DataReturnareAsteptata DATETIME NOT NULL,   -- = DataImprumut + 14 zile
+    DataReturnareReala     DATETIME NULL,       -- NULL = inca nereturnata
+    FOREIGN KEY (IdAbonat) REFERENCES Abonati(IdAbonat),
+    FOREIGN KEY (IdCarte)  REFERENCES Carti(IdCarte)
+);
+INSERT INTO Abonati VALUES
+ (1,'Popescu','Andrei','2021-05-10','0721000001','1998-03-14'),   -- ...escu -> a)
+ (2,'Ionescu','Maria','2021-06-01','0721000002','1999-07-22'),    -- ...escu -> a)
+ (3,'Pop','Vlad','2021-07-15','0721000003','2000-01-05'),
+ (4,'Georgescu','Elena','2021-08-20','0721000004','1997-11-30'),  -- ...escu -> a)
+ (5,'Marin','Radu','2022-01-02','0721000005','2001-02-18');       -- fara imprumuturi -> e) cu 0
+INSERT INTO Carti VALUES
+ (1,'Amintiri din copilarie','Ion Creanga','9789730000011','2022-11-05'),   -- aparuta in nov. -> f)
+ (2,'Morometii','Marin Preda','9789730000028','2020-03-01'),
+ (3,'Enigma Otiliei','George Calinescu','9789730000035','2022-11-20'),      -- aparuta in nov. -> f)
+ (4,'Ion','Liviu Rebreanu','9789730000042','2019-05-01'),
+ (5,'Baltagul','Mihail Sadoveanu','9789730000059','2021-09-10');
+INSERT INTO Imprumuturi VALUES
+ (10,1,1,'2022-01-10','2022-01-24','2022-01-20'),   -- returnat la timp
+ (11,1,1,'2022-02-01','2022-02-15','2022-03-01'),   -- reala > asteptata -> nereturnat la timp -> d)
+ (12,1,3,'2022-09-05','2022-09-19',NULL),           -- activ, expira < 25.09.2022 -> h); nereturnat -> b), d)
+ (13,2,1,'2022-03-10','2022-03-24','2022-03-22'),   -- la timp
+ (14,2,5,'2022-05-01','2022-05-15','2022-05-10'),   -- la timp; abonat 2 -> 2 imprum. in 2022 -> g)
+ (15,2,1,'2021-11-01','2021-11-15',NULL),           -- activ expirat -> b), d), h)
+ (16,3,2,'2022-06-01','2022-06-15','2022-06-10'),   -- la timp
+ (17,4,4,'2023-01-05','2023-01-19',NULL);           -- activ nereturnat -> b), d) (nu h: expira in 2023)
+-- carte 1 are 4 imprumuturi (10,11,13,15) = cea mai imprumutata -> c) da 4
 CREATE USER readonly FOR LOGIN readonly;
 ALTER ROLE db_datareader ADD MEMBER readonly;
 GO

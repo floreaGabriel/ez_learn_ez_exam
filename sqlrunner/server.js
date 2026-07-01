@@ -49,7 +49,9 @@ const SCENARIOS = {
   curierat:   { nume:"Curierat", icon:"📦", db:"curierat",
                 tables:["Expeditori","Colete","Livrari"] },
   universitate:{ nume:"Universitate", icon:"🎓", db:"universitate",
-                tables:["Studenti","Inscrieri","Note"] }
+                tables:["Studenti","Inscrieri","Note"] },
+  biblioteca_carti:{ nume:"Bibliotecă (împrumut cărți)", icon:"📖", db:"biblioteca_carti",
+                tables:["Abonati","Carti","Imprumuturi"] }
 };
 
 function baseCfg(extra){
