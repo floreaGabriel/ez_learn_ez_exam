@@ -27,6 +27,10 @@ RUN rm -f /usr/share/nginx/html/docker-entrypoint-reload.sh
 # index.html. La fiecare deploy versiunea se schimbă => browserul (care ia mereu
 # index.html proaspăt) cere automat JS/CSS-ul nou. Userii NU mai dau hard-reload.
 RUN sed -i -E "s|(href=\"css/[^\"]*)\"|\1?v=${ASSET_VER}\"|g; s|(src=\"js/[^\"]*)\"|\1?v=${ASSET_VER}\"|g" /usr/share/nginx/html/index.html
+# Idem pentru laboratorul PSO: simulatoarele (sims/*.js) primesc ?v=<sha>
+# (pso/index.html e no-cache — vezi nginx.conf — deci referințele proaspete
+#  ajung la utilizator la fiecare deploy).
+RUN sed -i -E "s|(src=\"sims/[^\"]*)\"|\1?v=${ASSET_VER}\"|g" /usr/share/nginx/html/pso/index.html
 
 EXPOSE 80
 

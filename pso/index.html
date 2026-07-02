@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSO — Simulatoare vizuale (laborator)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+/* aplică tema salvată înainte de paint (fără flash) */
+(function(){try{
+  var m=localStorage.getItem('psosim-theme')||localStorage.getItem('app-theme-mode')||'dark';
+  document.documentElement.dataset.theme=m;
+  var v=localStorage.getItem('app-theme-vars');
+  if(v){ var o=JSON.parse(v), s=document.documentElement.style; for(var k in o) s.setProperty(k,o[k]); }
+}catch(e){}})();
+</script>
+<style>
+:root{
+  --bg:#1a1714; --panel:#221e1a; --panel2:#2a2521; --topbar:#1d1916;
+  --ink:#ece3d2; --ink-soft:#d6cbb6; --muted:#a8997f; --line:#352f28; --line2:#403930;
+  --accent:#e9b143; --accent-2:#d8843f; --blue:#83a598; --green:#b8bb26; --red:#fb4934;
+  --purple:#d3869b; --aqua:#8ec07c; --code-bg:#14110d;
+  --mono:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+html[data-theme="light"]{
+  --bg:#f3ecdd; --panel:#fbf6ea; --panel2:#f1e8d6; --topbar:#f7f1e3;
+  --ink:#2a2118; --ink-soft:#4a3f30; --muted:#8a7a5f; --line:#ddd0b8; --line2:#cdbf9f;
+  --accent:#bf8b1d; --accent-2:#c46a2a; --blue:#076678; --green:#79740e; --red:#c23a2e;
+  --purple:#8f3f71; --aqua:#427b58; --code-bg:#efe6d2;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans); color:var(--ink); background:var(--bg); line-height:1.6; font-size:15px; -webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px; margin:0 auto; padding:24px 30px 120px}
+
+/* ---- header sobru ---- */
+.bar{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; padding-bottom:14px; border-bottom:1px solid var(--line)}
+.brand{font-size:21px; font-weight:700; letter-spacing:.3px; color:var(--ink)}
+.brand span{color:var(--muted); font-weight:500}
+.bar .sub{color:var(--muted); font-size:13px}
+.bar .pop{margin-left:auto; font-size:12px; color:var(--muted); text-decoration:none; border:1px solid var(--line2); border-radius:7px; padding:4px 10px; white-space:nowrap}
+.bar .pop:hover{color:var(--accent); border-color:var(--accent)}
+
+.page{animation:fade .25s ease}
+@keyframes fade{from{opacity:0; transform:translateY(5px)}to{opacity:1; transform:none}}
+
+h2{font-size:19px; color:var(--ink); margin-bottom:4px; font-weight:700}
+.lead{color:var(--muted); font-size:13.5px; margin:2px 0 20px; max-width:82ch}
+p{margin:0 0 10px}
+.muted{color:var(--muted)}
+code{font-family:var(--mono); font-size:.9em; background:var(--panel2); padding:1px 5px; border-radius:4px; color:var(--ink-soft)}
+
+/* ---- acasă: grila de simulatoare, pe subsisteme ---- */
+.cat-h{display:flex; align-items:center; gap:9px; font-size:13px; font-weight:700; letter-spacing:.8px;
+  text-transform:uppercase; color:var(--muted); margin:26px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--line)}
+.cat-h:first-of-type{margin-top:14px}
+.cat-h .cnt{font-family:var(--mono); font-size:11px; font-weight:600; color:var(--muted); border:1px solid var(--line2); border-radius:9px; padding:0 8px}
+.sim-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(245px,1fr)); gap:12px}
+.sim-card{position:relative; text-align:left; cursor:pointer; font-family:var(--sans); background:var(--panel);
+  border:1px solid var(--line2); border-radius:12px; padding:15px 16px 13px; display:flex; flex-direction:column; gap:7px;
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease}
+.sim-card:hover{transform:translateY(-3px); border-color:var(--accent); box-shadow:0 10px 26px rgba(0,0,0,.3)}
+.sim-card .ico{font-size:23px; line-height:1}
+.sim-card h3{font-size:14.5px; color:var(--ink); font-weight:700; line-height:1.35}
+.sim-card p{font-size:12.5px; color:var(--muted); line-height:1.5; margin:0; flex:1}
+.sim-card .meta{display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:3px}
+.pill{font-family:var(--mono); font-size:10.5px; font-weight:600; border-radius:6px; padding:2px 8px; white-space:nowrap}
+.pill.exam{color:var(--accent); background:color-mix(in srgb, var(--accent) 14%, transparent); border:1px solid color-mix(in srgb, var(--accent) 45%, transparent)}
+.pill.curs{color:var(--muted); background:var(--panel2); border:1px solid var(--line2)}
+.pill.scn{color:var(--ink-soft); background:transparent; border:1px dashed var(--line2)}
+.hint-foot{margin-top:30px; font-size:12.5px; color:var(--muted); border-top:1px dashed var(--line2); padding-top:12px}
+
+/* ---- pagina unui simulator ---- */
+.sim-head{display:flex; align-items:center; gap:11px; flex-wrap:wrap; margin:16px 0 4px}
+.sim-head .back{appearance:none; cursor:pointer; font-family:var(--sans); font-size:12.5px; font-weight:600;
+  color:var(--ink-soft); background:transparent; border:1px solid var(--line2); border-radius:7px; padding:5px 11px}
+.sim-head .back:hover{color:var(--accent); border-color:var(--accent)}
+.sim-head h2{display:flex; align-items:center; gap:9px; margin:0}
+.sim-desc{color:var(--muted); font-size:13.5px; margin:6px 0 14px; max-width:88ch}
+.sim-desc b{color:var(--ink-soft)}
+
+/* chips (scenarii) */
+.chips{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px}
+.chip{appearance:none; font-family:var(--sans); font-size:12.5px; font-weight:600; cursor:pointer;
+  border:1px solid var(--line2); background:var(--panel); color:var(--ink-soft); padding:6px 12px; border-radius:7px}
+.chip:hover{border-color:var(--accent); color:var(--ink)}
+.chip.active{background:var(--accent); border-color:var(--accent); color:var(--bg)}
+
+/* player: cod (opțional) + scenă */
+.sim-cols{display:grid; grid-template-columns:1fr; gap:16px}
+.sim-cols.has-code{grid-template-columns:minmax(320px,.92fr) 1.08fr}
+@media(max-width:860px){ .sim-cols.has-code{grid-template-columns:1fr} }
+pre.code{font-family:var(--mono); font-size:12.8px; line-height:1.6; background:var(--code-bg); color:var(--ink-soft);
+  border:1px solid var(--line); border-radius:10px; overflow:auto; white-space:pre; tab-size:4; padding:12px 0; margin:0}
+pre.code .jl{display:block; padding:0 14px; min-height:1.6em}
+pre.code .jl.on{background:color-mix(in srgb, var(--accent) 15%, transparent); box-shadow:inset 3px 0 0 var(--accent)}
+.tok-key{color:var(--accent); font-weight:600}
+.tok-fn{color:var(--blue)}
+.tok-str{color:var(--green)}
+.tok-com{color:var(--muted); font-style:italic}
+.tok-num{color:var(--purple)}
+.tok-pre{color:var(--aqua)}
+
+.stage-box{background:var(--panel); border:1px solid var(--line2); border-radius:12px; overflow:hidden}
+.stage-h{display:flex; align-items:center; gap:8px; font-size:10.5px; font-weight:700; letter-spacing:.7px; text-transform:uppercase;
+  color:var(--muted); padding:8px 13px; border-bottom:1px solid var(--line); background:var(--topbar)}
+.sim-stage{padding:14px}
+.sim-stage svg{width:100%; height:auto; display:block}
+.legend{display:flex; gap:11px; flex-wrap:wrap; padding:9px 14px; border-top:1px dashed var(--line); font-size:11px; color:var(--muted)}
+.legend .lg{display:inline-flex; align-items:center; gap:5px}
+.legend .sw{width:11px; height:11px; border-radius:3.5px; border:2px solid var(--line2); background:var(--panel2)}
+.legend .sw.run{border-color:var(--green)} .legend .sw.rdy{border-color:var(--blue)}
+.legend .sw.blk{border-color:var(--accent-2)} .legend .sw.zmb{border-color:var(--red)}
+.legend .sw.acc{border-color:var(--accent)} .legend .sw.prp{border-color:var(--purple)}
+
+/* controale player */
+.controls{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:14px 0 12px}
+.btn{appearance:none; font-family:var(--sans); font-size:13px; font-weight:600; cursor:pointer;
+  border:1px solid var(--accent); background:var(--accent); color:var(--bg); padding:7px 14px; border-radius:7px}
+.btn:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent; color:var(--ink-soft); border-color:var(--line2)}
+.btn.ghost:hover{border-color:var(--accent); color:var(--ink)}
+.btn:disabled{opacity:.4; cursor:default; filter:none}
+.prog{color:var(--muted); font-size:12.5px; font-family:var(--mono); margin-left:4px}
+.kbd-hint{margin-left:auto; font-size:11px; color:var(--muted)}
+.kbd-hint kbd{font-family:var(--mono); font-size:10px; border:1px solid var(--line2); border-bottom-width:2px; border-radius:4px; padding:0 4px}
+
+/* panoul „ce se întâmplă / de ce” */
+.sim-info{background:var(--panel); border:1px solid var(--line2); border-radius:11px; padding:13px 16px;
+  display:flex; flex-direction:column; gap:10px}
+.sim-stepn{font-size:11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--accent); font-family:var(--mono)}
+.sim-lbl{font-size:10.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--muted); margin-bottom:3px}
+.sim-what,.sim-why{font-size:13.5px; line-height:1.58; color:var(--ink-soft)}
+.sim-what b,.sim-why b{color:var(--ink)}
+.sim-why-box{padding-top:10px; border-top:1px dashed var(--line2)}
+
+/* consolă (output) */
+.console{display:none; background:var(--code-bg); border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-top:12px}
+.console .con-h{font-size:10.5px; letter-spacing:.6px; text-transform:uppercase; color:var(--muted); margin-bottom:5px}
+.console pre{font-family:var(--mono); font-size:12.5px; color:var(--green); white-space:pre-wrap; line-height:1.5}
+
+/* notă sub player (context de examen etc.) */
+.exam-note{display:flex; gap:11px; align-items:flex-start; margin:16px 0 0; padding:11px 14px; border-radius:9px;
+  border:1px solid var(--line2); border-left:3px solid var(--accent); background:var(--panel); font-size:13px; line-height:1.6; color:var(--ink-soft)}
+.exam-note .tag{flex:0 0 auto; font-size:10px; font-weight:700; letter-spacing:.6px; text-transform:uppercase;
+  padding:2px 8px; border-radius:6px; background:var(--accent); color:var(--bg); white-space:nowrap; margin-top:2px}
+
+/* ---- config (simulatoare parametrizabile: Gantt, înlocuire pagini) ---- */
+.cfg{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; background:var(--panel); border:1px solid var(--line2);
+  border-radius:11px; padding:12px 14px; margin-bottom:14px}
+.cfg .fld{display:flex; flex-direction:column; gap:3px}
+.cfg label{font-size:10.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--muted)}
+.cfg input,.cfg select{font-family:var(--mono); font-size:13px; padding:7px 10px; background:var(--code-bg);
+  color:var(--ink); border:1px solid var(--line2); border-radius:7px; min-width:70px}
+.cfg input:focus,.cfg select:focus{outline:none; border-color:var(--accent)}
+.cfg-tbl{width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:10px}
+.cfg-tbl th{text-align:left; color:var(--muted); font-weight:600; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; padding:4px 8px; border-bottom:1px solid var(--line)}
+.cfg-tbl td{padding:3px 6px; border-bottom:1px solid var(--line)}
+.cfg-tbl input{width:64px; font-family:var(--mono); font-size:12.5px; padding:5px 8px; background:var(--code-bg); color:var(--ink); border:1px solid var(--line2); border-radius:6px}
+.cfg-tbl input:focus{outline:none; border-color:var(--accent)}
+.cfg-tbl .del{cursor:pointer; border:none; background:none; color:var(--red); font-size:14px}
+
+/* ---- explorator interactiv (întrețeseri) ---- */
+.ix-wrap{display:grid; grid-template-columns:1.15fr .85fr; gap:16px}
+@media(max-width:860px){ .ix-wrap{grid-template-columns:1fr} }
+.ix-threads{display:flex; flex-direction:column; gap:10px}
+.ix-th{background:var(--panel); border:1px solid var(--line2); border-radius:11px; overflow:hidden}
+.ix-th.done{opacity:.55}
+.ix-th-h{display:flex; align-items:center; gap:9px; padding:8px 12px; background:var(--topbar); border-bottom:1px solid var(--line)}
+.ix-th-h b{font-size:13px; color:var(--ink)}
+.ix-th-h .st{margin-left:auto; font-family:var(--mono); font-size:10.5px; font-weight:700; border-radius:6px; padding:1px 8px}
+.ix-th-h .st.ready{color:var(--green); background:color-mix(in srgb, var(--green) 14%, transparent)}
+.ix-th-h .st.blocked{color:var(--accent-2); background:color-mix(in srgb, var(--accent-2) 14%, transparent)}
+.ix-th-h .st.done{color:var(--muted); background:var(--panel2)}
+.ix-code{font-family:var(--mono); font-size:12.5px; line-height:1.7; padding:9px 0; white-space:pre}
+.ix-code .il{display:block; padding:0 13px; color:var(--ink-soft)}
+.ix-code .il.next{background:color-mix(in srgb, var(--accent) 15%, transparent); box-shadow:inset 3px 0 0 var(--accent); color:var(--ink)}
+.ix-code .il.done{color:var(--muted); text-decoration:line-through; text-decoration-color:color-mix(in srgb, var(--muted) 55%, transparent)}
+.ix-run{display:block; width:100%; appearance:none; cursor:pointer; font-family:var(--sans); font-size:12px; font-weight:700;
+  color:var(--bg); background:var(--accent); border:none; padding:7px; letter-spacing:.3px}
+.ix-run:hover{filter:brightness(1.07)}
+.ix-run:disabled{background:var(--panel2); color:var(--muted); cursor:default}
+.ix-side{display:flex; flex-direction:column; gap:12px}
+.ix-box{background:var(--panel); border:1px solid var(--line2); border-radius:11px; padding:11px 14px}
+.ix-box .bh{font-size:10.5px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--muted); margin-bottom:7px}
+.ix-sems{display:flex; gap:9px; flex-wrap:wrap}
+.ix-sem{display:flex; flex-direction:column; align-items:center; gap:2px; border:1px solid var(--line2); border-radius:9px; padding:7px 13px; background:var(--panel2)}
+.ix-sem .v{font-family:var(--mono); font-size:19px; font-weight:700; color:var(--accent)}
+.ix-sem .v.zero{color:var(--red)}
+.ix-sem .n{font-family:var(--mono); font-size:10.5px; color:var(--muted)}
+.ix-sem .q{font-size:10px; color:var(--accent-2)}
+.ix-out{font-family:var(--mono); font-size:15px; letter-spacing:2px; color:var(--green); min-height:24px; word-break:break-all}
+.ix-out .cursor{display:inline-block; width:8px; height:15px; background:var(--accent); margin-left:2px; animation:blink 1s steps(1) infinite; vertical-align:text-bottom}
+@keyframes blink{50%{opacity:0}}
+.ix-vars{display:flex; gap:9px; flex-wrap:wrap}
+.ix-var{font-family:var(--mono); font-size:12.5px; color:var(--ink-soft); border:1px dashed var(--line2); border-radius:7px; padding:4px 10px}
+.ix-var b{color:var(--purple); font-weight:700}
+.ix-hist{font-family:var(--mono); font-size:11.5px; color:var(--muted); line-height:1.8; max-height:130px; overflow:auto}
+.ix-msg{font-size:12.5px; color:var(--ink-soft); line-height:1.55}
+.ix-msg.deadlock{color:var(--red); font-weight:600}
+
+/* ---- SVG: limbaj vizual comun (temabil) ---- */
+.sim-stage text{font-family:var(--sans); font-size:12.5px; fill:var(--ink)}
+.sim-stage .sv-t{fill:var(--ink)}
+.sim-stage .sv-t.b{font-weight:700}
+.sim-stage .sv-t.sm{font-size:10.5px}
+.sim-stage .sv-t.xs{font-size:9.5px}
+.sim-stage .sv-t.mut{fill:var(--muted)}
+.sim-stage .sv-t.soft{fill:var(--ink-soft)}
+.sim-stage .sv-t.acc{fill:var(--accent)}
+.sim-stage .sv-t.grn{fill:var(--green)}
+.sim-stage .sv-t.red{fill:var(--red)}
+.sim-stage .sv-t.blu{fill:var(--blue)}
+.sim-stage .sv-t.org{fill:var(--accent-2)}
+.sim-stage .sv-t.prp{fill:var(--purple)}
+.sim-stage .sv-t.aqu{fill:var(--aqua)}
+.sim-stage .sv-t.onacc{fill:var(--bg)}
+.sim-stage .sv-t.mono{font-family:var(--mono); font-size:11.5px}
+.sim-stage .sv-n{fill:var(--panel2); stroke:var(--line2); stroke-width:1.5}
+.sim-stage .sv-n.deep{fill:var(--code-bg)}
+.sim-stage .sv-n.flat{fill:var(--panel)}
+.sim-stage .sv-n.run{stroke:var(--green); stroke-width:2}
+.sim-stage .sv-n.rdy{stroke:var(--blue); stroke-width:2}
+.sim-stage .sv-n.blk{stroke:var(--accent-2); stroke-width:2; stroke-dasharray:5 3}
+.sim-stage .sv-n.zmb{stroke:var(--red); stroke-width:2}
+.sim-stage .sv-n.acc{stroke:var(--accent); stroke-width:2}
+.sim-stage .sv-n.prp{stroke:var(--purple); stroke-width:2}
+.sim-stage .sv-n.aqu{stroke:var(--aqua); stroke-width:2}
+.sim-stage .sv-n.dead{opacity:.42}
+.sim-stage .sv-n.ghost{fill:none; stroke-dasharray:4 4}
+.sim-stage .sv-fill-acc{fill:var(--accent)} .sim-stage .sv-fill-grn{fill:var(--green)}
+.sim-stage .sv-fill-red{fill:var(--red)}   .sim-stage .sv-fill-blu{fill:var(--blue)}
+.sim-stage .sv-fill-org{fill:var(--accent-2)} .sim-stage .sv-fill-prp{fill:var(--purple)}
+.sim-stage .sv-fill-aqu{fill:var(--aqua)}  .sim-stage .sv-fill-mut{fill:var(--muted)}
+.sim-stage .sv-fill-soft{fill:color-mix(in srgb, var(--accent) 13%, transparent)}
+.sim-stage .sv-l{stroke:var(--ink-soft); stroke-width:1.6; fill:none}
+.sim-stage .sv-l.acc{stroke:var(--accent); stroke-width:2}
+.sim-stage .sv-l.dim{stroke:var(--line2)}
+.sim-stage .sv-l.red{stroke:var(--red); stroke-width:2}
+.sim-stage .sv-l.grn{stroke:var(--green); stroke-width:2}
+.sim-stage .sv-l.blu{stroke:var(--blue)}
+.sim-stage .sv-l.org{stroke:var(--accent-2)}
+.sim-stage .sv-l.dash{stroke-dasharray:5 4}
+.sim-stage .sv-hot{filter:drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 65%, transparent))}
+.sim-stage .sv-pulse{animation:svPulse 1.5s ease infinite}
+@keyframes svPulse{0%,100%{opacity:1}50%{opacity:.5}}
+@media(prefers-reduced-motion:reduce){
+  .sv-pulse,.page,.ix-out .cursor{animation:none!important}
+  .sim-card,.sim-card:hover{transform:none; transition:none}
+}
+
+@media(max-width:680px){
+  .wrap{padding:18px 16px 90px}
+  .sim-stage{padding:10px}
+  .kbd-hint{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="bar">
+    <div class="brand">PSO <span>· Laborator de simulatoare</span></div>
+    <div class="sub">Scheme pas-cu-pas pentru conceptele din curs și din subiectele de examen</div>
+    <a class="pop" id="popout" target="_blank" rel="noopener" style="display:none">Tab separat ↗</a>
+  </header>
+
+  <div id="content"></div>
+
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   PSO · Laborator de simulatoare — motorul de pași
+   ------------------------------------------------------------
+   Fiecare simulator se înregistrează cu PSO.register({...}) din
+   fișierele sims/*.js. Un simulator = scenarii; un scenariu =
+   build() -> { cod?, pasi:[{svg, linii?, ce, dece, out?}] }
+   sau { custom:function(root, ctx){...} } pentru interfețe libere.
+   ============================================================ */
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+/* ---------- highlighter C (autonom) ---------- */
+var C_KW = ["int","char","void","bool","const","static","struct","return","if","else","for","while","do",
+"unsigned","signed","long","short","float","double","switch","case","break","continue","default","sizeof",
+"typedef","union","enum","goto","extern","volatile","true","false","NULL","size_t","ssize_t","pid_t",
+"pthread_t","sem_t","pthread_mutex_t","off_t","mode_t","sig_atomic_t"];
+function highlightC(text){
+  var store=[];
+  function hold(cls,val){ store.push('<span class="'+cls+'">'+esc(val)+'</span>'); return String.fromCharCode(0xE000+store.length-1); }
+  var s=text;
+  s=s.replace(/\/\*[\s\S]*?\*\//g, function(m){ return hold("tok-com",m); });
+  s=s.replace(/\/\/[^\n]*/g,        function(m){ return hold("tok-com",m); });
+  s=s.replace(/"(?:[^"\\]|\\.)*"/g, function(m){ return hold("tok-str",m); });
+  s=s.replace(/'(?:[^'\\]|\\.)*'/g, function(m){ return hold("tok-str",m); });
+  s=s.replace(/^\s*#[^\n]*/gm,      function(m){ return hold("tok-pre",m); });
+  s=esc(s);
+  s=s.replace(/([A-Za-z_]\w*)([ \t]*\()?|0x[0-9A-Fa-f]+|\b\d+\b/g, function(m, ident, paren){
+    if(ident===undefined) return '<span class="tok-num">'+m+'</span>';
+    if(C_KW.indexOf(ident)>=0) return '<span class="tok-key">'+ident+'</span>'+(paren||"");
+    if(paren) return '<span class="tok-fn">'+ident+'</span>'+paren;
+    return ident;
+  });
+  s=s.replace(/[-]/g, function(ch){ return store[ch.charCodeAt(0)-0xE000]; });
+  return s;
+}
+
+/* ---------- helperi SVG (limbaj vizual comun, temabil prin clase) ---------- */
+var S = {
+  /* deschide un svg cu viewBox și markerii de săgeți predefiniți */
+  open:function(w,h){
+    return '<svg viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg" role="img">'
+      +'<defs>'
+      +'<marker id="ma" markerWidth="8" markerHeight="7" refX="6.5" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" style="fill:var(--ink-soft)"/></marker>'
+      +'<marker id="ma-acc" markerWidth="8" markerHeight="7" refX="6.5" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" style="fill:var(--accent)"/></marker>'
+      +'<marker id="ma-red" markerWidth="8" markerHeight="7" refX="6.5" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" style="fill:var(--red)"/></marker>'
+      +'<marker id="ma-grn" markerWidth="8" markerHeight="7" refX="6.5" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" style="fill:var(--green)"/></marker>'
+      +'<marker id="ma-blu" markerWidth="8" markerHeight="7" refX="6.5" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" style="fill:var(--blue)"/></marker>'
+      +'<marker id="ma-org" markerWidth="8" markerHeight="7" refX="6.5" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" style="fill:var(--accent-2)"/></marker>'
+      +'</defs>';
+  },
+  close:'</svg>',
+  rect:function(x,y,w,h,cls,rx){
+    return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(rx==null?8:rx)+'" class="'+(cls||'sv-n')+'"/>';
+  },
+  text:function(x,y,str,cls,anchor){
+    return '<text x="'+x+'" y="'+y+'" class="sv-t '+(cls||'')+'"'+(anchor?' text-anchor="'+anchor+'"':'')+'>'+str+'</text>';
+  },
+  /* linie dreaptă cu săgeată opțională: mk = "", "acc", "red", "grn", "blu", "org", null(fără) */
+  line:function(x1,y1,x2,y2,cls,mk){
+    return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" class="sv-l '+(cls||'')+'"'
+      +(mk===null?'':' marker-end="url(#ma'+(mk?'-'+mk:'')+')"')+'/>';
+  },
+  /* curbă cubică orizontală cu săgeată */
+  curve:function(x1,y1,x2,y2,cls,mk){
+    var dx=Math.max(24,Math.abs(x2-x1)/2);
+    return '<path d="M'+x1+' '+y1+' C'+(x1+dx)+' '+y1+','+(x2-dx)+' '+y2+','+x2+' '+y2+'" class="sv-l '+(cls||'')+'"'
+      +(mk===null?'':' marker-end="url(#ma'+(mk?'-'+mk:'')+')"')+'/>';
+  },
+  /* nod dreptunghiular cu titlu (+ subtitlu opțional), centrat */
+  node:function(x,y,w,h,title,sub,cls,tcls){
+    var out=S.rect(x,y,w,h,'sv-n '+(cls||''));
+    var cy=y+h/2;
+    if(sub!=null){
+      out+=S.text(x+w/2, cy-2, title, 'b '+(tcls||''), 'middle');
+      out+=S.text(x+w/2, cy+14, sub, 'sm mut mono', 'middle');
+    } else {
+      out+=S.text(x+w/2, cy+4.5, title, 'b '+(tcls||''), 'middle');
+    }
+    return out;
+  },
+  /* pastilă (badge) cu text mono; lățimea se aproximează după numărul de caractere */
+  badge:function(cx,cy,txt,fillCls,tCls){
+    var w=txt.length*6.7+16;
+    return '<rect x="'+(cx-w/2)+'" y="'+(cy-9)+'" width="'+w+'" height="18" rx="9" class="'+(fillCls||'sv-fill-acc')+'"/>'
+      +S.text(cx,cy+3.5,txt,'xs mono b '+(tCls||'onacc'),'middle');
+  }
+};
+
+/* ---------- registrul simulatoarelor ---------- */
+var PSO = {
+  sims:[], byId:{},
+  register:function(sim){ PSO.sims.push(sim); PSO.byId[sim.id]=sim; }
+};
+var CATEGORII = [
+  {id:"procese",      nume:"Procese",               icon:"⚙️"},
+  {id:"sincronizare", nume:"Fire & sincronizare",   icon:"🔒"},
+  {id:"planificare",  nume:"Planificare",           icon:"⏱️"},
+  {id:"memorie",      nume:"Memorie",               icon:"🧠"},
+  {id:"fisiere",      nume:"Fișiere & IPC",         icon:"📁"},
+  {id:"sistem",       nume:"Sistem & semnale",      icon:"🖥️"}
+];
+
+/* ---------- player generic (pași liniari) ---------- */
+function Player(host, scena, simTitlu){
+  this.host=host; this.sc=scena; this.idx=0; this.timer=null; this.titlu=simTitlu||"";
+  this.render();
+}
+Player.prototype.destroy=function(){ this.stop(); this.host.innerHTML=""; };
+Player.prototype.stop=function(){ if(this.timer){ clearInterval(this.timer); this.timer=null; } this.syncPlayBtn(); };
+Player.prototype.play=function(){
+  var self=this;
+  if(this.idx>=this.sc.pasi.length-1) this.idx=0;
+  this.timer=setInterval(function(){
+    if(self.idx>=self.sc.pasi.length-1){ self.stop(); return; }
+    self.go(self.idx+1);
+  },1600);
+  this.go(this.idx); this.syncPlayBtn();
+};
+Player.prototype.toggle=function(){ this.timer?this.stop():this.play(); };
+Player.prototype.syncPlayBtn=function(){
+  var b=this.host.querySelector('[data-a="play"]');
+  if(b) b.textContent=this.timer?"⏸ Pauză":"▶ Auto";
+};
+Player.prototype.go=function(i){
+  this.idx=Math.max(0,Math.min(this.sc.pasi.length-1,i));
+  this.draw();
+};
+Player.prototype.render=function(){
+  var sc=this.sc, hasCode=!!sc.cod;
+  var html='<div class="sim-cols'+(hasCode?' has-code':'')+'">';
+  if(hasCode) html+='<pre class="code" data-el="cod"></pre>';
+  html+='<div><div class="stage-box"><div class="stage-h">'+esc(sc.stageTitlu||"Schemă")+'</div>'
+      +'<div class="sim-stage" data-el="stage"></div>'
+      +(sc.legenda?'<div class="legend">'+sc.legenda.map(function(l){return '<span class="lg"><span class="sw '+l.c+'"></span>'+esc(l.t)+'</span>';}).join("")+'</div>':'')
+      +'</div></div>';
+  html+='</div>';
+  html+='<div class="controls">'
+      +'<button class="btn ghost" data-a="reset">⏮ Reset</button>'
+      +'<button class="btn ghost" data-a="prev">◀ Înapoi</button>'
+      +'<button class="btn" data-a="next">Pas ▶</button>'
+      +'<button class="btn ghost" data-a="play">▶ Auto</button>'
+      +'<span class="prog" data-el="prog"></span>'
+      +'<span class="kbd-hint">tastele <kbd>←</kbd> <kbd>→</kbd> schimbă pasul</span>'
+      +'</div>';
+  html+='<div class="sim-info"><div class="sim-stepn" data-el="stepn"></div>'
+      +'<div><div class="sim-lbl">Ce se întâmplă</div><div class="sim-what" data-el="ce"></div></div>'
+      +'<div class="sim-why-box"><div class="sim-lbl">De ce</div><div class="sim-why" data-el="dece"></div></div></div>';
+  html+='<div class="console" data-el="con"><div class="con-h">Output (terminal)</div><pre data-el="conout"></pre></div>';
+  this.host.innerHTML=html;
+
+  if(hasCode) this._codeLines=highlightC(sc.cod).split("\n");
+  var self=this;
+  this.host.querySelector('[data-a="reset"]').onclick=function(){ self.stop(); self.go(0); };
+  this.host.querySelector('[data-a="prev"]').onclick=function(){ self.stop(); self.go(self.idx-1); };
+  this.host.querySelector('[data-a="next"]').onclick=function(){ self.stop(); self.go(self.idx+1); };
+  this.host.querySelector('[data-a="play"]').onclick=function(){ self.toggle(); };
+  this.draw();
+};
+Player.prototype.draw=function(){
+  var sc=this.sc, p=sc.pasi[this.idx], q=function(s,el){ return el.querySelector('[data-el="'+s+'"]'); };
+  var h=this.host;
+  var stage=q("stage",h); if(stage) stage.innerHTML=(typeof p.svg==="function")?p.svg():(p.svg||"");
+  if(this._codeLines){
+    var on=p.linii||[];
+    q("cod",h).innerHTML=this._codeLines.map(function(ln,i){
+      return '<span class="jl'+(on.indexOf(i+1)>=0?" on":"")+'">'+(ln.length?ln:" ")+'</span>';
+    }).join("\n");
+    var onEl=q("cod",h).querySelector(".jl.on");
+    if(onEl && onEl.scrollIntoView) try{ onEl.scrollIntoView({block:"nearest"}); }catch(e){}
+  }
+  q("stepn",h).textContent="Pasul "+(this.idx+1)+" / "+sc.pasi.length+(p.titlu?" — "+p.titlu:"");
+  q("ce",h).innerHTML=p.ce||"";
+  q("dece",h).innerHTML=p.dece||"";
+  var con=q("con",h);
+  if(p.out!=null && p.out!==""){ con.style.display="block"; q("conout",h).textContent=p.out; }
+  else con.style.display="none";
+  q("prog",h).textContent=(this.idx+1)+" / "+sc.pasi.length;
+  h.querySelector('[data-a="prev"]').disabled=(this.idx===0);
+  h.querySelector('[data-a="next"]').disabled=(this.idx>=sc.pasi.length-1);
+};
+
+/* ---------- vederi ---------- */
+var state={view:"jocuri", simId:null, scIdx:0, player:null};
+
+function aniPill(sim){
+  if(sim.ani && sim.ani.length) return '<span class="pill exam">examen: '+sim.ani.join(" · ")+'</span>';
+  return '<span class="pill curs">📚 doar în curs</span>';
+}
+
+function renderHome(){
+  cleanupPlayer();
+  state.view="jocuri";
+  var c=document.getElementById("content");
+  var html='<div class="page"><h2 style="margin-top:16px">Alege un simulator</h2>'
+    +'<p class="lead">'+PSO.sims.length+' simulatoare interactive, grupate pe subsistemele din curs. Fiecare arată <b>pas cu pas</b>, pe schemă, ce se întâmplă în sistemul de operare — iar pastila aurie îți spune în ce ani a apărut conceptul în subiectele reale de licență.</p>';
+  CATEGORII.forEach(function(cat){
+    var sims=PSO.sims.filter(function(s){ return s.cat===cat.id; });
+    if(!sims.length) return;
+    html+='<div class="cat-h"><span>'+cat.icon+'</span><span>'+cat.nume+'</span><span class="cnt">'+sims.length+'</span></div>';
+    html+='<div class="sim-grid">';
+    sims.forEach(function(s){
+      html+='<button class="sim-card" data-sim="'+s.id+'">'
+        +'<span class="ico">'+s.icon+'</span>'
+        +'<h3>'+esc(s.titlu)+'</h3>'
+        +'<p>'+s.scurt+'</p>'
+        +'<span class="meta">'+aniPill(s)+'<span class="pill scn">'+s.scenarii.length+' scenarii</span></span>'
+        +'</button>';
+    });
+    html+='</div>';
+  });
+  html+='<div class="hint-foot">💡 Simulatoarele cu pastilă aurie conțin chiar scenariile din subiectele de examen. Le găsești și în lecțiile de teorie, la butonul „Deschide simulatorul”.</div></div>';
+  c.innerHTML=html;
+  c.querySelectorAll(".sim-card").forEach(function(b){
+    b.onclick=function(){ location.hash="sim/"+b.dataset.sim; };
+  });
+  syncPopout();
+}
+
+function cleanupPlayer(){
+  if(state.player && state.player.destroy) try{ state.player.destroy(); }catch(e){}
+  state.player=null;
+}
+
+function renderSim(id, scId){
+  var sim=PSO.byId[id];
+  if(!sim){ renderHome(); return; }
+  cleanupPlayer();
+  state.view="sim"; state.simId=id;
+  state.scIdx=0;
+  if(scId){ sim.scenarii.forEach(function(s,i){ if(s.id===scId) state.scIdx=i; }); }
+  var c=document.getElementById("content");
+  var html='<div class="page">'
+    +'<div class="sim-head"><button class="back" data-a="back">← Toate simulatoarele</button>'
+    +'<h2><span>'+sim.icon+'</span> '+esc(sim.titlu)+'</h2>'+aniPill(sim)+'</div>'
+    +'<div class="sim-desc">'+(sim.desc||sim.scurt)+'</div>'
+    +(sim.scenarii.length>1?'<div class="chips" data-el="chips">'+sim.scenarii.map(function(s,i){
+        return '<button class="chip'+(i===state.scIdx?' active':'')+'" data-sc="'+i+'">'+esc(s.nume)+'</button>';
+      }).join("")+'</div>':'')
+    +'<div data-el="body"></div>'
+    +(sim.nota?'<div class="exam-note"><span class="tag">'+esc(sim.notaTag||'Examen')+'</span><div>'+sim.nota+'</div></div>':'')
+    +'</div>';
+  c.innerHTML=html;
+  c.querySelector('[data-a="back"]').onclick=function(){ location.hash="jocuri"; };
+  var chips=c.querySelector('[data-el="chips"]');
+  if(chips) chips.querySelectorAll(".chip").forEach(function(b){
+    b.onclick=function(){
+      chips.querySelectorAll(".chip").forEach(function(x){ x.classList.remove("active"); });
+      b.classList.add("active");
+      state.scIdx=+b.dataset.sc;
+      mountScenario(sim);
+    };
+  });
+  mountScenario(sim);
+  syncPopout();
+}
+
+function mountScenario(sim){
+  cleanupPlayer();
+  var body=document.querySelector('[data-el="body"]');
+  if(!body) return;
+  body.innerHTML="";
+  var sc=sim.scenarii[state.scIdx];
+  var scena=sc.build();
+  if(scena.custom){
+    var obj=scena.custom(body, {Player:Player, S:S, esc:esc, highlightC:highlightC});
+    state.player=obj&&obj.destroy?obj:{destroy:function(){}};
+  } else {
+    state.player=new Player(body, scena, sim.titlu);
+  }
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* ---------- rutare: hash + postMessage de la gazdă ---------- */
+function routeFromHash(){
+  var t=(location.hash||"").replace(/^#/,"");
+  if(!t || t==="jocuri"){ renderHome(); return; }
+  var m=t.match(/^sim\/([a-z0-9-]+)(?:\/([a-z0-9-]+))?$/);
+  if(m) renderSim(m[1], m[2]);
+  else renderHome();
+}
+window.addEventListener("hashchange", routeFromHash);
+
+function activateTab(tab){
+  var target=(tab && tab!=="jocuri")?tab:"jocuri";
+  if(("#"+target)===location.hash) routeFromHash();
+  else location.hash=target;
+}
+
+/* link „deschide în tab separat” — doar când suntem în iframe */
+function syncPopout(){
+  var a=document.getElementById("popout");
+  if(!a) return;
+  var embedded=false; try{ embedded=(window.parent!==window); }catch(e){ embedded=true; }
+  a.style.display=embedded?"":"none";
+  if(embedded) a.href="index.html"+(location.hash||"");
+}
+
+/* ---------- temă (contract cu aplicația-gazdă) ---------- */
+function setTheme(t){ document.documentElement.dataset.theme=t; try{ localStorage.setItem("psosim-theme",t); }catch(e){} }
+function applyThemeVars(v){
+  var ds=document.documentElement.style,
+      K=["--bg","--bg2","--bg3","--sidebar","--panel","--panel2","--topbar","--ink","--ink-soft","--txt","--muted",
+         "--line","--line2","--border","--accent","--accent-2","--accent2","--green","--good","--red","--bad",
+         "--blue","--purple","--aqua","--warn","--code-bg","--code-ink","--on-accent"];
+  K.forEach(function(k){ ds.removeProperty(k); });
+  if(v){ for(var k in v){ ds.setProperty(k, v[k]); } }
+}
+window.addEventListener("message", function(e){
+  var d=e.data||{};
+  if(d.type==="theme" && d.theme){ setTheme(d.theme); applyThemeVars(d.vars); }
+  else if(d.type==="tab" && d.tab) activateTab(d.tab);
+});
+
+/* ---------- taste: ← → schimbă pasul playerului activ ----------
+   (simulatoarele custom pot expune playerul intern prin proprietatea .player) */
+document.addEventListener("keydown", function(e){
+  var pl=state.player instanceof Player ? state.player
+        : (state.player && state.player.player instanceof Player ? state.player.player : null);
+  if(!pl) return;
+  var tag=(e.target&&e.target.tagName)||"";
+  if(tag==="INPUT"||tag==="SELECT"||tag==="TEXTAREA") return;
+  if(e.key==="ArrowRight"){ pl.stop(); pl.go(pl.idx+1); e.preventDefault(); }
+  else if(e.key==="ArrowLeft"){ pl.stop(); pl.go(pl.idx-1); e.preventDefault(); }
+});
+
+/* ---------- bootstrap ---------- */
+document.addEventListener("DOMContentLoaded", function(){
+  routeFromHash();
+});
+</script>
+
+<!-- simulatoarele (fiecare fișier apelează PSO.register);
+     ?v=<sha> e adăugat de Dockerfile la build, ca la index.html-ul principal -->
+<script src="sims/procese.js"></script>
+<script src="sims/sincronizare.js"></script>
+<script src="sims/planificare.js"></script>
+<script src="sims/memorie.js"></script>
+<script src="sims/fisiere.js"></script>
+<script src="sims/sistem.js"></script>
+</body>
+</html>

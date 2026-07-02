@@ -40,6 +40,9 @@ app/
 │   └── data/
 │       ├── concepte.js     # lecțiile PSO (+ diagrame SVG inline)
 │       └── intrebari.js    # banca de întrebări PSO
+├── pso/                    # laboratorul de simulatoare PSO (embed în materia nativă)
+│   ├── index.html          # shell + motorul de pași (Player) + helperii SVG + rutare hash
+│   └── sims/*.js           # simulatoarele, grupate pe subsisteme (PSO.register)
 ├── retele/index.html       # materia Rețele (pagină proprie, încărcată în iframe)
 ├── sda/index.html          # materia SDA (pagină proprie, încărcată în iframe)
 ├── diagrams/               # surse editabile draw.io (PSO)
@@ -89,3 +92,19 @@ Vezi `sda/index.html` ca model.
   `multi:true` + `corecte:[0,2]` pentru răspuns multiplu; `tip:"deschis"` + `raspuns:"..."` pentru problemă cu rezolvare.
 - Lecție nouă în `js/data/concepte.js`: obiect cu `id, cat, titlu, rezumat, html`.
 - Clip video atașat unei lecții: adaugă în `CONCEPT_VIDEOS` din `js/app.js` (cheia = `id`-ul lecției).
+
+### Simulatoarele PSO (`pso/`)
+
+Laboratorul de simulatoare vizuale („🎮 Simulatoare” din navigația PSO) e o pagină embed
+(`pso/index.html`) încărcată în iframe de `showSimLab()` din `js/app.js`, cu rutare pe hash:
+`#jocuri` (grila) sau `#sim/<id>[/<scenariu>]` (deep-link, folosit și de butoanele din lecții).
+
+- **Simulator nou:** adaugă un fișier în `pso/sims/` (sau extinde unul existent) care apelează
+  `PSO.register({id, cat, icon, titlu, scurt, desc, ani, scenarii})`. Un scenariu întoarce din
+  `build()` fie `{cod?, pasi:[{svg, linii?, ce, dece, out?}]}` (player liniar cu pași), fie
+  `{custom: root => {...}}` pentru interfețe libere (vezi Gantt / exploratorul de întrețeseri).
+  SVG-urile se scriu cu helperii `S.*` și clasele `sv-*` (temabile prin variabile CSS).
+- **Buton „deschide simulatorul” într-o lecție:** adaugă intrarea în `CONCEPT_SIMS`
+  din `js/app.js` (cheia = `id`-ul lecției, `s` = `sim` sau `sim/scenariu`).
+- Cache: `Dockerfile` adaugă `?v=<git-sha>` pe `sims/*.js`, iar orice `index.html` e
+  `no-cache` în `nginx.conf` — modificările ajung la useri la primul refresh după deploy.

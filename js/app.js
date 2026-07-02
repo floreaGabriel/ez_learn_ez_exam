@@ -54,7 +54,7 @@ const MATERII = [
   {
     id:"pso", nume:"PSO", icon:"🧠",
     sub:"Programarea Sistemelor de Operare",
-    descriere:"Procese, fire de execuție, semafoare, mutex, bariere, deadlock, planificare, semnale și zone de memorie — explicate cu diagrame, plus teste în stilul subiectelor reale ATM.",
+    descriere:"Procese, fire de execuție, semafoare, mutex, bariere, deadlock, planificare, semnale și zone de memorie — explicate cu diagrame, plus 14 simulatoare vizuale pas-cu-pas și teste în stilul subiectelor reale ATM.",
     tip:"native"
   },
   {
@@ -194,6 +194,50 @@ const CONCEPT_VIDEOS = {
   planificare: { id:"zFnrUVqtiOY" },
   pipe:        { id:"Mqb2dVRe0uo" }
 };
+// Simulatoarele PSO atașate fiecărei lecții (butoane „Deschide simulatorul”).
+// Valoarea s = id-ul simulatorului din pso/index.html, opțional cu /scenariu.
+const CONCEPT_SIMS = {
+  intro:              [{s:"syscall",       t:"🖥️ Apelul de sistem: user ↔ kernel"}],
+  procese:            [{s:"fork",          t:"🌳 fork() și arborele de procese"},
+                       {s:"stari",         t:"🔄 Stările unui proces"}],
+  stari:              [{s:"stari",         t:"🔄 Stările procesului & context switch"}],
+  fork:               [{s:"fork",          t:"🌳 fork() și arborele de procese"},
+                       {s:"cow",           t:"🐑 Copy-On-Write după fork()"}],
+  "exec-wait":        [{s:"fork/zombie",   t:"🌳 Zombie & orfan, pas cu pas"}],
+  memorie:            [{s:"vas",           t:"🧠 Zonele de memorie (subiect 2023)"}],
+  "gestiune-memorie": [{s:"paginare",      t:"📄 Paginare & TLB: translatarea adreselor"}],
+  "memorie-virtuala": [{s:"pagerepl",      t:"🔁 Înlocuirea paginilor (FIFO/LRU/OPT/Clock)"},
+                       {s:"cow",           t:"🐑 Copy-On-Write"}],
+  fire:               [{s:"threads",       t:"🧵 Threaduri vs procese & lost update"}],
+  semnale:            [{s:"semnale",       t:"⚡ SIGINT & handlere (subiect 2022)"}],
+  race:               [{s:"race",          t:"🎛️ Explorator de întrețeseri"},
+                       {s:"threads/lost",  t:"🧵 contor++ pierdut"}],
+  mutex:              [{s:"threads/lost",  t:"🧵 contor++ cu și fără mutex"},
+                       {s:"race/mutex",    t:"🎛️ întrețeseri cu mutex"}],
+  semafoare:          [{s:"prodcons",      t:"🚦 Producător–Consumator cu semafoare"},
+                       {s:"race",          t:"🎛️ Explorator de întrețeseri"}],
+  "condvar-bariere":  [{s:"prodcons",      t:"🚦 Producător–Consumator (bounded buffer)"}],
+  deadlock:           [{s:"deadlock",      t:"🔒 Deadlock & condițiile Coffman"}],
+  prodcons:           [{s:"prodcons",      t:"🚦 Tava de pizza: P/V pe goluri & pline"}],
+  ipc:                [{s:"vas/mmap",      t:"🧠 mmap partajat (subiect 2024)"},
+                       {s:"fd/pipe",       t:"🗂️ Pipe & descriptori"}],
+  pipe:               [{s:"fd/pipe",       t:"🗂️ Pipe: schema din subiectul 2019"}],
+  fisiere:            [{s:"fd",            t:"🗂️ Descriptorii: cele 3 tabele"}],
+  planificare:        [{s:"gantt",         t:"⏱️ Planificator Gantt interactiv"}],
+  "round-robin":      [{s:"gantt/subiect", t:"⏱️ RR pe priorități (2020/2022/2023)"}]
+};
+function conceptSimsHtml(id){
+  const sims = CONCEPT_SIMS[id];
+  if(!sims || !sims.length) return "";
+  return '<h2>🎮 Vezi conceptul în mișcare</h2>'
+    + '<p>Simulatoare interactive, pas cu pas — cu scenariile din subiectele reale:</p>'
+    + '<div class="btn-row">'
+    + sims.map(function(x){
+        return '<button class="btn" onclick="showSimLab(\'sim/'+x.s+'\')">'+x.t+' →</button>';
+      }).join("")
+    + '</div>';
+}
+
 function conceptVideoHtml(id){
   const v = CONCEPT_VIDEOS[id];
   if(!v) return "";
@@ -245,6 +289,7 @@ function buildNav(){
 
 function psoNavChildren(){
   let html = '<div class="nav-item nav-sub" data-view="quiz"><span class="ico">📝</span> Teste examen</div>';
+  html += '<div class="nav-item nav-sub" data-view="simlab"><span class="ico">🎮</span> Simulatoare</div>';
   const cats = [];
   CONCEPTE.forEach(function(c){ if(cats.indexOf(c.cat)<0) cats.push(c.cat); });
   cats.forEach(function(cat){
@@ -283,6 +328,7 @@ function wireNav(){
       else if(v==="videos") showVideos();
       else if(v==="conquistador") showConquistador();
       else if(v==="quiz") showQuiz();
+      else if(v==="simlab") showSimLab();
       else if(v==="concept") showConcept(it.dataset.id);
       else if(v==="exam") showExam(it.dataset.id);
       else if(v==="examindex") showExamIndex();
@@ -328,7 +374,7 @@ function setActive(view,id,sec){
   document.querySelectorAll(".nav-subhead").forEach(function(n){ n.classList.remove("active"); });
 
   let subj = null;
-  if(view==="home" || view==="quiz" || view==="concept") subj = "pso";
+  if(view==="home" || view==="quiz" || view==="concept" || view==="simlab") subj = "pso";
   else if(view==="exam" || view==="examindex") subj = "subiecte";
   else if(view==="embed") subj = id;
   document.querySelectorAll(".nav-subject").forEach(function(g){
@@ -345,6 +391,8 @@ function setActive(view,id,sec){
     const el = document.querySelector('.nav-subhead[data-subject="pso"]'); if(el) el.classList.add("active");
   } else if(view==="quiz"){
     const el = document.querySelector('.nav-item[data-view="quiz"]'); if(el) el.classList.add("active");
+  } else if(view==="simlab"){
+    const el = document.querySelector('.nav-item[data-view="simlab"]'); if(el) el.classList.add("active");
   } else if(view==="concept"){
     const el = document.querySelector('.nav-item[data-view="concept"][data-id="'+id+'"]'); if(el) el.classList.add("active");
   } else if(view==="embed"){
@@ -358,7 +406,7 @@ function setActive(view,id,sec){
   if(view!=="quiz"){ const bar=document.getElementById("scorebar"); if(bar) bar.remove(); }
   window.scrollTo(0,0);
   const cnt = document.querySelector(".content");
-  if(cnt){ cnt.classList.toggle("embed", view==="embed"); cnt.classList.toggle("videos", view==="videos"); cnt.scrollTop = 0;
+  if(cnt){ cnt.classList.toggle("embed", view==="embed" || view==="simlab"); cnt.classList.toggle("videos", view==="videos"); cnt.scrollTop = 0;
     if(view!=="conquistador") delete cnt.dataset.view;   // ca mesajele WS întârziate să nu rescrie altă vedere
   }
 }
@@ -438,6 +486,9 @@ function showHome(){
     + '<div class="tile feat" onclick="showQuiz()"><div class="ico">📝</div><h3>Teste examen</h3>'
     + '<p>'+INTREBARI.length+' întrebări (grile + probleme deschise) din 2020–2024, cu explicații.</p>'
     + '<span class="cat-tag">Începe testul →</span></div>'
+    + '<div class="tile feat" onclick="showSimLab()"><div class="ico">🎮</div><h3>Simulatoare vizuale</h3>'
+    + '<p>14 simulatoare interactive, pas cu pas: fork & arborele de procese, semafoare și producător–consumator, planificare Gantt, memoria procesului, descriptori & pipe, semnale — cu scenariile din subiectele reale.</p>'
+    + '<span class="cat-tag">Deschide laboratorul →</span></div>'
     + CONCEPTE.map(function(x){
         return '<div class="tile" onclick="showConcept(\''+x.id+'\')">'
           + '<div class="ico">'+(ICONS[x.cat]||"📘")+'</div>'
@@ -472,6 +523,28 @@ function showEmbed(subId, sec){
   }
 }
 
+// Laboratorul de simulatoare PSO — pagină embed (pso/index.html), secțiune a
+// materiei native PSO. sec = "jocuri" (grila) sau "sim/<id>[/<scenariu>]".
+function showSimLab(sec){
+  sec = sec || "jocuri";
+  setActive("simlab");
+  document.getElementById("crumb").textContent = "Materii · PSO";
+  document.getElementById("title").textContent = "PSO — Simulatoare vizuale";
+  const c = document.getElementById("content");
+  let frame = document.getElementById("embed-frame");
+  if(frame && frame.dataset.subject==="pso-sim"){
+    try{ frame.contentWindow.postMessage({ type:"tab", tab:sec }, "*"); }
+    catch(err){ frame.src = "pso/index.html#"+sec; }
+  } else {
+    c.innerHTML = '<div class="embed-wrap"><iframe id="embed-frame" class="embed-frame" '
+      + 'data-subject="pso-sim" src="pso/index.html#'+sec+'" title="Simulatoare PSO"></iframe></div>';
+    const f = document.getElementById("embed-frame");
+    f.addEventListener("load", function(){
+      try{ f.contentWindow.postMessage(frameThemeMsg(), "*"); }catch(e){}
+    });
+  }
+}
+
 function showConcept(id){
   const c = CONCEPTE.find(function(x){ return x.id===id; });
   if(!c){ showHome(); return; }
@@ -479,7 +552,7 @@ function showConcept(id){
   document.getElementById("crumb").textContent = "Concepte · "+c.cat;
   document.getElementById("title").textContent = shortTitle(c.titlu);
   const el = document.getElementById("content");
-  el.innerHTML = '<article class="article">'+c.html+conceptVideoHtml(id)+'</article>'+conceptNav(id);
+  el.innerHTML = '<article class="article">'+c.html+conceptSimsHtml(id)+conceptVideoHtml(id)+'</article>'+conceptNav(id);
   applyHighlight(el);
 }
 
