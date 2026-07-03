@@ -36,8 +36,10 @@ RUN sed -i -E "s|(src=\"subiecte-secret[^\"]*)\"|\1?v=${ASSET_VER}\"|g" /usr/sha
 
 EXPOSE 80
 
-# Verificare de sănătate: pagina principală răspunde
+# Verificare de sănătate: pagina principală răspunde.
+# User-Agent explicit, ca healthcheck-ul să NU fie prins de filtrul anti-bot
+# din nginx.conf (care blochează UA-uri de scripting și cereri fără UA).
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget -qO- http://127.0.0.1/ >/dev/null 2>&1 || exit 1
+  CMD wget -q -U "healthcheck-intern" -O- http://127.0.0.1/ >/dev/null 2>&1 || exit 1
 
 CMD ["/docker-entrypoint-reload.sh"]

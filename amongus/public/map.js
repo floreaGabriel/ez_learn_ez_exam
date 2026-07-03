@@ -143,11 +143,79 @@
     return [x, y];
   }
 
+  // ---------- drum pe grilă (BFS) ----------
+  // Clientul îl folosește pentru „poteca” până la următorul obiectiv (task /
+  // punct de reparat). Grilă de 20px peste podele, construită leneș o dată.
+  var GPAS = 20;
+  var gCols = Math.floor(W / GPAS) + 1;
+  var gRows = Math.floor(H / GPAS) + 1;
+  var gWalk = null;
+  function gIdx(cx, cy){ return cy * gCols + cx; }
+  function construiesteGrila(){
+    gWalk = new Uint8Array(gCols * gRows);
+    for(var cy = 0; cy < gRows; cy++)
+      for(var cx = 0; cx < gCols; cx++)
+        if(canStand(cx * GPAS, cy * GPAS)) gWalk[gIdx(cx, cy)] = 1;
+  }
+  // cea mai apropiată celulă călcabilă de punctul dat (raza 2 celule)
+  function celula(px, py){
+    var cx = Math.round(px / GPAS), cy = Math.round(py / GPAS);
+    for(var r = 0; r <= 2; r++)
+      for(var dy = -r; dy <= r; dy++)
+        for(var dx = -r; dx <= r; dx++){
+          var nx = cx + dx, ny = cy + dy;
+          if(nx < 0 || ny < 0 || nx >= gCols || ny >= gRows) continue;
+          if(gWalk[gIdx(nx, ny)]) return [nx, ny];
+        }
+    return null;
+  }
+  // drumul (sx,sy) -> (tx,ty): { puncte:[[x,y]…doar colțurile], lungime } | null
+  function cale(sx, sy, tx, ty){
+    if(!gWalk) construiesteGrila();
+    var S = celula(sx, sy), T = celula(tx, ty);
+    if(!S || !T) return null;
+    var start = gIdx(S[0], S[1]), tinta = gIdx(T[0], T[1]);
+    if(start === tinta) return { puncte: [[sx, sy], [tx, ty]], lungime: dist(sx, sy, tx, ty) };
+    var par = new Int32Array(gCols * gRows); par.fill(-1);
+    par[start] = start;
+    var coada = new Int32Array(gCols * gRows);
+    var qh = 0, qt = 0;
+    coada[qt++] = start;
+    var gasit = false;
+    while(qh < qt){
+      var cur = coada[qh++];
+      if(cur === tinta){ gasit = true; break; }
+      var ccx = cur % gCols, ccy = (cur / gCols) | 0;
+      if(ccy > 0        && par[cur - gCols] === -1 && gWalk[cur - gCols]){ par[cur - gCols] = cur; coada[qt++] = cur - gCols; }
+      if(ccy < gRows - 1 && par[cur + gCols] === -1 && gWalk[cur + gCols]){ par[cur + gCols] = cur; coada[qt++] = cur + gCols; }
+      if(ccx > 0        && par[cur - 1] === -1 && gWalk[cur - 1]){ par[cur - 1] = cur; coada[qt++] = cur - 1; }
+      if(ccx < gCols - 1 && par[cur + 1] === -1 && gWalk[cur + 1]){ par[cur + 1] = cur; coada[qt++] = cur + 1; }
+    }
+    if(!gasit) return null;
+    // reconstruim drumul și păstrăm doar colțurile (punctele coliniare pică)
+    var brut = [];
+    var c = tinta;
+    while(c !== start){ brut.push(c); c = par[c]; }
+    brut.push(start);
+    brut.reverse();
+    var puncte = [[sx, sy]];
+    for(var k = 1; k < brut.length; k++){
+      if(k < brut.length - 1){
+        var a = brut[k - 1], b = brut[k], d2 = brut[k + 1];
+        if((b - a) === (d2 - b)) continue;   // aceeași direcție -> coliniar
+      }
+      puncte.push([(brut[k] % gCols) * GPAS, ((brut[k] / gCols) | 0) * GPAS]);
+    }
+    puncte.push([tx, ty]);
+    return { puncte: puncte, lungime: (brut.length - 1) * GPAS };
+  }
+
   return {
     W: W, H: H, R: R,
     SPEED: SPEED, VISION: VISION, KILL_R: KILL_R, USE_R: USE_R, REPORT_R: REPORT_R,
     FLOORS: FLOORS, ROOM_NAMES: ROOM_NAMES, STATIONS: STATIONS,
     BUTTON: BUTTON, FIX_KERNEL: FIX_KERNEL, SPAWN: SPAWN,
-    inFloor: inFloor, canStand: canStand, roomAt: roomAt, dist: dist, misca: misca
+    inFloor: inFloor, canStand: canStand, roomAt: roomAt, dist: dist, misca: misca,
+    cale: cale
   };
 });

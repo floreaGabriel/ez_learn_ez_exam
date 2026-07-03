@@ -160,6 +160,13 @@ input[type=text]:focus{border-color:var(--accent)}
 .task-item.gata{opacity:.55; text-decoration:line-through}
 .task-item .ic{flex:0 0 auto}
 #fake-note{font-size:11px; color:#ff9d8f; padding-top:4px; border-top:1px dashed rgba(255,255,255,.2)}
+.pt-hint{font-size:11px; color:#9fb0d8; padding-top:6px; margin-top:2px; border-top:1px dashed rgba(255,255,255,.15)}
+
+/* butonul de minimapă */
+#btn-harta{position:absolute; top:88px; right:14px; width:46px; height:46px; border-radius:13px;
+           background:rgba(10,14,26,.82); border:1px solid rgba(255,255,255,.2); color:#fff;
+           font-size:21px; cursor:pointer; backdrop-filter:blur(4px)}
+#btn-harta:active{transform:scale(.94)}
 
 /* butoane de acțiune */
 #actiuni{position:absolute; right:14px; bottom:16px; display:flex; flex-direction:column; gap:10px; align-items:flex-end}
@@ -440,6 +447,8 @@ svg.fire-svg{position:absolute; inset:0; width:100%; height:100%; pointer-events
       <div class="cap" id="pt-cap">📋 TASKURILE TALE <span class="sagata">▾</span></div>
       <div class="corp" id="pt-corp"></div>
     </div>
+
+    <button id="btn-harta" title="Harta stației (M)">🗺️</button>
 
     <div id="actiuni"></div>
 

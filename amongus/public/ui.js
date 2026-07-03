@@ -202,6 +202,7 @@
   $("pt-cap").addEventListener("click", function(){
     $("panou-taskuri").classList.toggle("strans");
   });
+  $("btn-harta").addEventListener("click", function(){ JOC.minimapa("toggle"); });
 
   function randeazaTaskuri(){
     var html = STARE.tasks.map(function(tk){
@@ -214,6 +215,7 @@
         '<span>' + m.icon + ' ' + esc(tk.nume) + ' — <span class="st">' + esc(sala) + '</span></span></div>';
     }).join("");
     if(STARE.fake) html += '<div id="fake-note">🤫 Ești impostor: lista e de fațadă — taskurile tale NU mișcă bara. Prefă-te că muncești.</div>';
+    html += '<div class="pt-hint">🟡 poteca punctată = drumul spre task · 🗺️ M = harta stației</div>';
     $("pt-corp").innerHTML = html || '<div class="task-item">…</div>';
   }
 
@@ -483,6 +485,9 @@
     }
     SFX.play("reveal");
     setTimeout(function(){ ascunde("banner-rol"); }, 3600);
+    // după dezvăluirea rolului, arătăm scurt harta — să vezi pe unde s-o iei
+    setTimeout(function(){ if(STARE.inJoc && !STARE.meeting && !STARE.final) JOC.minimapa(true, true); }, 3800);
+    setTimeout(function(){ JOC.minimapa(false, true); }, 9800);
   });
 
   NET.on("roster", function(msg){
@@ -529,6 +534,7 @@
 
   NET.on("task", function(msg){
     STARE.taskActiv = msg;
+    JOC.minimapa(false);
     MINIJOC.deschide(msg, materieMeta(msg.materie),
       function(raspuns){ NET.send({ t: "taskSubmit", tid: msg.tid, raspuns: raspuns }); },
       function(){ NET.send({ t: "taskClose" }); STARE.taskActiv = null; MINIJOC.inchide(); });
@@ -572,6 +578,7 @@
     meetVot = null; meetAmVotat = false;
     meetDurata = Math.max(1, msg.pana - Date.now());
     MINIJOC.inchide(); STARE.taskActiv = null;
+    JOC.minimapa(false);
     ascunde("chat-fantome");
     SFX.play(msg.tip === "corp" ? "report" : "urgenta");
     setTimeout(function(){ SFX.play("meeting"); }, 500);
@@ -643,6 +650,7 @@
     STARE.meeting = null; STARE.sabotaj = null;
     clearInterval(meetTimer);
     MINIJOC.inchide(); STARE.taskActiv = null;
+    JOC.minimapa(false);
     ascunde("ecran-meeting"); ascunde("ecran-eject"); ascunde("alarma"); ascunde("chat-fantome");
     var f = $("ecran-final");
     var crew = msg.castiga === "crew";

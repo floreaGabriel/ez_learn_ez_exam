@@ -47,6 +47,193 @@
     return "rgb(" + r + "," + g + "," + b + ")";
   }
 
+  // ---------- poteca spre următorul obiectiv ----------
+  // BFS pe grila hărții (AMAP.cale) până la cel mai APROPIAT task nerezolvat
+  // — după drum, nu în linie dreaptă. În timpul sabotajului, echipajul viu e
+  // condus la punctul de reparat. Recalculăm doar când s-a schimbat ceva sau
+  // ne-am deplasat suficient (cache pe poziție + țintele curente).
+  var traseu = { cheie: "", sx: 0, sy: 0, cale: null, fel: "task" };
+  function actualizeazaTraseu(){
+    if(!STARE.inJoc || STARE.meeting){ traseu.cale = null; traseu.cheie = ""; return; }
+    var tinte = [];
+    if(STARE.sabotaj && STARE.me.viu === 1 && STARE.rol !== "impostor"){
+      tinte.push({ x: AMAP.FIX_KERNEL.x, y: AMAP.FIX_KERNEL.y, id: "fix", fel: "fix" });
+    } else {
+      (STARE.tasks || []).forEach(function(tk){
+        if(tk.done) return;
+        for(var i = 0; i < AMAP.STATIONS.length; i++){
+          if(AMAP.STATIONS[i].id === tk.statie){
+            tinte.push({ x: AMAP.STATIONS[i].x, y: AMAP.STATIONS[i].y, id: tk.tid, fel: "task" });
+            break;
+          }
+        }
+      });
+    }
+    if(!tinte.length){ traseu.cale = null; traseu.cheie = ""; return; }
+    var cheie = tinte.map(function(t){ return t.id; }).join(",");
+    if(cheie === traseu.cheie && traseu.cale &&
+       AMAP.dist(STARE.pred.x, STARE.pred.y, traseu.sx, traseu.sy) < 60) return;
+    var best = null, bestFel = "task";
+    for(var k = 0; k < tinte.length; k++){
+      var c = AMAP.cale(STARE.pred.x, STARE.pred.y, tinte[k].x, tinte[k].y);
+      if(c && (!best || c.lungime < best.lungime)){ best = c; bestFel = tinte[k].fel; }
+    }
+    traseu.cheie = cheie;
+    traseu.sx = STARE.pred.x; traseu.sy = STARE.pred.y;
+    traseu.fel = bestFel;
+    traseu.cale = (best && best.lungime > AMAP.USE_R) ? best : null;   // ești deja acolo -> nimic
+  }
+  function culoareTraseu(alpha){
+    return (traseu.fel === "fix" ? "rgba(255,140,66," : "rgba(255,215,107,") + alpha + ")";
+  }
+  // desenată în spațiul lumii (sub jucători): „furnicuțe” spre țintă
+  function desenTraseu(tNow){
+    if(!traseu.cale) return;
+    var p = traseu.cale.puncte;
+    ctx.save();
+    ctx.strokeStyle = culoareTraseu(0.8);
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.setLineDash([11, 10]);
+    ctx.lineDashOffset = -((tNow / 32) % 21);   // punctele „curg” spre țintă
+    ctx.beginPath();
+    ctx.moveTo(p[0][0], p[0][1]);
+    for(var i = 1; i < p.length; i++) ctx.lineTo(p[i][0], p[i][1]);
+    ctx.stroke();
+    ctx.restore();
+  }
+  // punctul de pe traseu aflat la distanța d de start (pentru săgeata de direcție)
+  function punctPeTraseu(d){
+    var p = traseu.cale.puncte;
+    for(var i = 1; i < p.length; i++){
+      var seg = AMAP.dist(p[i-1][0], p[i-1][1], p[i][0], p[i][1]);
+      if(d <= seg){
+        var f = seg ? d / seg : 0;
+        return [p[i-1][0] + (p[i][0] - p[i-1][0]) * f, p[i-1][1] + (p[i][1] - p[i-1][1]) * f];
+      }
+      d -= seg;
+    }
+    return p[p.length - 1];
+  }
+  // săgeată mică lângă propriul bob, orientată pe drum (peste jucători)
+  function desenSageataTraseu(tNow){
+    if(!traseu.cale) return;
+    var P = punctPeTraseu(85);
+    var a = Math.atan2(P[1] - STARE.pred.y, P[0] - (STARE.pred.x));
+    var r = 46 + Math.sin(tNow / 220) * 3;
+    var x = STARE.pred.x + Math.cos(a) * r;
+    var y = STARE.pred.y - 20 + Math.sin(a) * r;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(a);
+    ctx.fillStyle = culoareTraseu(0.95);
+    ctx.strokeStyle = "rgba(8,10,20,.6)"; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(10, 0); ctx.lineTo(-7, -7); ctx.lineTo(-3, 0); ctx.lineTo(-7, 7);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.restore();
+  }
+
+  // ---------- minimapa (M / butonul 🗺️) ----------
+  var mmap = { on: false, auto: false };
+  function desenMinimapa(tNow){
+    if(!mmap.on || !STARE.inJoc) return;
+    ctx.fillStyle = "rgba(3,5,12,.72)";
+    ctx.fillRect(0, 0, cw, ch);
+    var s2 = Math.min((cw * 0.88) / AMAP.W, (ch * 0.68) / AMAP.H);
+    var w = AMAP.W * s2, h = AMAP.H * s2;
+    var ox = (cw - w) / 2, oy = (ch - h) / 2 + 12;
+    ctx.fillStyle = "rgba(9,12,26,.96)";
+    roundRect(ox - 16, oy - 46, w + 32, h + 76, 14);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.lineWidth = 1.5;
+    roundRect(ox - 16, oy - 46, w + 32, h + 76, 14);
+    ctx.stroke();
+    ctx.fillStyle = "#cdd6ee";
+    ctx.font = "800 13px Inter, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("HARTA STAȚIEI  ·  M sau o atingere = închide", cw / 2, oy - 22);
+    ctx.font = "600 11.5px Inter, sans-serif";
+    ctx.fillStyle = "#8e9ac2";
+    ctx.fillText("! = taskurile tale  ·  punct roșu = butonul de urgență  ·  poteca punctată = drumul cel mai scurt" +
+                 (STARE.sabotaj ? "  ·  ⚠ = REPARĂ AICI" : ""), cw / 2, oy + h + 18);
+
+    ctx.save();
+    ctx.translate(ox, oy);
+    ctx.scale(s2, s2);
+    // podele + tente + nume
+    AMAP.FLOORS.forEach(function(f){
+      ctx.fillStyle = "#828bb3";
+      ctx.fillRect(f.x, f.y, f.w, f.h);
+      if(f.room && TENTA[f.room]){ ctx.fillStyle = TENTA[f.room]; ctx.fillRect(f.x, f.y, f.w, f.h); }
+    });
+    ctx.font = "800 44px Inter, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(16,22,44,.65)";
+    AMAP.FLOORS.forEach(function(f){
+      if(f.room) ctx.fillText(AMAP.ROOM_NAMES[f.room].toUpperCase(), f.x + f.w / 2, f.y + 62);
+    });
+    // poteca
+    if(traseu.cale){
+      var p = traseu.cale.puncte;
+      ctx.strokeStyle = culoareTraseu(0.9);
+      ctx.lineWidth = 14;
+      ctx.setLineDash([34, 30]);
+      ctx.lineDashOffset = -((tNow / 12) % 64);
+      ctx.beginPath();
+      ctx.moveTo(p[0][0], p[0][1]);
+      for(var i = 1; i < p.length; i++) ctx.lineTo(p[i][0], p[i][1]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    // taskurile tale nerezolvate
+    (STARE.tasks || []).forEach(function(tk){
+      if(tk.done) return;
+      for(var i = 0; i < AMAP.STATIONS.length; i++){
+        if(AMAP.STATIONS[i].id !== tk.statie) continue;
+        var s = AMAP.STATIONS[i];
+        var puls = 1 + Math.sin(tNow / 260) * 0.12;
+        ctx.fillStyle = "#ffd76b";
+        ctx.beginPath(); ctx.arc(s.x, s.y, 30 * puls, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#3b2c05";
+        ctx.font = "900 44px Inter, sans-serif";
+        ctx.fillText("!", s.x, s.y + 16);
+        break;
+      }
+    });
+    // butonul de urgență + punctul de reparat
+    ctx.fillStyle = "#e74c3c";
+    ctx.beginPath(); ctx.arc(AMAP.BUTTON.x, AMAP.BUTTON.y, 22, 0, Math.PI * 2); ctx.fill();
+    if(STARE.sabotaj){
+      var pf = 0.55 + Math.abs(Math.sin(tNow / 150)) * 0.45;
+      ctx.save(); ctx.globalAlpha = pf;
+      ctx.fillStyle = "#ff8c42";
+      ctx.beginPath(); ctx.arc(AMAP.FIX_KERNEL.x, AMAP.FIX_KERNEL.y, 40, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#3b1d08";
+      ctx.font = "900 52px Inter, sans-serif";
+      ctx.fillText("⚠", AMAP.FIX_KERNEL.x, AMAP.FIX_KERNEL.y + 18);
+      ctx.restore();
+    }
+    // fantomele văd toată lumea; cei vii doar propriul punct
+    if(STARE.me.viu === 0){
+      for(var id in pozLive){
+        var info = STARE.roster[id] || {};
+        ctx.globalAlpha = pozLive[id].viu ? 1 : 0.5;
+        ctx.fillStyle = COLORS[info.color] || "#999";
+        ctx.beginPath(); ctx.arc(pozLive[id].x, pozLive[id].y, 18, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+    // tu — punct pulsând în culoarea ta
+    var mc = COLORS[(STARE.roster[STARE.eu.id] || {}).color || 0];
+    ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.arc(STARE.pred.x, STARE.pred.y, 26 + Math.sin(tNow / 180) * 6, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = mc;
+    ctx.beginPath(); ctx.arc(STARE.pred.x, STARE.pred.y, 20, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
   // ---------- inputul ----------
   var taste = {};
   var joy = { activ: false, id: null, ox: 0, oy: 0, dx: 0, dy: 0 };
@@ -79,6 +266,10 @@
     if(e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
     taste[e.code] = true;
     trimiteInput(false);
+    if(e.code === "KeyM" && !e.repeat && !STARE.taskActiv && !STARE.meeting){
+      mmap.on = !mmap.on; mmap.auto = false;
+    }
+    if(e.code === "Escape" && mmap.on){ mmap.on = false; mmap.auto = false; }
     if(!e.repeat && window.UI && UI.tasta) UI.tasta(e.code, true);
     if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Space"].indexOf(e.code) >= 0) e.preventDefault();
   });
@@ -91,6 +282,7 @@
 
   function leagaJoystick(){
     canvas.addEventListener("pointerdown", function(e){
+      if(mmap.on){ mmap.on = false; mmap.auto = false; return; }   // atingerea închide harta
       if(!STARE.inJoc || STARE.meeting || STARE.taskActiv) return;
       if(e.pointerType === "mouse") return;              // joystick doar la touch
       if(e.clientX > window.innerWidth * 0.55) return;   // jumătatea stângă
@@ -365,6 +557,10 @@
       }
     });
 
+    // poteca punctată spre următorul obiectiv (sub jucători)
+    actualizeazaTraseu();
+    desenTraseu(tNow);
+
     // cadavrele
     (STARE.bodies || []).forEach(function(b){
       desenBob(b.x, b.y, COLORS[b.color] || "#999", 1, false, { rotit: true, mort: true });
@@ -395,6 +591,9 @@
       desenBob(o.x, o.y, o.color, o.f, o.mers, { fantoma: !o.viu });
       if(o.viu || STARE.me.viu === 0) nume(o.x, o.y - 52, o.nume + (o.eu ? " (tu)" : ""), o.eu ? "#ffd76b" : "#fff");
     });
+
+    // săgeata de direcție de lângă propriul bob (pe drumul calculat)
+    desenSageataTraseu(tNow);
 
     // ținta de kill (pentru impostor): cel mai apropiat NE-coleg viu
     if(STARE.rol === "impostor" && STARE.me.viu === 1){
@@ -456,6 +655,9 @@
       ctx.beginPath(); ctx.arc(joy.ox + joy.dx * 0.8, joy.oy + joy.dy * 0.8, 20, 0, Math.PI * 2); ctx.fill();
     }
 
+    // ---- minimapa (peste tot restul) ----
+    desenMinimapa(tNow);
+
     if(window.UI && UI.actualizeazaActiuni) UI.actualizeazaActiuni(ctxA);
     requestAnimationFrame(cadru);
   }
@@ -483,8 +685,21 @@
       if(on){
         STARE.pred.x = STARE.me.x || AMAP.SPAWN.x;
         STARE.pred.y = STARE.me.y || AMAP.SPAWN.y;
+        traseu.cheie = ""; traseu.cale = null;
+        mmap.on = false; mmap.auto = false;
         dimensioneaza();
       } else if(window.SFX) SFX.pasi(false);
+    },
+    // controlul minimapei: "toggle" | true/false; auto=true = deschidere/închidere
+    // automată (cea de la începutul rundei) — nu calcă peste alegerea userului
+    minimapa: function(on, auto){
+      if(on === "toggle"){ mmap.on = !mmap.on; mmap.auto = false; return; }
+      if(auto){
+        if(on && !mmap.on){ mmap.on = true; mmap.auto = true; }
+        else if(!on && mmap.auto){ mmap.on = false; mmap.auto = false; }
+      } else {
+        mmap.on = !!on; mmap.auto = false;
+      }
     },
     pozitii: function(){ return pozLive; }
   };
