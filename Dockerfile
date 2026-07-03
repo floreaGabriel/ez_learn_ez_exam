@@ -31,6 +31,8 @@ RUN sed -i -E "s|(href=\"css/[^\"]*)\"|\1?v=${ASSET_VER}\"|g; s|(src=\"js/[^\"]*
 # (pso/index.html e no-cache — vezi nginx.conf — deci referințele proaspete
 #  ajung la utilizator la fiecare deploy).
 RUN sed -i -E "s|(src=\"sims/[^\"]*)\"|\1?v=${ASSET_VER}\"|g" /usr/share/nginx/html/pso/index.html
+# ... și blobul criptat cu subiectele PSO, referit din pso/subiecte.html
+RUN sed -i -E "s|(src=\"subiecte-secret[^\"]*)\"|\1?v=${ASSET_VER}\"|g" /usr/share/nginx/html/pso/subiecte.html
 
 EXPOSE 80
 

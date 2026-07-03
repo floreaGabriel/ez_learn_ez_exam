@@ -108,3 +108,11 @@ Laboratorul de simulatoare vizuale („🎮 Simulatoare” din navigația PSO) e
   din `js/app.js` (cheia = `id`-ul lecției, `s` = `sim` sau `sim/scenariu`).
 - Cache: `Dockerfile` adaugă `?v=<git-sha>` pe `sims/*.js`, iar orice `index.html` e
   `no-cache` în `nginx.conf` — modificările ajung la useri la primul refresh după deploy.
+
+### Subiectele PSO protejate cu parolă (`pso/subiecte.html`)
+
+Secțiunea „🔐 Subiecte examen” din navigația PSO. Conținutul (10 variante în formatul
+2024) stă **criptat AES-GCM-256** în `pso/subiecte-secret.enc.js`; cheia se derivă din
+parolă (PBKDF2), deblocarea are loc în browser, iar parola poate fi ținută minte per
+stație (localStorage). Sursa în clar + scriptul de (re)criptare/schimbare de parolă
+NU sunt în acest repo — vezi `materii/pso/subiecte-secrete/` (README acolo).

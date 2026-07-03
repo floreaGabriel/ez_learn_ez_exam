@@ -290,6 +290,7 @@ function buildNav(){
 function psoNavChildren(){
   let html = '<div class="nav-item nav-sub" data-view="quiz"><span class="ico">📝</span> Teste examen</div>';
   html += '<div class="nav-item nav-sub" data-view="simlab"><span class="ico">🎮</span> Simulatoare</div>';
+  html += '<div class="nav-item nav-sub" data-view="psosub"><span class="ico">🔐</span> Subiecte examen</div>';
   const cats = [];
   CONCEPTE.forEach(function(c){ if(cats.indexOf(c.cat)<0) cats.push(c.cat); });
   cats.forEach(function(cat){
@@ -329,6 +330,7 @@ function wireNav(){
       else if(v==="conquistador") showConquistador();
       else if(v==="quiz") showQuiz();
       else if(v==="simlab") showSimLab();
+      else if(v==="psosub") showPsoSub();
       else if(v==="concept") showConcept(it.dataset.id);
       else if(v==="exam") showExam(it.dataset.id);
       else if(v==="examindex") showExamIndex();
@@ -374,7 +376,7 @@ function setActive(view,id,sec){
   document.querySelectorAll(".nav-subhead").forEach(function(n){ n.classList.remove("active"); });
 
   let subj = null;
-  if(view==="home" || view==="quiz" || view==="concept" || view==="simlab") subj = "pso";
+  if(view==="home" || view==="quiz" || view==="concept" || view==="simlab" || view==="psosub") subj = "pso";
   else if(view==="exam" || view==="examindex") subj = "subiecte";
   else if(view==="embed") subj = id;
   document.querySelectorAll(".nav-subject").forEach(function(g){
@@ -393,6 +395,8 @@ function setActive(view,id,sec){
     const el = document.querySelector('.nav-item[data-view="quiz"]'); if(el) el.classList.add("active");
   } else if(view==="simlab"){
     const el = document.querySelector('.nav-item[data-view="simlab"]'); if(el) el.classList.add("active");
+  } else if(view==="psosub"){
+    const el = document.querySelector('.nav-item[data-view="psosub"]'); if(el) el.classList.add("active");
   } else if(view==="concept"){
     const el = document.querySelector('.nav-item[data-view="concept"][data-id="'+id+'"]'); if(el) el.classList.add("active");
   } else if(view==="embed"){
@@ -406,7 +410,7 @@ function setActive(view,id,sec){
   if(view!=="quiz"){ const bar=document.getElementById("scorebar"); if(bar) bar.remove(); }
   window.scrollTo(0,0);
   const cnt = document.querySelector(".content");
-  if(cnt){ cnt.classList.toggle("embed", view==="embed" || view==="simlab"); cnt.classList.toggle("videos", view==="videos"); cnt.scrollTop = 0;
+  if(cnt){ cnt.classList.toggle("embed", view==="embed" || view==="simlab" || view==="psosub"); cnt.classList.toggle("videos", view==="videos"); cnt.scrollTop = 0;
     if(view!=="conquistador") delete cnt.dataset.view;   // ca mesajele WS întârziate să nu rescrie altă vedere
   }
 }
@@ -489,6 +493,9 @@ function showHome(){
     + '<div class="tile feat" onclick="showSimLab()"><div class="ico">🎮</div><h3>Simulatoare vizuale</h3>'
     + '<p>14 simulatoare interactive, pas cu pas: fork & arborele de procese, semafoare și producător–consumator, planificare Gantt, memoria procesului, descriptori & pipe, semnale — cu scenariile din subiectele reale.</p>'
     + '<span class="cat-tag">Deschide laboratorul →</span></div>'
+    + '<div class="tile feat" onclick="showPsoSub()"><div class="ico">🔐</div><h3>Subiecte examen (protejat)</h3>'
+    + '<p>10 variante generate în formatul subiectului PSO din 2024: cod C concurent + 6 întrebări justificate, cu rezolvări detaliate și barem. Conținut criptat — se deblochează cu parolă.</p>'
+    + '<span class="cat-tag">Deblochează →</span></div>'
     + CONCEPTE.map(function(x){
         return '<div class="tile" onclick="showConcept(\''+x.id+'\')">'
           + '<div class="ico">'+(ICONS[x.cat]||"📘")+'</div>'
@@ -538,6 +545,28 @@ function showSimLab(sec){
   } else {
     c.innerHTML = '<div class="embed-wrap"><iframe id="embed-frame" class="embed-frame" '
       + 'data-subject="pso-sim" src="pso/index.html#'+sec+'" title="Simulatoare PSO"></iframe></div>';
+    const f = document.getElementById("embed-frame");
+    f.addEventListener("load", function(){
+      try{ f.contentWindow.postMessage(frameThemeMsg(), "*"); }catch(e){}
+    });
+  }
+}
+
+// Subiectele PSO protejate cu parolă — pagină embed (pso/subiecte.html).
+// Conținutul e criptat AES în subiecte-secret.enc.js; deblocarea se face în pagină.
+function showPsoSub(sec){
+  sec = sec || "lista";
+  setActive("psosub");
+  document.getElementById("crumb").textContent = "Materii · PSO";
+  document.getElementById("title").textContent = "PSO — Subiecte examen 🔐";
+  const c = document.getElementById("content");
+  let frame = document.getElementById("embed-frame");
+  if(frame && frame.dataset.subject==="pso-sub"){
+    try{ frame.contentWindow.postMessage({ type:"tab", tab:sec }, "*"); }
+    catch(err){ frame.src = "pso/subiecte.html#"+sec; }
+  } else {
+    c.innerHTML = '<div class="embed-wrap"><iframe id="embed-frame" class="embed-frame" '
+      + 'data-subject="pso-sub" src="pso/subiecte.html#'+sec+'" title="Subiecte examen PSO"></iframe></div>';
     const f = document.getElementById("embed-frame");
     f.addEventListener("load", function(){
       try{ f.contentWindow.postMessage(frameThemeMsg(), "*"); }catch(e){}
