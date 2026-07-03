@@ -1,0 +1,103 @@
+# Conținut minijocuri Among Us CS — Structuri de date și algoritmi
+# Fapte extrase din conquistador/questions/sda.yaml (+ tematica cursuri/SDA).
+materie: sda
+nume: "Structuri de date"
+icon: "🧮"
+
+fire:
+  - titlu: "Algoritm → complexitate"
+    sursa: "questions/sda.yaml — complexități căutare, sortări, liste"
+    stanga: "Algoritm / operație"
+    dreapta: "Complexitate"
+    perechi:
+      - ["Căutare binară", "O(log n)"]
+      - ["Căutare liniară (defavorabil)", "O(n)"]
+      - ["Inserare în capul listei", "O(1)"]
+      - ["Bubble Sort (defavorabil)", "O(n²)"]
+      - ["Merge Sort (orice caz)", "O(n log n)"]
+
+  - titlu: "Structură de date → proprietate"
+    sursa: "questions/sda.yaml — stivă, coadă, max-heap, Trie, filtru Bloom"
+    stanga: "Structură"
+    dreapta: "Proprietate"
+    perechi:
+      - ["Stivă", "LIFO — ultimul intrat, primul ieșit"]
+      - ["Coadă", "FIFO — primul intrat, primul ieșit"]
+      - ["Max-heap", "maximul se află în rădăcină"]
+      - ["Trie", "căutare de șiruri (autocomplete)"]
+      - ["Filtru Bloom", "posibile false pozitive"]
+
+ordonare:
+  - titlu: "Parcurgerea BFS a unui graf"
+    sursa: "questions/sda.yaml — BFS folosește o coadă"
+    pasi:
+      - "Adaugă nodul de start în coadă"
+      - "Extrage nodul curent din coadă"
+      - "Vizitează nodul extras"
+      - "Adaugă vecinii nevizitați în coadă"
+      - "Repetă până când coada e goală"
+
+  - titlu: "Inserarea unei chei într-un BST"
+    sursa: "questions/sda.yaml — operațiile BST coboară pe o ramură, O(h); cursuri/SDA"
+    pasi:
+      - "Pornește de la rădăcină"
+      - "Compară cheia nouă cu nodul curent"
+      - "Coboară la stânga sau la dreapta"
+      - "Repetă până la un loc liber (NULL)"
+      - "Leagă noul nod ca frunză"
+
+calibrare:
+  - intrebare: "Câte noduri are minim un arbore AVL de înălțime 5?"
+    sursa: "questions/sda.yaml — recurența AVL N(h)=N(h-1)+N(h-2)+1"
+    context: "N(0)=1, N(1)=2, N(h)=N(h-1)+N(h-2)+1"
+    min: 5
+    max: 40
+    corect: 20
+    tol: 0
+    unitate: "noduri"
+
+  - intrebare: "Câte niveluri (înălțimea + 1) are un arbore binar complet cu 15 noduri?"
+    sursa: "questions/sda.yaml — arbore binar complet cu 15 noduri"
+    min: 1
+    max: 10
+    corect: 4
+    tol: 0
+    unitate: "niveluri"
+
+stiva:
+  - titlu: "Stiva de apeluri"
+    sursa: "questions/sda.yaml — stiva LIFO, apeluri de funcții; cursuri/SDA"
+    context: "main() cheamă f(), f() cheamă g(), g() cheamă h(); funcțiile se termină în ordine LIFO"
+    sosire: ["main()", "f()", "g()", "h()"]
+    iesire: ["h()", "g()", "f()", "main()"]
+
+  - titlu: "Obține ieșirea cerută (LIFO)"
+    sursa: "questions/sda.yaml — principiul LIFO al stivei"
+    context: "Elementele sosesc în ordinea 1, 2, 3, 4"
+    sosire: [1, 2, 3, 4]
+    iesire: [2, 4, 3, 1]
+
+arbore:
+  - titlu: "BST cu 5 noduri"
+    sursa: "questions/sda.yaml — inserare BST: 50, 30, 70, 20, 40"
+    rad: { v: 50, st: { v: 30, st: { v: 20 }, dr: { v: 40 } }, dr: { v: 70 } }
+    parcurgeri: ["inordine", "preordine", "postordine"]
+
+  - titlu: "BST cu 7 noduri"
+    sursa: "questions/sda.yaml — BST cu cheile 8, 3, 10, 1, 6, 14, 4 (inordine sortată)"
+    rad: { v: 8, st: { v: 3, st: { v: 1 }, dr: { v: 6, st: { v: 4 } } }, dr: { v: 10, dr: { v: 14 } } }
+    parcurgeri: ["inordine", "preordine", "postordine"]
+
+  - titlu: "Arbore binar oarecare"
+    sursa: "questions/sda.yaml — arborele din întrebările BFS/preordine (100, 19, 36…)"
+    rad: { v: 100, st: { v: 19, st: { v: 17 }, dr: { v: 3 } }, dr: { v: 36, st: { v: 25 }, dr: { v: 1 } } }
+    parcurgeri: ["inordine", "preordine", "postordine"]
+
+sortare:
+  - titlu: "O trecere de bubble sort"
+    sursa: "questions/sda.yaml — șirul 50, 30, 70, 20, 40; cursuri/SDA — sortări"
+    valori: [50, 30, 70, 20, 40]
+
+  - titlu: "Încă o trecere de bubble sort"
+    sursa: "questions/sda.yaml — șirul 6, 2, 1, 4, 3, 5 (preordine); cursuri/SDA — sortări"
+    valori: [6, 2, 1, 4, 3, 5]

@@ -7,12 +7,14 @@ README.md
 .git
 .gitignore
 diagrams/
-# backend contor + sqlrunner + conquistador (NU fac parte din site-ul static).
-# IMPORTANT: conquistador/ conține server.js + questions/*.yaml cu RĂSPUNSURILE
-# corecte — nu trebuie servite static (anti-cheat). Audio-ul jocului stă în /audio/.
+# backend contor + sqlrunner + conquistador + amongus (NU fac parte din site-ul
+# static). IMPORTANT: conquistador/questions/*.yaml și amongus/content/*.yaml
+# conțin RĂSPUNSURILE corecte — nu trebuie servite static (anti-cheat).
+# Audio-ul jocurilor stă în /audio/.
 counter/
 sqlrunner/
 conquistador/
+amongus/
 sql/db/
 deploy/
 docker-compose.yaml

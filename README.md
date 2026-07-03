@@ -45,6 +45,10 @@ app/
 │   └── sims/*.js           # simulatoarele, grupate pe subsisteme (PSO.register)
 ├── retele/index.html       # materia Rețele (pagină proprie, încărcată în iframe)
 ├── sda/index.html          # materia SDA (pagină proprie, încărcată în iframe)
+├── amongus/                # joc multiplayer „Among Us CS” (serviciu Node separat)
+│   ├── server.js           # server autoritar (WebSocket) — vezi amongus/README.md
+│   ├── content/*.yaml      # conținutul minijocurilor per materie (cu soluțiile!)
+│   └── public/             # clientul Canvas, servit de serviciu pe /amongus/
 ├── diagrams/               # surse editabile draw.io (PSO)
 ├── assets/                 # diagrame PNG exportate (PSO)
 ├── Dockerfile              # imagine nginx pentru deploy (folosită pe Raspberry Pi 5)
@@ -116,3 +120,16 @@ Secțiunea „🔐 Subiecte examen” din navigația PSO. Conținutul (10 varian
 parolă (PBKDF2), deblocarea are loc în browser, iar parola poate fi ținută minte per
 stație (localStorage). Sursa în clar + scriptul de (re)criptare/schimbare de parolă
 NU sunt în acest repo — vezi `materii/pso/subiecte-secrete/` (README acolo).
+
+### Among Us CS (`amongus/`) 🛸
+
+Joc multiplayer „Among Us” cu temă de informatică: 4–8 jucători, 1–2 impostori,
+hartă 2D cu 7 camere, iar taskurile echipajului sunt **minijocuri din materiile
+de licență** (gazda camerei alege max 3 materii; conținutul vine din băncile
+Conquistador + cursuri). Kill, cadavre, raport, ședințe cu chat + vot, sabotaj
+de kernel, fantome care fac taskuri în continuare, reconectare grațioasă.
+
+Rulează ca **serviciu Node separat** (aceeași rețetă ca `conquistador/`): imagine
+proprie în GHCR, nginx proxează `/amongus/` cu upgrade WebSocket, serverul e
+autoritar (rolurile și soluțiile minijocurilor nu ajung niciodată la client).
+Detalii, protocol și cum se adaugă conținut: `amongus/README.md` + `amongus/PROTOCOL.md`.

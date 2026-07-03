@@ -1,0 +1,93 @@
+# Conținut minijocuri Among Us CS — OOP / C++
+# Fapte extrase din conquistador/questions/oop-cpp.yaml (+ cursuri/programare_oop_c++).
+materie: oop-cpp
+nume: "OOP / C++"
+icon: "🧬"
+
+fire:
+  - titlu: "Concept OOP → descriere"
+    sursa: "questions/oop-cpp.yaml — încapsulare, is-a/has-a, legare dinamică"
+    stanga: "Concept"
+    dreapta: "Descriere"
+    perechi:
+      - ["Încapsulare", "date ascunse, acces prin metode"]
+      - ["Moștenire", "modelează relația is-a"]
+      - ["Compoziție", "modelează relația has-a"]
+      - ["Polimorfism", "metoda aleasă după tipul real"]
+
+  - titlu: "Cuvânt-cheie → rol"
+    sursa: "questions/oop-cpp.yaml — virtual, static, friend, protected, auto"
+    stanga: "Cuvânt-cheie"
+    dreapta: "Rol"
+    perechi:
+      - ["virtual", "legare dinamică prin v-table"]
+      - ["static", "membru al clasei, nu al obiectului"]
+      - ["friend", "funcție externă cu acces la private"]
+      - ["protected", "ca private, dar vizibil în derivate"]
+      - ["auto (C++11)", "tip dedus din inițializare"]
+
+  - titlu: "Instrucțiune → ce se apelează"
+    sursa: "questions/oop-cpp.yaml — inițializare vs asignare («ctor ctor asig»)"
+    stanga: "Instrucțiune"
+    dreapta: "Se apelează"
+    perechi:
+      - ["C a;", "constructorul fără parametri"]
+      - ["C b = a;", "constructorul de copiere"]
+      - ["b = a; (b există deja)", "operatorul de asignare ="]
+      - ["obiect ieșit din scope", "destructorul ~C()"]
+
+  - titlu: "Mecanism C++ → descriere"
+    sursa: "questions/oop-cpp.yaml — virtual pur, clase abstracte, template, excepții"
+    stanga: "Mecanism"
+    dreapta: "Descriere"
+    perechi:
+      - ["metodă virtuală pură", "virtual void f() = 0;"]
+      - ["clasă abstractă", "nu poate fi instanțiată"]
+      - ["template <class T>", "echivalent cu <typename T>"]
+      - ["throw", "lansează o excepție"]
+      - ["catch(...)", "prinde orice tip de excepție"]
+
+ordonare:
+  - titlu: "Viața unui obiect derivat"
+    sursa: "questions/oop-cpp.yaml — ordinea cB cD dD dB; cursuri/programare_oop_c++"
+    context: "struct Derivat : public Baza — un obiect Derivat este creat, apoi distrus"
+    pasi:
+      - "Constructorul clasei de bază"
+      - "Constructorul clasei derivate"
+      - "Destructorul clasei derivate"
+      - "Destructorul clasei de bază"
+
+  - titlu: "Drumul unei excepții"
+    sursa: "questions/oop-cpp.yaml — throw / try / catch"
+    pasi:
+      - "Codul protejat rulează în try"
+      - "throw lansează excepția"
+      - "Se caută un catch compatibil ca tip"
+      - "catch captează și tratează excepția"
+
+  - titlu: "Apelul unei metode virtuale"
+    sursa: "questions/oop-cpp.yaml — v-table și __vfptr, legare dinamică"
+    context: "Baza* p = new Derivat(); p->f();"
+    pasi:
+      - "Apelul p->f() printr-un Baza*"
+      - "Se citește __vfptr din obiect"
+      - "Se caută f() în v-table"
+      - "Rulează f() din Derivat (tip real)"
+
+calibrare:
+  - intrebare: "În ce an a apărut standardul C++11?"
+    sursa: "questions/oop-cpp.yaml — anul standardului C++11"
+    min: 1998
+    max: 2020
+    corect: 2011
+    tol: 0
+    unitate: ""
+
+  - intrebare: "Câți constructori se apelează la crearea unui obiect D?"
+    sursa: "questions/oop-cpp.yaml — lanțul de derivări B → A → C → D"
+    context: "class A : public B; class C : public A; class D : public C"
+    min: 1
+    max: 8
+    corect: 4
+    tol: 0
+    unitate: "constructori"

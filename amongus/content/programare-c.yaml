@@ -1,0 +1,114 @@
+# ============================================================
+#  Among Us CS — conținut minijocuri: Programare C
+#  Fapte extrase din conquistador/questions/programare-c.yaml
+#  și din cursuri/programare (vezi `sursa` la fiecare intrare).
+# ============================================================
+materie: programare-c
+nume: "Programare C"
+icon: "🔧"
+
+# ---------- FIRE — „Conectează firele" ----------
+fire:
+  - titlu: "Specificator printf → ce afișează"
+    sursa: "questions/programare-c.yaml — %d, %c, %s, %.2f, %zu în exemplele de cod"
+    stanga: "Specificator"
+    dreapta: "Tip afișat"
+    perechi:
+      - ["%d", "int (întreg cu semn)"]
+      - ["%c", "un caracter (char)"]
+      - ["%s", "șir de caractere (string)"]
+      - ["%f", "număr real (float/double)"]
+      - ["%zu", "size_t (rezultatul sizeof)"]
+
+  - titlu: "Funcție de bibliotecă → rol"
+    sursa: "questions/programare-c.yaml — malloc/calloc/free/realloc/strcmp"
+    stanga: "Funcție"
+    dreapta: "Rol"
+    perechi:
+      - ["malloc", "alocă memorie neinițializată"]
+      - ["calloc", "alocă și umple cu zero"]
+      - ["free", "eliberează blocul alocat"]
+      - ["realloc", "redimensionează un bloc existent"]
+      - ["strcmp", "compară șiruri (0 = egale)"]
+
+  - titlu: "Operator → semnificație"
+    sursa: "questions/programare-c.yaml — 7%4, a<<2, a>>2, p->titlu, a^b"
+    stanga: "Operator"
+    dreapta: "Semnificație"
+    perechi:
+      - ["%", "restul împărțirii întregi"]
+      - ["<<", "deplasare stânga (înmulțește)"]
+      - [">>", "deplasare dreapta (împarte)"]
+      - ["->", "membru prin pointer la struct"]
+      - ["^", "SAU exclusiv pe biți (XOR)"]
+
+  - titlu: "Mod fopen → efect"
+    sursa: "questions/programare-c.yaml — moduri fopen (r, w, a, r+)"
+    stanga: "Mod fopen"
+    dreapta: "Efect"
+    perechi:
+      - ["r", "deschide doar pentru citire"]
+      - ["w", "scrie; golește dacă există"]
+      - ["a", "adaugă la sfârșitul fișierului"]
+      - ["r+", "citire și scriere (update)"]
+
+# ---------- ORDONARE — „Compilează codul" ----------
+ordonare:
+  - titlu: "Etapele traducerii unui program C"
+    sursa: "cursuri/programare — etapele compilării (gcc)"
+    pasi:
+      - "Preprocesare (#include, macro)"
+      - "Compilare (C → asamblare)"
+      - "Asamblare (cod obiect .o)"
+      - "Editare de legături (linking)"
+
+  - titlu: "Viața memoriei alocate dinamic"
+    sursa: "questions/programare-c.yaml — malloc/NULL, free, dangling pointer"
+    pasi:
+      - "malloc(n) alocă blocul pe heap"
+      - "Se verifică rezultatul (NULL?)"
+      - "Blocul este folosit în program"
+      - "free(p) eliberează blocul"
+      - "p nu se mai dereferențiază"
+
+# ---------- CALIBRARE — slider pe valoarea corectă ----------
+calibrare:
+  - intrebare: "Pe un sistem pe 64 de biți, câți octeți are un pointer (sizeof(int*))?"
+    sursa: "questions/programare-c.yaml — sizeof(int*) = 8 pe 64 de biți"
+    min: 0
+    max: 16
+    corect: 8
+    tol: 0
+    unitate: "octeți"
+
+  - intrebare: 'Câți octeți ocupă char s[] = "Hello", cu tot cu terminator?'
+    sursa: "questions/programare-c.yaml — Hello = 5 litere + '\\0' = 6 octeți"
+    min: 0
+    max: 10
+    corect: 6
+    tol: 0
+    unitate: "octeți"
+
+  - intrebare: "Câți octeți alocă malloc(10 * sizeof(int)), cu sizeof(int) = 4?"
+    sursa: "questions/programare-c.yaml — 10 * 4 = 40 de octeți"
+    min: 10
+    max: 60
+    corect: 40
+    tol: 0
+    unitate: "octeți"
+
+  - intrebare: "unsigned int a = 60: cât este a << 2?"
+    sursa: "questions/programare-c.yaml — 60 << 2 = 60 * 4 = 240"
+    min: 100
+    max: 300
+    corect: 240
+    tol: 0
+    unitate: ""
+
+# ---------- STIVA — puzzle push/pop (stiva de apeluri) ----------
+stiva:
+  - titlu: "Stiva de apeluri: add() apoi sub()"
+    sursa: "questions/programare-c.yaml — calc(10,3,add) apoi calc(10,3,sub)"
+    context: "main() apelează add(); după ce add() revine, main() apelează sub(). Produ ordinea revenirilor."
+    sosire: ["main()", "add()", "sub()"]
+    iesire: ["add()", "sub()", "main()"]

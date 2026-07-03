@@ -19,6 +19,7 @@ jobs:
       counter:      ${{ steps.filter.outputs.counter }}
       sqlrunner:    ${{ steps.filter.outputs.sqlrunner }}
       conquistador: ${{ steps.filter.outputs.conquistador }}
+      amongus:      ${{ steps.filter.outputs.amongus }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -48,20 +49,22 @@ jobs:
           grep -qE '^counter/'      <<< "$FILES" && counter=true      || counter=false
           grep -qE '^sqlrunner/'    <<< "$FILES" && sqlrunner=true    || sqlrunner=false
           grep -qE '^conquistador/' <<< "$FILES" && conquistador=true || conquistador=false
+          grep -qE '^amongus/'      <<< "$FILES" && amongus=true      || amongus=false
 
           # Site static (context "."): se reface la ORICE modificare care NU e
-          # exclusiv în cele trei directoare de backend (acelea sunt excluse din
+          # exclusiv în directoarele de backend (acelea sunt excluse din
           # imaginea statică prin .dockerignore). Mai sigur: rebuild dacă e dubiu.
-          grep -qvE '^(counter|sqlrunner|conquistador)/' <<< "$FILES" && site=true || site=false
+          grep -qvE '^(counter|sqlrunner|conquistador|amongus)/' <<< "$FILES" && site=true || site=false
 
           {
             echo "site=$site"
             echo "counter=$counter"
             echo "sqlrunner=$sqlrunner"
             echo "conquistador=$conquistador"
+            echo "amongus=$amongus"
           } >> "$GITHUB_OUTPUT"
 
-          echo "Rezultat => site=$site counter=$counter sqlrunner=$sqlrunner conquistador=$conquistador"
+          echo "Rezultat => site=$site counter=$counter sqlrunner=$sqlrunner conquistador=$conquistador amongus=$amongus"
 
   # ── Pas 2: build & push — fiecare imagine doar dacă flag-ul ei e true ───────
   build-and-push:
@@ -141,3 +144,15 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_conquistador:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_conquistador:${{ github.sha }}
+
+      - name: Build and push image (amongus — joc multiplayer Among Us CS)
+        if: needs.changes.outputs.amongus == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: ./amongus
+          file: ./amongus/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_amongus:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_amongus:${{ github.sha }}

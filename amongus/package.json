@@ -1,0 +1,14 @@
+{
+  "name": "amongus-cs",
+  "version": "1.0.0",
+  "description": "Among Us: Computer Science — joc multiplayer (WebSocket) cu taskuri-minijoc din materiile de licență",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "ws": "^8.18.0"
+  }
+}

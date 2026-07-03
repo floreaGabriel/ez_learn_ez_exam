@@ -1,0 +1,100 @@
+# Conținut minijocuri Among Us CS — ARHITECTURA CALCULATOARELOR
+# Fapte extrase din conquistador/questions/arhitecturi.yaml (+ cursuri/Arhitecturi).
+
+materie: arhitecturi
+nume: "Arhitectura calculatoarelor"
+icon: "🖥️"
+
+fire:
+  - titlu: "Registru IA-32 → Rol"
+    sursa: "questions/arhitecturi.yaml — EIP = program counter (adresa următoarei instrucțiuni); opțiunile „Acumulatorul (EAX)”, „Stack pointer (ESP)”; registrele segment CS/DS/SS (mod real: CS·10H+IP)"
+    stanga: "Registru"
+    dreapta: "Rol"
+    perechi:
+      - ["EIP", "adresa următoarei instrucțiuni"]
+      - ["EAX", "acumulatorul"]
+      - ["ESP", "stack pointer — vârful stivei"]
+      - ["CS", "selectează segmentul de cod"]
+
+  - titlu: "Concept cache → Descriere"
+    sursa: "questions/arhitecturi.yaml — Write Back vs Write Through; mapare directă (x mod 2^L), complet asociativă, asociativă pe seturi (k linii/set)"
+    stanga: "Concept"
+    dreapta: "Descriere"
+    perechi:
+      - ["Write Back", "scrie în RAM doar la înlocuire"]
+      - ["Write Through", "scrie simultan în cache și RAM"]
+      - ["Mapare directă", "linie fixă: blocul x mod 2^L"]
+      - ["Complet asociativă", "orice bloc în oricare linie"]
+      - ["Asociativă pe seturi", "set fix, orice linie din set"]
+
+  - titlu: "Arhitectură → Trăsătură"
+    sursa: "questions/arhitecturi.yaml — Harvard (memorii separate instrucțiuni/date vs magistrala unică Von Neumann); RISC load/store (ARM, MIPS) vs CISC register-memory (x86)"
+    stanga: "Arhitectură"
+    dreapta: "Trăsătură"
+    perechi:
+      - ["Harvard", "memorii separate cod/date"]
+      - ["Von Neumann", "memorie comună, o magistrală"]
+      - ["RISC", "load/store (ARM, MIPS)"]
+      - ["CISC", "register-memory (x86)"]
+
+ordonare:
+  - titlu: "Etapele pipeline-ului clasic"
+    sursa: "questions/arhitecturi.yaml — numeric_exact „Câte etape are pipeline-ul (IF, ID, Ex, MEM, WB)?” = 5 + ciclul fetch-decode-execute"
+    pasi:
+      - "IF — preluarea instrucțiunii"
+      - "ID — decodificarea instrucțiunii"
+      - "Ex — execuția operației"
+      - "MEM — accesul la memorie"
+      - "WB — scrierea în registri"
+
+  - titlu: "Ierarhia memoriei (rapid → lent)"
+    sursa: "questions/arhitecturi.yaml — ierarhia memoriei (hit/miss pe niveluri), swapping RAM↔disc, cache + cursuri/Arhitecturi"
+    pasi:
+      - "Registre (în CPU)"
+      - "Memorie cache"
+      - "Memorie principală (RAM)"
+      - "Disc (memorie secundară)"
+
+  - titlu: "Adresa fizică în modul real"
+    sursa: "questions/arhitecturi.yaml — mod real: adresa fizică = segment·10H + offset, pe 20 de biți (1 MB)"
+    context: "Cum obține 8086 adresa pe 20 de biți"
+    pasi:
+      - "Ia baza din registrul segment"
+      - "Înmulțește baza cu 10H"
+      - "Adună offset-ul (IP)"
+      - "Obții adresa fizică pe 20 biți"
+
+calibrare:
+  - intrebare: "Câți registri de uz general are IA-32?"
+    sursa: "questions/arhitecturi.yaml — numeric_exact: 8 registri de uz general pe 32 de biți (EAX...EBP)"
+    min: 0
+    max: 20
+    corect: 8
+    tol: 0
+    unitate: "registri"
+
+  - intrebare: "Câți registri segment are IA-32?"
+    sursa: "questions/arhitecturi.yaml — numeric_exact: 6 registri segment (CS, DS, SS, ES, FS, GS)"
+    min: 0
+    max: 10
+    corect: 6
+    tol: 0
+    unitate: "registri"
+
+  - context: "Memorie de 64 de cuvinte, bloc de 4 cuvinte"
+    intrebare: "Câte blocuri rezultă?"
+    sursa: "questions/arhitecturi.yaml — numeric_exact: 64/4 = 16 blocuri"
+    min: 0
+    max: 50
+    corect: 16
+    tol: 0
+    unitate: "blocuri"
+
+  - context: "Mod real: CS=1100H, IP=450H; fizic = CS·10H + IP"
+    intrebare: "Care e adresa fizică, în zecimal?"
+    sursa: "questions/arhitecturi.yaml — numeric_exact: 1100H·10H + 450H = 11450H = 70736"
+    min: 60000
+    max: 80000
+    corect: 70736
+    tol: 0
+    unitate: "zecimal"

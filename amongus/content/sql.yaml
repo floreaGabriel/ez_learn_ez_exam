@@ -1,0 +1,100 @@
+# Conținut minijocuri Among Us CS — SQL / Baze de date
+# Fapte extrase din conquistador/questions/sql.yaml (+ tematica cursuri/BD).
+materie: sql
+nume: "SQL / Baze de date"
+icon: "🗄️"
+
+sql:
+  - titlu: "Clienți și numărul lor de comenzi"
+    sursa: "questions/sql.yaml — LEFT JOIN + COUNT(o.id) pe Clienti/Comenzi"
+    context: "Numărul de comenzi al fiecărui client, inclusiv clienții fără comenzi (nr = 0)"
+    sablon: "SELECT c.nume, COUNT(o.id) FROM Clienti c ___ JOIN Comenzi o ON o.client_id = ___ GROUP BY ___;"
+    goluri: ["LEFT", "c.id", "c.nume"]
+    momeli: ["CROSS", "HAVING", "DISTINCT"]
+
+  - titlu: "Filtrarea grupurilor cu HAVING"
+    sursa: "questions/sql.yaml — GROUP BY ShipVia HAVING COUNT(*) > 100"
+    context: "Curierii (ShipVia) cu peste 100 de comenzi"
+    sablon: "SELECT ShipVia, COUNT(*) AS nr FROM Comenzi GROUP BY ___ HAVING ___ > 100;"
+    goluri: ["ShipVia", "COUNT(*)"]
+    momeli: ["WHERE", "ORDER BY", "client_id"]
+
+  - titlu: "Top 3 produse scumpe"
+    sursa: "questions/sql.yaml — clauza TOP + ORDER BY (LIMIT/ROWNUM = greșite în T-SQL)"
+    context: "Cele mai scumpe 3 produse, în T-SQL"
+    sablon: "SELECT ___ (3) nume, pret FROM Produse ORDER BY pret ___;"
+    goluri: ["TOP", "DESC"]
+    momeli: ["LIMIT", "ROWNUM", "HAVING"]
+
+  - titlu: "Testarea valorilor NULL"
+    sursa: "questions/sql.yaml — WHERE Region IS NULL (= NULL / <> NULL sunt greșite)"
+    context: "Angajații fără regiune completată, ordonați alfabetic"
+    sablon: "SELECT nume FROM Angajati WHERE Region ___ ORDER BY ___;"
+    goluri: ["IS NULL", "nume"]
+    momeli: ["= NULL", "<> NULL", "GROUP BY"]
+
+fire:
+  - titlu: "Clauză → rol"
+    sursa: "questions/sql.yaml — DISTINCT, WHERE/HAVING, ORDER BY, TOP"
+    stanga: "Clauză"
+    dreapta: "Rol"
+    perechi:
+      - ["DISTINCT", "elimină duplicatele"]
+      - ["WHERE", "filtrează la nivel de rând"]
+      - ["HAVING", "filtrează la nivel de grup"]
+      - ["ORDER BY", "sortează rezultatul"]
+      - ["TOP", "limitează numărul de rânduri"]
+
+  - titlu: "Funcție agregată → comportament"
+    sursa: "questions/sql.yaml — agregatele ignoră NULL; COUNT(*) e excepția"
+    stanga: "Funcție"
+    dreapta: "Comportament"
+    perechi:
+      - ["COUNT(*)", "numără toate rândurile"]
+      - ["COUNT(col)", "numără valorile nenule"]
+      - ["AVG(col)", "media valorilor nenule"]
+      - ["MAX(col)", "cea mai mare valoare"]
+      - ["SUM(col)", "suma valorilor"]
+
+  - titlu: "Tip de JOIN → comportament"
+    sursa: "questions/sql.yaml — INNER / LEFT / CROSS / self join"
+    stanga: "JOIN"
+    dreapta: "Comportament"
+    perechi:
+      - ["INNER JOIN", "doar rândurile potrivite"]
+      - ["LEFT JOIN", "tot tabelul stâng + potriviri"]
+      - ["CROSS JOIN", "produs cartezian (m × n)"]
+      - ["SELF JOIN", "tabelul unit cu el însuși"]
+
+ordonare:
+  - titlu: "Evaluarea logică a unui SELECT"
+    sursa: "questions/sql.yaml — FROM e evaluată prima; cursuri/BD"
+    context: "De la prima la ultima clauză evaluată logic"
+    pasi: ["FROM", "WHERE", "GROUP BY", "HAVING", "SELECT", "ORDER BY"]
+
+  - titlu: "Tranzacție eșuată: fluxul erorii"
+    sursa: "questions/sql.yaml — tranzacții, TRY/CATCH, ROLLBACK"
+    pasi:
+      - "BEGIN TRAN — începe tranzacția"
+      - "Instrucțiunile rulează în TRY"
+      - "O instrucțiune provoacă o eroare"
+      - "Controlul sare în blocul CATCH"
+      - "ROLLBACK anulează toată tranzacția"
+
+calibrare:
+  - intrebare: "Câte rânduri întoarce UNION ALL între cele două tabele?"
+    sursa: "questions/sql.yaml — UNION ALL: 9 + 91 = 100 de rânduri"
+    context: "Angajati are 9 rânduri, Clienti are 91; fără eliminarea duplicatelor"
+    min: 0
+    max: 200
+    corect: 100
+    tol: 0
+    unitate: "rânduri"
+
+  - intrebare: "Câte proprietăți denotă acronimul ACID?"
+    sursa: "questions/sql.yaml — ACID = 4 proprietăți"
+    min: 0
+    max: 10
+    corect: 4
+    tol: 0
+    unitate: "proprietăți"

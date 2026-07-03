@@ -1,0 +1,125 @@
+# ============================================================
+#  Among Us CS — conținut minijocuri: PSO (Sisteme de operare)
+#  Fapte extrase din conquistador/questions/pso.yaml, din
+#  subiectele de examen și din cursuri/PSO-NOI (vezi `sursa`).
+# ============================================================
+materie: pso
+nume: "Sisteme de operare"
+icon: "🧠"
+
+# ---------- FIRE — „Conectează firele" ----------
+fire:
+  - titlu: "Apel de sistem → efect"
+    sursa: "questions/pso.yaml — fork/exec/wait/pipe/dup"
+    stanga: "Apel de sistem"
+    dreapta: "Efect"
+    perechi:
+      - ["fork()", "creează un proces copil"]
+      - ["exec()", "înlocuiește imaginea procesului"]
+      - ["wait()", "așteaptă terminarea copilului"]
+      - ["pipe()", "canal între procese înrudite"]
+      - ["dup()", "duplică un descriptor de fișier"]
+
+  - titlu: "Semnal → semnificație"
+    sursa: "questions/pso.yaml — semnale (SIGKILL 9, SIGSEGV, SIGCHLD, SIGINT)"
+    stanga: "Semnal"
+    dreapta: "Semnificație"
+    perechi:
+      - ["SIGKILL", "oprire forțată, nu poate fi prins"]
+      - ["SIGSEGV", "acces invalid la memorie"]
+      - ["SIGCHLD", "un copil s-a terminat"]
+      - ["SIGINT", "întrerupere de la tastatură (Ctrl+C)"]
+
+  - titlu: "Mecanism de sincronizare → comportament"
+    sursa: "questions/pso.yaml — mutex vs spinlock, barieră, semafor P/V, TLS"
+    stanga: "Mecanism"
+    dreapta: "Comportament"
+    perechi:
+      - ["Mutex", "adoarme firul când e ocupat"]
+      - ["Spinlock", "așteptare activă (busy-waiting)"]
+      - ["Barieră", "eliberează când sosesc toate firele"]
+      - ["Semafor", "contor: P scade, V crește"]
+      - ["TLS", "copie a variabilei per fir"]
+
+# ---------- ORDONARE — „Compilează codul" ----------
+ordonare:
+  - titlu: "Round-Robin cu priorități — ordinea execuției"
+    sursa: "Subiecte examen 2020/2022/2023 — planificare RR cu priorități"
+    context: "P1..P5, burst 14,3,10,8,17s; priorități 5,3,1,4,2 (1=max); cuantă 3s. În ce ordine se termină procesele?"
+    pasi: ["P1 (prio 5)", "P4 (prio 4)", "P2 (prio 3)", "P5 (prio 2)", "P3 (prio 1)"]
+
+  - titlu: "Tratarea unui page fault"
+    sursa: "questions/pso.yaml — page fault, demand paging, tabela de pagini"
+    pasi:
+      - "Procesul accesează o pagină absentă"
+      - "MMU generează page fault (trap)"
+      - "Nucleul aduce pagina de pe disc"
+      - "Se actualizează tabela de pagini"
+      - "Instrucțiunea se reia"
+
+  - titlu: "Viața unui proces zombie"
+    sursa: "questions/pso.yaml — proces zombie, wait() și exit status"
+    pasi:
+      - "Copilul apelează exit(status)"
+      - "Copilul devine proces zombie"
+      - "Părintele apelează wait()"
+      - "Părintele citește exit status-ul"
+      - "Intrarea din tabelă se eliberează"
+
+# ---------- CALIBRARE — slider pe valoarea corectă ----------
+calibrare:
+  - intrebare: "Câte procese există după 3 fork()-uri consecutive?"
+    sursa: "questions/pso.yaml — fork în buclă (2^3 = 8) / subiecte examen"
+    context: "Fiecare proces execută toate cele 3 apeluri fork()"
+    min: 0
+    max: 16
+    corect: 8
+    tol: 0
+    unitate: "procese"
+
+  - intrebare: "Ce valoare numerică are semnalul SIGKILL în Linux?"
+    sursa: "questions/pso.yaml — SIGKILL are numărul 9 (kill -9)"
+    min: 0
+    max: 32
+    corect: 9
+    tol: 0
+    unitate: ""
+
+  - intrebare: "Câte page fault-uri apar?"
+    sursa: "questions/pso.yaml — FIFO, 3 cadre, șirul 1 2 3 4 1 2 5 → 7 fault-uri"
+    context: "Înlocuire FIFO, 3 cadre; referințe: 1 2 3 4 1 2 5"
+    min: 0
+    max: 10
+    corect: 7
+    tol: 0
+    unitate: "page fault-uri"
+
+# ---------- STIVA — puzzle push/pop ----------
+stiva:
+  - titlu: "Drumul unui apel de sistem"
+    sursa: "questions/pso.yaml — trap/syscall (user mode → kernel mode)"
+    context: "main() cheamă printf(), care declanșează trap; rulează handlerul din kernel. Revenirile sunt în ordine inversă."
+    sosire: ["main()", "printf() (libc)", "trap / syscall", "handler kernel"]
+    iesire: ["handler kernel", "trap / syscall", "printf() (libc)", "main()"]
+
+# ---------- STARI — diagrama de stări ----------
+stari:
+  - titlu: "Stările unui proces"
+    sursa: "questions/pso.yaml — stări + curs Procese (diagrama din _SCHEMA.md)"
+    noduri: ["New", "Ready", "Running", "Waiting", "Terminated"]
+    tranzitii:
+      - { de: "New", la: "Ready", eticheta: "admitere în sistem" }
+      - { de: "Ready", la: "Running", eticheta: "dispatch (planificator)" }
+      - { de: "Running", la: "Ready", eticheta: "expiră cuanta" }
+      - { de: "Running", la: "Waiting", eticheta: "cere I/O" }
+      - { de: "Waiting", la: "Ready", eticheta: "I/O terminat" }
+      - { de: "Running", la: "Terminated", eticheta: "exit()" }
+
+  - titlu: "Zombie și orfan"
+    sursa: "questions/pso.yaml — zombie (fără wait), orfan adoptat de init (PID 1)"
+    noduri: ["Proces activ", "Orfan", "Zombie", "Șters din tabelă"]
+    tranzitii:
+      - { de: "Proces activ", la: "Orfan", eticheta: "părintele moare; adoptat de init" }
+      - { de: "Proces activ", la: "Zombie", eticheta: "exit(); părintele nu a dat wait()" }
+      - { de: "Orfan", la: "Zombie", eticheta: "orfanul își termină execuția" }
+      - { de: "Zombie", la: "Șters din tabelă", eticheta: "wait() citește codul de ieșire" }

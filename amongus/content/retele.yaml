@@ -1,0 +1,121 @@
+# Conținut minijocuri Among Us CS — REȚELE
+# Fapte extrase din conquistador/questions/retele.yaml (+ cursuri/retele_protocoale_noi).
+
+materie: retele
+nume: "Rețele"
+icon: "🌐"
+
+fire:
+  - titlu: "Port standard → Protocol"
+    sursa: "questions/retele.yaml — DNS pe 53, HTTPS pe 443, SMTP pe 25, port 80 → HTTP (hexdump TCP), port 23 → Telnet (captură tcpdump)"
+    stanga: "Port"
+    dreapta: "Protocol"
+    perechi:
+      - ["53", "DNS"]
+      - ["80", "HTTP"]
+      - ["443", "HTTPS"]
+      - ["25", "SMTP"]
+      - ["23", "Telnet"]
+
+  - titlu: "Protocol → Rol în rețea"
+    sursa: "questions/retele.yaml — ARP (IP→MAC), DHCP (alocare dinamică IP), DNS (nume→IP), NAT (privat→public), ICMP Time Exceeded (traceroute)"
+    stanga: "Protocol"
+    dreapta: "Rol"
+    perechi:
+      - ["ARP", "mapează adresa IP la adresa MAC"]
+      - ["DHCP", "alocă automat adresa IP stației"]
+      - ["DNS", "traduce nume de domenii în IP"]
+      - ["NAT", "traduce IP privat în IP public"]
+      - ["ICMP", "semnalează erori (Time Exceeded)"]
+
+  - titlu: "Nivel OSI → PDU"
+    sursa: "questions/retele.yaml — „Cum se numește PDU la nivelul Rețea?”: Transport=segment, Rețea=pachet, Legătură=cadru, Fizic=bit"
+    stanga: "Nivel OSI"
+    dreapta: "PDU"
+    perechi:
+      - ["Transport", "Segment"]
+      - ["Rețea", "Pachet"]
+      - ["Legătură de date", "Cadru"]
+      - ["Fizic", "Bit"]
+
+  - titlu: "Standard IEEE 802 → Tehnologie"
+    sursa: "questions/retele.yaml — „Cărui standard IEEE îi corespunde WLAN?”: 802.11 Wi-Fi, 802.3 Ethernet, 802.15 WPAN (Bluetooth), 802.16 WiMAX"
+    stanga: "Standard"
+    dreapta: "Tehnologie"
+    perechi:
+      - ["802.3", "Ethernet"]
+      - ["802.11", "Wi-Fi (WLAN)"]
+      - ["802.15", "Bluetooth (WPAN)"]
+      - ["802.16", "WiMAX"]
+
+ordonare:
+  - titlu: "Încapsularea datelor la emisie"
+    sursa: "questions/retele.yaml — încapsularea (fiecare nivel adaugă antet la coborârea prin stivă) + PDU-urile pe niveluri"
+    pasi:
+      - "Date (Aplicație)"
+      - "Segment (Transport)"
+      - "Pachet (Rețea)"
+      - "Cadru (Legătură de date)"
+      - "Biți (Fizic)"
+
+  - titlu: "DHCP: obținerea adresei (DORA)"
+    sursa: "questions/retele.yaml — procesul DORA: Discover, Offer, Request, Acknowledge"
+    pasi:
+      - "DISCOVER — clientul caută serverul"
+      - "OFFER — serverul propune o adresă"
+      - "REQUEST — clientul cere adresa"
+      - "ACK — serverul confirmă alocarea"
+
+  - titlu: "Cum descoperă traceroute un hop"
+    sursa: "questions/retele.yaml — traceroute (TTL crescător + ICMP Time Exceeded) și rolul TTL (scade cu 1 la fiecare router)"
+    pasi:
+      - "Trimite pachet cu TTL=1"
+      - "Primul router scade TTL la 0"
+      - "Routerul aruncă pachetul"
+      - "Răspunde cu ICMP Time Exceeded"
+      - "Sursa notează IP-ul routerului"
+      - "Repetă cu TTL=2, 3, ..."
+
+calibrare:
+  - intrebare: "Câte gazde utilizabile are un /24?"
+    sursa: "questions/retele.yaml — numeric_exact „Câte gazde utilizabile are o subrețea /24?” = 254"
+    min: 0
+    max: 512
+    corect: 254
+    tol: 0
+    unitate: "gazde"
+
+  - intrebare: "Ce MTU are Ethernet, în octeți?"
+    sursa: "questions/retele.yaml — numeric_exact „valoarea MTU pentru Ethernet” = 1500 octeți"
+    min: 0
+    max: 2500
+    corect: 1500
+    tol: 0
+    unitate: "octeți"
+
+  - intrebare: "Câți octeți are antetul UDP?"
+    sursa: "questions/retele.yaml — numeric_exact „Câți octeți are antetul UDP?” = 8"
+    min: 0
+    max: 30
+    corect: 8
+    tol: 0
+    unitate: "octeți"
+
+  - intrebare: "Câți biți are o adresă MAC?"
+    sursa: "questions/retele.yaml — numeric_exact „Câți biți are o adresă MAC?” = 48"
+    min: 0
+    max: 100
+    corect: 48
+    tol: 0
+    unitate: "biți"
+
+stari:
+  - titlu: "Deschiderea conexiunii TCP"
+    sursa: "questions/retele.yaml — three-way handshake (SYN, SYN+ACK, ACK; 3 întrebări) + cursuri/retele_protocoale_noi/tcp_udp.pdf"
+    context: "Stările la stabilirea conexiunii TCP"
+    noduri: ["CLOSED", "SYN_SENT", "SYN_RCVD", "ESTABLISHED"]
+    tranzitii:
+      - { de: "CLOSED", la: "SYN_SENT", eticheta: "clientul trimite SYN" }
+      - { de: "CLOSED", la: "SYN_RCVD", eticheta: "primește SYN, trimite SYN+ACK" }
+      - { de: "SYN_SENT", la: "ESTABLISHED", eticheta: "primește SYN+ACK, trimite ACK" }
+      - { de: "SYN_RCVD", la: "ESTABLISHED", eticheta: "primește ACK-ul final" }
