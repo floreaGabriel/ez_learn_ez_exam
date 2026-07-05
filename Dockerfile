@@ -33,6 +33,11 @@ RUN sed -i -E "s|(href=\"css/[^\"]*)\"|\1?v=${ASSET_VER}\"|g; s|(src=\"js/[^\"]*
 RUN sed -i -E "s|(src=\"sims/[^\"]*)\"|\1?v=${ASSET_VER}\"|g" /usr/share/nginx/html/pso/index.html
 # ... și blobul criptat cu subiectele PSO, referit din pso/subiecte.html
 RUN sed -i -E "s|(src=\"subiecte-secret[^\"]*)\"|\1?v=${ASSET_VER}\"|g" /usr/share/nginx/html/pso/subiecte.html
+# ... idem pentru subiectele C & C++ (oop/subiecte.html)
+RUN sed -i -E "s|(src=\"subiecte-secret[^\"]*)\"|\1?v=${ASSET_VER}\"|g" /usr/share/nginx/html/oop/subiecte.html
+# ... și scripturile cursului OOP (teorie/jocuri/exercitii), ca embed-ul să nu
+# rămână 7 zile pe versiunea veche după un deploy
+RUN sed -i -E "s|(src=\"(teorie|jocuri|exercitii)\.js)\"|\1?v=${ASSET_VER}\"|g" /usr/share/nginx/html/oop/index.html
 
 EXPOSE 80
 

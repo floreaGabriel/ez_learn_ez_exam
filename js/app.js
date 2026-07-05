@@ -281,6 +281,9 @@ function buildNav(){
         html += '<div class="nav-item nav-sub" data-view="embed" data-subject="'+m.id+'" data-sec="'+s.id+'">'
               + '<span class="ico">'+s.icon+'</span> '+s.nume+'</div>';
       });
+      if(m.id==="oop"){   // subiectele generate C & C++ (protejate cu parolă)
+        html += '<div class="nav-item nav-sub" data-view="oopsub"><span class="ico">🔐</span> Subiecte examen</div>';
+      }
     }
     html += '</div></div>';
   });
@@ -333,6 +336,7 @@ function wireNav(){
       else if(v==="quiz") showQuiz();
       else if(v==="simlab") showSimLab();
       else if(v==="psosub") showPsoSub();
+      else if(v==="oopsub") showOopSub();
       else if(v==="concept") showConcept(it.dataset.id);
       else if(v==="exam") showExam(it.dataset.id);
       else if(v==="examindex") showExamIndex();
@@ -379,6 +383,7 @@ function setActive(view,id,sec){
 
   let subj = null;
   if(view==="home" || view==="quiz" || view==="concept" || view==="simlab" || view==="psosub") subj = "pso";
+  else if(view==="oopsub") subj = "oop";
   else if(view==="exam" || view==="examindex") subj = "subiecte";
   else if(view==="embed") subj = id;
   document.querySelectorAll(".nav-subject").forEach(function(g){
@@ -401,6 +406,8 @@ function setActive(view,id,sec){
     const el = document.querySelector('.nav-item[data-view="simlab"]'); if(el) el.classList.add("active");
   } else if(view==="psosub"){
     const el = document.querySelector('.nav-item[data-view="psosub"]'); if(el) el.classList.add("active");
+  } else if(view==="oopsub"){
+    const el = document.querySelector('.nav-item[data-view="oopsub"]'); if(el) el.classList.add("active");
   } else if(view==="concept"){
     const el = document.querySelector('.nav-item[data-view="concept"][data-id="'+id+'"]'); if(el) el.classList.add("active");
   } else if(view==="embed"){
@@ -414,7 +421,7 @@ function setActive(view,id,sec){
   if(view!=="quiz"){ const bar=document.getElementById("scorebar"); if(bar) bar.remove(); }
   window.scrollTo(0,0);
   const cnt = document.querySelector(".content");
-  if(cnt){ cnt.classList.toggle("embed", view==="embed" || view==="simlab" || view==="psosub" || view==="amongus"); cnt.classList.toggle("videos", view==="videos"); cnt.scrollTop = 0;
+  if(cnt){ cnt.classList.toggle("embed", view==="embed" || view==="simlab" || view==="psosub" || view==="oopsub" || view==="amongus"); cnt.classList.toggle("videos", view==="videos"); cnt.scrollTop = 0;
     if(view!=="conquistador") delete cnt.dataset.view;   // ca mesajele WS întârziate să nu rescrie altă vedere
   }
 }
@@ -571,6 +578,28 @@ function showPsoSub(sec){
   } else {
     c.innerHTML = '<div class="embed-wrap"><iframe id="embed-frame" class="embed-frame" '
       + 'data-subject="pso-sub" src="pso/subiecte.html#'+sec+'" title="Subiecte examen PSO"></iframe></div>';
+    const f = document.getElementById("embed-frame");
+    f.addEventListener("load", function(){
+      try{ f.contentWindow.postMessage(frameThemeMsg(), "*"); }catch(e){}
+    });
+  }
+}
+
+// Subiectele C & C++ protejate cu parolă — pagină embed (oop/subiecte.html).
+// Conținutul e criptat AES în oop/subiecte-secret.enc.js; deblocarea are loc în pagină.
+function showOopSub(sec){
+  sec = sec || "lista";
+  setActive("oopsub");
+  document.getElementById("crumb").textContent = "Materii · OOP C++";
+  document.getElementById("title").textContent = "C & C++ — Subiecte examen 🔐";
+  const c = document.getElementById("content");
+  let frame = document.getElementById("embed-frame");
+  if(frame && frame.dataset.subject==="oop-sub"){
+    try{ frame.contentWindow.postMessage({ type:"tab", tab:sec }, "*"); }
+    catch(err){ frame.src = "oop/subiecte.html#"+sec; }
+  } else {
+    c.innerHTML = '<div class="embed-wrap"><iframe id="embed-frame" class="embed-frame" '
+      + 'data-subject="oop-sub" src="oop/subiecte.html#'+sec+'" title="Subiecte examen C & C++"></iframe></div>';
     const f = document.getElementById("embed-frame");
     f.addEventListener("load", function(){
       try{ f.contentWindow.postMessage(frameThemeMsg(), "*"); }catch(e){}

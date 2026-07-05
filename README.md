@@ -121,6 +121,17 @@ parolă (PBKDF2), deblocarea are loc în browser, iar parola poate fi ținută m
 stație (localStorage). Sursa în clar + scriptul de (re)criptare/schimbare de parolă
 NU sunt în acest repo — vezi `materii/pso/subiecte-secrete/` (README acolo).
 
+### Subiectele C & C++ protejate cu parolă (`oop/subiecte.html`)
+
+Secțiunea „🔐 Subiecte examen” de sub OOP C++. 12 variante generate (6 Programare C +
+6 OOP/C++) în stilul Subiectului III de la examenele 2019–2024: coduri scurte cu
+capcanele reale de examen, întrebările „se compilează? / ce afișează? / justificați”,
+rezolvări detaliate și barem. **Fiecare cod, fiecare ieșire și fiecare corectare au
+fost verificate prin compilare și rulare reală** (gcc/g++) înainte de criptare.
+Conținutul stă criptat AES-GCM-256 în `oop/subiecte-secret.enc.js` (aceeași parolă ca
+la subiectele PSO); sursa în clar + pipeline-ul de verificare/criptare NU sunt în acest
+repo — vezi `materii/oop/subiecte-secrete/` (README acolo).
+
 ### Among Us CS (`amongus/`) 🛸
 
 Joc multiplayer „Among Us” cu temă de informatică: 4–8 jucători, 1–2 impostori,
