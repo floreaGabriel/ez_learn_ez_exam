@@ -36,8 +36,9 @@ RUN sed -i -E "s|(src=\"subiecte-secret[^\"]*)\"|\1?v=${ASSET_VER}\"|g" /usr/sha
 # ... idem pentru subiectele C & C++ (oop/subiecte.html)
 RUN sed -i -E "s|(src=\"subiecte-secret[^\"]*)\"|\1?v=${ASSET_VER}\"|g" /usr/share/nginx/html/oop/subiecte.html
 # ... și scripturile cursului OOP (teorie/jocuri/exercitii), ca embed-ul să nu
-# rămână 7 zile pe versiunea veche după un deploy
-RUN sed -i -E "s|(src=\"(teorie|jocuri|exercitii)\.js)\"|\1?v=${ASSET_VER}\"|g" /usr/share/nginx/html/oop/index.html
+# rămână 7 zile pe versiunea veche după un deploy.
+# Delimitatorul e „#”, NU „|”: pattern-ul conține alternanțe cu | și ar rupe comanda.
+RUN sed -i -E "s#(src=\"(teorie|jocuri|exercitii)\.js)\"#\1?v=${ASSET_VER}\"#g" /usr/share/nginx/html/oop/index.html
 
 EXPOSE 80
 
