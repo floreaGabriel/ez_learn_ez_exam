@@ -24,10 +24,21 @@ const LUME_H = 80 * 32;
 const MAX_JUCATORI = 80;      // plafon global de conexiuni
 const MAX_PE_IP = 4;          // conexiuni simultane per IP (mai multe taburi ok)
 const MIN_INTERVAL_POZ = 50;  // ms — pozițiile mai dese de-atât se ignoră
+const MIN_INTERVAL_EMOTE = 700; // ms — anti-spam pe emoji/fraze
 const MAX_STRIKES = 5;        // mesaje invalide până la deconectare
 const TICK_MS = 120;          // cât de des difuzăm instantaneul (dacă s-a mișcat ceva)
 
+// paleta socială/avatar e FIXĂ și indexată — clientul trimite doar indici, deci
+// serverul nu vede niciodată text arbitrar (fără moderare, fără injecții)
+const NR_EMOTE = 16;          // 8 emoji + 8 fraze gata făcute (vezi game.js → EMOTE)
+const NR_CULORI = 8;          // culori de avatar (game.js → AVATAR_CULORI)
+const NR_ACCES = 7;           // accesorii de avatar (game.js → AVATAR_ACCESORII)
+
 const DIRECTII = ['jos', 'sus', 'stanga', 'dreapta'];
+
+// întreg validat într-un interval (altfel — valoarea implicită)
+const intInterval = (v, min, max, impl) =>
+  (Number.isInteger(v) && v >= min && v <= max) ? v : impl;
 
 /** id -> { ws, ip, nume, x, y, dir, misca, reg, ultimPoz, strikes, viu } */
 const jucatori = new Map();
@@ -82,8 +93,9 @@ wss.on('connection', (ws, req) => {
   const stare = {
     ws, ip, id: 0, nume: null,
     x: 0, y: 0, dir: 0, misca: false, reg: '',
+    avc: 0, avh: 0,  // avatar: index de culoare + index de accesoriu
     arePoz: false,   // nu-l difuzăm până nu-și anunță prima poziție (altfel apare la (0,0))
-    ultimPoz: 0, strikes: 0,
+    ultimPoz: 0, ultimEmote: 0, strikes: 0,
   };
 
   ws.viu = true; // pentru heartbeat — acoperă și socket-urile care n-au dat join
@@ -106,6 +118,8 @@ wss.on('connection', (ws, req) => {
       if (jucatori.size >= MAX_JUCATORI) { ws.close(4001, 'plin'); return; }
       stare.id = urmatorulId++;
       stare.nume = nume;
+      stare.avc = intInterval(m.c, 0, NR_CULORI - 1, 0);
+      stare.avh = intInterval(m.h, 0, NR_ACCES - 1, 0);
       jucatori.set(stare.id, stare);
       schimbat = true;
       trimite(ws, { t: 'ok', id: stare.id });
@@ -131,6 +145,26 @@ wss.on('connection', (ws, req) => {
       return;
     }
 
+    /* emoji / frază: {t:"e", k} — k = index în paleta fixă; difuzat imediat */
+    if (m.t === 'e') {
+      if (!stare.id) return strike();
+      if (!Number.isInteger(m.k) || m.k < 0 || m.k >= NR_EMOTE) return strike();
+      const acum = Date.now();
+      if (acum - stare.ultimEmote < MIN_INTERVAL_EMOTE) return; // prea des — ignorăm tăcut
+      stare.ultimEmote = acum;
+      difuzeaza({ t: 'em', id: stare.id, k: m.k });
+      return;
+    }
+
+    /* schimbare de avatar: {t:"av", c, h} — reflectată în următorul instantaneu */
+    if (m.t === 'av') {
+      if (!stare.id) return strike();
+      stare.avc = intInterval(m.c, 0, NR_CULORI - 1, stare.avc);
+      stare.avh = intInterval(m.h, 0, NR_ACCES - 1, stare.avh);
+      schimbat = true;
+      return;
+    }
+
     strike();
     function strike() {
       if (++stare.strikes >= MAX_STRIKES) ws.terminate();
@@ -149,18 +183,29 @@ wss.on('connection', (ws, req) => {
   ws.on('error', () => { /* close vine oricum după error */ });
 });
 
-/* instantaneul difuzat: compact, ca listă de tupluri */
+/* instantaneul difuzat: compact, ca listă de tupluri
+   [id, nume, x, y, dir, misca, reg, culoareAvatar, accesoriuAvatar] */
 function instantaneu() {
   const j = [];
   for (const s of jucatori.values()) {
     if (!s.arePoz) continue; // încă n-a trimis prima poziție — nu-l arătăm la (0,0)
-    j.push([s.id, s.nume, s.x, s.y, s.dir, s.misca ? 1 : 0, s.reg]);
+    j.push([s.id, s.nume, s.x, s.y, s.dir, s.misca ? 1 : 0, s.reg, s.avc || 0, s.avh || 0]);
   }
   return { t: 's', j };
 }
 
 function trimite(ws, obiect) {
   if (ws.readyState === ws.OPEN) { try { ws.send(JSON.stringify(obiect)); } catch (e) {} }
+}
+
+/* difuzare imediată a unui obiect mic (emoji/fraze) către toți jucătorii */
+function difuzeaza(obiect) {
+  const pachet = JSON.stringify(obiect);
+  for (const s of jucatori.values()) {
+    if (s.ws.readyState === s.ws.OPEN && s.ws.bufferedAmount < 65536) {
+      try { s.ws.send(pachet); } catch (e) {}
+    }
+  }
 }
 
 /* difuzare periodică — doar când s-a schimbat ceva (mișcare/intrări/ieșiri) */

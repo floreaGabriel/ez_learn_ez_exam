@@ -27,7 +27,7 @@
   // tipuri de teren (stratul de jos)
   const T = { IARBA: 0, DRUM: 1, APA: 2, NISIP: 3, PODEA: 4, SALBATIC: 5 };
   // tipuri de obstacole (stratul solid; 0 = liber)
-  const S = { LIBER: 0, COPAC: 1, STANCA: 2, CLADIRE: 3, ZID: 4, POARTA: 5, TURN: 6, LADA: 7, CASA: 8, RAFT: 9 };
+  const S = { LIBER: 0, COPAC: 1, STANCA: 2, CLADIRE: 3, ZID: 4, POARTA: 5, TURN: 6, LADA: 7, CASA: 8, RAFT: 9, POD: 10, BANC: 11, TARABA: 12 };
 
   /* ═════════════════ 2. AȘEZAREA REGIUNILOR PE HARTĂ ══════════════════════
      Drumul prin hartă urmează drumul unui pachet prin stiva de rețea:
@@ -91,6 +91,79 @@
     [0.52, 0.52], [0.82, 0.66], [0.42, 0.84],
   ];
 
+  /* ═══════════ 2b. SOCIAL, CRAFTING & INSULE (date) ═══════════════════════
+     Paletele sociale și de avatar sunt FIXE și indexate: clientul trimite doar
+     indici către server (server.js), care nu vede niciodată text arbitrar.   */
+
+  // emoji + fraze gata făcute — index-ul (0..15) e tot ce circulă pe fir.
+  // Ordinea trebuie să rămână sincronă cu NR_EMOTE din server.js.
+  const EMOTE = [
+    { e: '👋' }, { e: '😂' }, { e: '❤️' }, { e: '👍' },
+    { e: '🎉' }, { e: '😮' }, { e: '🤔' }, { e: '🔥' },
+    { e: '👋', t: 'Salut!' },   { e: '🍀', t: 'Baftă!' },
+    { e: '🙏', t: 'Mersi!' },   { e: '🏆', t: 'GG!' },
+    { e: '📍', t: 'Aici!' },    { e: '🆘', t: 'Ajutor?' },
+    { e: '👀', t: 'Frumos!' },  { e: '⌛', t: 'Un moment…' },
+  ];
+
+  // avatar: 8 culori (hue) + 7 accesorii (primul = fără). Sincron cu server.js.
+  const AVATAR_CULORI = [40, 8, 205, 150, 275, 100, 330, 24]; // hue-uri HSL
+  const AVATAR_ACCESORII = ['', '🎓', '🧢', '👑', '🎩', '🌸', '⭐'];
+
+  // resurse (materii prime) strânse din teorie/recapitulări; pret = valoarea la negustor
+  const RESURSE = {
+    lemn:   { emoji: '🪵', nume: 'Lemn',   pret: 3 },
+    cuie:   { emoji: '🔩', nume: 'Cuie',   pret: 2 },
+    piatra: { emoji: '🪨', nume: 'Piatră', pret: 3 },
+    cablu:  { emoji: '🔌', nume: 'Cablu',  pret: 5 },
+    piesa:  { emoji: '⚙️', nume: 'Piesă',  pret: 8 },
+  };
+  const RES_ORDINE = ['lemn', 'cuie', 'piatra', 'cablu', 'piesa'];
+
+  // rețete: cost = resurse consumate; necesita = unelte pe care trebuie să le AI
+  // (nu se consumă); refolosibil = unealta rămâne după folosire.
+  const RETETE = [
+    { id: 'ciocan', emoji: '🔨', nume: 'Ciocan', refolosibil: true,
+      desc: 'Unealta de bază, refolosibilă. Îți trebuie ca să construiești orice altceva.',
+      cost: { lemn: 2, piesa: 1 }, necesita: [] },
+    { id: 'kitpod', emoji: '🧰', nume: 'Kit de pod',
+      desc: 'Scânduri și cuie. Repară un pod stricat — se consumă la reparație.',
+      cost: { lemn: 3, cuie: 4 }, necesita: ['ciocan'] },
+    { id: 'felinar', emoji: '🏮', nume: 'Felinar', refolosibil: true,
+      desc: 'Un obiect frumos de vânzare — sau doar de colecție. Valorează bine la negustor.',
+      cost: { piatra: 3, cablu: 2, piesa: 1 }, necesita: ['ciocan'], valoare: 40 },
+    { id: 'diploma', emoji: '🎓', nume: 'Diplomă de Rețelist', refolosibil: true,
+      desc: 'Se poate face DOAR după ce ai citit toată teoria din Rețelistan. Dovada că ai străbătut toată stiva.',
+      cost: { piesa: 3, cablu: 5 }, necesita: ['ciocan'], cunostinteTot: true },
+  ];
+
+  // podurile bonus + insulele lor secrete (nu blochează drumul principal —
+  // sunt scurtături/comori peste apă, deblocate reparând podul cu un kit).
+  // Toate tile-urile sunt carve-uite de construiesteInsule() → apă, dale de
+  // pod și pământ de insulă; singura trecere e podul.
+  const INSULE = [
+    {
+      id: 'i-semnale', nume: 'Ostrovul Undelor', reg: 'semnale',
+      apa: [[57, 69, 66, 76]],            // moat [x0,y0,x1,y1)
+      insula: [60, 71, 63, 74],           // pământ (grass)
+      pod: [[57, 72], [58, 72], [59, 72]],// dale de pod (se repară)
+      podPoi: [56, 72],                   // POI-ul de reparare (mal, walkable)
+      cufar: [61, 72],                    // comoara
+      loot: { bani: 30, resurse: { piesa: 1, piatra: 3 } },
+      fapta: 'Ostrovul Undelor: orice mediu se traversează dacă îi construiești puntea — modulația e podul dintre biți și semnalul fizic.',
+    },
+    {
+      id: 'i-port', nume: 'Insula Ecoului', reg: 'transport',
+      apa: [[13, 50, 23, 54]],
+      insula: [13, 54, 23, 61],
+      pod: [[17, 50], [18, 50], [17, 51], [18, 51], [17, 52], [18, 52], [17, 53], [18, 53]],
+      podPoi: [17, 49],
+      cufar: [18, 57],
+      loot: { bani: 45, resurse: { piesa: 2, cablu: 3 } },
+      fapta: 'Insula Ecoului: un pod stricat se reface cu uneltele potrivite — exact ca o retransmisie TCP care recuperează un segment pierdut peste ape tulburi.',
+    },
+  ];
+
   /* ══════════════════════ 3. UNELTE MICI (utilitare) ══════════════════════ */
 
   // hash determinist pe coordonate — pentru decor „aleator" dar stabil
@@ -102,6 +175,14 @@
   const clamp = (v, a, b) => v < a ? a : (v > b ? b : v);
   const lerp = (a, b, t) => a + (b - a) * t;
   const dist2 = (ax, ay, bx, by) => (ax - bx) * (ax - bx) + (ay - by) * (ay - by);
+
+  // hash determinist pe un string — pentru drop-uri „aleatoare" dar stabile
+  function hashStr(s) {
+    let h = 2166136261 >>> 0;
+    s = String(s);
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
 
   // escape pentru orice text care ajunge în HTML
   function esc(s) {
@@ -203,18 +284,31 @@
   /* ═══════════════════════ 4. PROGRES (localStorage) ══════════════════════ */
 
   const Progres = {
-    date: { pos: null, citite: {}, boss: {}, vizitate: {}, fapte: [], sunet: true, ajutorVazut: false },
+    date: {
+      pos: null, citite: {}, boss: {}, vizitate: {}, fapte: [], sunet: true, muzica: true, ajutorVazut: false,
+      // economie: inventar de resurse, unelte făurite, bani, poduri reparate, insule golite
+      inventar: {}, unelte: {}, bani: 0, poduri: {}, insule: {},
+    },
     incarca() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) Object.assign(this.date, JSON.parse(raw));
       } catch (e) { /* localStorage indisponibil — jucăm fără persistență */ }
+      // salvările vechi n-au câmpurile de economie — le completăm ca să nu crape
+      for (const k of ['inventar', 'unelte', 'poduri', 'insule'])
+        if (!this.date[k] || typeof this.date[k] !== 'object') this.date[k] = {};
+      if (typeof this.date.bani !== 'number') this.date.bani = 0;
+      if (typeof this.date.muzica !== 'boolean') this.date.muzica = true;
     },
     salveaza() {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.date)); } catch (e) {}
     },
     reset() {
-      this.date = { pos: null, citite: {}, boss: {}, vizitate: {}, fapte: [], sunet: this.date.sunet, ajutorVazut: true };
+      this.date = {
+        pos: null, citite: {}, boss: {}, vizitate: {}, fapte: [],
+        sunet: this.date.sunet, muzica: this.date.muzica, ajutorVazut: true,
+        inventar: {}, unelte: {}, bani: 0, poduri: {}, insule: {},
+      };
       this.salveaza();
     },
     eCitit(rid, pid) { return !!this.date.citite[rid + '/' + pid]; },
@@ -231,7 +325,78 @@
     seteazaBoss(rid, scor) {
       if (scor > (this.date.boss[rid] || 0)) { this.date.boss[rid] = scor; this.salveaza(); }
     },
+
+    /* ── economie (resurse, unelte, bani) ── */
+    resursa(id) { return this.date.inventar[id] || 0; },
+    adaugaResursa(id, n) { this.date.inventar[id] = this.resursa(id) + n; this.salveaza(); },
+    scoateResursa(id, n) { this.date.inventar[id] = Math.max(0, this.resursa(id) - n); this.salveaza(); },
+    areUnealta(id) { return (this.date.unelte[id] || 0) > 0; },
+    nrUnealta(id) { return this.date.unelte[id] || 0; },
+    adaugaUnealta(id, n) { this.date.unelte[id] = this.nrUnealta(id) + (n || 1); this.salveaza(); },
+    scoateUnealta(id, n) { this.date.unelte[id] = Math.max(0, this.nrUnealta(id) - (n || 1)); this.salveaza(); },
+    adaugaBani(n) { this.date.bani = Math.max(0, (this.date.bani || 0) + n); this.salveaza(); },
+    podReparat(id) { return !!this.date.poduri[id]; },
+    reparaPod(id) { this.date.poduri[id] = true; this.salveaza(); },
+    insulaGolita(id) { return !!this.date.insule[id]; },
+    goleaInsula(id) { this.date.insule[id] = true; this.salveaza(); },
   };
+
+  /* ═══════════════════ 4b. CRAFTING & DROP-URI (logică) ═══════════════════ */
+
+  const Craft = {
+    reteta(id) { return RETETE.find(r => r.id === id); },
+
+    // ce cade când citești prima dată un punct de teorie — determinist, dar variat.
+    // materialele de construcție (lemn/cuie) sunt dese; piatra/cablul rare; piesa
+    // foarte rară (vine mai ales din recapitulări). Așa, teoria unei regiuni
+    // finanțează sigur un ciocan + un kit de pod.
+    dropCitit(regId, pid) {
+      const h = hashStr(regId + '/' + pid);
+      const COMUNE = ['lemn', 'lemn', 'lemn', 'cuie', 'cuie', 'cuie', 'cuie', 'piatra', 'cablu'];
+      const L = COMUNE.length;
+      const out = {};
+      const add = (id, n) => { out[id] = (out[id] || 0) + n; };
+      add(COMUNE[h % L], 1 + (h % 2));            // 1–2
+      add(COMUNE[(h >>> 4) % L], 1);
+      add(COMUNE[(h >>> 9) % L], 1);
+      if ((h % 100) < 12) add('piesa', 1);        // piesa e rară
+      return out;
+    },
+
+    aplicaDrop(drop) {
+      for (const id in drop) Progres.adaugaResursa(id, drop[id]);
+    },
+
+    // se poate face rețeta? {ok, lipsa:[texte]}
+    poate(reteta) {
+      const lipsa = [];
+      for (const id in reteta.cost)
+        if (Progres.resursa(id) < reteta.cost[id])
+          lipsa.push((RESURSE[id].emoji) + ' ' + RESURSE[id].nume + ' ×' + (reteta.cost[id] - Progres.resursa(id)));
+      for (const u of (reteta.necesita || []))
+        if (!Progres.areUnealta(u)) { const r = this.reteta(u); lipsa.push('unealta ' + (r ? r.emoji + ' ' + r.nume : u)); }
+      if (reteta.cunostinteTot && Progres.date.fapte.length < Joc.totalPuncte)
+        lipsa.push('toată teoria citită (' + Progres.date.fapte.length + '/' + Joc.totalPuncte + ')');
+      return { ok: lipsa.length === 0, lipsa };
+    },
+
+    // consumă costul și adaugă unealta rezultată; întoarce true la reușită
+    faurente(reteta) {
+      if (!this.poate(reteta).ok) return false;
+      for (const id in reteta.cost) Progres.scoateResursa(id, reteta.cost[id]);
+      Progres.adaugaUnealta(reteta.id, 1);
+      return true;
+    },
+  };
+
+  // formatare umană a unui drop / cost: „🪵 Lemn ×2, 🔩 Cuie ×1, 💰 20"
+  function textDrop(drop) {
+    return Object.keys(drop).map(id => {
+      if (id === 'bani') return '💰 ' + drop[id];
+      const r = RESURSE[id];
+      return r ? (r.emoji + ' ' + r.nume + ' ×' + drop[id]) : (id + ' ×' + drop[id]);
+    }).join(', ');
+  }
 
   /* ═══════════════════════════ 5. SUNET (WebAudio) ════════════════════════ */
 
@@ -263,7 +428,40 @@
     deblocare(){ this.porneste(); this.nota(392, 0, 0.12); this.nota(523, 0.1, 0.12); this.nota(659, 0.2, 0.12); this.nota(784, 0.3, 0.22); },
     corect()   { this.porneste(); this.nota(660, 0, 0.08); this.nota(990, 0.06, 0.1); },
     gresit()   { this.porneste(); this.nota(196, 0, 0.18, 0.1, 'square'); },
+    craft()    { this.porneste(); this.nota(300, 0, 0.06, 0.12, 'square'); this.nota(300, 0.09, 0.06, 0.12, 'square'); this.nota(500, 0.2, 0.14); },
+    bani()     { this.porneste(); this.nota(880, 0, 0.06); this.nota(1175, 0.05, 0.08); },
+    emote()    { this.porneste(); this.nota(700, 0, 0.05, 0.08); this.nota(900, 0.05, 0.07, 0.08); },
     pas()      { /* fără sunet de pași — ar obosi */ },
+  };
+
+  /* ─── muzica de fundal (fișier .mp3, în loop, buton 🎵 separat de efecte) ─── */
+  const Muzica = {
+    el: null, gata: false,
+    activa() { return Progres.date.muzica; },
+    creeaza() {
+      if (this.el) return;
+      try {
+        const a = new Audio('/audio/retelistan_audio.mp3');
+        a.loop = true; a.volume = 0.32; a.preload = 'none';
+        a.addEventListener('error', () => { this.gata = false; }); // fișier lipsă (ex. local) — ignorăm
+        this.el = a;
+      } catch (e) { this.el = null; }
+    },
+    // pornim doar după un gest al utilizatorului (politica de autoplay)
+    incearca() {
+      if (!this.activa() || !Joc.pornit) return;
+      this.creeaza();
+      if (!this.el || document.hidden) return;
+      const p = this.el.play();
+      if (p && p.catch) p.catch(() => {}); // blocat de autoplay — reîncercăm la următorul gest
+    },
+    opreste() { if (this.el) { try { this.el.pause(); } catch (e) {} } },
+    comuta() {
+      Progres.date.muzica = !Progres.date.muzica;
+      Progres.salveaza();
+      if (Progres.date.muzica) this.incearca(); else this.opreste();
+      return Progres.date.muzica;
+    },
   };
 
   /* ══════════════════════════ 6. STAREA JOCULUI ═══════════════════════════ */
@@ -283,10 +481,11 @@
     sol: null,            // Uint8Array LUME_W*LUME_H — terenul
     solid: null,          // Uint8Array — obstacole
     decor: [],            // obiecte decorative desenate y-sortat
-    poi: [],              // punctele de interes (teorie + semne + boși)
+    poi: [],              // punctele de interes (teorie + semne + boși + crafting)
     portiTiles: {},       // "x,y" -> poarta (pt. desen și coliziune)
+    poduriTiles: {},      // "x,y" -> podul bonus (rupt sau reparat)
 
-    jucator: { x: 0, y: 0, vx: 0, vy: 0, dir: 'jos', faza: 0, misca: false },
+    jucator: { x: 0, y: 0, vx: 0, vy: 0, dir: 'jos', faza: 0, misca: false, bula: null },
     cam: { x: 0, y: 0 },
     regiuneCurenta: null,
     poiAproape: null,
@@ -307,6 +506,7 @@
     Joc.decor = [];
     Joc.poi = [];
     Joc.portiTiles = {};
+    Joc.poduriTiles = {};
 
     const idx = (x, y) => y * LUME_W + x;
 
@@ -345,11 +545,45 @@
     // 5) amenajarea fiecărei regiuni (apă, drumuri interioare, decor tematic)
     for (const reg of ASEZARE) amenajeazaRegiunea(reg);
 
-    // 6) punctele de interes din teorie + semnele + boșii
+    // 5.5) insulele bonus + podurile lor (peste apă, în sălbăticie) — DUPĂ
+    // amenajare, ca să suprascrie iazurile/decorul de dedesubt
+    construiesteInsule();
+
+    // 6) punctele de interes din teorie + semnele + boșii + crafting
     plaseazaPoi();
 
     // 7) curățăm obstacolele din jurul fiecărui POI (să nu blocheze accesul)
     for (const p of Joc.poi) elibereaza(p.tx, p.ty, 1);
+  }
+
+  /* insulele bonus: apă (moat) + pământ + dale de pod. Podurile rupte sunt
+     singura trecere; se repară cu un 🧰 Kit de pod. Nu blochează drumul
+     principal — sunt scurtături spre comori și fapte-cheie în plus. */
+  function construiesteInsule() {
+    const idx = (x, y) => y * LUME_W + x;
+    const pune = (x, y, sol, solid) => {
+      if (x < 0 || y < 0 || x >= LUME_W || y >= LUME_H) return;
+      Joc.sol[idx(x, y)] = sol; Joc.solid[idx(x, y)] = solid;
+    };
+    for (const ins of INSULE) {
+      // apă (impasabilă)
+      for (const [x0, y0, x1, y1] of ins.apa)
+        for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) pune(x, y, T.APA, S.ZID);
+      // pământul insulei (grass, liber) + niște flori
+      const [ix0, iy0, ix1, iy1] = ins.insula;
+      for (let y = iy0; y < iy1; y++) for (let x = ix0; x < ix1; x++) {
+        pune(x, y, T.IARBA, S.LIBER);
+        if (hash2(x * 5 + 2, y * 9 + 4) < 0.14)
+          Joc.decor.push({ tx: x, ty: y, tip: 'floare', varianta: (x + y) % 3, reg: ins.reg });
+      }
+      // dalele de pod: rupte (apă sub ele) până la reparare
+      const reparat = Progres.podReparat(ins.id);
+      for (const [x, y] of ins.pod) {
+        Joc.poduriTiles[x + ',' + y] = ins;
+        if (reparat) pune(x, y, T.PODEA, S.LIBER);
+        else pune(x, y, T.APA, S.POD);   // S.POD = rupt, impasabil, dar protejat de elibereaza (terenul e APA)
+      }
+    }
   }
 
   // eliberează un pătrat (rază r) în jurul unui tile — pentru POI-uri;
@@ -494,6 +728,18 @@
         Joc.totalPuncte++;
       });
     }
+
+    // atelierul din sat: banc de lucru (crafting) + negustor (magazin)
+    const poiTile = (fel, tx, ty, extra) => Joc.poi.push(Object.assign(
+      { fel, tx, ty, x: (tx + 0.5) * TILE, y: (ty + 0.5) * TILE }, extra || {}));
+    poiTile('banc', 26, 66);
+    poiTile('negustor', 16, 60);
+
+    // podurile bonus + comorile de pe insule
+    for (const ins of INSULE) {
+      poiTile('pod', ins.podPoi[0], ins.podPoi[1], { insId: ins.id });
+      poiTile('cufar', ins.cufar[0], ins.cufar[1], { insId: ins.id, faza: hash2(ins.cufar[0], ins.cufar[1]) * 6.28 });
+    }
   }
 
   /* ═══════════════════ 8. COLIZIUNI + MIȘCARE + CAMERĂ ════════════════════ */
@@ -598,12 +844,16 @@
           if (e.code === 'Escape') { UI.inchidePanou(); e.preventDefault(); }
           return;
         }
+        // paleta de emoji e deschisă → Esc o închide
+        if (UI.emoteDeschis() && e.code === 'Escape') { UI.inchideEmote(); e.preventDefault(); return; }
         if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyW','KeyA','KeyS','KeyD'].includes(e.code))
           e.preventDefault(); // să nu deruleze pagina
         this.taste[e.code] = true;
         this.fuga = e.shiftKey;
         if (e.code === 'KeyE' || e.code === 'Space' || e.code === 'Enter') interactioneaza();
         if (e.code === 'KeyJ') UI.deschideJurnal();
+        if (e.code === 'KeyI') UI.deschideInventar();
+        if (e.code === 'KeyR') UI.comutaEmote();
       });
       window.addEventListener('keyup', e => {
         this.taste[e.code] = false;
@@ -621,6 +871,10 @@
     if (p.fel === 'punct') UI.deschideTeorie(p);
     else if (p.fel === 'semn') UI.deschideSemn(p.regId);
     else if (p.fel === 'boss') UI.deschideRecap(p.regId);
+    else if (p.fel === 'banc') UI.deschideCrafting();
+    else if (p.fel === 'negustor') UI.deschideShop();
+    else if (p.fel === 'pod') UI.deschidePod(p);
+    else if (p.fel === 'cufar') UI.deschideCufar(p);
   }
 
   /* deschide porțile păzite de bossul regiunii rid (după recapitulare) */
@@ -732,6 +986,13 @@
       ctx.fillRect(x0 * TILE, y0 * TILE, (x1 - x0) * TILE, (y1 - y0) * TILE);
     }
 
+    /* ── podurile bonus: scânduri întregi (reparat) sau rupte, cu goluri ── */
+    for (const cheie in Joc.poduriTiles) {
+      const [x, y] = cheie.split(',').map(Number);
+      if (x < tx0 || x > tx1 || y < ty0 || y > ty1) continue;
+      deseneazaPod(ctx, x, y, Progres.podReparat(Joc.poduriTiles[cheie].id), t);
+    }
+
     /* ── obiectele y-sortate: decor + POI + jucător (efect de adâncime) ── */
     const obiecte = [];
     for (const d of Joc.decor) {
@@ -796,7 +1057,41 @@
     /* ── bula de interacțiune deasupra POI-ului apropiat ── */
     if (Joc.poiAproape && !UI.panouDeschis()) deseneazaBula(ctx, Joc.poiAproape);
 
+    /* ── bulele de emoji/fraze (deasupra tuturor) ── */
+    const acum = Joc.timp;
+    for (const a of Multiplayer.alti.values())
+      if (a.bula && a.bula.until > acum) deseneazaEmote(ctx, a.x, a.y - 34, a.bula.k);
+    if (Joc.jucator.bula && Joc.jucator.bula.until > acum)
+      deseneazaEmote(ctx, Joc.jucator.x, Joc.jucator.y - 38, Joc.jucator.bula.k);
+
     ctx.restore();
+  }
+
+  /* o bulă de emoji/frază deasupra unui personaj (dispare singură) */
+  function deseneazaEmote(ctx, x, y, k) {
+    const em = EMOTE[k]; if (!em) return;
+    const txt = em.t || '';
+    ctx.font = '600 12px Inter,sans-serif';
+    const wTxt = txt ? ctx.measureText(txt).width : 0;
+    const w = 22 + wTxt + (txt ? 6 : 0);
+    const bx = x - w / 2, by = y - 24;
+    ctx.fillStyle = PAL.css.panel;
+    ctx.strokeStyle = PAL.css.accent; ctx.lineWidth = 1.5;
+    if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(bx, by, w, 22, 11); ctx.fill(); ctx.stroke(); }
+    else { ctx.fillRect(bx, by, w, 22); ctx.strokeRect(bx, by, w, 22); }
+    // codița bulei
+    ctx.beginPath();
+    ctx.moveTo(x - 4, by + 22); ctx.lineTo(x + 4, by + 22); ctx.lineTo(x, by + 28);
+    ctx.closePath(); ctx.fillStyle = PAL.css.panel; ctx.fill();
+    // conținut: emoji (+ text)
+    ctx.font = '14px "Apple Color Emoji","Segoe UI Emoji",sans-serif';
+    ctx.textAlign = txt ? 'left' : 'center';
+    ctx.fillStyle = PAL.css.txt;
+    ctx.fillText(em.e, txt ? bx + 8 : x, by + 15);
+    if (txt) {
+      ctx.font = '600 12px Inter,sans-serif';
+      ctx.fillText(txt, bx + 26, by + 15);
+    }
   }
 
   /* un element de decor tematic */
@@ -960,6 +1255,53 @@
       return;
     }
 
+    if (p.fel === 'banc' || p.fel === 'negustor') { // atelier: masă de lemn cu iconul de sus
+      const e = p.fel === 'banc' ? '🛠️' : '🏪';
+      const cul = p.fel === 'banc' ? PAL.css.accent2 : PAL.css.purple;
+      // tejgheaua
+      ctx.fillStyle = PAL.teren.trunchi;
+      ctx.fillRect(p.x - 15, p.y - 10, 30, 16);
+      ctx.fillStyle = cul; ctx.fillRect(p.x - 15, p.y - 12, 30, 5);
+      ctx.strokeStyle = aproape ? PAL.css.accent : PAL.css.border; ctx.lineWidth = 2;
+      ctx.strokeRect(p.x - 15, p.y - 12, 30, 18);
+      // baldachin/emblemă
+      ctx.font = '15px "Apple Color Emoji","Segoe UI Emoji",sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(e, p.x, p.y - 15 + Math.sin(t * 2 + p.x) * 1.5);
+      if (aproape) {
+        ctx.strokeStyle = 'rgba(' + PAL.accent.join(',') + ',0.4)';
+        ctx.beginPath(); ctx.arc(p.x, p.y - 4, 22 + Math.sin(t * 4) * 2, 0, 7); ctx.stroke();
+      }
+      return;
+    }
+
+    if (p.fel === 'pod') { // indicator de pod (reparat sau de reparat)
+      const ins = INSULE.find(i => i.id === p.insId);
+      const reparat = ins && Progres.podReparat(ins.id);
+      ctx.fillStyle = PAL.teren.trunchi; ctx.fillRect(p.x - 2, p.y - 6, 4, 16);
+      ctx.fillStyle = PAL.css.panel;
+      ctx.fillRect(p.x - 14, p.y - 24, 28, 18);
+      ctx.strokeStyle = aproape ? PAL.css.accent : (reparat ? PAL.css.good : PAL.css.warn);
+      ctx.lineWidth = 2; ctx.strokeRect(p.x - 14, p.y - 24, 28, 18);
+      ctx.font = '13px "Apple Color Emoji","Segoe UI Emoji",sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(reparat ? '🌉' : '🚧', p.x, p.y - 10);
+      return;
+    }
+
+    if (p.fel === 'cufar') { // comoara de pe insulă
+      const golit = Progres.insulaGolita(p.insId);
+      const bob2 = golit ? 0 : Math.sin(t * 2.6 + (p.faza || 0)) * 2;
+      ctx.font = '20px "Apple Color Emoji","Segoe UI Emoji",sans-serif'; ctx.textAlign = 'center';
+      ctx.globalAlpha = golit ? 0.5 : 1;
+      ctx.fillText(golit ? '📭' : '🎁', p.x, p.y - 2 + bob2);
+      ctx.globalAlpha = 1;
+      if (aproape && !golit) {
+        ctx.strokeStyle = 'rgba(' + PAL.accent.join(',') + ',0.5)';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(p.x, p.y - 6, 16 + Math.sin(t * 4) * 2, 0, 7); ctx.stroke();
+      }
+      return;
+    }
+
     // punct de teorie
     const citit = Progres.eCitit(p.regId, p.punct.id);
     ctx.fillStyle = citit ? PAL.css.bg3 : PAL.css.panel;
@@ -986,9 +1328,28 @@
     }
   }
 
+  /* culorile corpului derivate din indexul de culoare al avatarului */
+  function culoriAvatar(c) {
+    const hue = AVATAR_CULORI[c] != null ? AVATAR_CULORI[c] : AVATAR_CULORI[0];
+    return {
+      corp:  'hsl(' + hue + ',60%,' + (PAL.eLight ? 46 : 58) + '%)',
+      dunga: 'hsl(' + hue + ',60%,' + (PAL.eLight ? 33 : 41) + '%)',
+    };
+  }
+  /* accesoriul (pălărie/emoji) așezat pe capul unui personaj */
+  function deseneazaAccesoriu(ctx, x, yTop, h) {
+    const e = AVATAR_ACCESORII[h || 0];
+    if (!e) return;
+    ctx.font = '14px "Apple Color Emoji","Segoe UI Emoji",sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(e, x, yTop);
+  }
+
   /* personajul: un pachet de date antropomorf, simpatic */
   function deseneazaJucator(ctx, t) {
     const j = Joc.jucator;
+    const av = Multiplayer.avatar;
+    const cul = culoriAvatar(av.c);
     const bob = j.misca ? Math.abs(Math.sin(j.faza)) * 2.5 : Math.sin(t * 1.8) * 1;
     const px = j.x, py = j.y - bob;
 
@@ -1002,19 +1363,19 @@
     ctx.fillRect(px - 7, j.y + 4 + pas * 0.4, 5, 5);
     ctx.fillRect(px + 2, j.y + 4 - pas * 0.4, 5, 5);
 
-    // corpul — un „pachet" cu dungă de antet
+    // corpul — un „pachet" cu dungă de antet, în culoarea aleasă
     const w = 22, h = 24;
-    ctx.fillStyle = PAL.css.accent;
+    ctx.fillStyle = cul.corp;
     ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 2;
     if (ctx.roundRect) {
       ctx.beginPath(); ctx.roundRect(px - w / 2, py - h + 4, w, h, 6); ctx.fill(); ctx.stroke();
     } else { ctx.fillRect(px - w / 2, py - h + 4, w, h); ctx.strokeRect(px - w / 2, py - h + 4, w, h); }
     // dunga de antet (partea de sus a pachetului)
-    ctx.fillStyle = PAL.css.accent2;
+    ctx.fillStyle = cul.dunga;
     ctx.fillRect(px - w / 2 + 2, py - h + 6, w - 4, 6);
 
     // antena cu beculeț
-    ctx.strokeStyle = PAL.css.accent2; ctx.lineWidth = 2;
+    ctx.strokeStyle = cul.dunga; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(px, py - h + 4); ctx.lineTo(px, py - h - 4); ctx.stroke();
     ctx.fillStyle = PAL.css.good;
     ctx.beginPath(); ctx.arc(px, py - h - 6, 2.5 + Math.sin(t * 5) * 0.7, 0, 7); ctx.fill();
@@ -1031,14 +1392,50 @@
       ctx.strokeStyle = '#2a2118'; ctx.lineWidth = 1.4;
       ctx.beginPath(); ctx.arc(px + ox, py - 2 + oy, 3, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
     }
+    // accesoriul, deasupra capului
+    deseneazaAccesoriu(ctx, px, py - h - 1, av.h);
+  }
+
+  /* un pod bonus: dale de scânduri (reparat) sau rupte cu goluri (de reparat) */
+  function deseneazaPod(ctx, x, y, reparat, t) {
+    const px = x * TILE, py = y * TILE;
+    // stâlpii/umbra sub pod
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.fillRect(px + 2, py + TILE - 5, TILE - 4, 4);
+    if (reparat) {
+      // scânduri întregi, orizontale
+      ctx.fillStyle = PAL.teren.trunchi;
+      ctx.fillRect(px + 1, py + 3, TILE - 2, TILE - 6);
+      ctx.strokeStyle = 'rgba(0,0,0,0.28)'; ctx.lineWidth = 1;
+      for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.moveTo(px + 1, py + 6 + i * 7); ctx.lineTo(px + TILE - 1, py + 6 + i * 7); ctx.stroke(); }
+      ctx.strokeStyle = PAL.css.accent2; ctx.lineWidth = 1.5;
+      ctx.strokeRect(px + 1, py + 3, TILE - 2, TILE - 6);
+    } else {
+      // scânduri sparte: câteva bucăți, cu goluri (apa se vede printre ele)
+      ctx.fillStyle = PAL.teren.apa2;
+      ctx.fillRect(px, py, TILE, TILE);
+      ctx.fillStyle = 'rgba(255,255,255,' + (0.05 + 0.04 * Math.sin(t * 2 + x + y)) + ')';
+      ctx.fillRect(px + 4, py + 8 + Math.sin(t + x) * 2, TILE - 8, 2);
+      ctx.fillStyle = PAL.teren.trunchi;
+      const h = hash2(x, y);
+      if (h < 0.7) ctx.fillRect(px + 1, py + 4, TILE - 2, 6);          // o scândură sus
+      if (h > 0.35) ctx.fillRect(px + 1, py + TILE - 11, TILE * (0.5 + h * 0.4), 6); // una parțială jos
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1;
+      ctx.strokeRect(px + 1, py + 4, TILE - 2, 6);
+    }
   }
 
   /* bula „apasă E" deasupra POI-ului din rază */
   function deseneazaBula(ctx, p) {
     const eTouch = UI.eTouch;
-    const text = p.fel === 'punct' ? (Progres.eCitit(p.regId, p.punct.id) ? 'Recitește' : 'Deschide')
-      : p.fel === 'boss' ? (Progres.bossTrecut(p.regId) ? 'Re-încearcă recapitularea' : 'Recapitulare')
-      : 'Citește';
+    let text;
+    if (p.fel === 'punct') text = Progres.eCitit(p.regId, p.punct.id) ? 'Recitește' : 'Deschide';
+    else if (p.fel === 'boss') text = Progres.bossTrecut(p.regId) ? 'Re-încearcă recapitularea' : 'Recapitulare';
+    else if (p.fel === 'banc') text = 'Banc de lucru';
+    else if (p.fel === 'negustor') text = 'Negustor';
+    else if (p.fel === 'pod') text = Progres.podReparat(p.insId) ? 'Treci podul' : 'Repară podul';
+    else if (p.fel === 'cufar') text = Progres.insulaGolita(p.insId) ? 'Cufăr gol' : 'Deschide cufărul';
+    else text = 'Citește';
     const eticheta = (eTouch ? '👆 ' : 'E · ') + text;
     ctx.font = '600 12px Inter,sans-serif';
     const w = ctx.measureText(eticheta).width + 18;
@@ -1166,11 +1563,13 @@
     Joc.dirty = true;
     Joc.rafId = requestAnimationFrame(cadru);
     Multiplayer.conecteaza(); // prezența online (dacă serverul există; altfel offline)
+    Muzica.incearca();        // muzica de fundal (pornește la primul gest)
   }
   function opreste() {
     if (!Joc.pornit) return;
     Joc.pornit = false;
     cancelAnimationFrame(Joc.rafId);
+    Muzica.opreste();           // oprim muzica cât timp nu suntem în joc
     Multiplayer.deconecteaza(); // dispari de pe hartă cât timp nu ești în joc
     // salvăm poziția la ieșire
     Progres.date.pos = { x: Joc.jucator.x, y: Joc.jucator.y };
@@ -1209,7 +1608,8 @@
 
   const Multiplayer = {
     ws: null, conectat: false, id: 0, nume: '',
-    alti: new Map(),        // id -> {id,nume,x,y,tx,ty,dir,misca,reg,hue}
+    avatar: { c: 0, h: 0 }, // avatarul propriu (index de culoare + accesoriu)
+    alti: new Map(),        // id -> {id,nume,x,y,tx,ty,dir,misca,reg,hue,av,bula}
     oprit: false,           // deconectare intenționată (tab părăsit)
     intrebat: false,        // am arătat deja modalul de nume în sesiunea asta?
     primul: true,           // primul instantaneu (fără toasturi de „a intrat")
@@ -1221,6 +1621,36 @@
     },
     numeSalvat() {
       try { return localStorage.getItem('retelistan-nume') || ''; } catch (e) { return ''; }
+    },
+    // avatarul e identitate (ca numele) — stă în cheia lui, separat de progres,
+    // ca să nu se piardă la „resetează progresul"
+    incarcaAvatar() {
+      try {
+        const raw = localStorage.getItem('retelistan-avatar');
+        if (raw) { const a = JSON.parse(raw); this.avatar = this.curataAvatar(a.c, a.h); }
+      } catch (e) {}
+      return this.avatar;
+    },
+    curataAvatar(c, h) {
+      const n = (v, max) => (Number.isInteger(v) && v >= 0 && v <= max) ? v : 0;
+      return { c: n(c, AVATAR_CULORI.length - 1), h: n(h, AVATAR_ACCESORII.length - 1) };
+    },
+    salveazaAvatar(c, h) {
+      this.avatar = this.curataAvatar(c, h);
+      try { localStorage.setItem('retelistan-avatar', JSON.stringify(this.avatar)); } catch (e) {}
+      // dacă suntem online, anunțăm imediat noul aspect
+      if (this.ws && this.ws.readyState === 1)
+        try { this.ws.send(JSON.stringify({ t: 'av', c: this.avatar.c, h: this.avatar.h })); } catch (e) {}
+      Joc.dirty = true;
+    },
+    // trimite un emoji/frază (index în EMOTE) și arată bula deasupra propriului cap
+    trimiteEmote(k) {
+      if (!EMOTE[k]) return;
+      Joc.jucator.bula = { k, until: Joc.timp + 3.6 };
+      Joc.dirty = true;
+      Sunet.emote();
+      if (this.ws && this.ws.readyState === 1)
+        try { this.ws.send(JSON.stringify({ t: 'e', k })); } catch (e) {}
     },
     // aceeași curățare ca pe server (server.js → curataNume) — altfel un nume
     // care „trece" în modal ar fi respins de server la fiecare reconectare
@@ -1258,7 +1688,10 @@
       // toate handler-ele ignoră evenimentele unei conexiuni vechi (this.ws s-a
       // schimbat între timp) — altfel onclose-ul întârziat al vechiului socket
       // ar strica starea conexiunii noi (ex. la schimbarea numelui)
-      ws.onopen = () => { if (this.ws === ws) { try { ws.send(JSON.stringify({ t: 'j', nume: this.nume })); } catch (e) {} } };
+      ws.onopen = () => {
+        if (this.ws !== ws) return;
+        try { ws.send(JSON.stringify({ t: 'j', nume: this.nume, c: this.avatar.c, h: this.avatar.h })); } catch (e) {}
+      };
       ws.onmessage = (ev) => {
         if (this.ws !== ws) return;
         let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
@@ -1276,6 +1709,7 @@
           UI.toast('🌐 Ești online ca <strong>' + esc(this.nume) + '</strong>');
           this.actualizeazaChip();
         } else if (m.t === 's' && Array.isArray(m.j)) this.laStare(m.j);
+        else if (m.t === 'em') this.laEmote(m.id, m.k);
       };
       ws.onerror = () => { /* onclose vine oricum */ };
       ws.onclose = (ev) => {
@@ -1313,20 +1747,30 @@
       Joc.dirty = true;
     },
 
-    /* instantaneul de la server: [[id,nume,x,y,dir,misca,reg], ...] */
+    /* logout explicit: ieși offline și uită numele salvat (nu se mai
+       reconectează automat până nu reintri prin chip-ul 🌐) */
+    logout() {
+      this.deconecteaza();
+      try { localStorage.removeItem('retelistan-nume'); } catch (e) {}
+      this.nume = ''; this.intrebat = true;
+      this.actualizeazaChip();
+    },
+
+    /* instantaneul de la server: [[id,nume,x,y,dir,misca,reg,avc,avh], ...] */
     laStare(lista) {
       const eraPrimul = this.primul; this.primul = false;
       const vechi = this.alti, noi = new Map();
       for (const rand of lista) {
-        const [id, nume, x, y, dir, misca, reg] = rand;
+        const [id, nume, x, y, dir, misca, reg, avc, avh] = rand;
         if (id === this.id) continue;
         let a = vechi.get(id);
         if (!a) {
-          a = { id, x, y, tx: x, ty: y, hue: (id * 137) % 360 };
+          a = { id, x, y, tx: x, ty: y, hue: (id * 137) % 360, bula: null };
           if (!eraPrimul && vechi.size <= 12) UI.toast('🟢 <strong>' + esc(nume) + '</strong> a intrat în Rețelistan');
         }
         a.nume = nume; a.tx = x; a.ty = y;
         a.dir = DIR_IDX[dir] || 'jos'; a.misca = !!misca; a.reg = reg;
+        a.av = { c: avc | 0, h: avh | 0 };
         if (Math.hypot(a.tx - a.x, a.ty - a.y) > 300) { a.x = a.tx; a.y = a.ty; } // „teleport" — nu interpolăm
         noi.set(id, a);
       }
@@ -1334,6 +1778,14 @@
         for (const [id, a] of vechi) if (!noi.has(id)) UI.toast('⚪ ' + esc(a.nume) + ' a plecat');
       this.alti = noi;
       this.actualizeazaChip();
+      Joc.dirty = true;
+    },
+
+    /* emoji/frază venit de la alt jucător (id, index k) → bulă deasupra lui */
+    laEmote(id, k) {
+      const a = this.alti.get(id);
+      if (!a || !EMOTE[k]) return;
+      a.bula = { k, until: Joc.timp + 3.6 };
       Joc.dirty = true;
     },
 
@@ -1395,12 +1847,14 @@
     ctx.globalAlpha = 1;
   }
 
-  /* un alt jucător: același pachet simpatic, dar în culoarea lui + nume */
+  /* un alt jucător: același pachet simpatic, dar cu avatarul lui + nume */
   function deseneazaAlt(ctx, a, t) {
     const bob = a.misca ? Math.abs(Math.sin(t * 9 + a.id)) * 2.5 : Math.sin(t * 1.8 + a.id) * 1;
     const px = a.x, py = a.y - bob;
-    const corp = 'hsl(' + a.hue + ',52%,' + (PAL.eLight ? 44 : 58) + '%)';
-    const dunga = 'hsl(' + a.hue + ',52%,' + (PAL.eLight ? 32 : 40) + '%)';
+    const cul = a.av ? culoriAvatar(a.av.c) : {
+      corp: 'hsl(' + a.hue + ',52%,' + (PAL.eLight ? 44 : 58) + '%)',
+      dunga: 'hsl(' + a.hue + ',52%,' + (PAL.eLight ? 32 : 40) + '%)',
+    };
 
     ctx.fillStyle = 'rgba(0,0,0,0.2)';
     ctx.beginPath(); ctx.ellipse(px, a.y + 10, 10, 4, 0, 0, 7); ctx.fill();
@@ -1411,11 +1865,11 @@
     ctx.fillRect(px + 1, a.y + 4 - pas * 0.4, 5, 5);
 
     const w = 20, h = 22;
-    ctx.fillStyle = corp;
+    ctx.fillStyle = cul.corp;
     ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1.6;
     if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(px - w / 2, py - h + 4, w, h, 6); ctx.fill(); ctx.stroke(); }
     else { ctx.fillRect(px - w / 2, py - h + 4, w, h); ctx.strokeRect(px - w / 2, py - h + 4, w, h); }
-    ctx.fillStyle = dunga;
+    ctx.fillStyle = cul.dunga;
     ctx.fillRect(px - w / 2 + 2, py - h + 6, w - 4, 5);
 
     const ox = a.dir === 'stanga' ? -3 : a.dir === 'dreapta' ? 3 : 0;
@@ -1426,6 +1880,7 @@
       ctx.fillStyle = '#2a2118';
       ctx.beginPath(); ctx.arc(px - 4 + ox * 1.4, py - 8 + oy * 1.4, 1.5, 0, 7); ctx.arc(px + 4 + ox * 1.4, py - 8 + oy * 1.4, 1.5, 0, 7); ctx.fill();
     }
+    if (a.av) deseneazaAccesoriu(ctx, px, py - h + 3, a.av.h);
     deseneazaEticheta(ctx, px, py - h - 8, a.nume, false);
   }
 
@@ -1464,15 +1919,27 @@
         '<div class="rt-hud-st">' +
           '<div class="rt-chip" id="rtRegChip">🗺️ Rețelistan</div>' +
           '<div class="rt-chip rt-chip-mic" id="rtProgChip">📜 0/0</div>' +
+          '<div class="rt-chip rt-chip-mic rt-chip-bani" id="rtBaniChip" title="Bani">💰 0</div>' +
           '<button class="rt-btn rt-online" id="rtOnlineChip" style="display:none">🌐</button>' +
         '</div>' +
         '<div class="rt-hud-dr">' +
+          '<button class="rt-btn" id="rtBtnInventar" title="Inventar & avatar (I)">🎒</button>' +
           '<button class="rt-btn" id="rtBtnJurnal" title="Jurnal (J)">📖</button>' +
           '<button class="rt-btn" id="rtBtnAjutor" title="Cum se joacă">❓</button>' +
-          '<button class="rt-btn" id="rtBtnSunet" title="Sunet">🔊</button>' +
+          '<button class="rt-btn" id="rtBtnSunet" title="Efecte sonore">🔊</button>' +
+          '<button class="rt-btn" id="rtBtnMuzica" title="Muzică">🎵</button>' +
         '</div>';
       stage.appendChild(this.hud);
       Minimap.creeaza(stage);
+
+      // butonul plutitor de emoji/fraze (jos-centru) — desktop și telefon
+      const emoteBtn = document.createElement('button');
+      emoteBtn.className = 'rt-emote-btn';
+      emoteBtn.id = 'rtEmoteBtn';
+      emoteBtn.title = 'Emoji & mesaje (R)';
+      emoteBtn.textContent = '🙂';
+      emoteBtn.onclick = () => this.comutaEmote();
+      stage.appendChild(emoteBtn);
 
       // bannerul de intrare în regiune
       this.bannerEl = document.createElement('div');
@@ -1494,12 +1961,17 @@
       if (this.eTouch) this.construiesteTouch(stage);
 
       // butoane
+      this.hud.querySelector('#rtBtnInventar').onclick = () => this.deschideInventar();
       this.hud.querySelector('#rtBtnJurnal').onclick = () => this.deschideJurnal();
       this.hud.querySelector('#rtBtnAjutor').onclick = () => this.deschideAjutor();
       const btnSunet = this.hud.querySelector('#rtBtnSunet');
       const setSunet = () => { btnSunet.textContent = Progres.date.sunet ? '🔊' : '🔇'; };
       setSunet();
       btnSunet.onclick = () => { Progres.date.sunet = !Progres.date.sunet; Progres.salveaza(); setSunet(); };
+      const btnMuzica = this.hud.querySelector('#rtBtnMuzica');
+      const setMuzica = () => { btnMuzica.textContent = Progres.date.muzica ? '🎵' : '🎶'; btnMuzica.classList.toggle('rt-btn-off', !Progres.date.muzica); };
+      setMuzica();
+      btnMuzica.onclick = () => { Muzica.comuta(); setMuzica(); };
       // chip-ul online: intră online / schimbă numele
       this.hud.querySelector('#rtOnlineChip').onclick = () => {
         if (Multiplayer.conectat) this.deschideNume(() => { Multiplayer.deconecteaza(); Multiplayer.conecteaza(); });
@@ -1563,6 +2035,8 @@
       const citite = Object.keys(Progres.date.citite).length;
       const pct = Joc.totalPuncte ? Math.round(citite / Joc.totalPuncte * 100) : 0;
       if (prog) prog.textContent = '📜 ' + citite + '/' + Joc.totalPuncte + ' · ' + pct + '%';
+      const bani = document.getElementById('rtBaniChip');
+      if (bani) bani.textContent = '💰 ' + (Progres.date.bani || 0);
     },
 
     banner(regId, prima) {
@@ -1591,6 +2065,7 @@
     panouDeschis() { return this.overlay && this.overlay.classList.contains('vizibil'); },
 
     aratapanou(html, clasa) {
+      this.inchideEmote(); // paleta de emoji nu stă peste un modal
       this.overlay.innerHTML = '<div class="rt-panou ' + (clasa || '') + '" role="dialog" aria-modal="true">' + html + '</div>';
       this.overlay.classList.add('vizibil');
       this.panou = this.overlay.firstChild;
@@ -1674,11 +2149,15 @@
 
       if (btnDone) btnDone.onclick = () => {
         const nou = Progres.marcheazaCitit(poi.regId, p.id);
+        // recompensă în materiale — doar prima dată când citești punctul
+        const drop = nou ? Craft.dropCitit(poi.regId, p.id) : null;
+        if (drop) Craft.aplicaDrop(drop);
         this.inchidePanou();
         if (nou) {
           Sunet.citit(); Sunet.fapta();
           Particule.explozie(poi.x, poi.y - 8, 'fapta', 16);
           this.toast('📜 <strong>Faptă-cheie colectată:</strong> ' + esc(p.faptaCheie || p.titlu));
+          if (drop) this.toast('🎒 Ai primit ' + textDrop(drop));
           this.actualizeazaHud();
           Minimap.deseneaza();
           this.verificaRegiuneCompleta(poi.regId);
@@ -1781,10 +2260,15 @@
         const trecutAcum = scor >= 2;
         const dejaEra = Progres.bossTrecut(regId);
         Progres.seteazaBoss(regId, scor);
-        let mesaj;
+        let mesaj, bonus = null;
         if (trecutAcum && !dejaEra) {
           mesaj = '🎉 <strong>Ai trecut!</strong> Poarta se deschide.';
           deschidePorti(regId);
+          // răsplată de challenge — o singură dată, la prima trecere a paznicului
+          bonus = { bani: 20 + scor * 5, piesa: 2 };
+          Progres.adaugaBani(bonus.bani);
+          Progres.adaugaResursa('piesa', bonus.piesa);
+          Sunet.bani();
         } else if (trecutAcum) {
           mesaj = scor === intrebari.length ? '🏅 Scor perfect!' : '👍 Bine! Poarta rămâne deschisă.';
         } else {
@@ -1794,6 +2278,7 @@
           '<div class="rt-rezultat">' +
             '<div class="rt-rezultat-scor">' + scor + '/' + intrebari.length + '</div>' +
             '<p>' + mesaj + '</p>' +
+            (bonus ? '<p class="rt-recompensa">🎁 Răsplată: ' + esc(textDrop(bonus)) + '</p>' : '') +
             (regId === 'aplicatii' && trecutAcum
               ? '<p class="rt-final">🏆 <strong>Ai străbătut tot Rețelistanul!</strong> De la semnal la aplicație — exact drumul unui pachet. Jurnalul (📖) îți păstrează toate faptele-cheie pentru recapitulare.</p>' : '') +
             '<button class="rt-done" id="rtGata">Continuă explorarea</button>' +
@@ -1872,8 +2357,11 @@
           '<p class="rt-descriere">Alege un nume — toți cei care explorează Rețelistanul acum o să te vadă plimbându-te pe hartă (și tu pe ei). Progresul tău rămâne doar al tău.</p>' +
           '<input class="rt-nume-input" id="rtNume" maxlength="14" placeholder="ex. Gabi" value="' + esc(curent) + '" autocomplete="off">' +
           '<p class="rt-mut">2–14 caractere · se salvează în browserul tău</p>' +
-          '<button class="rt-done" id="rtNumeOk">🌐 Intră online</button>' +
-          '<button class="rt-btn-sec" id="rtNumeNu" style="display:block;width:100%;margin-top:8px">Joacă offline</button>' +
+          '<button class="rt-done" id="rtNumeOk">🌐 ' + (Multiplayer.conectat ? 'Salvează numele' : 'Intră online') + '</button>' +
+          '<button class="rt-btn-sec" id="rtNumeAvatar" style="display:block;width:100%;margin-top:8px">🎨 Schimbă avatarul</button>' +
+          (curent || Multiplayer.conectat
+            ? '<button class="rt-btn-sec rt-danger" id="rtLogout" style="display:block;width:100%;margin-top:8px">🚪 Ieși offline (logout)</button>'
+            : '<button class="rt-btn-sec" id="rtNumeNu" style="display:block;width:100%;margin-top:8px">Joacă offline</button>') +
         '</div>', 'rt-panou-nume');
       const input = panou.querySelector('#rtNume');
       setTimeout(() => { input.focus(); input.select(); }, 50);
@@ -1886,7 +2374,15 @@
         if (dupa) dupa();
       };
       panou.querySelector('#rtNumeOk').onclick = ok;
-      panou.querySelector('#rtNumeNu').onclick = () => this.inchidePanou();
+      panou.querySelector('#rtNumeAvatar').onclick = () => this.deschideAvatar(() => this.deschideNume(dupa));
+      const btnNu = panou.querySelector('#rtNumeNu');
+      if (btnNu) btnNu.onclick = () => this.inchidePanou();
+      const btnLogout = panou.querySelector('#rtLogout');
+      if (btnLogout) btnLogout.onclick = () => {
+        Multiplayer.logout();
+        this.inchidePanou();
+        this.toast('🚪 Ai ieșit offline. Nu te mai vede nimeni pe hartă.');
+      };
       input.addEventListener('keydown', e => {
         if (e.key === 'Enter') { ok(); e.preventDefault(); }
         if (e.key !== 'Escape') e.stopPropagation(); // să nu miște personajul cât scrii
@@ -1905,20 +2401,331 @@
         '</div>' +
         '<div class="rt-panou-corp rt-ajutor">' +
           '<p>Fiecare regiune ține teoria unui curs. Plimbă-te, deschide punctele de interes și strânge <strong>fapte-cheie</strong>. La ieșirea din regiune, un paznic 🛡️ îți pune 3 întrebări — treci recapitularea și drumul se deschide mai departe.</p>' +
+          '<p>Pe drum strângi <strong>materiale</strong> 🪵🔩⚙️ din teorie și recapitulări. La <strong>bancul de lucru 🛠️</strong> din sat le combini în unelte, repari <strong>poduri 🚧</strong> stricate și treci pe insule secrete cu comori 🎁. La <strong>negustor 🏪</strong> vinzi ce-ți prisosește și cumperi ce-ți lipsește.</p>' +
           '<ul class="rt-ajutor-lista">' +
             (this.eTouch
-              ? '<li>🕹️ <strong>Joystick</strong> — mișcare · <strong>E</strong> — interacționează</li>'
+              ? '<li>🕹️ <strong>Joystick</strong> — mișcare · <strong>E</strong> — interacționează · <strong>🙂</strong> — emoji/mesaje</li>'
               : '<li>⌨️ <strong>WASD / săgeți</strong> — mișcare · <strong>Shift</strong> — fugi</li>' +
-                '<li>⚡ <strong>E / Space</strong> — interacționează · <strong>J</strong> — jurnal · <strong>Esc</strong> — închide</li>') +
-            '<li>💻 🧑‍🏫 📡 📦 — puncte de teorie (rezumat → detaliu → diagramă → 💡 de examen)</li>' +
-            '<li>🛡️ — recapitularea care deschide poarta următoare</li>' +
-            '<li>📖 — jurnalul cu toate faptele-cheie colectate</li>' +
+                '<li>⚡ <strong>E / Space</strong> — interacționează · <strong>J</strong> — jurnal · <strong>I</strong> — inventar · <strong>R</strong> — emoji · <strong>Esc</strong> — închide</li>') +
+            '<li>💻 🧑‍🏫 📡 📦 — puncte de teorie (rezumat → detaliu → diagramă → 💡 de examen) + materiale</li>' +
+            '<li>🛡️ — recapitularea care deschide poarta următoare (+ răsplată)</li>' +
+            '<li>🛠️ banc de lucru · 🏪 negustor · 🚧 pod de reparat · 🎒 inventar & avatar</li>' +
+            '<li>🙂 — trimite emoji și mesaje celorlalți jucători online</li>' +
           '</ul>' +
           '<p class="rt-mut">Drumul prin hartă urmează drumul unui pachet prin stiva de rețea: de la semnalul fizic până la aplicație. Progresul se salvează automat în browser.</p>' +
           '<button class="rt-done" id="rtHaide">Hai la drum! 🎒</button>' +
         '</div>', 'rt-panou-ajutor');
       const b = this.overlay.querySelector('#rtHaide');
       if (b) b.onclick = () => { Progres.date.ajutorVazut = true; Progres.salveaza(); this.inchidePanou(); };
+    },
+
+    /* antetul comun al panourilor */
+    capPanou(emoji, titlu, sub) {
+      return '<div class="rt-panou-cap">' +
+        '<div class="rt-panou-emoji">' + esc(emoji) + '</div>' +
+        '<div class="rt-panou-titluri"><h3>' + esc(titlu) + '</h3>' +
+        '<div class="rt-panou-sub">' + esc(sub || '') + '</div></div>' +
+        '<button class="rt-inchide" title="Închide (Esc)">✕</button>' +
+      '</div>';
+    },
+
+    /* ── bancul de lucru: crafting ── */
+    deschideCrafting() {
+      const randRet = (r) => {
+        const stare = Craft.poate(r);
+        const are = Progres.nrUnealta(r.id);
+        const cost = Object.keys(r.cost).map(id =>
+          '<span class="rt-cost' + (Progres.resursa(id) < r.cost[id] ? ' rt-cost-lipsa' : '') + '">' +
+          RESURSE[id].emoji + ' ' + r.cost[id] + '</span>').join('');
+        const nec = (r.necesita || []).map(u => {
+          const rr = Craft.reteta(u);
+          return '<span class="rt-cost' + (Progres.areUnealta(u) ? '' : ' rt-cost-lipsa') + '" title="unealtă necesară">' +
+            (rr ? rr.emoji : '') + '</span>';
+        }).join('');
+        const cun = r.cunostinteTot
+          ? '<span class="rt-cost' + (Progres.date.fapte.length >= Joc.totalPuncte ? '' : ' rt-cost-lipsa') + '" title="cunoștințe necesare">🧠 toată teoria</span>'
+          : '';
+        return '<div class="rt-reteta">' +
+          '<div class="rt-reteta-emoji">' + r.emoji + '</div>' +
+          '<div class="rt-reteta-info">' +
+            '<div class="rt-reteta-nume">' + esc(r.nume) + (are ? ' <span class="rt-mut">×' + are + '</span>' : '') + '</div>' +
+            '<div class="rt-reteta-desc">' + esc(r.desc) + '</div>' +
+            '<div class="rt-reteta-cost">' + cost + nec + cun + '</div>' +
+          '</div>' +
+          '<button class="rt-craft-btn" data-id="' + r.id + '"' + (stare.ok ? '' : ' disabled') + '>Fă</button>' +
+        '</div>';
+      };
+      const panou = this.aratapanou(
+        this.capPanou('🛠️', 'Banc de lucru', 'combină materiale în unelte') +
+        '<div class="rt-panou-corp">' +
+          '<p class="rt-mut rt-inv-rezumat" id="rtCraftInv"></p>' +
+          '<div id="rtCraftLista"></div>' +
+        '</div>', 'rt-panou-craft');
+      const refresh = () => {
+        panou.querySelector('#rtCraftInv').innerHTML = this.rezumatResurse();
+        panou.querySelector('#rtCraftLista').innerHTML = RETETE.map(randRet).join('');
+        panou.querySelectorAll('.rt-craft-btn').forEach(bt => bt.onclick = () => {
+          const r = Craft.reteta(bt.dataset.id);
+          if (Craft.faurente(r)) {
+            Sunet.craft();
+            this.toast('🔨 Ai făurit ' + r.emoji + ' <strong>' + esc(r.nume) + '</strong>!');
+            this.actualizeazaHud();
+            refresh();
+          }
+        });
+      };
+      refresh();
+    },
+
+    /* ── negustorul: vinzi/cumperi resurse ── */
+    deschideShop() {
+      const pretCumpara = id => Math.ceil(RESURSE[id].pret * 1.7);
+      const randRes = id => {
+        const r = RESURSE[id], n = Progres.resursa(id);
+        return '<div class="rt-shop-rand">' +
+          '<div class="rt-shop-nume">' + r.emoji + ' ' + esc(r.nume) + ' <span class="rt-mut">×' + n + '</span></div>' +
+          '<button class="rt-shop-b rt-shop-cump" data-buy="' + id + '">Cumpără <b>💰' + pretCumpara(id) + '</b></button>' +
+          '<button class="rt-shop-b rt-shop-vinde" data-sell="' + id + '"' + (n > 0 ? '' : ' disabled') + '>Vinde <b>💰' + r.pret + '</b></button>' +
+        '</div>';
+      };
+      // unelte cu valoare de vânzare (ex. felinar)
+      const vandabile = RETETE.filter(r => r.valoare && Progres.nrUnealta(r.id) > 0);
+      const randUnealta = r => '<div class="rt-shop-rand">' +
+        '<div class="rt-shop-nume">' + r.emoji + ' ' + esc(r.nume) + ' <span class="rt-mut">×' + Progres.nrUnealta(r.id) + '</span></div>' +
+        '<div></div>' +
+        '<button class="rt-shop-b rt-shop-vinde" data-sellu="' + r.id + '">Vinde <b>💰' + r.valoare + '</b></button>' +
+      '</div>';
+      const panou = this.aratapanou(
+        this.capPanou('🏪', 'Negustorul din sat', 'vinde ce-ți prisosește, cumpără ce-ți lipsește') +
+        '<div class="rt-panou-corp">' +
+          '<p class="rt-shop-bani" id="rtShopBani"></p>' +
+          '<div id="rtShopLista"></div>' +
+        '</div>', 'rt-panou-shop');
+      const refresh = () => {
+        panou.querySelector('#rtShopBani').innerHTML = '💰 Ai <strong>' + Progres.date.bani + '</strong> bani';
+        const vand = RETETE.filter(r => r.valoare && Progres.nrUnealta(r.id) > 0);
+        panou.querySelector('#rtShopLista').innerHTML =
+          '<div class="rt-shop-titlu">Materiale</div>' + RES_ORDINE.map(randRes).join('') +
+          (vand.length ? '<div class="rt-shop-titlu">Obiecte de vânzare</div>' + vand.map(randUnealta).join('') : '');
+        panou.querySelectorAll('[data-buy]').forEach(bt => bt.onclick = () => {
+          const id = bt.dataset.buy, cost = pretCumpara(id);
+          if (Progres.date.bani < cost) { this.toast('💸 N-ai destui bani pentru ' + RESURSE[id].nume + '.'); return; }
+          Progres.adaugaBani(-cost); Progres.adaugaResursa(id, 1); Sunet.bani();
+          this.actualizeazaHud(); refresh();
+        });
+        panou.querySelectorAll('[data-sell]').forEach(bt => bt.onclick = () => {
+          const id = bt.dataset.sell;
+          if (Progres.resursa(id) <= 0) return;
+          Progres.scoateResursa(id, 1); Progres.adaugaBani(RESURSE[id].pret); Sunet.bani();
+          this.actualizeazaHud(); refresh();
+        });
+        panou.querySelectorAll('[data-sellu]').forEach(bt => bt.onclick = () => {
+          const r = Craft.reteta(bt.dataset.sellu);
+          if (Progres.nrUnealta(r.id) <= 0) return;
+          Progres.scoateUnealta(r.id, 1); Progres.adaugaBani(r.valoare); Sunet.bani();
+          this.actualizeazaHud(); refresh();
+        });
+      };
+      refresh();
+    },
+
+    /* ── podul bonus: reparație (cu kit gata sau făurit pe loc) ── */
+    reparaPodul(ins) {
+      Progres.reparaPod(ins.id);
+      for (const [x, y] of ins.pod) {
+        Joc.sol[y * LUME_W + x] = T.PODEA; Joc.solid[y * LUME_W + x] = S.LIBER;
+        for (let i = 0; i < 6; i++) Particule.adauga((x + 0.5) * TILE, (y + 0.5) * TILE, 'deblocare');
+      }
+      Sunet.deblocare(); Minimap.deseneaza(); Joc.dirty = true;
+    },
+    deschidePod(poi) {
+      const ins = INSULE.find(i => i.id === poi.insId);
+      if (!ins) return;
+      const kit = Craft.reteta('kitpod');
+      const arata = () => {
+        const reparat = Progres.podReparat(ins.id);
+        let corp, actiune = '';
+        if (reparat) {
+          corp = '<p class="rt-descriere">🌉 Podul e reparat. Treci liniștit spre <strong>' + esc(ins.nume) + '</strong> — te așteaptă o comoară.</p>';
+        } else if (Progres.areUnealta('kitpod')) {
+          corp = '<p class="rt-descriere">🚧 Podul spre <strong>' + esc(ins.nume) + '</strong> e stricat. Ai un 🧰 <strong>Kit de pod</strong> — perfect ca să-l repari.</p>';
+          actiune = '<button class="rt-done" id="rtRepara">🔨 Repară podul <span class="rt-mut">(folosește 🧰 Kit de pod)</span></button>';
+        } else {
+          const stare = Craft.poate(kit);
+          const cost = Object.keys(kit.cost).map(id =>
+            '<span class="rt-cost' + (Progres.resursa(id) < kit.cost[id] ? ' rt-cost-lipsa' : '') + '">' + RESURSE[id].emoji + ' ' + kit.cost[id] + '</span>').join('');
+          const nec = Progres.areUnealta('ciocan') ? '' : '<span class="rt-cost rt-cost-lipsa">🔨 ciocan</span>';
+          corp = '<p class="rt-descriere">🚧 Podul e stricat. Îți trebuie un 🧰 <strong>Kit de pod</strong> ca să-l repari.</p>' +
+            '<div class="rt-reteta-cost" style="justify-content:center;margin:10px 0">' + cost + nec + '</div>';
+          if (stare.ok) actiune = '<button class="rt-done" id="rtCraftRep">🧰 Fă un Kit de pod și repară</button>';
+          else actiune = '<p class="rt-mut" style="text-align:center">Îți mai trebuie: ' + esc(stare.lipsa.join(', ')) +
+            '.<br>Fă-ți un 🔨 ciocan și un 🧰 kit la <strong>bancul de lucru 🛠️</strong> din sat (sau cumpără materiale de la 🏪).</p>';
+        }
+        const panou = this.aratapanou(
+          this.capPanou(Progres.podReparat(ins.id) ? '🌉' : '🚧', 'Podul spre ' + ins.nume, 'scurtătură peste apă spre o insulă secretă') +
+          '<div class="rt-panou-corp">' + corp + actiune + '</div>', 'rt-panou-pod');
+        const rep = panou.querySelector('#rtRepara');
+        if (rep) rep.onclick = () => {
+          Progres.scoateUnealta('kitpod', 1);
+          this.reparaPodul(ins); this.inchidePanou();
+          this.toast('🌉 Ai reparat podul spre <strong>' + esc(ins.nume) + '</strong>! Treci și caută comoara 🎁.');
+        };
+        const cr = panou.querySelector('#rtCraftRep');
+        if (cr) cr.onclick = () => {
+          if (!Craft.faurente(kit)) return;      // consumă materialele, dă kitul
+          Progres.scoateUnealta('kitpod', 1);    // …pe care îl folosim imediat
+          this.reparaPodul(ins); this.actualizeazaHud(); this.inchidePanou();
+          this.toast('🌉 Ai făurit un kit și ai reparat podul spre <strong>' + esc(ins.nume) + '</strong>!');
+        };
+      };
+      arata();
+    },
+
+    /* ── comoara de pe insulă ── */
+    deschideCufar(poi) {
+      const ins = INSULE.find(i => i.id === poi.insId);
+      if (!ins) return;
+      const golit = Progres.insulaGolita(ins.id);
+      if (!golit) {
+        Progres.goleaInsula(ins.id);
+        const loot = ins.loot || {};
+        if (loot.bani) Progres.adaugaBani(loot.bani);
+        for (const id in (loot.resurse || {})) Progres.adaugaResursa(id, loot.resurse[id]);
+        Sunet.bani(); Sunet.fapta();
+        Particule.explozie(poi.x, poi.y - 8, 'fapta', 20);
+        this.actualizeazaHud();
+      }
+      const loot = ins.loot || {};
+      const primite = Object.assign({}, loot.resurse || {});
+      if (loot.bani) primite.bani = loot.bani;
+      this.aratapanou(
+        this.capPanou(golit ? '📭' : '🎁', ins.nume, golit ? 'comoara a fost deja luată' : 'comoară descoperită!') +
+        '<div class="rt-panou-corp">' +
+          (golit
+            ? '<p class="rt-descriere">Cufărul de pe <strong>' + esc(ins.nume) + '</strong> e gol — ai luat deja tot.</p>'
+            : '<p class="rt-descriere">🎉 Ai găsit: <strong>' + esc(textDrop(primite)) + '</strong></p>') +
+          '<div class="rt-fapta-afisata">📜 <em>' + esc(ins.fapta) + '</em></div>' +
+        '</div>', 'rt-panou-cufar');
+    },
+
+    /* ── inventarul: resurse, unelte, bani, cunoștințe, avatar ── */
+    rezumatResurse() {
+      return RES_ORDINE.map(id => RESURSE[id].emoji + ' ' + Progres.resursa(id)).join('  ·  ') +
+        '  ·  💰 ' + (Progres.date.bani || 0);
+    },
+    deschideInventar() {
+      if (this.panouDeschis()) this.inchidePanou();
+      const res = RES_ORDINE.map(id =>
+        '<div class="rt-inv-cell"><div class="rt-inv-emoji">' + RESURSE[id].emoji + '</div>' +
+        '<div class="rt-inv-nr">' + Progres.resursa(id) + '</div>' +
+        '<div class="rt-inv-nume">' + esc(RESURSE[id].nume) + '</div></div>').join('');
+      const unelte = RETETE.filter(r => Progres.nrUnealta(r.id) > 0);
+      const unelteHtml = unelte.length
+        ? unelte.map(r => '<div class="rt-inv-cell"><div class="rt-inv-emoji">' + r.emoji + '</div>' +
+            '<div class="rt-inv-nr">' + Progres.nrUnealta(r.id) + '</div>' +
+            '<div class="rt-inv-nume">' + esc(r.nume) + '</div></div>').join('')
+        : '<p class="rt-mut">Încă n-ai făurit nimic. Adună materiale și mergi la bancul de lucru 🛠️ din sat.</p>';
+      const cun = Progres.date.fapte.length;
+      const av = Multiplayer.avatar;
+      this.aratapanou(
+        this.capPanou('🎒', 'Inventarul tău', 'materiale, unelte și cunoștințe') +
+        '<div class="rt-panou-corp">' +
+          '<p class="rt-shop-bani">💰 <strong>' + (Progres.date.bani || 0) + '</strong> bani · 🧠 <strong>' + cun + '/' + Joc.totalPuncte + '</strong> cunoștințe dobândite</p>' +
+          '<div class="rt-inv-titlu">Materiale</div>' +
+          '<div class="rt-inv-grid">' + res + '</div>' +
+          '<div class="rt-inv-titlu">Unelte & obiecte</div>' +
+          '<div class="rt-inv-grid">' + unelteHtml + '</div>' +
+          '<div class="rt-inv-titlu">Avatarul tău</div>' +
+          '<div class="rt-inv-avatar">' +
+            '<div class="rt-av-preview" style="background:hsl(' + AVATAR_CULORI[av.c] + ',60%,52%)"><span>' + (AVATAR_ACCESORII[av.h] || '') + '</span></div>' +
+            '<button class="rt-btn-sec" id="rtInvAvatar">🎨 Personalizează avatarul</button>' +
+          '</div>' +
+        '</div>', 'rt-panou-inventar');
+      const b = this.overlay.querySelector('#rtInvAvatar');
+      if (b) b.onclick = () => this.deschideAvatar(() => this.deschideInventar());
+    },
+
+    /* ── personalizarea avatarului (culoare + accesoriu) ── */
+    deschideAvatar(dupa) {
+      if (this.panouDeschis()) this.inchidePanou();
+      let c = Multiplayer.avatar.c, h = Multiplayer.avatar.h;
+      const culori = AVATAR_CULORI.map((hue, i) =>
+        '<button class="rt-av-cul' + (i === c ? ' sel' : '') + '" data-c="' + i + '" style="background:hsl(' + hue + ',60%,52%)"></button>').join('');
+      const acces = AVATAR_ACCESORII.map((e, i) =>
+        '<button class="rt-av-acc' + (i === h ? ' sel' : '') + '" data-h="' + i + '">' + (e || '∅') + '</button>').join('');
+      const panou = this.aratapanou(
+        this.capPanou('🎨', 'Avatarul tău', 'culoare + accesoriu — te văd toți online') +
+        '<div class="rt-panou-corp">' +
+          '<div class="rt-av-preview-mare" id="rtAvPrev"></div>' +
+          '<div class="rt-inv-titlu">Culoare</div>' +
+          '<div class="rt-av-culori">' + culori + '</div>' +
+          '<div class="rt-inv-titlu">Accesoriu</div>' +
+          '<div class="rt-av-acces">' + acces + '</div>' +
+          '<button class="rt-done" id="rtAvOk">✔ Salvează</button>' +
+        '</div>', 'rt-panou-avatar');
+      const prev = panou.querySelector('#rtAvPrev');
+      const randPrev = () => {
+        prev.style.background = 'hsl(' + AVATAR_CULORI[c] + ',60%,52%)';
+        prev.innerHTML = '<span>' + (AVATAR_ACCESORII[h] || '') + '</span>';
+      };
+      randPrev();
+      panou.querySelectorAll('.rt-av-cul').forEach(bt => bt.onclick = () => {
+        c = +bt.dataset.c;
+        panou.querySelectorAll('.rt-av-cul').forEach(x => x.classList.toggle('sel', x === bt));
+        randPrev();
+      });
+      panou.querySelectorAll('.rt-av-acc').forEach(bt => bt.onclick = () => {
+        h = +bt.dataset.h;
+        panou.querySelectorAll('.rt-av-acc').forEach(x => x.classList.toggle('sel', x === bt));
+        randPrev();
+      });
+      panou.querySelector('#rtAvOk').onclick = () => {
+        Multiplayer.salveazaAvatar(c, h);
+        this.inchidePanou();
+        this.toast('🎨 Avatar salvat!');
+        if (dupa) dupa();
+      };
+    },
+
+    /* ── paleta de emoji/fraze (nu pune jocul pe pauză) ── */
+    emoteDeschis() { return this._emotePal && this._emotePal.classList.contains('vizibil'); },
+    comutaEmote() {
+      if (this.panouDeschis()) return;
+      if (this.emoteDeschis()) { this.inchideEmote(); return; }
+      this.deschideEmote();
+    },
+    deschideEmote() {
+      const stage = document.getElementById('rtStage');
+      if (!stage) return;
+      if (!this._emotePal) {
+        const pal = document.createElement('div');
+        pal.className = 'rt-emote-pal';
+        let h = '<div class="rt-emote-grid">';
+        EMOTE.forEach((em, k) => { if (!em.t) h += '<button class="rt-emote-cell" data-k="' + k + '">' + em.e + '</button>'; });
+        h += '</div><div class="rt-emote-fraze">';
+        EMOTE.forEach((em, k) => { if (em.t) h += '<button class="rt-emote-fraza" data-k="' + k + '">' + em.e + ' ' + esc(em.t) + '</button>'; });
+        h += '</div>';
+        pal.innerHTML = h;
+        pal.addEventListener('click', e => {
+          const bt = e.target.closest('[data-k]');
+          if (!bt) return;
+          Multiplayer.trimiteEmote(+bt.dataset.k);
+          this.inchideEmote();
+        });
+        stage.appendChild(pal);
+        this._emotePal = pal;
+      }
+      this._emotePal.classList.add('vizibil');
+      // închide la click în afara paletei (și nu pe butonul 🙂)
+      this._emoteAfara = (e) => {
+        if (this._emotePal.contains(e.target) || e.target.id === 'rtEmoteBtn') return;
+        this.inchideEmote();
+      };
+      setTimeout(() => document.addEventListener('pointerdown', this._emoteAfara), 0);
+    },
+    inchideEmote() {
+      if (this._emotePal) this._emotePal.classList.remove('vizibil');
+      if (this._emoteAfara) { document.removeEventListener('pointerdown', this._emoteAfara); this._emoteAfara = null; }
     },
   };
 
@@ -2058,10 +2865,84 @@
   background:color-mix(in srgb,var(--accent) 85%,transparent);border:2px solid var(--border);color:#1a1714;
   font-weight:900;font-size:1.3rem;touch-action:none}
 .rt-tab-diag{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;justify-content:center}
+.rt-chip-bani{color:var(--accent)}
+.rt-btn-off{opacity:.5}
+.rt-btn-sec.rt-danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,var(--border))}
+.rt-btn-sec.rt-danger:hover{background:color-mix(in srgb,var(--bad) 14%,var(--bg3))}
+.rt-recompensa{text-align:center;color:var(--accent);font-weight:600;margin:.4em 0}
+/* butonul + paleta de emoji/fraze */
+.rt-emote-btn{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:9;width:46px;height:46px;
+  border-radius:50%;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--border);
+  color:var(--txt);font-size:1.35rem;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 10px rgba(0,0,0,.28)}
+.rt-emote-btn:hover{border-color:var(--accent);transform:translateX(-50%) translateY(-2px)}
+.rt-emote-pal{position:absolute;left:50%;bottom:70px;transform:translateX(-50%) translateY(8px);z-index:9;
+  width:min(320px,90%);background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:10px;
+  box-shadow:0 8px 26px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .16s,transform .16s}
+.rt-emote-pal.vizibil{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.rt-emote-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+.rt-emote-cell{aspect-ratio:1;border:1px solid var(--border);background:var(--bg3);border-radius:10px;font-size:1.4rem;
+  cursor:pointer;line-height:1}
+.rt-emote-cell:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,var(--bg3))}
+.rt-emote-fraze{display:flex;flex-wrap:wrap;gap:6px}
+.rt-emote-fraza{border:1px solid var(--border);background:var(--bg3);color:var(--txt);border-radius:20px;
+  padding:6px 11px;font-size:.82rem;font-family:inherit;cursor:pointer}
+.rt-emote-fraza:hover{border-color:var(--accent);color:var(--accent)}
+/* rețete de crafting */
+.rt-inv-rezumat{text-align:center;font-size:.82rem;margin:0 0 10px}
+.rt-reteta{display:flex;align-items:center;gap:12px;padding:11px;border:1px solid var(--border);border-radius:12px;
+  margin-bottom:9px;background:var(--bg3)}
+.rt-reteta-emoji{font-size:1.8rem;line-height:1;flex:0 0 auto}
+.rt-reteta-info{flex:1;min-width:0}
+.rt-reteta-nume{font-weight:700;font-size:.94rem}
+.rt-reteta-desc{color:var(--muted);font-size:.8rem;line-height:1.35;margin:2px 0 5px}
+.rt-reteta-cost{display:flex;flex-wrap:wrap;gap:5px}
+.rt-cost{font-size:.78rem;background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:2px 7px}
+.rt-cost-lipsa{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,var(--border))}
+.rt-craft-btn{flex:0 0 auto;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#1a1714;
+  font-weight:800;padding:9px 15px;border-radius:10px;cursor:pointer}
+.rt-craft-btn:hover:not(:disabled){filter:brightness(1.07)}
+.rt-craft-btn:disabled{opacity:.4;cursor:not-allowed;background:var(--bg3);color:var(--muted)}
+/* negustor */
+.rt-shop-bani{text-align:center;font-size:.95rem;margin:0 0 10px}
+.rt-shop-titlu{font-weight:700;color:var(--muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.04em;
+  margin:12px 0 6px}
+.rt-shop-rand{display:grid;grid-template-columns:1fr auto auto;gap:7px;align-items:center;padding:6px 0;
+  border-top:1px dashed var(--border)}
+.rt-shop-nume{font-size:.9rem}
+.rt-shop-b{border:1px solid var(--border);background:var(--bg3);color:var(--txt);border-radius:9px;padding:6px 10px;
+  font-size:.78rem;font-family:inherit;cursor:pointer;white-space:nowrap}
+.rt-shop-b b{color:var(--accent)}
+.rt-shop-cump:hover{border-color:var(--good)}
+.rt-shop-vinde:hover:not(:disabled){border-color:var(--accent)}
+.rt-shop-b:disabled{opacity:.4;cursor:not-allowed}
+/* inventar */
+.rt-inv-titlu{font-weight:700;color:var(--muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.04em;
+  margin:14px 0 7px}
+.rt-inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px}
+.rt-inv-cell{background:var(--bg3);border:1px solid var(--border);border-radius:11px;padding:9px 4px;text-align:center}
+.rt-inv-emoji{font-size:1.6rem;line-height:1}
+.rt-inv-nr{font-weight:800;font-size:1.05rem;margin-top:2px}
+.rt-inv-nume{color:var(--muted);font-size:.72rem}
+.rt-inv-avatar{display:flex;align-items:center;gap:14px;margin-top:6px}
+.rt-av-preview{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;border:2px solid rgba(0,0,0,.3);flex:0 0 auto}
+/* avatar */
+.rt-av-preview-mare{width:84px;height:84px;border-radius:16px;margin:0 auto 10px;display:flex;align-items:center;
+  justify-content:center;font-size:2.4rem;border:2px solid rgba(0,0,0,.3)}
+.rt-av-culori{display:flex;flex-wrap:wrap;gap:9px;justify-content:center}
+.rt-av-cul{width:36px;height:36px;border-radius:50%;border:3px solid transparent;cursor:pointer}
+.rt-av-cul.sel{border-color:var(--txt);box-shadow:0 0 0 2px var(--panel) inset}
+.rt-av-acces{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.rt-av-acc{width:42px;height:42px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);
+  font-size:1.35rem;cursor:pointer;color:var(--muted)}
+.rt-av-acc.sel{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,var(--bg3))}
 @media (max-width:640px){
   .rt-minimap{width:120px;height:88px;top:50px}
   .rt-stage{height:clamp(380px,72vh,640px)}
   .rt-chip{font-size:.76rem;padding:5px 9px}
+  .rt-emote-btn{bottom:84px}
+  .rt-emote-pal{bottom:138px;width:min(300px,84%)}
 }
 `;
     document.head.appendChild(s);
@@ -2785,16 +3666,23 @@
     const pagina = document.getElementById('page-harta');
     if (!pagina) return; // secțiunea nu există — nu facem nimic
     Progres.incarca();
+    Multiplayer.incarcaAvatar();
     if (!UI.construieste()) return;
     Input.prinde();
     // clic pe canvas → focus pentru tastatură (utile în iframe-ul embed)
     Joc.canvas.addEventListener('pointerdown', () => Joc.canvas.focus({ preventScroll: true }));
+    // muzica de fundal poate porni doar după un gest (politica de autoplay) —
+    // la orice apăsare, reîncercăm (funcția se auto-protejează dacă e deja pornită)
+    const startMuzica = () => Muzica.incearca();
+    window.addEventListener('pointerdown', startMuzica);
+    window.addEventListener('keydown', startMuzica);
     citestePaleta();
     leagaCicluDeViata();
   }
 
   // expus doar pentru teste/depanare (jocul nu-l folosește)
-  window.RETELISTAN_DEBUG = { Joc, ASEZARE, PORTI, PLASARE, Progres, Multiplayer, construiesteLumea, T, S, TILE, LUME_W, LUME_H };
+  window.RETELISTAN_DEBUG = { Joc, ASEZARE, PORTI, PLASARE, Progres, Multiplayer, construiesteLumea, T, S, TILE, LUME_W, LUME_H,
+    Craft, RETETE, RESURSE, INSULE, EMOTE, AVATAR_CULORI, AVATAR_ACCESORII };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();

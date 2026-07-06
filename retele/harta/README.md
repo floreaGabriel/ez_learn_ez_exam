@@ -43,8 +43,8 @@ Pe site, jocul are **prezență online**: la prima intrare îți alegi un nume
 (2–14 caractere, salvat în browser), iar toți cei care explorează Rețelistanul
 în acel moment se văd unii pe alții pe hartă — siluete colorate cu numele
 deasupra, puncte pe minimap și contorul 👥 din HUD (click pe el = schimbi
-numele / intri online). **Progresul rămâne local** — doar numele și poziția
-se trimit.
+numele / intri online). **Progresul rămâne local** — pe fir se trimit doar
+numele, poziția, avatarul (2 indici) și, la nevoie, indexul unui emoji/frază.
 
 Partea de server e serviciul **`retelistan/`** (Node + WebSocket, port 3004,
 proxat de nginx la `/retelistan/ws`) — stare 100% în memorie, fără bază de
@@ -54,10 +54,50 @@ jocul merge normal, offline, și reîncearcă discret conexiunea.
 ## Controale
 
 - **Desktop:** WASD / săgeți — mișcare · **Shift** — fugă · **E / Space / Enter** —
-  interacțiune · **J** — jurnal · **Esc** — închide panoul.
-- **Telefon:** joystick virtual (stânga-jos) + buton **E** (dreapta-jos).
+  interacțiune · **J** — jurnal · **I** — inventar · **R** — emoji/mesaje ·
+  **Esc** — închide panoul.
+- **Telefon:** joystick virtual (stânga-jos) + buton **E** (dreapta-jos) +
+  butonul **🙂** (jos-centru) pentru emoji/mesaje.
 - **❓** din HUD redeschide ecranul „cum se joacă"; **📖** deschide jurnalul
-  (faptele-cheie colectate, insigne, reset progres); **🔊** comută sunetul.
+  (faptele-cheie colectate, insigne, reset progres); **🎒** deschide inventarul
+  (materiale, unelte, cunoștințe, avatar); **🔊** comută efectele sonore;
+  **🎵** comută muzica de fundal.
+
+## Crafting, poduri și insule 🛠️
+
+Peste explorarea de teorie e o mică buclă de **crafting** — un strat bonus care
+**nu** blochează drumul principal (porțile rămân deschise de recapitulări):
+
+- **Materiale** 🪵🔩🪨🔌⚙️ pică prima dată când citești un punct de teorie și, mai
+  ales, când treci recapitularea unui paznic (răsplată de „challenge": bani + piese).
+- La **bancul de lucru 🛠️** (în satul Intro) combini materialele în unelte după
+  rețete: **🔨 Ciocan** (refolosibil) → **🧰 Kit de pod** → **🏮 Felinar** (de
+  vânzare) → **🎓 Diplomă de Rețelist** (doar după ce ai citit TOATĂ teoria).
+- **Podurile stricate 🚧** (peste apă, în Câmpia Semnalelor și Portul Transport)
+  se repară cu un Kit de pod — poți face kitul pe loc, la pod, dacă ai materialele.
+  Dincolo te așteaptă o **insulă secretă 🎁** cu bani, piese rare și o faptă-cheie
+  în plus.
+- La **negustor 🏪** (tot în sat) vinzi ce-ți prisosește și cumperi ce-ți lipsește —
+  supapa care ține economia fără blocaje.
+
+Datele stau în secțiunea „2b" din `game.js` (`RESURSE`, `RETETE`, `INSULE`), iar
+logica în modulul `Craft`; totul e persistat în `localStorage` (`inventar`,
+`unelte`, `bani`, `poduri`, `insule`). Insulele/podurile sunt **date-driven** —
+adaugi o intrare în `INSULE` (moat + insulă + dale de pod) și `construiesteInsule()`
+le sapă singur în hartă.
+
+## Social: emoji, mesaje, avatar
+
+Butonul **🙂** (sau tasta **R**) deschide o paletă cu **8 emoji** + **8 fraze**
+gata făcute („Salut!", „Baftă!", „GG!"…). Ce trimiți apare ca bulă deasupra
+capului tău și, dacă ești online, deasupra capului tău la ceilalți jucători.
+Paleta e **fixă și indexată** — pe fir circulă doar un index (0–15), deci serverul
+nu vede niciodată text arbitrar (fără moderare, fără injecții).
+
+Din **🎒 → 🎨** (sau din modalul de nume 🌐) îți alegi **avatarul**: una din 8
+culori + un accesoriu (🎓🧢👑🎩🌸⭐). Se salvează separat de progres
+(`localStorage: retelistan-avatar`) și se vede la toți cei online. Tot de acolo ai
+și **logout** („🚪 Ieși offline") — te deconectează și uită numele salvat.
 
 ## Cum adaug conținut nou (fără să ating motorul)
 
