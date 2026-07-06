@@ -60,8 +60,18 @@ jocul merge normal, offline, și reîncearcă discret conexiunea.
   butonul **🙂** (jos-centru) pentru emoji/mesaje.
 - **❓** din HUD redeschide ecranul „cum se joacă"; **📖** deschide jurnalul
   (faptele-cheie colectate, insigne, reset progres); **🎒** deschide inventarul
-  (materiale, unelte, cunoștințe, avatar); **🔊** comută efectele sonore;
-  **🎵** comută muzica de fundal.
+  (materiale, unelte, cunoștințe, avatar, cont online); **🏆** clasamentul;
+  **🔊** comută efectele sonore; **🎵** comută muzica de fundal;
+  **⛶** (tasta **F**) ecran complet.
+
+## Clasament (scoreboard) 🏆
+
+Butonul **🏆** din HUD deschide clasamentul jucătorilor **online acum**, ordonați
+după scor (🥇🥈🥉), cu tine evidențiat. Scorul se derivă din progresul local:
+cunoștințe ×10 + paznici trecuți ×30 + poduri reparate ×20 + insule golite ×60 +
+avere/5. Fiecare client își calculează scorul și trimite serverului doar un număr
+(`{t:sc}`), care intră în instantaneu (`[…,scor]`). Offline vezi doar scorul tău,
+cu detalierea pe categorii.
 
 ## Crafting, poduri și insule 🛠️
 
@@ -135,6 +145,11 @@ secvență), `stiva`, `nest` (încapsulare), `unda` (forme de undă), `flux`
 - **Performanță:** bucla rAF pornește doar când `#page-harta` e `.active` și
   fila e vizibilă (MutationObserver + `visibilitychange`); se desenează numai
   intervalul de tile-uri vizibil; jocul stă pe **pauză** cât un panou e deschis.
+  Colorarea solului folosește `Joc.regGrid` (index de regiune per tile,
+  precalculat la build) în loc de 8 teste `inRect` per tile per cadru; DPR
+  plafonat la 1.5; vigneta e coaptă o dată într-un canvas ascuns și doar
+  „lipită" în fiecare cadru. Ambianța (halou sub jucător, licurici, vignetă)
+  e adăugată din câteva operații ieftine, ca mișcarea să rămână fluidă.
 - **Responsive:** canvas-ul urmărește containerul (ResizeObserver, DPR-aware).
 - **Progres:** `localStorage` → puncte citite, fapte-cheie, recapitulări trecute,
   porți deschise, poziția pe hartă, sunet on/off. „Resetează progresul" e în 📖.

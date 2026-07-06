@@ -398,6 +398,21 @@
     }).join(', ');
   }
 
+  // scorul de clasament, derivat din progres (teorie + recap + explorare + avere)
+  function detaliiScor() {
+    const d = Progres.date;
+    const cun = (d.fapte || []).length;
+    const boss = Object.values(d.boss || {}).filter(s => s >= 2).length;
+    const poduri = Object.keys(d.poduri || {}).length;
+    const insule = Object.keys(d.insule || {}).length;
+    const bani = Math.floor((d.bani || 0) / 5);
+    return {
+      cun, boss, poduri, insule, bani,
+      total: cun * 10 + boss * 30 + poduri * 20 + insule * 60 + bani,
+    };
+  }
+  function scorLocal() { return detaliiScor().total; }
+
   /* ═══════════════════════════ 5. SUNET (WebAudio) ════════════════════════ */
 
   const Sunet = {
@@ -480,6 +495,7 @@
 
     sol: null,            // Uint8Array LUME_W*LUME_H — terenul
     solid: null,          // Uint8Array — obstacole
+    regGrid: null,        // Int8Array — indexul regiunii per tile (-1 = sălbăticie); pt. colorare rapidă
     decor: [],            // obiecte decorative desenate y-sortat
     poi: [],              // punctele de interes (teorie + semne + boși + crafting)
     portiTiles: {},       // "x,y" -> poarta (pt. desen și coliziune)
@@ -515,13 +531,17 @@
       for (let x = 0; x < LUME_W; x++)
         if (hash2(x, y) < 0.12) Joc.solid[idx(x, y)] = S.STANCA;
 
-    // 2) regiunile: teren propriu, fără obstacole (le adăugăm apoi controlat)
-    for (const reg of ASEZARE) {
-      const [x0, y0, x1, y1] = reg.rect;
+    // 2) regiunile: teren propriu, fără obstacole (le adăugăm apoi controlat).
+    // În paralel, construim regGrid (index de regiune per tile) o singură dată —
+    // ca desenul solului să nu mai facă 8 teste inRect per tile în fiecare cadru.
+    Joc.regGrid = new Int8Array(LUME_W * LUME_H).fill(-1);
+    for (let ri = 0; ri < ASEZARE.length; ri++) {
+      const [x0, y0, x1, y1] = ASEZARE[ri].rect;
       for (let y = y0; y < y1; y++)
         for (let x = x0; x < x1; x++) {
           Joc.sol[idx(x, y)] = T.IARBA;
           Joc.solid[idx(x, y)] = S.LIBER;
+          Joc.regGrid[idx(x, y)] = ri;
         }
     }
 
@@ -854,6 +874,7 @@
         if (e.code === 'KeyJ') UI.deschideJurnal();
         if (e.code === 'KeyI') UI.deschideInventar();
         if (e.code === 'KeyR') UI.comutaEmote();
+        if (e.code === 'KeyF') UI.comutaFullscreen();
       });
       window.addEventListener('keyup', e => {
         this.taste[e.code] = false;
@@ -948,10 +969,9 @@
         const px = x * TILE, py = y * TILE;
         let c;
         if (s === T.IARBA) {
-          // culoarea regiunii din care face parte tile-ul
-          let reg = null;
-          for (const r of ASEZARE) if (inRect(r.rect, x, y)) { reg = r; break; }
-          c = reg ? PAL.teren[reg.culoare] : PAL.teren.salbatic;
+          // culoarea regiunii — căutare O(1) în regGrid (precalculat la build)
+          const ri = Joc.regGrid[y * LUME_W + x];
+          c = ri >= 0 ? PAL.teren[ASEZARE[ri].culoare] : PAL.teren.salbatic;
         }
         else if (s === T.DRUM) c = PAL.teren.drum;
         else if (s === T.APA) c = (Math.floor(t * 1.4 + (x + y) * 0.7) % 2) ? PAL.teren.apa : PAL.teren.apa2;
@@ -991,6 +1011,16 @@
       const [x, y] = cheie.split(',').map(Number);
       if (x < tx0 || x > tx1 || y < ty0 || y > ty1) continue;
       deseneazaPod(ctx, x, y, Progres.podReparat(Joc.poduriTiles[cheie].id), t);
+    }
+
+    /* ── halou cald sub jucător: dă senzație de „ambianță" și adâncime ── */
+    {
+      const gx = Joc.jucator.x, gy = Joc.jucator.y, acc = PAL.accent;
+      const glow = ctx.createRadialGradient(gx, gy - 6, 6, gx, gy - 6, 96);
+      glow.addColorStop(0, 'rgba(' + acc.join(',') + ',' + (PAL.eLight ? 0.09 : 0.13) + ')');
+      glow.addColorStop(1, 'rgba(' + acc.join(',') + ',0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(gx - 96, gy - 102, 192, 192);
     }
 
     /* ── obiectele y-sortate: decor + POI + jucător (efect de adâncime) ── */
@@ -1065,6 +1095,28 @@
       deseneazaEmote(ctx, Joc.jucator.x, Joc.jucator.y - 38, Joc.jucator.bula.k);
 
     ctx.restore();
+
+    /* ── ambianță în spațiu-ecran: firicele plutitoare + vignetă ── */
+    deseneazaAmbianta(ctx, Joc.latime, Joc.inaltime, t);
+  }
+
+  /* praf/licurici care plutesc + vigneta coaptă — atmosferă ieftină */
+  function deseneazaAmbianta(ctx, w, h, t) {
+    // firicele (praf luminos) care urcă lin și pâlpâie
+    ctx.fillStyle = PAL.css.accent;
+    for (let i = 0; i < 20; i++) {
+      const px = ((Math.sin(i * 12.9898) * 0.5 + 0.5) * w + Math.sin(t * 0.3 + i) * 16 + w) % w;
+      const py = (1 - ((i * 0.141 + t * 0.018) % 1)) * h;
+      const a = 0.05 + 0.05 * (Math.sin(t * 1.4 + i * 2.1) * 0.5 + 0.5);
+      ctx.globalAlpha = a;
+      ctx.beginPath(); ctx.arc(px, py, 1.5, 0, 7); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    // vigneta (rebuild leneș dacă s-a schimbat tema)
+    if (vignetaCanvas) {
+      if (vignetaLight !== PAL.eLight) construiesteVigneta();
+      ctx.drawImage(vignetaCanvas, 0, 0, w, h);
+    }
   }
 
   /* o bulă de emoji/frază deasupra unui personaj (dispare singură) */
@@ -1582,7 +1634,9 @@
     const stage = document.getElementById('rtStage');
     if (!stage || !Joc.canvas) return;
     const rect = stage.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // DPR plafonat la 1.5: pe ecrane retina, 2× înseamnă de 4× mai mulți pixeli
+    // de umplut în fiecare cadru — mișcarea devine sacadată fără câștig vizibil.
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     Joc.latime = Math.max(280, rect.width);
     Joc.inaltime = Math.max(240, rect.height);
     Joc.dpr = dpr;
@@ -1593,8 +1647,28 @@
     Joc.ctx = Joc.canvas.getContext('2d');
     Joc.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     Joc.ctx.imageSmoothingEnabled = false;
+    construiesteVigneta();
     Joc.dirty = true;
     if (Joc.pornit === false && Joc.initializat) deseneaza();
+  }
+
+  /* vigneta (întunecarea marginilor) e coaptă o singură dată într-un canvas
+     ascuns și doar „lipită" în fiecare cadru — un gradient radial pe tot
+     ecranul la 60fps ar fi scump degeaba. */
+  let vignetaCanvas = null, vignetaLight = null;
+  function construiesteVigneta() {
+    if (!PAL) return;
+    const w = Math.round(Joc.latime), h = Math.round(Joc.inaltime);
+    if (w < 2 || h < 2) return;
+    const c = vignetaCanvas || (vignetaCanvas = document.createElement('canvas'));
+    c.width = w; c.height = h;
+    const g = c.getContext('2d');
+    const grad = g.createRadialGradient(w / 2, h * 0.46, Math.min(w, h) * 0.32, w / 2, h / 2, Math.max(w, h) * 0.72);
+    grad.addColorStop(0, 'rgba(0,0,0,0)');
+    grad.addColorStop(1, PAL.eLight ? 'rgba(60,45,18,0.16)' : 'rgba(0,0,0,0.36)');
+    g.clearRect(0, 0, w, h);
+    g.fillStyle = grad; g.fillRect(0, 0, w, h);
+    vignetaLight = PAL.eLight;
   }
 
   /* ═══════════════ 14b. PREZENȚA ONLINE (multiplayer ușor) ════════════════
@@ -1609,7 +1683,8 @@
   const Multiplayer = {
     ws: null, conectat: false, id: 0, nume: '',
     avatar: { c: 0, h: 0 }, // avatarul propriu (index de culoare + accesoriu)
-    alti: new Map(),        // id -> {id,nume,x,y,tx,ty,dir,misca,reg,hue,av,bula}
+    scorTrimis: -1,         // ultimul scor anunțat serverului (ca să nu spamăm)
+    alti: new Map(),        // id -> {id,nume,x,y,tx,ty,dir,misca,reg,hue,av,scor,bula}
     oprit: false,           // deconectare intenționată (tab părăsit)
     intrebat: false,        // am arătat deja modalul de nume în sesiunea asta?
     primul: true,           // primul instantaneu (fără toasturi de „a intrat")
@@ -1652,6 +1727,14 @@
       if (this.ws && this.ws.readyState === 1)
         try { this.ws.send(JSON.stringify({ t: 'e', k })); } catch (e) {}
     },
+    // anunță scorul serverului (doar când s-a schimbat) — pentru clasament
+    trimiteScor() {
+      const s = scorLocal();
+      if (s === this.scorTrimis) return;
+      this.scorTrimis = s;
+      if (this.ws && this.ws.readyState === 1)
+        try { this.ws.send(JSON.stringify({ t: 'sc', s })); } catch (e) {}
+    },
     // aceeași curățare ca pe server (server.js → curataNume) — altfel un nume
     // care „trece" în modal ar fi respins de server la fiecare reconectare
     curataNumeLocal(v) {
@@ -1690,7 +1773,7 @@
       // ar strica starea conexiunii noi (ex. la schimbarea numelui)
       ws.onopen = () => {
         if (this.ws !== ws) return;
-        try { ws.send(JSON.stringify({ t: 'j', nume: this.nume, c: this.avatar.c, h: this.avatar.h })); } catch (e) {}
+        try { ws.send(JSON.stringify({ t: 'j', nume: this.nume, c: this.avatar.c, h: this.avatar.h, s: scorLocal() })); } catch (e) {}
       };
       ws.onmessage = (ev) => {
         if (this.ws !== ws) return;
@@ -1706,6 +1789,7 @@
               d: Joc.jucator.dir, m: 0, r: Joc.regiuneCurenta || '',
             }));
           } catch (e) {}
+          this.scorTrimis = scorLocal(); // deja trimis în join
           UI.toast('🌐 Ești online ca <strong>' + esc(this.nume) + '</strong>');
           this.actualizeazaChip();
         } else if (m.t === 's' && Array.isArray(m.j)) this.laStare(m.j);
@@ -1742,6 +1826,7 @@
 
     curata() {
       this.ws = null; this.conectat = false; this.id = 0;
+      this.scorTrimis = -1;
       this.alti = new Map();
       this.actualizeazaChip();
       Joc.dirty = true;
@@ -1756,12 +1841,12 @@
       this.actualizeazaChip();
     },
 
-    /* instantaneul de la server: [[id,nume,x,y,dir,misca,reg,avc,avh], ...] */
+    /* instantaneul de la server: [[id,nume,x,y,dir,misca,reg,avc,avh,scor], ...] */
     laStare(lista) {
       const eraPrimul = this.primul; this.primul = false;
       const vechi = this.alti, noi = new Map();
       for (const rand of lista) {
-        const [id, nume, x, y, dir, misca, reg, avc, avh] = rand;
+        const [id, nume, x, y, dir, misca, reg, avc, avh, scor] = rand;
         if (id === this.id) continue;
         let a = vechi.get(id);
         if (!a) {
@@ -1770,7 +1855,7 @@
         }
         a.nume = nume; a.tx = x; a.ty = y;
         a.dir = DIR_IDX[dir] || 'jos'; a.misca = !!misca; a.reg = reg;
-        a.av = { c: avc | 0, h: avh | 0 };
+        a.av = { c: avc | 0, h: avh | 0 }; a.scor = scor | 0;
         if (Math.hypot(a.tx - a.x, a.ty - a.y) > 300) { a.x = a.tx; a.y = a.ty; } // „teleport" — nu interpolăm
         noi.set(id, a);
       }
@@ -1920,6 +2005,7 @@
           '<div class="rt-chip" id="rtRegChip">🗺️ Rețelistan</div>' +
           '<div class="rt-chip rt-chip-mic" id="rtProgChip">📜 0/0</div>' +
           '<div class="rt-chip rt-chip-mic rt-chip-bani" id="rtBaniChip" title="Bani">💰 0</div>' +
+          '<button class="rt-btn" id="rtBtnScor" title="Clasament (scoreboard)">🏆</button>' +
           '<button class="rt-btn rt-online" id="rtOnlineChip" style="display:none">🌐</button>' +
         '</div>' +
         '<div class="rt-hud-dr">' +
@@ -1928,6 +2014,7 @@
           '<button class="rt-btn" id="rtBtnAjutor" title="Cum se joacă">❓</button>' +
           '<button class="rt-btn" id="rtBtnSunet" title="Efecte sonore">🔊</button>' +
           '<button class="rt-btn" id="rtBtnMuzica" title="Muzică">🎵</button>' +
+          '<button class="rt-btn" id="rtBtnFull" title="Ecran complet (F)">⛶</button>' +
         '</div>';
       stage.appendChild(this.hud);
       Minimap.creeaza(stage);
@@ -1962,8 +2049,10 @@
 
       // butoane
       this.hud.querySelector('#rtBtnInventar').onclick = () => this.deschideInventar();
+      this.hud.querySelector('#rtBtnScor').onclick = () => this.deschideScoreboard();
       this.hud.querySelector('#rtBtnJurnal').onclick = () => this.deschideJurnal();
       this.hud.querySelector('#rtBtnAjutor').onclick = () => this.deschideAjutor();
+      this.hud.querySelector('#rtBtnFull').onclick = () => this.comutaFullscreen();
       const btnSunet = this.hud.querySelector('#rtBtnSunet');
       const setSunet = () => { btnSunet.textContent = Progres.date.sunet ? '🔊' : '🔇'; };
       setSunet();
@@ -2037,6 +2126,7 @@
       if (prog) prog.textContent = '📜 ' + citite + '/' + Joc.totalPuncte + ' · ' + pct + '%';
       const bani = document.getElementById('rtBaniChip');
       if (bani) bani.textContent = '💰 ' + (Progres.date.bani || 0);
+      if (Multiplayer.conectat) Multiplayer.trimiteScor(); // clasamentul rămâne la zi
     },
 
     banner(regId, prima) {
@@ -2452,7 +2542,7 @@
             '<div class="rt-reteta-desc">' + esc(r.desc) + '</div>' +
             '<div class="rt-reteta-cost">' + cost + nec + cun + '</div>' +
           '</div>' +
-          '<button class="rt-craft-btn" data-id="' + r.id + '"' + (stare.ok ? '' : ' disabled') + '>Fă</button>' +
+          '<button class="rt-craft-btn" data-id="' + r.id + '"' + (stare.ok ? '' : ' disabled') + '>🔨 Build</button>' +
         '</div>';
       };
       const panou = this.aratapanou(
@@ -2752,6 +2842,59 @@
       if (this._emotePal) this._emotePal.classList.remove('vizibil');
       if (this._emoteAfara) { document.removeEventListener('pointerdown', this._emoteAfara); this._emoteAfara = null; }
     },
+
+    /* ── ecran complet ── */
+    comutaFullscreen() {
+      const el = document.getElementById('rtStage');
+      if (!el) return;
+      const d = document;
+      const activ = d.fullscreenElement || d.webkitFullscreenElement;
+      try {
+        if (!activ) (el.requestFullscreen || el.webkitRequestFullscreen || function () {}).call(el);
+        else (d.exitFullscreen || d.webkitExitFullscreen || function () {}).call(d);
+      } catch (e) {}
+    },
+    actualizeazaFullscreen() {
+      const b = document.getElementById('rtBtnFull');
+      if (!b) return;
+      const activ = document.fullscreenElement || document.webkitFullscreenElement;
+      b.textContent = activ ? '🗗' : '⛶';
+      b.title = activ ? 'Ieși din ecran complet (F)' : 'Ecran complet (F)';
+    },
+
+    /* ── clasamentul (scoreboard) ── */
+    deschideScoreboard() {
+      if (this.panouDeschis()) this.inchidePanou();
+      const meu = { nume: (Multiplayer.conectat && Multiplayer.nume) || 'Tu', scor: scorLocal(), av: Multiplayer.avatar, eu: true };
+      const lista = [meu];
+      if (Multiplayer.conectat)
+        for (const a of Multiplayer.alti.values())
+          lista.push({ nume: a.nume, scor: a.scor || 0, av: a.av || { c: 0, h: 0 }, eu: false });
+      lista.sort((x, y) => y.scor - x.scor);
+      const medalie = i => ['🥇', '🥈', '🥉'][i] || ('<span class="rt-sc-nr">' + (i + 1) + '</span>');
+      const randuri = lista.map((p, i) =>
+        '<div class="rt-sc-rand' + (p.eu ? ' eu' : '') + '">' +
+          '<div class="rt-sc-rang">' + medalie(i) + '</div>' +
+          '<div class="rt-sc-av" style="background:hsl(' + AVATAR_CULORI[(p.av && p.av.c) || 0] + ',60%,52%)"><span>' + (AVATAR_ACCESORII[(p.av && p.av.h) || 0] || '') + '</span></div>' +
+          '<div class="rt-sc-nume">' + esc(p.nume) + (p.eu ? ' <span class="rt-mut">(tu)</span>' : '') + '</div>' +
+          '<div class="rt-sc-scor">' + p.scor + '</div>' +
+        '</div>').join('');
+      const d = detaliiScor();
+      const brk = '<div class="rt-sc-brk">' +
+        '<span>🧠 ' + d.cun + '×10</span><span>🛡️ ' + d.boss + '×30</span>' +
+        '<span>🌉 ' + d.poduri + '×20</span><span>🎁 ' + d.insule + '×60</span>' +
+        '<span>💰 +' + d.bani + '</span></div>';
+      const nota = Multiplayer.conectat
+        ? '<p class="rt-mut" style="text-align:center;margin-top:8px">Cei online acum. Scorul crește citind teorie, trecând paznici 🛡️, reparând poduri 🌉 și golind insule 🎁.</p>'
+        : '<p class="rt-mut" style="text-align:center;margin-top:8px">Ești offline — vezi doar scorul tău. Intră online (🎒 → Online) ca să te compari cu ceilalți.</p>';
+      this.aratapanou(
+        this.capPanou('🏆', 'Clasament', Multiplayer.conectat ? (lista.length + ' jucători online') : 'scorul tău') +
+        '<div class="rt-panou-corp">' +
+          '<div class="rt-sc-lista">' + randuri + '</div>' +
+          '<div class="rt-inv-titlu">Scorul tău · <strong>' + d.total + '</strong></div>' + brk +
+          nota +
+        '</div>', 'rt-panou-scor');
+    },
   };
 
   /* ══════════════════════════ 16. STILURI (injectate) ═════════════════════ */
@@ -2963,8 +3106,44 @@
 .rt-av-cul.sel{border-color:var(--txt);box-shadow:0 0 0 2px var(--panel) inset}
 .rt-av-acces{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .rt-av-acc{width:42px;height:42px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);
-  font-size:1.35rem;cursor:pointer;color:var(--muted)}
+  font-size:1.35rem;cursor:pointer;color:var(--muted);transition:.12s}
+.rt-av-acc:hover{transform:translateY(-1px)}
 .rt-av-acc.sel{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,var(--bg3))}
+/* scoreboard */
+.rt-sc-lista{display:flex;flex-direction:column;gap:6px}
+.rt-sc-rand{display:grid;grid-template-columns:34px 34px 1fr auto;gap:10px;align-items:center;
+  background:var(--bg3);border:1px solid var(--border);border-radius:11px;padding:8px 12px}
+.rt-sc-rand.eu{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--bg3));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 40%,transparent)}
+.rt-sc-rang{font-size:1.2rem;text-align:center;font-weight:800}
+.rt-sc-nr{font-size:.86rem;color:var(--muted);font-weight:700}
+.rt-sc-av{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:.95rem;border:2px solid rgba(0,0,0,.28)}
+.rt-sc-nume{font-weight:700;font-size:.92rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rt-sc-scor{font-weight:900;font-size:1.05rem;color:var(--accent);font-variant-numeric:tabular-nums}
+.rt-sc-brk{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.rt-sc-brk span{font-size:.76rem;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:3px 8px}
+/* ecran complet */
+.rt-stage:fullscreen{border-radius:0;height:100%;width:100%;border:none}
+.rt-stage:-webkit-full-screen{border-radius:0;height:100%;width:100%;border:none}
+/* ——— lustruire vizuală: HUD glass + glow, panouri cu antet gradient ——— */
+.rt-btn{backdrop-filter:blur(6px);box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.rt-btn:hover{box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 30%,transparent);
+  background:color-mix(in srgb,var(--accent) 12%,var(--panel))}
+.rt-btn:active{transform:translateY(0) scale(.94)}
+.rt-btn-off{opacity:.5}
+.rt-chip{box-shadow:0 2px 8px rgba(0,0,0,.16)}
+.rt-chip-bani{color:var(--accent)}
+.rt-online{box-shadow:0 2px 8px rgba(0,0,0,.16)}
+.rt-panou{box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px color-mix(in srgb,var(--accent) 12%,transparent)}
+.rt-panou-cap{background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 9%,var(--panel)),var(--panel))}
+.rt-panou-emoji{filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
+.rt-overlay{background:rgba(0,0,0,.52);backdrop-filter:blur(5px)}
+.rt-reteta,.rt-inv-cell,.rt-sc-rand{transition:.14s}
+.rt-reteta:hover,.rt-inv-cell:hover{border-color:color-mix(in srgb,var(--accent) 40%,var(--border));transform:translateY(-1px)}
+.rt-emote-btn{background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 20%,var(--panel)),var(--panel));
+  box-shadow:0 4px 14px rgba(0,0,0,.32)}
+.rt-craft-btn,.rt-done{box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 26%,transparent)}
 @media (max-width:640px){
   .rt-minimap{width:120px;height:88px;top:50px}
   .rt-stage{height:clamp(380px,72vh,640px)}
@@ -3666,6 +3845,11 @@
 
     new MutationObserver(decide).observe(pagina, { attributes: true, attributeFilter: ['class'] });
     document.addEventListener('visibilitychange', decide);
+
+    // ecran complet: la intrare/ieșire, redimensionăm canvasul și actualizăm iconul
+    const laFullscreen = () => { UI.actualizeazaFullscreen(); if (Joc.initializat) setTimeout(redimensioneaza, 60); };
+    document.addEventListener('fullscreenchange', laFullscreen);
+    document.addEventListener('webkitfullscreenchange', laFullscreen);
 
     // tema se poate schimba oricând (postMessage din gazdă → setTheme/applyThemeVars
     // umblă la data-theme și la style-ul rădăcinii) → recitim paleta și redesenăm

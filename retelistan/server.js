@@ -33,6 +33,7 @@ const TICK_MS = 120;          // cât de des difuzăm instantaneul (dacă s-a mi
 const NR_EMOTE = 16;          // 8 emoji + 8 fraze gata făcute (vezi game.js → EMOTE)
 const NR_CULORI = 8;          // culori de avatar (game.js → AVATAR_CULORI)
 const NR_ACCES = 7;           // accesorii de avatar (game.js → AVATAR_ACCESORII)
+const MAX_SCOR = 1000000;     // plafon de siguranță pentru scorul de clasament
 
 const DIRECTII = ['jos', 'sus', 'stanga', 'dreapta'];
 
@@ -94,6 +95,7 @@ wss.on('connection', (ws, req) => {
     ws, ip, id: 0, nume: null,
     x: 0, y: 0, dir: 0, misca: false, reg: '',
     avc: 0, avh: 0,  // avatar: index de culoare + index de accesoriu
+    scor: 0,         // scorul de clasament (derivat din progresul local al clientului)
     arePoz: false,   // nu-l difuzăm până nu-și anunță prima poziție (altfel apare la (0,0))
     ultimPoz: 0, ultimEmote: 0, strikes: 0,
   };
@@ -120,6 +122,7 @@ wss.on('connection', (ws, req) => {
       stare.nume = nume;
       stare.avc = intInterval(m.c, 0, NR_CULORI - 1, 0);
       stare.avh = intInterval(m.h, 0, NR_ACCES - 1, 0);
+      stare.scor = intInterval(m.s, 0, MAX_SCOR, 0);
       jucatori.set(stare.id, stare);
       schimbat = true;
       trimite(ws, { t: 'ok', id: stare.id });
@@ -165,6 +168,14 @@ wss.on('connection', (ws, req) => {
       return;
     }
 
+    /* scor de clasament: {t:"sc", s} — reflectat în următorul instantaneu */
+    if (m.t === 'sc') {
+      if (!stare.id) return strike();
+      if (!Number.isInteger(m.s) || m.s < 0 || m.s > MAX_SCOR) return strike();
+      if (m.s !== stare.scor) { stare.scor = m.s; schimbat = true; }
+      return;
+    }
+
     strike();
     function strike() {
       if (++stare.strikes >= MAX_STRIKES) ws.terminate();
@@ -184,12 +195,12 @@ wss.on('connection', (ws, req) => {
 });
 
 /* instantaneul difuzat: compact, ca listă de tupluri
-   [id, nume, x, y, dir, misca, reg, culoareAvatar, accesoriuAvatar] */
+   [id, nume, x, y, dir, misca, reg, culoareAvatar, accesoriuAvatar, scor] */
 function instantaneu() {
   const j = [];
   for (const s of jucatori.values()) {
     if (!s.arePoz) continue; // încă n-a trimis prima poziție — nu-l arătăm la (0,0)
-    j.push([s.id, s.nume, s.x, s.y, s.dir, s.misca ? 1 : 0, s.reg, s.avc || 0, s.avh || 0]);
+    j.push([s.id, s.nume, s.x, s.y, s.dir, s.misca ? 1 : 0, s.reg, s.avc || 0, s.avh || 0, s.scor || 0]);
   }
   return { t: 's', j };
 }
