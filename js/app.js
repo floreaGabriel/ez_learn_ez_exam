@@ -266,6 +266,8 @@ function buildNav(){
     + '<div class="nav-item" data-view="videos"><span class="ico">🎬</span> Materiale Video</div>'
     + '<div class="nav-item" data-view="conquistador"><span class="ico">⚔️</span> Joacă cu prietenii</div>'
     + '<div class="nav-item" data-view="amongus"><span class="ico">🛸</span> Among Us CS</div>'
+    + '<div class="nav-item" data-view="salvate"><span class="ico">⭐</span> Probleme salvate'
+    +   '<span id="salvateBadge" style="display:none; margin-left:auto; font-size:11px; font-weight:700; color:var(--accent,#e9b143); background:color-mix(in srgb,var(--accent,#e9b143) 16%,transparent); border-radius:20px; padding:1px 8px"></span></div>'
     + '</div>';
   MATERII.forEach(function(m){
     html += '<div class="nav-subject" data-subject="'+m.id+'">';
@@ -290,6 +292,7 @@ function buildNav(){
   });
   nav.innerHTML = html;
   wireNav();
+  updateSalvateBadge();
 }
 
 function psoNavChildren(){
@@ -338,6 +341,7 @@ function wireNav(){
       else if(v==="simlab") showSimLab();
       else if(v==="psosub") showPsoSub();
       else if(v==="oopsub") showOopSub();
+      else if(v==="salvate") showSalvate();
       else if(v==="concept") showConcept(it.dataset.id);
       else if(v==="exam") showExam(it.dataset.id);
       else if(v==="examindex") showExamIndex();
@@ -399,6 +403,8 @@ function setActive(view,id,sec){
     const el = document.querySelector('.nav-item[data-view="conquistador"]'); if(el) el.classList.add("active");
   } else if(view==="amongus"){
     const el = document.querySelector('.nav-item[data-view="amongus"]'); if(el) el.classList.add("active");
+  } else if(view==="salvate"){
+    const el = document.querySelector('.nav-item[data-view="salvate"]'); if(el) el.classList.add("active");
   } else if(view==="home"){
     const el = document.querySelector('.nav-subhead[data-subject="pso"]'); if(el) el.classList.add("active");
   } else if(view==="quiz"){
@@ -585,6 +591,40 @@ function showPsoSub(sec){
     });
   }
 }
+
+// Probleme salvate (⭐) — pagină embed (salvate.html) care citește
+// localStorage 'probleme-salvate-v1'. Fără parolă: conținutul e deja decriptat
+// din momentul salvării. Per stație/browser (nu avem conturi).
+function showSalvate(){
+  setActive("salvate");
+  document.getElementById("crumb").textContent = "Personal";
+  document.getElementById("title").textContent = "⭐ Probleme salvate";
+  const c = document.getElementById("content");
+  let frame = document.getElementById("embed-frame");
+  if(frame && frame.dataset.subject==="salvate"){
+    try{ frame.contentWindow.postMessage({ type:"tab", tab:"lista" }, "*"); }
+    catch(err){ frame.src = "salvate.html"; }
+  } else {
+    c.innerHTML = '<div class="embed-wrap"><iframe id="embed-frame" class="embed-frame" '
+      + 'data-subject="salvate" src="salvate.html" title="Probleme salvate"></iframe></div>';
+    const f = document.getElementById("embed-frame");
+    f.addEventListener("load", function(){
+      try{ f.contentWindow.postMessage(frameThemeMsg(), "*"); }catch(e){}
+    });
+  }
+}
+
+// contorul de pe elementul „⭐ Probleme salvate" din bara laterală
+function updateSalvateBadge(){
+  var el = document.getElementById("salvateBadge");
+  if(!el) return;
+  var n = 0;
+  try{ n = (JSON.parse(localStorage.getItem("probleme-salvate-v1")||"[]")||[]).length; }catch(e){}
+  if(n>0){ el.textContent = n; el.style.display=""; }
+  else{ el.textContent = ""; el.style.display="none"; }
+}
+// se actualizează când o altă filă (iframe-ul de subiecte) salvează/scoate ceva
+window.addEventListener("storage", function(e){ if(e.key==="probleme-salvate-v1") updateSalvateBadge(); });
 
 // Subiectele C & C++ protejate cu parolă — pagină embed (oop/subiecte.html).
 // Conținutul e criptat AES în oop/subiecte-secret.enc.js; deblocarea are loc în pagină.

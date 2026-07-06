@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probleme salvate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+/* aplică tema salvată înainte de paint (fără flash) */
+(function(){try{
+  var m=localStorage.getItem('app-theme-mode')||'dark';
+  document.documentElement.dataset.theme=m;
+  var v=localStorage.getItem('app-theme-vars');
+  if(v){ var o=JSON.parse(v), s=document.documentElement.style; for(var k in o) s.setProperty(k,o[k]); }
+}catch(e){}})();
+</script>
+<style>
+:root{
+  --bg:#1a1714; --panel:#221e1a; --panel2:#2a2521; --topbar:#1d1916;
+  --ink:#ece3d2; --ink-soft:#d6cbb6; --muted:#a8997f; --line:#352f28; --line2:#403930;
+  --accent:#e9b143; --accent-2:#d8843f; --blue:#83a598; --green:#b8bb26; --red:#fb4934;
+  --purple:#d3869b; --aqua:#8ec07c; --code-bg:#14110d;
+  --mono:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+html[data-theme="light"]{
+  --bg:#f3ecdd; --panel:#fbf6ea; --panel2:#f1e8d6; --topbar:#f7f1e3;
+  --ink:#2a2118; --ink-soft:#4a3f30; --muted:#8a7a5f; --line:#ddd0b8; --line2:#cdbf9f;
+  --accent:#bf8b1d; --accent-2:#c46a2a; --blue:#076678; --green:#79740e; --red:#c23a2e;
+  --purple:#8f3f71; --aqua:#427b58; --code-bg:#efe6d2;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans); color:var(--ink); background:var(--bg); line-height:1.6; font-size:15px; -webkit-font-smoothing:antialiased}
+.wrap{max-width:980px; margin:0 auto; padding:24px 30px 120px}
+.bar{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; padding-bottom:14px; border-bottom:1px solid var(--line)}
+.brand{font-size:21px; font-weight:700; letter-spacing:.3px; color:var(--ink)}
+.brand span{color:var(--muted); font-weight:500}
+.bar .sub{color:var(--muted); font-size:13px}
+.bar .act{margin-left:auto; display:flex; gap:8px}
+.bar .mini{appearance:none; cursor:pointer; font-family:var(--sans); font-size:12px; color:var(--muted);
+  background:transparent; border:1px solid var(--line2); border-radius:7px; padding:4px 10px; white-space:nowrap}
+.bar .mini:hover{color:var(--red); border-color:var(--red)}
+.page{animation:fade .25s ease}
+@keyframes fade{from{opacity:0; transform:translateY(5px)}to{opacity:1; transform:none}}
+.muted{color:var(--muted)}
+code{font-family:var(--mono); font-size:.9em; background:var(--panel2); padding:1px 5px; border-radius:4px; color:var(--ink-soft)}
+h2.pagetitle{font-size:19px; margin:18px 0 4px}
+.lead{color:var(--muted); font-size:13.5px; margin:2px 0 18px; max-width:82ch}
+.grup{font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; margin:22px 0 10px; font-weight:600}
+
+.btn{appearance:none; font-family:var(--sans); font-size:13.5px; font-weight:600; cursor:pointer;
+  border:1px solid var(--accent); background:var(--accent); color:var(--bg); padding:9px 16px; border-radius:8px}
+.btn:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent; color:var(--ink-soft); border-color:var(--line2)}
+.btn.ghost:hover{border-color:var(--accent); color:var(--ink)}
+.btn.ghost.saved{border-color:var(--accent); color:var(--accent); background:color-mix(in srgb, var(--accent) 10%, transparent)}
+.btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+
+/* ---- lista de carduri salvate ---- */
+.vgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px}
+.scard{position:relative; text-align:left; cursor:pointer; background:var(--panel);
+  border:1px solid var(--line2); border-radius:12px; padding:15px 16px; display:flex; flex-direction:column; gap:7px;
+  transition:transform .16s ease, border-color .16s ease}
+.scard:hover{transform:translateY(-3px); border-color:var(--accent)}
+.scard-top{display:flex; align-items:center; justify-content:space-between; gap:8px}
+.scard .num{font-family:var(--mono); font-size:11px; font-weight:700; color:var(--accent)}
+.scard .src{font-family:var(--sans); font-size:10px; font-weight:700; color:var(--blue);
+  background:color-mix(in srgb, var(--blue) 14%, transparent); border:1px solid color-mix(in srgb, var(--blue) 40%, transparent);
+  border-radius:5px; padding:1px 7px; margin-left:6px}
+.scard h3{font-size:14.5px; color:var(--ink); font-weight:700; line-height:1.35}
+.scard p{font-size:12.5px; color:var(--muted); line-height:1.5; margin:0}
+.scard .rm{appearance:none; cursor:pointer; border:1px solid var(--line2); background:transparent; color:var(--muted);
+  width:24px; height:24px; border-radius:6px; font-size:12px; flex:none}
+.scard .rm:hover{color:var(--red); border-color:var(--red)}
+
+/* ---- gol ---- */
+.empty{max-width:520px; margin:8vh auto 0; text-align:center}
+.empty .ico{font-size:44px}
+.empty h2{font-size:19px; margin:12px 0 6px}
+.empty p{font-size:13.5px; color:var(--muted); margin:6px 0; line-height:1.7}
+.empty .how{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 18px; text-align:left; margin-top:18px}
+.empty .how b{color:var(--ink)}
+
+/* ---- articolul (problema) ---- */
+.article{background:var(--panel); border:1px solid var(--line); padding:26px 30px; border-radius:14px; margin-top:14px}
+.article h2{font-size:20px; margin:0 0 14px; padding-bottom:8px; border-bottom:2px solid var(--line); color:var(--accent); font-weight:700}
+.article p{margin:11px 0; color:var(--ink-soft); font-size:14px; line-height:1.65}
+.article ol{margin:11px 0 11px 24px}
+.article li{margin:7px 0; color:var(--ink-soft); font-size:14px; line-height:1.6}
+.article b{color:var(--ink); font-weight:600}
+.subiect-pts{float:right; font-size:12px; color:var(--accent); background:var(--panel2); padding:2px 11px; border-radius:6px; font-weight:600; letter-spacing:.3px}
+.subq{margin:14px 0 6px; font-weight:600; color:var(--ink)}
+pre.code{font-family:var(--mono); font-size:12.8px; line-height:1.55; background:var(--code-bg); color:var(--ink-soft);
+  border:1px solid var(--line); border-radius:10px; padding:14px 16px; overflow:auto; white-space:pre; tab-size:4; margin:12px 0}
+.tok-key{color:var(--accent); font-weight:600}
+.tok-fn{color:var(--blue)}
+.tok-str{color:var(--green)}
+.tok-com{color:var(--muted); font-style:italic}
+.tok-num{color:var(--purple)}
+.tok-pre{color:var(--aqua)}
+details.rezolvare{margin:16px 0 8px; border:1px solid var(--line2); border-radius:11px; background:var(--panel2); overflow:hidden}
+details.rezolvare>summary{cursor:pointer; padding:12px 16px; font-weight:600; color:var(--accent); font-size:14px; list-style:none; user-select:none}
+details.rezolvare>summary::-webkit-details-marker{display:none}
+details.rezolvare>summary::before{content:"▸  "; font-size:11px}
+details.rezolvare[open]>summary::before{content:"▾  "}
+details.rezolvare[open]>summary{border-bottom:1px solid var(--line)}
+details.rezolvare>summary:hover{color:var(--accent-2)}
+.rez-body{padding:6px 18px 16px; color:var(--ink-soft); font-size:14px}
+.rez-body h4{color:var(--ink); margin:14px 0 6px; font-size:14.5px}
+.rez-body h4:first-child{margin-top:6px}
+.rez-body p{font-size:13.5px}
+.barem{font-size:12.5px; color:var(--muted); margin-top:10px; border-top:1px dashed var(--line2); padding-top:8px}
+table.tbl{width:100%; border-collapse:collapse; font-size:12.5px; margin:8px 0}
+.tbl th{text-align:left; color:var(--muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.4px; padding:5px 8px; border-bottom:1px solid var(--line)}
+.tbl td{padding:5px 8px; border-bottom:1px solid var(--line); vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+@media(max-width:680px){
+  .wrap{padding:18px 14px 90px}
+  .article{padding:18px 14px}
+  .subiect-pts{float:none; display:inline-block; margin:6px 0 0}
+  .tbl{display:block; overflow-x:auto; white-space:nowrap}
+}
+@media(prefers-reduced-motion:reduce){ .page{animation:none} .scard{transition:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <div class="brand">⭐ <span>Probleme salvate</span></div>
+    <div class="sub">problemele tale marcate din PSO și C &amp; C++ — exersează-le oricând</div>
+    <div class="act" id="actiuni" style="display:none">
+      <button class="mini" id="btnClear">Golește tot</button>
+    </div>
+  </header>
+  <div id="content"></div>
+</div>
+
+<script>
+"use strict";
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+/* --- highlight C/C++ (identic cu paginile de subiecte) --- */
+var C_KW = ["int","char","void","bool","const","static","struct","class","public","private","protected",
+"return","if","else","for","while","do","unsigned","signed","long","short","float","double","new","delete",
+"virtual","switch","case","break","continue","default","sizeof","typedef","union","enum","goto","extern",
+"volatile","true","false","NULL","nullptr","size_t","ssize_t","pid_t","pthread_t","sem_t","pthread_mutex_t",
+"off_t","mode_t","sig_atomic_t","namespace","using","template","typename","this","operator","friend","inline"];
+function highlightC(text){
+  var store=[];
+  function hold(cls,val){ store.push('<span class="'+cls+'">'+esc(val)+'</span>'); return String.fromCharCode(0xE000+store.length-1); }
+  var s=text;
+  s=s.replace(/\/\*[\s\S]*?\*\//g, function(m){ return hold("tok-com",m); });
+  s=s.replace(/\/\/[^\n]*/g,        function(m){ return hold("tok-com",m); });
+  s=s.replace(/"(?:[^"\\]|\\.)*"/g, function(m){ return hold("tok-str",m); });
+  s=s.replace(/'(?:[^'\\]|\\.)*'/g, function(m){ return hold("tok-str",m); });
+  s=s.replace(/^\s*#[^\n]*/gm,      function(m){ return hold("tok-pre",m); });
+  s=esc(s);
+  s=s.replace(/([A-Za-z_]\w*)([ \t]*\()?|0x[0-9A-Fa-f]+|\b\d+\b/g, function(m, ident, paren){
+    if(ident===undefined) return '<span class="tok-num">'+m+'</span>';
+    if(C_KW.indexOf(ident)>=0) return '<span class="tok-key">'+ident+'</span>'+(paren||"");
+    if(paren) return '<span class="tok-fn">'+ident+'</span>'+paren;
+    return ident;
+  });
+  s=s.replace(/[-]/g, function(ch){ return store[ch.charCodeAt(0)-0xE000]; });
+  return s;
+}
+function applyHighlight(root){
+  root.querySelectorAll("pre.code").forEach(function(pre){
+    if(pre.dataset.hl) return;
+    pre.dataset.hl="1";
+    pre.innerHTML=highlightC(pre.textContent);
+  });
+}
+
+/* --- magazia de probleme salvate (localStorage, comun cu paginile de subiecte) --- */
+var SAVE_KEY="probleme-salvate-v1";
+function getSalvate(){ try{ return JSON.parse(localStorage.getItem(SAVE_KEY)||"[]"); }catch(e){ return []; } }
+function setSalvate(a){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(a)); }catch(e){} }
+function scoate(key){ setSalvate(getSalvate().filter(function(x){ return x.key!==key; })); }
+
+function q(id){ return document.getElementById(id); }
+
+function renderEmpty(){
+  q("actiuni").style.display="none";
+  q("content").innerHTML=''
+    +'<div class="page empty">'
+    +'<div class="ico">⭐</div>'
+    +'<h2>Nicio problemă salvată încă</h2>'
+    +'<p>Aici ajung problemele pe care le marchezi ca fiind mai tricky, ca să le poți reexersa oricând — fără parolă.</p>'
+    +'<div class="how">'
+    +'<p><b>Cum salvezi o problemă:</b></p>'
+    +'<p>1. Deschide <b>PSO → 🔐 Subiecte examen</b> sau <b>OOP C++ → 🔐 Subiecte examen</b>.</p>'
+    +'<p>2. Intră într-o variantă și apasă <b>☆ Salvează problema</b>.</p>'
+    +'<p>3. Revino aici — toate problemele salvate stau într-un singur loc.</p>'
+    +'</div>'
+    +'</div>';
+}
+
+function renderLista(){
+  var lista=getSalvate();
+  if(!lista.length){ renderEmpty(); return; }
+  q("actiuni").style.display="";
+  var grupuri={};
+  lista.forEach(function(x){ (grupuri[x.sursaNume||x.source]=grupuri[x.sursaNume||x.source]||[]).push(x); });
+  var html='<div class="page"><h2 class="pagetitle">Problemele tale salvate</h2>'
+    +'<p class="lead">'+lista.length+' '+(lista.length===1?"problemă salvată":"probleme salvate")
+    +' din PSO și C &amp; C++. Click pe un card ca s-o deschizi și s-o reexersezi; ✕ o scoate din listă. '
+    +'Totul e stocat doar în browserul acestei stații.</p>';
+  Object.keys(grupuri).forEach(function(g){
+    html+='<h3 class="grup">'+esc(g)+'</h3><div class="vgrid">';
+    grupuri[g].forEach(function(x){
+      html+='<div class="scard" data-k="'+esc(x.key)+'">'
+        +'<div class="scard-top"><span class="num">'+esc((x.navTitlu||"").toUpperCase())
+          +'<span class="src">'+esc(x.sursaNume||x.source)+'</span></span>'
+          +'<button class="rm" data-rm="'+esc(x.key)+'" title="Scoate din salvate">✕</button></div>'
+        +'<h3>'+esc((x.titlu||"").replace(/^Varianta \d+ — /,""))+'</h3>'
+        +'<p>'+esc(x.rezumat||"")+'</p>'
+        +'</div>';
+    });
+    html+='</div>';
+  });
+  html+='</div>';
+  q("content").innerHTML=html;
+  q("content").querySelectorAll(".rm").forEach(function(b){
+    b.onclick=function(e){ e.stopPropagation(); scoate(b.dataset.rm); renderLista(); };
+  });
+  q("content").querySelectorAll(".scard").forEach(function(card){
+    card.onclick=function(){ location.hash="p/"+encodeURIComponent(card.dataset.k); };
+  });
+}
+
+function renderProblema(key){
+  var lista=getSalvate(), idx=-1;
+  lista.forEach(function(x,i){ if(x.key===key) idx=i; });
+  if(idx<0){ location.hash="lista"; return; }
+  var x=lista[idx], prev=lista[idx-1], next=lista[idx+1];
+  q("actiuni").style.display="";
+  var nav='<div class="btn-row" style="justify-content:space-between; margin-top:22px">'
+    +(prev?'<button class="btn ghost" data-go="p/'+encodeURIComponent(prev.key)+'">← '+esc(prev.navTitlu||"Anterioara")+'</button>':'<span></span>')
+    +(next?'<button class="btn" data-go="p/'+encodeURIComponent(next.key)+'">'+esc(next.navTitlu||"Următoarea")+' →</button>'
+          :'<button class="btn ghost" data-go="lista">↩ Toate salvate</button>')
+    +'</div>';
+  q("content").innerHTML='<div class="page">'
+    +'<div class="btn-row" style="margin-top:14px">'
+      +'<button class="btn ghost" data-go="lista">← Toate salvate</button>'
+      +'<button class="btn ghost saved" id="btnScoate">★ Scoate din salvate</button>'
+    +'</div>'
+    +'<article class="article">'+x.html+'</article>'
+    +nav+'</div>';
+  applyHighlight(q("content"));
+  q("content").querySelectorAll("[data-go]").forEach(function(b){
+    b.onclick=function(){ location.hash=b.dataset.go; };
+  });
+  q("btnScoate").onclick=function(){ scoate(key); location.hash="lista"; };
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* ---------- rutare ---------- */
+function routeFromHash(){
+  var t=(location.hash||"").replace(/^#/,"");
+  var m=t.match(/^p\/(.+)$/);
+  if(m){ renderProblema(decodeURIComponent(m[1])); }
+  else renderLista();
+}
+window.addEventListener("hashchange", routeFromHash);
+/* dacă se salvează/scoate ceva din altă filă a aceleiași origini, reîmprospătăm */
+window.addEventListener("storage", function(e){ if(e.key===SAVE_KEY) routeFromHash(); });
+
+function activateTab(tab){
+  var target=(tab && tab!=="lista" && /^p\//.test(tab))?tab:"lista";
+  if(("#"+target)===location.hash) routeFromHash();
+  else location.hash=target;
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  q("btnClear").onclick=function(){
+    if(!getSalvate().length) return;
+    if(confirm("Ștergi toate problemele salvate de pe această stație?")){ setSalvate([]); routeFromHash(); }
+  };
+  routeFromHash();
+});
+
+/* ---------- temă (contract cu aplicația-gazdă) ---------- */
+function setTheme(t){ document.documentElement.dataset.theme=t; try{ localStorage.setItem("app-theme-mode",t); }catch(e){} }
+function applyThemeVars(v){
+  var ds=document.documentElement.style,
+      K=["--bg","--bg2","--bg3","--sidebar","--panel","--panel2","--topbar","--ink","--ink-soft","--txt","--muted",
+         "--line","--line2","--border","--accent","--accent-2","--accent2","--green","--good","--red","--bad",
+         "--blue","--purple","--aqua","--warn","--code-bg","--code-ink","--on-accent"];
+  K.forEach(function(k){ ds.removeProperty(k); });
+  if(v){ for(var k in v){ ds.setProperty(k, v[k]); } }
+}
+window.addEventListener("message", function(e){
+  var d=e.data||{};
+  if(d.type==="theme" && d.theme){ setTheme(d.theme); applyThemeVars(d.vars); }
+  else if(d.type==="tab" && d.tab) activateTab(d.tab);
+});
+</script>
+</body>
+</html>
