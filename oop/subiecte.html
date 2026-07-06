@@ -75,6 +75,8 @@ code{font-family:var(--mono); font-size:.9em; background:var(--panel2); padding:
 .btn.ghost:hover{border-color:var(--accent); color:var(--ink)}
 .btn.ghost.saved{border-color:var(--accent); color:var(--accent); background:color-mix(in srgb, var(--accent) 10%, transparent)}
 .pin-badge{font-family:var(--sans); font-size:10px; font-weight:700; color:var(--accent); background:color-mix(in srgb, var(--accent) 14%, transparent); border:1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius:5px; padding:1px 6px; margin-left:6px; letter-spacing:0}
+.ex-tools{margin:2px 0 8px}
+.btn.ex-save{font-size:12px; padding:5px 12px}
 .btn:disabled{opacity:.5; cursor:default}
 .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
 
@@ -227,18 +229,22 @@ function uitaParola(){ try{ localStorage.removeItem(PASSKEY); }catch(e){} }
 
 /* ---------- probleme salvate (pin) — cheie comună tuturor materiilor ----------
    Se salvează în localStorage (per browser/stație — nu avem conturi). Reținem
-   conținutul deja decriptat, ca fila „⭐ Probleme salvate" să nu ceară parola.  */
+   conținutul deja decriptat, ca fila „⭐ Probleme salvate" să nu ceară parola.
+   La C/C++ o variantă are MAI MULTE exerciții → salvăm exercițiul specific,
+   cu cheia "oop:<varianta>#<nrExercitiu>".                                    */
 var SOURCE="oop", SURSA_NUME="C & C++", SAVE_KEY="probleme-salvate-v1";
 function getSalvate(){ try{ return JSON.parse(localStorage.getItem(SAVE_KEY)||"[]"); }catch(e){ return []; } }
 function setSalvate(a){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(a)); }catch(e){} }
-function esteSalvat(id){ var k=SOURCE+":"+id; return getSalvate().some(function(x){ return x.key===k; }); }
-function comutaSalvat(v){
-  var k=SOURCE+":"+v.id, a=getSalvate(), i=-1;
-  a.forEach(function(x,j){ if(x.key===k) i=j; });
+function esteSalvatKey(key){ return getSalvate().some(function(x){ return x.key===key; }); }
+function nrSalvateVarianta(vid){
+  var p=SOURCE+":"+vid+"#";
+  return getSalvate().filter(function(x){ return x.key.indexOf(p)===0; }).length;
+}
+function comutaSalvatItem(item){
+  var a=getSalvate(), i=-1;
+  a.forEach(function(x,j){ if(x.key===item.key) i=j; });
   if(i>=0){ a.splice(i,1); setSalvate(a); return false; }
-  a.push({ key:k, source:SOURCE, sursaNume:SURSA_NUME, id:v.id, navTitlu:v.navTitlu,
-    titlu:v.titlu, rezumat:v.rezumat, html:v.html, savedAt:Date.now() });
-  setSalvate(a); return true;
+  a.push(item); setSalvate(a); return true;
 }
 
 /* ---------- vederi ---------- */
@@ -293,8 +299,9 @@ function incearca(parola, tineMinte, dinSalvat){
 }
 
 function cardVarianta(v){
+  var n=nrSalvateVarianta(v.id);
   return '<button class="vcard" data-v="'+esc(v.id)+'">'
-    +'<span class="num">'+esc(v.navTitlu).toUpperCase()+(esteSalvat(v.id)?' <span class="pin-badge">★ salvat</span>':'')+'</span>'
+    +'<span class="num">'+esc(v.navTitlu).toUpperCase()+(n?' <span class="pin-badge">★ '+n+' salvat'+(n>1?'e':'')+'</span>':'')+'</span>'
     +'<h3>'+esc(v.titlu.replace(/^Varianta \d+ — /,""))+'</h3>'
     +'<p>'+esc(v.rezumat)+'</p>'
     +'</button>';
@@ -338,23 +345,49 @@ function renderVarianta(id){
   c.innerHTML='<div class="page">'
     +'<div class="btn-row" style="margin-top:14px">'
       +'<button class="btn ghost" data-go="lista">← Toate variantele</button>'
-      +'<button class="btn ghost pin" id="btnSalveaza"></button>'
     +'</div>'
-    +'<article class="article">'+v.html+'</article>'
+    +'<article class="article" id="artic"></article>'
     +nav+'</div>';
+  var art=q("artic");
+  art.innerHTML=v.html;
+  adaugaSalvarePeExercitii(art, v);
   applyHighlight(c);
   c.querySelectorAll("[data-go]").forEach(function(b){
     b.onclick=function(){ location.hash=b.dataset.go; };
   });
-  var bs=q("btnSalveaza");
-  function refreshSave(){
-    var on=esteSalvat(v.id);
-    bs.innerHTML=on?"★ Salvat — scoate din salvate":"☆ Salvează problema";
-    bs.classList.toggle("saved", on);
-  }
-  refreshSave();
-  bs.onclick=function(){ comutaSalvat(v); refreshSave(); };
   window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* împarte varianta în exerciții (delimitate de <p class="subq">) și pune un
+   buton „☆ salvează exercițiul" la fiecare — salvăm exact acel exercițiu. */
+function adaugaSalvarePeExercitii(art, v){
+  var kids=[].slice.call(art.children);
+  var starts=[];
+  kids.forEach(function(n,i){ if(n.classList && n.classList.contains("subq")) starts.push(i); });
+  starts.forEach(function(s, si){
+    var end=(si+1<starts.length)?starts[si+1]:kids.length;
+    var bloc=kids.slice(s, end);
+    var subq=kids[s];
+    var titlu=subq.textContent.trim();
+    var exId=(titlu.match(/Exerci[țt]iul\s+(\d+)/i)||[])[1]||String(si+1);
+    var exHtml=bloc.map(function(n){ return n.outerHTML; }).join("");
+    var li=null;
+    bloc.forEach(function(n){ if(!li && n.querySelector) li=n.querySelector("ol li"); });
+    var rezumat=li?li.textContent.trim().slice(0,120):"";
+    var key=SOURCE+":"+v.id+"#"+exId;
+    var item={ key:key, source:SOURCE, sursaNume:SURSA_NUME, id:v.id+"#"+exId,
+      navTitlu:v.navTitlu+" · Ex "+exId, titlu:titlu, rezumat:rezumat,
+      html:'<p class="muted" style="margin:0 0 10px">din <b>'+esc(v.titlu)+'</b></p>'+exHtml, savedAt:Date.now() };
+    var tools=document.createElement("div");
+    tools.className="ex-tools";
+    var b=document.createElement("button");
+    b.className="btn ghost pin ex-save";
+    tools.appendChild(b);
+    subq.parentNode.insertBefore(tools, subq.nextSibling);
+    function refresh(){ var on=esteSalvatKey(key); b.innerHTML=on?"★ salvat — scoate":"☆ salvează exercițiul"; b.classList.toggle("saved", on); }
+    refresh();
+    b.onclick=function(){ item.savedAt=Date.now(); comutaSalvatItem(item); refresh(); };
+  });
 }
 
 /* ---------- rutare ---------- */
