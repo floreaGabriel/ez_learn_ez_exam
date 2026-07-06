@@ -20,6 +20,7 @@ jobs:
       sqlrunner:    ${{ steps.filter.outputs.sqlrunner }}
       conquistador: ${{ steps.filter.outputs.conquistador }}
       amongus:      ${{ steps.filter.outputs.amongus }}
+      retelistan:   ${{ steps.filter.outputs.retelistan }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -50,11 +51,12 @@ jobs:
           grep -qE '^sqlrunner/'    <<< "$FILES" && sqlrunner=true    || sqlrunner=false
           grep -qE '^conquistador/' <<< "$FILES" && conquistador=true || conquistador=false
           grep -qE '^amongus/'      <<< "$FILES" && amongus=true      || amongus=false
+          grep -qE '^retelistan/'   <<< "$FILES" && retelistan=true   || retelistan=false
 
           # Site static (context "."): se reface la ORICE modificare care NU e
           # exclusiv în directoarele de backend (acelea sunt excluse din
           # imaginea statică prin .dockerignore). Mai sigur: rebuild dacă e dubiu.
-          grep -qvE '^(counter|sqlrunner|conquistador|amongus)/' <<< "$FILES" && site=true || site=false
+          grep -qvE '^(counter|sqlrunner|conquistador|amongus|retelistan)/' <<< "$FILES" && site=true || site=false
 
           {
             echo "site=$site"
@@ -62,9 +64,10 @@ jobs:
             echo "sqlrunner=$sqlrunner"
             echo "conquistador=$conquistador"
             echo "amongus=$amongus"
+            echo "retelistan=$retelistan"
           } >> "$GITHUB_OUTPUT"
 
-          echo "Rezultat => site=$site counter=$counter sqlrunner=$sqlrunner conquistador=$conquistador amongus=$amongus"
+          echo "Rezultat => site=$site counter=$counter sqlrunner=$sqlrunner conquistador=$conquistador amongus=$amongus retelistan=$retelistan"
 
   # ── Pas 2: build & push — fiecare imagine doar dacă flag-ul ei e true ───────
   build-and-push:
@@ -156,3 +159,15 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_amongus:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_amongus:${{ github.sha }}
+
+      - name: Build and push image (retelistan — prezență online Rețelistan)
+        if: needs.changes.outputs.retelistan == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: ./retelistan
+          file: ./retelistan/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_retelistan:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_retelistan:${{ github.sha }}

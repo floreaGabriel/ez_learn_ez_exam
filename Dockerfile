@@ -39,6 +39,9 @@ RUN sed -i -E "s|(src=\"subiecte-secret[^\"]*)\"|\1?v=${ASSET_VER}\"|g" /usr/sha
 # rămână 7 zile pe versiunea veche după un deploy.
 # Delimitatorul e „#”, NU „|”: pattern-ul conține alternanțe cu | și ar rupe comanda.
 RUN sed -i -E "s#(src=\"(teorie|jocuri|exercitii)\.js)\"#\1?v=${ASSET_VER}\"#g" /usr/share/nginx/html/oop/index.html
+# ... și jocul Rețelistan (retele/harta/theory.js + game.js), din același motiv
+# (retele/index.html e no-cache, deci referințele versionate ajung imediat la useri).
+RUN sed -i -E "s|(src=\"harta/[^\"]*)\"|\1?v=${ASSET_VER}\"|g" /usr/share/nginx/html/retele/index.html
 
 EXPOSE 80
 

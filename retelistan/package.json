@@ -1,0 +1,13 @@
+{
+  "name": "retelistan-presence",
+  "version": "1.0.0",
+  "description": "Rețelistan — server de prezență online (WebSocket): jucătorii se văd unii pe alții pe hartă",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

@@ -15,6 +15,7 @@ counter/
 sqlrunner/
 conquistador/
 amongus/
+retelistan/
 sql/db/
 deploy/
 docker-compose.yaml

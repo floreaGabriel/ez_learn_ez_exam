@@ -622,6 +622,7 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
     <div class="brand"><span class="dot"></span> Headere de Rețea</div>
     <nav class="tabs" id="tabs">
       <button data-tab="ref" class="active">📘 Învață</button>
+      <button data-tab="harta">🎮 Rețelistan</button>
       <button data-tab="osi">📚 OSI &amp; TCP/IP</button>
       <button data-tab="porturi">🔌 Porturi &amp; servicii</button>
       <button data-tab="anatomy">🧬 Anatomie pe biți</button>
@@ -650,6 +651,14 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
     </div>
     <div class="card" id="refCard"></div>
     <div class="card" id="refFlows"></div>
+  </section>
+
+  <!-- ============ REȚELISTAN (lume 2D explorabilă de teorie) ============ -->
+  <section class="page" id="page-harta">
+    <h1>Rețelistan 🗺️</h1>
+    <p class="lead">Toată teoria din cursuri, ca o <b>lume explorabilă</b>: plimbă-te prin regiuni (fiecare = un curs), deschide punctele de interes și colecționează <b>fapte-cheie</b>. Teoria se dezvăluie în straturi: rezumat → explicație → diagramă → <b>💡 de examen</b>. Drumul prin hartă urmează drumul unui pachet prin stiva de rețea.</p>
+    <!-- game.js construiește aici scena (HUD, minimap, panouri) în jurul canvas-ului -->
+    <canvas id="worldCanvas"></canvas>
   </section>
 
   <!-- ============ OSI / TCP-IP ============ -->
@@ -6089,5 +6098,8 @@ window.addEventListener('message', function(e){
   else if(d.type==='tab' && d.tab) activateTab(d.tab);
 });
 </script>
+<!-- Rețelistan: conținutul de teorie (date) + motorul jocului — vezi harta/README.md -->
+<script src="harta/theory.js"></script>
+<script src="harta/game.js"></script>
 </body>
 </html>
