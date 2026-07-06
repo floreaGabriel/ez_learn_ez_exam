@@ -96,8 +96,11 @@ nu vede niciodată text arbitrar (fără moderare, fără injecții).
 
 Din **🎒 → 🎨** (sau din modalul de nume 🌐) îți alegi **avatarul**: una din 8
 culori + un accesoriu (🎓🧢👑🎩🌸⭐). Se salvează separat de progres
-(`localStorage: retelistan-avatar`) și se vede la toți cei online. Tot de acolo ai
-și **logout** („🚪 Ieși offline") — te deconectează și uită numele salvat.
+(`localStorage: retelistan-avatar`) și se vede la toți cei online.
+
+Din **🎒 Inventar → secțiunea „Online"** (sau din modalul de nume 🌐) ai statusul
+online, „intră online / schimbă numele" și **logout** („🚪 Ieși offline") —
+te deconectează și uită numele salvat.
 
 ## Cum adaug conținut nou (fără să ating motorul)
 

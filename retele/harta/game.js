@@ -2627,8 +2627,21 @@
         : '<p class="rt-mut">Încă n-ai făurit nimic. Adună materiale și mergi la bancul de lucru 🛠️ din sat.</p>';
       const cun = Progres.date.fapte.length;
       const av = Multiplayer.avatar;
+      // secțiunea Online: status + intră/schimbă nume + logout (doar dacă online e posibil)
+      const areNume = !!Multiplayer.numeSalvat();
+      const online = Multiplayer.poateOnline()
+        ? '<div class="rt-inv-titlu">Online</div>' +
+          '<div class="rt-inv-online">' +
+            '<p class="rt-mut">' + (Multiplayer.conectat
+              ? '🟢 Ești online ca <strong>' + esc(Multiplayer.nume) + '</strong>'
+              : '⚪ Ești offline') + '</p>' +
+            '<button class="rt-btn-sec" id="rtInvNume">🌐 ' + (Multiplayer.conectat ? 'Schimbă numele' : 'Intră online') + '</button>' +
+            ((Multiplayer.conectat || areNume)
+              ? '<button class="rt-btn-sec rt-danger" id="rtInvLogout">🚪 Ieși offline (logout)</button>' : '') +
+          '</div>'
+        : '';
       this.aratapanou(
-        this.capPanou('🎒', 'Inventarul tău', 'materiale, unelte și cunoștințe') +
+        this.capPanou('🎒', 'Inventarul tău', 'materiale, unelte, cunoștințe, avatar și cont') +
         '<div class="rt-panou-corp">' +
           '<p class="rt-shop-bani">💰 <strong>' + (Progres.date.bani || 0) + '</strong> bani · 🧠 <strong>' + cun + '/' + Joc.totalPuncte + '</strong> cunoștințe dobândite</p>' +
           '<div class="rt-inv-titlu">Materiale</div>' +
@@ -2640,9 +2653,21 @@
             '<div class="rt-av-preview" style="background:hsl(' + AVATAR_CULORI[av.c] + ',60%,52%)"><span>' + (AVATAR_ACCESORII[av.h] || '') + '</span></div>' +
             '<button class="rt-btn-sec" id="rtInvAvatar">🎨 Personalizează avatarul</button>' +
           '</div>' +
+          online +
         '</div>', 'rt-panou-inventar');
       const b = this.overlay.querySelector('#rtInvAvatar');
       if (b) b.onclick = () => this.deschideAvatar(() => this.deschideInventar());
+      const bn = this.overlay.querySelector('#rtInvNume');
+      if (bn) bn.onclick = () => this.deschideNume(() => {
+        if (Multiplayer.conectat) { Multiplayer.deconecteaza(); Multiplayer.conecteaza(); }
+        else { Multiplayer.intrebat = false; Multiplayer.conecteaza(); }
+      });
+      const bl = this.overlay.querySelector('#rtInvLogout');
+      if (bl) bl.onclick = () => {
+        Multiplayer.logout();
+        this.toast('🚪 Ai ieșit offline. Nu te mai vede nimeni pe hartă.');
+        this.deschideInventar();
+      };
     },
 
     /* ── personalizarea avatarului (culoare + accesoriu) ── */
@@ -2925,6 +2950,9 @@
 .rt-inv-nr{font-weight:800;font-size:1.05rem;margin-top:2px}
 .rt-inv-nume{color:var(--muted);font-size:.72rem}
 .rt-inv-avatar{display:flex;align-items:center;gap:14px;margin-top:6px}
+.rt-inv-online{display:flex;flex-direction:column;gap:8px}
+.rt-inv-online p{margin:0 0 2px}
+.rt-inv-online .rt-btn-sec{width:100%;text-align:center}
 .rt-av-preview{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
   font-size:1.5rem;border:2px solid rgba(0,0,0,.3);flex:0 0 auto}
 /* avatar */
