@@ -627,6 +627,7 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
       <button data-tab="porturi">🔌 Porturi &amp; servicii</button>
       <button data-tab="anatomy">🧬 Anatomie pe biți</button>
       <button data-tab="journey">🎬 Călătoria pachetului</button>
+      <button data-tab="ipclase">🏷️ Clase &amp; adrese IP</button>
       <button data-tab="subnet">🧮 Subnetizare</button>
       <button data-tab="drag">🧲 Trage câmpul</button>
       <button data-tab="tryhard">🛠️ Trage câmpul TRYHARD</button>
@@ -3511,6 +3512,94 @@ C0 A8 01 0A  C0 A8 01 01</pre>
     <p class="lead"><b>Cum citești fiecare problemă:</b> întâi doar <i>Enunțul</i> + topologia, încearcă singur pe ciornă, apoi dezvăluie <i>Rezolvarea</i> pas cu pas. Reflexele de examen se formează doar dacă încerci înainte să te uiți la soluție.</p>
     <div id="subnetPracticeBody"></div>
   </section>
+
+  <!-- ============ CLASE & ADRESE IP ============ -->
+  <section class="page" id="page-ipclase">
+    <style>
+    /* stiluri locale ale secțiunii (prefix .ipc- ca să nu se ciocnească) */
+    .ipc-calc{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;margin:14px 0;box-shadow:var(--shadow)}
+    .ipc-in{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .ipc-in input{font-family:"JetBrains Mono",monospace;font-size:1.15rem;font-weight:700;letter-spacing:.5px;
+      padding:10px 14px;background:var(--bg3);color:var(--ink,var(--txt));border:2px solid var(--border);border-radius:10px;width:210px}
+    .ipc-in input:focus{outline:none;border-color:var(--accent)}
+    .ipc-in input.bad{border-color:var(--bad,var(--red))}
+    .ipc-ex{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 0}
+    .ipc-ex button{font-family:"JetBrains Mono",monospace;font-size:.78rem;cursor:pointer;background:var(--bg3);
+      border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:4px 9px}
+    .ipc-ex button:hover{border-color:var(--accent);color:var(--accent)}
+    .ipc-bits{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+    .ipc-oct{display:flex;flex-direction:column;align-items:center;gap:4px}
+    .ipc-oct .dec{font-weight:800;font-size:1.05rem}
+    .ipc-oct .bin{display:flex;gap:2px}
+    .ipc-bit{font-family:"JetBrains Mono",monospace;font-size:.9rem;width:20px;height:26px;display:flex;align-items:center;
+      justify-content:center;border-radius:5px;background:var(--bg3);border:1px solid var(--border)}
+    .ipc-bit.pref{background:color-mix(in srgb,var(--accent) 26%,transparent);border-color:var(--accent);font-weight:800}
+    .ipc-oct .lbl{font-size:.68rem;color:var(--muted)}
+    .ipc-grid{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin-top:12px;font-size:.92rem}
+    .ipc-grid .k{color:var(--muted)}
+    .ipc-grid .v{font-weight:600}
+    .ipc-tag{display:inline-block;font-weight:800;font-size:.8rem;padding:3px 11px;border-radius:20px;
+      border:1px solid var(--border)}
+    .ipc-tag.A{background:color-mix(in srgb,var(--blue) 20%,transparent);border-color:var(--blue)}
+    .ipc-tag.B{background:color-mix(in srgb,var(--green,var(--good)) 20%,transparent);border-color:var(--green,var(--good))}
+    .ipc-tag.C{background:color-mix(in srgb,var(--accent) 22%,transparent);border-color:var(--accent)}
+    .ipc-tag.D{background:color-mix(in srgb,var(--purple) 22%,transparent);border-color:var(--purple)}
+    .ipc-tag.E{background:color-mix(in srgb,var(--muted) 22%,transparent);border-color:var(--muted)}
+    .ipc-tag.priv{background:color-mix(in srgb,var(--warn,var(--accent)) 20%,transparent);border-color:var(--warn,var(--accent))}
+    .ipc-tag.pub{background:color-mix(in srgb,var(--good,var(--green)) 20%,transparent);border-color:var(--good,var(--green))}
+    .ipc-tag.spec{background:color-mix(in srgb,var(--bad,var(--red)) 18%,transparent);border-color:var(--bad,var(--red))}
+    .ipc-why{color:var(--muted);font-size:.86rem;margin-top:10px;line-height:1.5}
+    </style>
+
+    <h1>Clase de adrese IP · privat / public / special</h1>
+    <p class="lead">O adresă <b>IPv4</b> are <b>32 de biți</b>, scriși ca 4 octeți în zecimal cu punct (<span class="kbd">a.b.c.d</span>, fiecare octet 0–255). Istoric, adresele erau împărțite în <b>clase</b> (A–E) după <b>primii biți</b> ai primului octet; azi se folosește <b>CIDR</b> (măști variabile), dar clasele și intervalele speciale <b>pică la examen</b>.</p>
+
+    <h2>Cum determini clasa — te uiți la primul octet</h2>
+    <p class="hint">Clasa e dată de <b>biții de prefix</b> ai primului octet (adică ai celui mai semnificativ octet). Practic e suficient intervalul zecimal al primului octet:</p>
+    <table class="reftable">
+      <tr><th>Clasă</th><th>Biți prefix</th><th>Primul octet</th><th>Mască implicită</th><th>Biți rețea / host</th><th>Nr. rețele</th><th>Host-uri / rețea</th><th>Rol</th></tr>
+      <tr><td><span class="ipc-tag A">A</span></td><td><code>0</code>…</td><td><code>0 – 127</code></td><td><code>255.0.0.0</code> (/8)</td><td>8 / 24</td><td>126</td><td>16.777.214</td><td>rețele foarte mari</td></tr>
+      <tr><td><span class="ipc-tag B">B</span></td><td><code>10</code>…</td><td><code>128 – 191</code></td><td><code>255.255.0.0</code> (/16)</td><td>16 / 16</td><td>16.384</td><td>65.534</td><td>rețele medii</td></tr>
+      <tr><td><span class="ipc-tag C">C</span></td><td><code>110</code>…</td><td><code>192 – 223</code></td><td><code>255.255.255.0</code> (/24)</td><td>24 / 8</td><td>2.097.152</td><td>254</td><td>rețele mici (LAN)</td></tr>
+      <tr><td><span class="ipc-tag D">D</span></td><td><code>1110</code></td><td><code>224 – 239</code></td><td>— (fără host-uri)</td><td>—</td><td>—</td><td>—</td><td><b>Multicast</b> (unu-la-mulți)</td></tr>
+      <tr><td><span class="ipc-tag E">E</span></td><td><code>1111</code></td><td><code>240 – 255</code></td><td>—</td><td>—</td><td>—</td><td>—</td><td>rezervată (experimental)</td></tr>
+    </table>
+    <p class="note">💡 <b>Trucul mental:</b> scrii primul octet în binar și te uiți câți <b>1</b> apar la început până la primul <b>0</b>: <code>0…→A</code>, <code>10…→B</code>, <code>110…→C</code>, <code>1110→D</code>, <code>1111→E</code>. La clasele A/B/C, restul biților de prefix (7/14/21) numără <b>rețelele</b>, iar biții rămași numără <b>host-urile</b> (minus 2: adresa de rețea și cea de broadcast).</p>
+
+    <h2>🧮 Calculator — scrie o adresă și vezi tot</h2>
+    <div class="ipc-calc">
+      <div class="ipc-in">
+        <input id="ipcInput" value="192.168.1.10" spellcheck="false" inputmode="decimal" aria-label="Adresă IPv4">
+        <span class="badge">a.b.c.d · fiecare octet 0–255</span>
+      </div>
+      <div class="ipc-ex" id="ipcExemple"></div>
+      <div id="ipcOut"></div>
+    </div>
+
+    <h2>Categorii speciale de adrese</h2>
+    <p class="hint">Unele intervale au <b>rol special</b> și „bat" clasa (o adresă din intervalul privat rămâne clasa ei, dar <b>nu e rutabilă pe Internet</b>).</p>
+    <table class="reftable">
+      <tr><th>Categorie</th><th>Interval</th><th>La ce folosește</th></tr>
+      <tr><td><b>Publică</b></td><td>tot ce nu e mai jos</td><td>Unic la nivel global, rutabilă pe Internet. Alocată de autorități (IANA → RIR-uri → ISP).</td></tr>
+      <tr><td><b>Privată</b> (RFC 1918)</td><td><code>10.0.0.0/8</code><br><code>172.16.0.0/12</code> (172.16–172.31)<br><code>192.168.0.0/16</code></td><td>Rețele interne (LAN). <b>Nu</b> se rutează pe Internet; ies prin <b>NAT</b>. Se pot refolosi în orice organizație.</td></tr>
+      <tr><td><b>Loopback</b></td><td><code>127.0.0.0/8</code> (uzual <code>127.0.0.1</code>)</td><td>„localhost" — pachetul se întoarce în aceeași mașină, fără să atingă rețeaua. Test local.</td></tr>
+      <tr><td><b>Link-local</b> (APIPA)</td><td><code>169.254.0.0/16</code></td><td>Auto-configurată de host <b>când DHCP eșuează</b>. Valabilă doar pe segmentul local (nu trece de router).</td></tr>
+      <tr><td><b>Multicast</b> (clasa D)</td><td><code>224.0.0.0/4</code> (224–239)</td><td>Un-la-mulți: un pachet ajunge la toți membrii unui grup (streaming, protocoale de rutare: OSPF <code>224.0.0.5</code>).</td></tr>
+      <tr><td><b>Broadcast</b></td><td><code>255.255.255.255</code> (limitat)<br>+ broadcast dirijat (biții de host toți 1)</td><td>Unu-la-toți din rețeaua locală. <b>Limitat</b> = toți din LAN, nu trece de router. <b>Dirijat</b> = <code>a.b.c.255</code> (ex.) pentru o rețea anume.</td></tr>
+      <tr><td><b>„Acest host" / rută implicită</b></td><td><code>0.0.0.0</code></td><td>Adresă nespecificată (la boot, înainte de a primi IP) și „orice rețea" (ruta default <code>0.0.0.0/0</code>).</td></tr>
+      <tr><td><b>Documentație</b> <span class="star">★</span></td><td><code>192.0.2.0/24</code>, <code>198.51.100.0/24</code>, <code>203.0.113.0/24</code></td><td>Rezervate pentru exemple/manuale (TEST-NET), ca să nu se folosească IP-uri reale.</td></tr>
+    </table>
+
+    <h2>Adresa de rețea vs. broadcast (într-o rețea)</h2>
+    <p>În orice rețea, două adrese nu se dau host-urilor:</p>
+    <ul>
+      <li><b>Adresa de rețea</b> — toți biții de <b>host = 0</b> (ex. clasful, C: <code>192.168.1.0</code>). Identifică rețeaua însăși.</li>
+      <li><b>Adresa de broadcast</b> — toți biții de <b>host = 1</b> (ex. C: <code>192.168.1.255</code>). Trimite tuturor host-urilor din rețea.</li>
+    </ul>
+    <p class="note">De aceea numărul de host-uri utilizabile e <code>2^(biți host) − 2</code>: clasa C are <code>2^8 − 2 = 254</code>, clasa B <code>2^16 − 2 = 65.534</code>, clasa A <code>2^24 − 2 = 16.777.214</code>.</p>
+
+    <div class="note" style="margin-top:14px">📌 <b>De reținut la examen:</b> clasa se citește din primul octet; <code>127.x.x.x</code> e loopback (nu clasă A utilă); privatele (10 / 172.16–31 / 192.168) nu se rutează; <code>169.254</code> = DHCP eșuat; <code>224–239</code> = multicast; <code>255.255.255.255</code> = broadcast limitat; clasele A/B/C au 7/14/21 biți de rețea și 24/16/8 de host.</div>
+  </section>
 </main>
 
 <div class="tooltip" id="tip"></div>
@@ -6101,5 +6190,104 @@ window.addEventListener('message', function(e){
 <!-- Rețelistan: conținutul de teorie (date) + motorul jocului — vezi harta/README.md -->
 <script src="harta/theory.js"></script>
 <script src="harta/game.js"></script>
+
+<!-- Calculator „Clase & adrese IP" -->
+<script>
+(function(){
+  var EX = ['10.0.0.5','172.16.5.4','192.168.1.1','8.8.8.8','127.0.0.1','169.254.10.20','224.0.0.5','255.255.255.255','203.0.113.7','240.0.0.1'];
+  var PREFSTR = {A:'0',B:'10',C:'110',D:'1110',E:'1111'};
+  var PREFN   = {A:1,B:2,C:3,D:4,E:4};
+
+  function parse(s){
+    var m = String(s).trim().match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+    if(!m) return null;
+    var o = [+m[1],+m[2],+m[3],+m[4]];
+    return o.some(function(x){ return x>255; }) ? null : o;
+  }
+  function bin8(n){ var s=n.toString(2); while(s.length<8) s='0'+s; return s; }
+  function clsOf(a){ if(a<=127)return 'A'; if(a<=191)return 'B'; if(a<=223)return 'C'; if(a<=239)return 'D'; return 'E'; }
+  function fmt(n){ try{ return n.toLocaleString('ro-RO'); }catch(e){ return String(n); } }
+
+  function categ(o){
+    var a=o[0], b=o[1], c=o[2], d=o[3];
+    if(a===0) return {t:'„Acest host" / nespecificată', c:'spec', x:'0.0.0.0 — adresă nespecificată (host care încă n-a primit IP) sau ruta implicită 0.0.0.0/0.'};
+    if(a===127) return {t:'Loopback', c:'spec', x:'127.0.0.0/8 — pachetul se întoarce în aceeași mașină („localhost"), fără să atingă rețeaua.'};
+    if(a===10 || (a===172 && b>=16 && b<=31) || (a===192 && b===168)) return {t:'Privată (RFC 1918)', c:'priv', x:'Rețea internă — NU se rutează pe Internet, iese prin NAT. Se poate refolosi în orice organizație.'};
+    if(a===169 && b===254) return {t:'Link-local (APIPA)', c:'spec', x:'169.254.0.0/16 — auto-asignată când DHCP eșuează; valabilă doar pe segmentul local (nu trece de router).'};
+    if(a===255 && b===255 && c===255 && d===255) return {t:'Broadcast limitat', c:'spec', x:'255.255.255.255 — către toți din rețeaua locală; nu trece de router.'};
+    if(a>=224 && a<=239) return {t:'Multicast (clasa D)', c:'spec', x:'224.0.0.0/4 — un-la-mulți: pachetul ajunge la toți membrii unui grup.'};
+    if(a>=240) return {t:'Rezervată (clasa E)', c:'spec', x:'240.0.0.0/4 — experimental/rezervat, nefolosită pentru host-uri.'};
+    if((a===192&&b===0&&c===2) || (a===198&&b===51&&c===100) || (a===203&&b===0&&c===113)) return {t:'Documentație (TEST-NET)', c:'spec', x:'Interval rezervat pentru exemple în manuale — nu se folosește în producție.'};
+    return {t:'Publică', c:'pub', x:'Unică la nivel global, rutabilă pe Internet.'};
+  }
+
+  function classful(K, o){
+    var a=o[0], b=o[1], c=o[2];
+    if(K==='A') return {net:a+'.0.0.0',   bc:a+'.255.255.255', mask:'255.0.0.0 (/8)',   nh:'8 / 24', hosts:16777214};
+    if(K==='B') return {net:a+'.'+b+'.0.0', bc:a+'.'+b+'.255.255', mask:'255.255.0.0 (/16)', nh:'16 / 16', hosts:65534};
+    if(K==='C') return {net:a+'.'+b+'.'+c+'.0', bc:a+'.'+b+'.'+c+'.255', mask:'255.255.255.0 (/24)', nh:'24 / 8', hosts:254};
+    return null;
+  }
+
+  function render(){
+    var el = document.getElementById('ipcInput');
+    var out = document.getElementById('ipcOut');
+    if(!el || !out) return;
+    var o = parse(el.value);
+    if(!o){
+      el.classList.add('bad');
+      out.innerHTML = '<p class="ipc-why">Adresă invalidă. Format: patru numere între 0 și 255, separate de punct (ex. <code>192.168.1.10</code>).</p>';
+      return;
+    }
+    el.classList.remove('bad');
+    var K = clsOf(o[0]), cat = categ(o), np = PREFN[K], cf = classful(K, o);
+
+    // reprezentarea binară, cu biții de prefix ai primului octet evidențiați
+    var bits = '<div class="ipc-bits">';
+    o.forEach(function(oct, idx){
+      var b = bin8(oct), bh = '';
+      for(var i=0;i<8;i++){ var pref = (idx===0 && i<np); bh += '<span class="ipc-bit'+(pref?' pref':'')+'">'+b[i]+'</span>'; }
+      bits += '<div class="ipc-oct"><div class="dec">'+oct+'</div><div class="bin">'+bh+'</div><div class="lbl">octet '+(idx+1)+'</div></div>';
+      if(idx<3) bits += '<div class="ipc-oct"><div class="dec" style="opacity:.5">.</div><div class="bin"></div><div class="lbl">&nbsp;</div></div>';
+    });
+    bits += '</div>';
+
+    function row(k, v){ return '<div class="k">'+k+'</div><div class="v">'+v+'</div>'; }
+    var g = '<div class="ipc-grid">';
+    g += row('Clasă', '<span class="ipc-tag '+K+'">Clasa '+K+'</span> &nbsp;<span style="color:var(--muted);font-size:.85rem">prefix <code>'+PREFSTR[K]+'</code> pe primul octet</span>');
+    g += row('Categorie', '<span class="ipc-tag '+cat.c+'">'+cat.t+'</span>');
+    if(cf){
+      g += row('Mască implicită', '<code>'+cf.mask+'</code>');
+      g += row('Biți rețea / host', cf.nh);
+      g += row('Adresa de rețea', '<code>'+cf.net+'</code> <span style="color:var(--muted);font-size:.82rem">(biți host = 0)</span>');
+      g += row('Adresa de broadcast', '<code>'+cf.bc+'</code> <span style="color:var(--muted);font-size:.82rem">(biți host = 1)</span>');
+      g += row('Host-uri utilizabile', fmt(cf.hosts) + ' <span style="color:var(--muted);font-size:.82rem">(2^'+cf.nh.split(' / ')[1]+' − 2)</span>');
+    } else {
+      g += row('Mască / host-uri', '— <span style="color:var(--muted);font-size:.85rem">clasele D și E nu se împart în rețea/host (fără mască implicită)</span>');
+    }
+    g += '</div>';
+
+    out.innerHTML = bits + g + '<p class="ipc-why"><b>'+cat.t+':</b> '+cat.x+'</p>';
+  }
+
+  function init(){
+    var el = document.getElementById('ipcInput');
+    var exe = document.getElementById('ipcExemple');
+    if(!el) return;
+    if(exe && !exe.dataset.done){
+      exe.dataset.done = '1';
+      exe.innerHTML = EX.map(function(ip){ return '<button data-ip="'+ip+'">'+ip+'</button>'; }).join('');
+      exe.addEventListener('click', function(e){
+        var b = e.target.closest('button'); if(!b) return;
+        el.value = b.dataset.ip; render();
+      });
+    }
+    el.addEventListener('input', render);
+    render();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
 </body>
 </html>

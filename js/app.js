@@ -69,6 +69,7 @@ const MATERII = [
       {id:"porturi", nume:"Porturi & servicii",      icon:"🔌"},
       {id:"anatomy", nume:"Anatomie pe biți",        icon:"🧬"},
       {id:"journey", nume:"Călătoria pachetului",    icon:"🎬"},
+      {id:"ipclase", nume:"Clase & adrese IP",        icon:"🏷️"},
       {id:"subnet",  nume:"Subnetizare",             icon:"🧮"},
       {id:"drag",  nume:"Trage câmpul",    icon:"🧲"},
       {id:"tryhard", nume:"Trage câmpul TRYHARD", icon:"🛠️"},
