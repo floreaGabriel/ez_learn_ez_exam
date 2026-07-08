@@ -77,7 +77,8 @@ const MATERII = [
       {id:"write", nume:"Scrie câmpurile", icon:"✍️"},
       {id:"quiz",  nume:"Quiz",            icon:"❓"},
       {id:"hex",   nume:"Analiză pachete", icon:"🔬"},
-      {id:"exercitii", nume:"Exerciții examen", icon:"📝"}
+      {id:"exercitii", nume:"Exerciții examen", icon:"📝"},
+      {id:"salvate", nume:"Probleme salvate", icon:"🔖"}
     ]
   },
   {
