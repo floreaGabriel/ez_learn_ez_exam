@@ -784,8 +784,6 @@ const UPDATES = [
   { d:"08.07.2026", t:"Rețele → „🏷️ Clase & adrese IP”: calculator de clasă (A–E) + privat / public / multicast / broadcast / loopback / link-local" },
   { d:"07.07.2026", t:"SDA → „🔐 Subiecte examen”: 10 variante noi în stil licență, cu rezolvări și barem" },
   { d:"06.07.2026", t:"Nou: „⭐ Probleme salvate” — pinuiește problemele mai tricky din PSO / OOP / SDA și reexersează-le" },
-  { d:"06.07.2026", t:"Rețelistan: crafting & poduri, avatar personalizabil, emoji + mesaje, clasament și muzică" },
-  { d:"03.07.2026", t:"Nou: „🛸 Among Us CS” — joc multiplayer cu taskuri-minijoc din materii" },
 ];
 
 // Versiunea aplicației = data celui mai nou update (fără separatori). Se schimbă
