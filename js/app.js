@@ -532,6 +532,18 @@ function showHome(){
     + '</div>';
 }
 
+// Versiune a aplicației (definită mai jos, lângă jurnalul UPDATES). O punem ca
+// „?v=" pe URL-urile iframe-urilor: când versiunea se schimbă (feature nou),
+// browserul e obligat să reîncarce pagina embed (nu mai servește din cache/bfcache
+// o versiune veche — cauza „am adăugat ceva și nu apărea"). embSrc citește
+// APP_VER la momentul apelului (runtime), deci ordinea declarării nu contează.
+function embSrc(path){
+  var hash = "", p = path, i = path.indexOf("#");
+  if(i >= 0){ hash = path.slice(i); p = path.slice(0, i); }
+  var v = (typeof APP_VER !== "undefined") ? APP_VER : "1";
+  return p + (p.indexOf("?") >= 0 ? "&" : "?") + "v=" + v + hash;
+}
+
 // materie embed (pagină self-contained încărcată în iframe, ex. Rețele)
 function showEmbed(subId, sec){
   const m = materie(subId);
@@ -548,7 +560,7 @@ function showEmbed(subId, sec){
     catch(err){ frame.src = m.src+"#"+sec; }
   } else {
     c.innerHTML = '<div class="embed-wrap"><iframe id="embed-frame" class="embed-frame" '
-      + 'data-subject="'+subId+'" src="'+m.src+'#'+sec+'" title="'+m.nume+'"></iframe></div>';
+      + 'data-subject="'+subId+'" src="'+embSrc(m.src+'#'+sec)+'" title="'+m.nume+'"></iframe></div>';
     const f = document.getElementById("embed-frame");
     f.addEventListener("load", function(){
       try{ f.contentWindow.postMessage(frameThemeMsg(), "*"); }catch(e){}
@@ -570,7 +582,7 @@ function showSimLab(sec){
     catch(err){ frame.src = "pso/index.html#"+sec; }
   } else {
     c.innerHTML = '<div class="embed-wrap"><iframe id="embed-frame" class="embed-frame" '
-      + 'data-subject="pso-sim" src="pso/index.html#'+sec+'" title="Simulatoare PSO"></iframe></div>';
+      + 'data-subject="pso-sim" src="'+embSrc('pso/index.html#'+sec)+'" title="Simulatoare PSO"></iframe></div>';
     const f = document.getElementById("embed-frame");
     f.addEventListener("load", function(){
       try{ f.contentWindow.postMessage(frameThemeMsg(), "*"); }catch(e){}
@@ -592,7 +604,7 @@ function showPsoSub(sec){
     catch(err){ frame.src = "pso/subiecte.html#"+sec; }
   } else {
     c.innerHTML = '<div class="embed-wrap"><iframe id="embed-frame" class="embed-frame" '
-      + 'data-subject="pso-sub" src="pso/subiecte.html#'+sec+'" title="Subiecte examen PSO"></iframe></div>';
+      + 'data-subject="pso-sub" src="'+embSrc('pso/subiecte.html#'+sec)+'" title="Subiecte examen PSO"></iframe></div>';
     const f = document.getElementById("embed-frame");
     f.addEventListener("load", function(){
       try{ f.contentWindow.postMessage(frameThemeMsg(), "*"); }catch(e){}
@@ -614,7 +626,7 @@ function showSdaSub(sec){
     catch(err){ frame.src = "sda/subiecte.html#"+sec; }
   } else {
     c.innerHTML = '<div class="embed-wrap"><iframe id="embed-frame" class="embed-frame" '
-      + 'data-subject="sda-sub" src="sda/subiecte.html#'+sec+'" title="Subiecte examen SDA"></iframe></div>';
+      + 'data-subject="sda-sub" src="'+embSrc('sda/subiecte.html#'+sec)+'" title="Subiecte examen SDA"></iframe></div>';
     const f = document.getElementById("embed-frame");
     f.addEventListener("load", function(){
       try{ f.contentWindow.postMessage(frameThemeMsg(), "*"); }catch(e){}
@@ -636,7 +648,7 @@ function showSalvate(){
     catch(err){ frame.src = "salvate.html"; }
   } else {
     c.innerHTML = '<div class="embed-wrap"><iframe id="embed-frame" class="embed-frame" '
-      + 'data-subject="salvate" src="salvate.html" title="Probleme salvate"></iframe></div>';
+      + 'data-subject="salvate" src="'+embSrc('salvate.html')+'" title="Probleme salvate"></iframe></div>';
     const f = document.getElementById("embed-frame");
     f.addEventListener("load", function(){
       try{ f.contentWindow.postMessage(frameThemeMsg(), "*"); }catch(e){}
@@ -670,7 +682,7 @@ function showOopSub(sec){
     catch(err){ frame.src = "oop/subiecte.html#"+sec; }
   } else {
     c.innerHTML = '<div class="embed-wrap"><iframe id="embed-frame" class="embed-frame" '
-      + 'data-subject="oop-sub" src="oop/subiecte.html#'+sec+'" title="Subiecte examen C & C++"></iframe></div>';
+      + 'data-subject="oop-sub" src="'+embSrc('oop/subiecte.html#'+sec)+'" title="Subiecte examen C & C++"></iframe></div>';
     const f = document.getElementById("embed-frame");
     f.addEventListener("load", function(){
       try{ f.contentWindow.postMessage(frameThemeMsg(), "*"); }catch(e){}
@@ -765,9 +777,44 @@ function examNav(id){
   return out;
 }
 
+// ---------- Bandă de noutăți (ticker de sus) ----------
+// Editează AICI la fiecare modificare notabilă (cea mai NOUĂ prima). Apare în
+// banda care se derulează sus, ca toți utilizatorii să vadă ce s-a adăugat.
+const UPDATES = [
+  { d:"08.07.2026", t:"Rețele → „🏷️ Clase & adrese IP”: calculator de clasă (A–E) + privat / public / multicast / broadcast / loopback / link-local" },
+  { d:"07.07.2026", t:"SDA → „🔐 Subiecte examen”: 10 variante noi în stil licență, cu rezolvări și barem" },
+  { d:"06.07.2026", t:"Nou: „⭐ Probleme salvate” — pinuiește problemele mai tricky din PSO / OOP / SDA și reexersează-le" },
+  { d:"06.07.2026", t:"Rețelistan: crafting & poduri, avatar personalizabil, emoji + mesaje, clasament și muzică" },
+  { d:"03.07.2026", t:"Nou: „🛸 Among Us CS” — joc multiplayer cu taskuri-minijoc din materii" },
+];
+
+// Versiunea aplicației = data celui mai nou update (fără separatori). Se schimbă
+// automat la fiecare intrare nouă în UPDATES → busts cache-ul iframe-urilor (embSrc).
+const APP_VER = (UPDATES[0] && UPDATES[0].d) ? UPDATES[0].d.replace(/\W/g, "") : "1";
+
+function renderUpdateTicker(){
+  const track = document.getElementById("utTrack");
+  if(!track || !UPDATES.length) return;
+  function e(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  const items = UPDATES.map(function(u,i){
+    return '<span class="ut-item">'
+      + (i===0 ? '<span class="ut-new">NOU</span>' : '')
+      + '<span class="ut-date">'+e(u.d)+'</span>'+e(u.t)+'</span>';
+  }).join('<span class="ut-sep">•</span>');
+  const oneCopy = items + '<span class="ut-sep">•</span>';   // separator și la cusătură
+  track.innerHTML = oneCopy + oneCopy;                        // două copii → buclă fără salt
+  // viteză constantă (~55 px/s) indiferent de câte noutăți sunt
+  requestAnimationFrame(function(){
+    const latimeCopie = track.scrollWidth / 2;
+    const durata = Math.max(16, Math.round(latimeCopie / 55));
+    track.style.animationDuration = durata + "s";
+  });
+}
+
 // ---------- Init ----------
 window.addEventListener("DOMContentLoaded", function(){
   // tema este aplicată de js/theme.js (tot pe DOMContentLoaded)
+  renderUpdateTicker();
   initSidebar();
   buildNav();
   showDashboard();

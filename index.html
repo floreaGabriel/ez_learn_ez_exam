@@ -19,6 +19,12 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
 </head>
 <body>
+  <!-- Bandă de noutăți: ce s-a adăugat ultima dată în aplicație (se derulează continuu) -->
+  <div class="update-ticker" id="updateTicker" role="status" aria-label="Ultimele actualizări din aplicație">
+    <span class="ut-label">🆕 Noutăți</span>
+    <div class="ut-viewport"><div class="ut-track" id="utTrack"></div></div>
+  </div>
+
   <aside class="sidebar">
     <div class="brand" onclick="showDashboard(); closeSidebar()" style="cursor:pointer">
       <h1>Licență Trainer 🎓</h1>

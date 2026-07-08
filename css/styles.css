@@ -121,7 +121,7 @@ body{
 
 /* ---------- Materie încărcată în iframe (ex. Rețele) ---------- */
 .content.embed{max-width:none; padding:0}
-.embed-wrap{height:calc(100vh - 66px)}
+.embed-wrap{height:calc(100vh - 96px)}  /* 66px topbar + 30px bandă de noutăți */
 .embed-frame{width:100%; height:100%; border:0; display:block; background:var(--bg)}
 
 /* ---------- Video încorporat în lecție (PSO) ---------- */
@@ -386,7 +386,7 @@ details.rezolvare>summary:hover{color:var(--accent-2); background:var(--panel2)}
   .sidebar-backdrop{display:block}
   body.nav-open .sidebar-backdrop{opacity:1; pointer-events:auto}
   body.nav-open{overflow:hidden}                /* nu derula fundalul cât e meniul deschis */
-  .embed-wrap{height:calc(100vh - 62px); height:calc(100dvh - 62px)}
+  .embed-wrap{height:calc(100vh - 92px); height:calc(100dvh - 92px)}  /* + 30px bandă de noutăți */
 }
 
 @media(max-width:560px){
@@ -806,3 +806,37 @@ details.rezolvare>summary:hover{color:var(--accent-2); background:var(--panel2)}
   .conq-side .conq-pcard2{flex:1 1 130px}
   .conq-chat{flex:1 1 100%}
 }
+
+/* ============================================================
+   Bandă de noutăți (ticker) — sus, pe toată lățimea, derulare continuă
+   ============================================================ */
+.update-ticker{
+  position:fixed; top:0; left:0; right:0; height:30px; z-index:60;
+  display:flex; align-items:stretch; overflow:hidden;
+  background:linear-gradient(90deg, var(--accent), var(--accent-2, var(--accent)));
+  color:var(--on-accent, #1a1714); border-bottom:1px solid rgba(0,0,0,.18);
+  font-size:12.5px; box-shadow:0 1px 6px rgba(0,0,0,.18);
+}
+.ut-label{
+  flex:0 0 auto; display:flex; align-items:center; padding:0 13px;
+  background:rgba(0,0,0,.16); font-weight:800; letter-spacing:.3px; white-space:nowrap;
+}
+.ut-viewport{ flex:1 1 auto; position:relative; overflow:hidden; }
+.ut-track{
+  position:absolute; top:0; left:0; height:100%; display:flex; align-items:center;
+  width:max-content; white-space:nowrap; will-change:transform;
+  animation:ut-scroll 30s linear infinite;
+}
+/* derulare de la STÂNGA la DREAPTA, fără cusătură (două copii identice) */
+@keyframes ut-scroll{ from{ transform:translateX(-50%) } to{ transform:translateX(0) } }
+.update-ticker:hover .ut-track{ animation-play-state:paused }
+.ut-item{ display:inline-flex; align-items:center; font-weight:600; }
+.ut-item .ut-date{ font-family:"JetBrains Mono",monospace; font-weight:700; opacity:.72; margin-right:6px; }
+.ut-item .ut-new{ background:rgba(0,0,0,.22); border-radius:4px; padding:1px 6px; margin-right:7px; font-weight:800; font-size:10.5px; letter-spacing:.4px; }
+.ut-sep{ opacity:.5; padding:0 16px; }
+@media (prefers-reduced-motion: reduce){ .ut-track{ animation:none; transform:translateX(0) } }
+
+/* împinge aplicația sub bandă (30px) */
+.sidebar{ top:30px }
+.topbar{ top:30px }
+.main{ padding-top:30px }
