@@ -3845,6 +3845,8 @@ C0 A8 01 0A  C0 A8 01 01</pre>
     .dhcp-step .l{font-weight:800;font-size:1.15rem;color:var(--accent)}
     .dhcp-step b{color:var(--ink,var(--txt))}
     .dhcp-step small{color:var(--muted);display:block;margin-top:3px;line-height:1.45}
+    .dhcp-diag{overflow-x:auto}
+    .dhcp-diag svg{display:block;margin:0 auto;width:100%;max-width:600px;height:auto;min-width:420px}
     </style>
 
     <h1>DHCP — cum obține un dispozitiv adresa IP automat (DORA)</h1>
@@ -3864,9 +3866,10 @@ C0 A8 01 0A  C0 A8 01 01</pre>
     </ul>
 
     <h2>Exemplu — pas cu pas</h2>
-    <p>Rețea locală: server DHCP cu <b>MAC 11:11:11:11:11:11</b> și <b>IP 192.168.0.1</b>. Laptop cu <b>MAC 77:77:77:77:77:77</b>, setat pe IP automat; la pornire i se atribuie <b>192.168.0.7</b>. Completează tabelul pentru pachetele trimise/primite de laptop:</p>
+    <p>Rețea locală: server DHCP cu <b>MAC 11:11:11:11:11:11</b> și <b>IP 192.168.0.1</b>. Laptop cu <b>MAC 77:77:77:77:77:77</b>, setat pe IP automat; la pornire i se atribuie <b>192.168.0.7</b>. Apasă <b>„Pasul următor"</b>: se aprinde săgeata din diagramă și se completează rândul din tabel.</p>
     <div class="tcp-trainer">
-      <div style="overflow-x:auto"><table class="tcp-table dhcp-table" id="dhcpTable"></table></div>
+      <div class="card dhcp-diag" style="padding:14px"><div id="dhcpDiag"></div></div>
+      <div style="overflow-x:auto"><table class="tcp-table dhcp-table" id="dhcpSeqTable"></table></div>
       <div class="tcp-expl" id="dhcpExpl">Apasă „Pasul următor" ca să pornești obținerea adresei.</div>
       <div class="btn-row">
         <button class="btn primary" id="dhcpNext">▶ Pasul următor</button>
@@ -6850,9 +6853,54 @@ window.addEventListener('message', function(e){
     }
     el.innerHTML = h;
   }
-  var reveal=0, table=document.getElementById("dhcpTable"), expl=document.getElementById("dhcpExpl");
+  // diagramă de secvență (Laptop ↔ Server) — săgeata pasului curent se aprinde
+  var MSG = [
+    { n:"① Discover", dir:1,  sub:"broadcast",       c:"var(--blue, #6a9fb5)" },
+    { n:"② Offer",    dir:-1, sub:"→ 192.168.0.7",   c:"var(--good, #7fae3a)" },
+    { n:"③ Request",  dir:1,  sub:"broadcast",       c:"var(--blue, #6a9fb5)" },
+    { n:"④ Ack",      dir:-1, sub:"confirmă",         c:"var(--good, #7fae3a)" }
+  ];
+  function actor(cx, ico, nume, sub){
+    return '<g>'
+      + '<rect x="'+(cx-62)+'" y="10" width="124" height="40" rx="9" style="fill:var(--bg3);stroke:var(--accent);stroke-width:1.5"/>'
+      + '<text x="'+cx+'" y="28" text-anchor="middle" style="fill:var(--txt);font-weight:700;font-size:13px">'+ico+' '+nume+'</text>'
+      + '<text x="'+cx+'" y="43" text-anchor="middle" style="fill:var(--muted);font-size:10px;font-family:monospace">'+sub+'</text>'
+      + '</g>';
+  }
+  function dhcpDiagram(reveal){
+    var L=110, S=490, y0=92, dy=58, botY = y0 + (MSG.length-1)*dy + 26;
+    var s = '<svg viewBox="0 0 600 '+(botY+16)+'" role="img" aria-label="Diagramă DHCP DORA">';
+    // linii de viață
+    s += '<line x1="'+L+'" y1="50" x2="'+L+'" y2="'+botY+'" style="stroke:var(--border);stroke-width:2;stroke-dasharray:4 4"/>';
+    s += '<line x1="'+S+'" y1="50" x2="'+S+'" y2="'+botY+'" style="stroke:var(--border);stroke-width:2;stroke-dasharray:4 4"/>';
+    // mesajele
+    var mid = (L+S)/2;
+    MSG.forEach(function(m,i){
+      var idx=i+1, y=y0+i*dy, on=reveal>=idx, active=reveal===idx, op=on?1:0.15;
+      var x1 = m.dir>0 ? L+6 : S-6, x2 = m.dir>0 ? S-6 : L+6;
+      var w = active?3.4:2, ah = 8;
+      var head = m.dir>0
+        ? (x2)+','+y+' '+(x2-ah)+','+(y-5)+' '+(x2-ah)+','+(y+5)
+        : (x2)+','+y+' '+(x2+ah)+','+(y-5)+' '+(x2+ah)+','+(y+5);
+      s += '<g style="opacity:'+op+';transition:opacity .3s">';
+      if(active) s += '<line x1="'+x1+'" y1="'+y+'" x2="'+x2+'" y2="'+y+'" style="stroke:'+m.c+';stroke-width:'+(w+5)+';opacity:.22;stroke-linecap:round"/>';
+      s += '<line x1="'+x1+'" y1="'+y+'" x2="'+x2+'" y2="'+y+'" style="stroke:'+m.c+';stroke-width:'+w+'"/>';
+      s += '<polygon points="'+head+'" style="fill:'+m.c+'"/>';
+      s += '<text x="'+mid+'" y="'+(y-7)+'" text-anchor="middle" style="fill:var(--txt);font-weight:'+(active?800:600)+';font-size:12.5px">'+m.n+' DHCP</text>';
+      s += '<text x="'+mid+'" y="'+(y+13)+'" text-anchor="middle" style="fill:var(--muted);font-size:10px">'+m.sub+'</text>';
+      s += '</g>';
+    });
+    s += actor(L, '💻', 'Laptop', '77:…:77');
+    s += actor(S, '🖧', 'Server', '192.168.0.1');
+    s += '</svg>';
+    return s;
+  }
+
+  var reveal=0, table=document.getElementById("dhcpSeqTable"), expl=document.getElementById("dhcpExpl"),
+      diag=document.getElementById("dhcpDiag");
   function upd(){
     render(table, reveal);
+    if(diag) diag.innerHTML = dhcpDiagram(reveal);
     if(expl) expl.textContent = reveal===0 ? 'Apasă „Pasul următor" ca să pornești obținerea adresei.'
                                            : (reveal + ". " + DHCP[reveal-1].expl);
   }
