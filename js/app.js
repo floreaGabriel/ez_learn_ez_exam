@@ -70,6 +70,7 @@ const MATERII = [
       {id:"anatomy", nume:"Anatomie pe biți",        icon:"🧬"},
       {id:"journey", nume:"Călătoria pachetului",    icon:"🎬"},
       {id:"tcpseq",  nume:"Transmisia TCP",           icon:"🤝"},
+      {id:"dhcp",    nume:"DHCP (DORA)",              icon:"🆔"},
       {id:"ipclase", nume:"Clase & adrese IP",        icon:"🏷️"},
       {id:"subnet",  nume:"Subnetizare",             icon:"🧮"},
       {id:"drag",  nume:"Trage câmpul",    icon:"🧲"},
@@ -783,6 +784,7 @@ function examNav(id){
 // Editează AICI la fiecare modificare notabilă (cea mai NOUĂ prima). Apare în
 // banda care se derulează sus, ca toți utilizatorii să vadă ce s-a adăugat.
 const UPDATES = [
+  { d:"08.07.2026", t:"Rețele → „🆔 DHCP (DORA)”: cum obține un dispozitiv IP-ul automat — Discover/Offer/Request/Ack cu anteturile Ethernet/IP/UDP completate pas cu pas" },
   { d:"08.07.2026", t:"Rețele → „🤝 Transmisia TCP”: SEQ/ACK pas cu pas (handshake, transfer, închidere) + antrenament de calcul al ACK-ului" },
   { d:"08.07.2026", t:"Rețele → „📝 Exerciții examen”: buton „🔖 Salvează problema” pe fiecare exercițiu + tab nou „🔖 Probleme salvate” unde le reexersezi (salvate local, în browser)" },
   { d:"08.07.2026", t:"Rețele → Ex. 30 (DNS): rezoluția recursivă a lui www.mta.ro explicată pas cu pas, cu diagramă a fluxului recursiv ↔ iterativ (root → .ro → mta.ro)" },

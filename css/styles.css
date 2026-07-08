@@ -827,8 +827,8 @@ details.rezolvare>summary:hover{color:var(--accent-2); background:var(--panel2)}
   width:max-content; white-space:nowrap; will-change:transform;
   animation:ut-scroll 30s linear infinite;
 }
-/* derulare de la STÂNGA la DREAPTA, fără cusătură (două copii identice) */
-@keyframes ut-scroll{ from{ transform:translateX(-50%) } to{ transform:translateX(0) } }
+/* derulare de la DREAPTA la STÂNGA, fără cusătură (două copii identice) */
+@keyframes ut-scroll{ from{ transform:translateX(0) } to{ transform:translateX(-50%) } }
 .update-ticker:hover .ut-track{ animation-play-state:paused }
 .ut-item{ display:inline-flex; align-items:center; font-weight:600; }
 .ut-item .ut-date{ font-family:"JetBrains Mono",monospace; font-weight:700; opacity:.72; margin-right:6px; }

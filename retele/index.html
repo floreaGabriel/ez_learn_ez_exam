@@ -672,6 +672,7 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
       <button data-tab="anatomy">🧬 Anatomie pe biți</button>
       <button data-tab="journey">🎬 Călătoria pachetului</button>
       <button data-tab="tcpseq">🤝 Transmisia TCP</button>
+      <button data-tab="dhcp">🆔 DHCP (DORA)</button>
       <button data-tab="ipclase">🏷️ Clase &amp; adrese IP</button>
       <button data-tab="subnet">🧮 Subnetizare</button>
       <button data-tab="drag">🧲 Trage câmpul</button>
@@ -3834,6 +3835,56 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       <div class="in" style="overflow-x:auto"><table class="tcp-table" id="tcpTable2"></table></div>
     </details>
   </section>
+
+  <!-- ============ DHCP (DORA) ============ -->
+  <section class="page" id="page-dhcp">
+    <style>
+    .dhcp-table td.mono{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:.8rem;white-space:nowrap}
+    .dhcp-dora{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+    .dhcp-step{flex:1 1 180px;background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:12px 14px}
+    .dhcp-step .l{font-weight:800;font-size:1.15rem;color:var(--accent)}
+    .dhcp-step b{color:var(--ink,var(--txt))}
+    .dhcp-step small{color:var(--muted);display:block;margin-top:3px;line-height:1.45}
+    </style>
+
+    <h1>DHCP — cum obține un dispozitiv adresa IP automat (DORA)</h1>
+    <p class="lead">Când un dispozitiv pornește setat pe „obține IP automat", nu are încă adresă. Cere una unui <b>server DHCP</b> printr-un schimb de <b>4 pachete</b>, ținut minte ca <b>DORA</b>. DHCP merge peste <b>UDP</b>, cu porturile fixe <b>67 (server)</b> și <b>68 (client)</b>.</p>
+
+    <h2>Cele 4 pachete — DORA</h2>
+    <div class="dhcp-dora">
+      <div class="dhcp-step"><span class="l">D</span> <b>Discover</b><small>clientul strigă în broadcast „e vreun server DHCP?"</small></div>
+      <div class="dhcp-step"><span class="l">O</span> <b>Offer</b><small>serverul oferă o adresă liberă</small></div>
+      <div class="dhcp-step"><span class="l">R</span> <b>Request</b><small>clientul cere oficial exact acea adresă</small></div>
+      <div class="dhcp-step"><span class="l">A</span> <b>Ack</b><small>serverul confirmă → clientul are IP-ul</small></div>
+    </div>
+    <ul>
+      <li><b>Broadcast la Discover și Request:</b> clientul n-are încă IP, deci trimite către toți — MAC destinație <code>FF:FF:FF:FF:FF:FF</code>, IP destinație <code>255.255.255.255</code>, IP sursă <code>0.0.0.0</code>.</li>
+      <li><b>Porturi:</b> mereu <code>68 → 67</code> când trimite clientul, <code>67 → 68</code> când răspunde serverul.</li>
+      <li><b>Offer și Ack:</b> serverul știe deja MAC-ul clientului (din Discover) → poate trimite <b>unicast la nivel MAC</b> (către MAC-ul laptop-ului), dar <b>IP destinație tot broadcast</b> (255.255.255.255), fiindcă laptop-ul încă n-are IP configurat.</li>
+    </ul>
+
+    <h2>Exemplu — pas cu pas</h2>
+    <p>Rețea locală: server DHCP cu <b>MAC 11:11:11:11:11:11</b> și <b>IP 192.168.0.1</b>. Laptop cu <b>MAC 77:77:77:77:77:77</b>, setat pe IP automat; la pornire i se atribuie <b>192.168.0.7</b>. Completează tabelul pentru pachetele trimise/primite de laptop:</p>
+    <div class="tcp-trainer">
+      <div style="overflow-x:auto"><table class="tcp-table dhcp-table" id="dhcpTable"></table></div>
+      <div class="tcp-expl" id="dhcpExpl">Apasă „Pasul următor" ca să pornești obținerea adresei.</div>
+      <div class="btn-row">
+        <button class="btn primary" id="dhcpNext">▶ Pasul următor</button>
+        <button class="btn" id="dhcpAll">Arată tot</button>
+        <button class="btn ghost" id="dhcpReset">↺ De la capăt</button>
+      </div>
+    </div>
+    <p class="note">🔵 pachetele <b>trimise de laptop</b> (Discover, Request) · 🟢 pachetele <b>primite de la server</b> (Offer, Ack).</p>
+    <p class="note">ℹ️ <b>Variantă acceptată:</b> dacă în Discover clientul cere răspuns în broadcast (bitul <i>broadcast</i>), atunci și la <b>Offer/Ack</b> MAC destinație e <code>FF:FF:FF:FF:FF:FF</code>, nu MAC-ul laptop-ului. Restul (IP-uri, porturi) rămâne identic. Aici am folosit varianta cu <b>unicast la MAC</b> (serverul știe deja MAC-ul laptop-ului).</p>
+
+    <h2>Capcanele de examen</h2>
+    <ul>
+      <li>IP sursă la Discover/Request e <code>0.0.0.0</code> — <b>nu</b> adresa oferită (laptop-ul n-o are încă oficial).</li>
+      <li>IP destinație la Offer/Ack rămâne <code>255.255.255.255</code> (broadcast), <b>nu</b> 192.168.0.7 — laptop-ul nu poate fi încă adresat prin IP-ul lui.</li>
+      <li>Nu confunda porturile: <b>server = 67</b>, <b>client = 68</b> (invers față de cum pare intuitiv).</li>
+      <li>Abia <b>după Ack</b> laptop-ul folosește 192.168.0.7 (și de-abia atunci ar comunica unicast normal).</li>
+    </ul>
+  </section>
 </main>
 
 <div class="tooltip" id="tip"></div>
@@ -6770,6 +6821,46 @@ window.addEventListener('message', function(e){
   if(qn) qn.onclick=newQ;
   if(qi) qi.addEventListener("keydown", function(e){ if(e.key==="Enter") check(); });
   newQ();
+})();
+</script>
+
+<!-- DHCP (DORA): trainer pas-cu-pas -->
+<script>
+(function(){
+  var DHCP = [
+    { macS:"77:77:77:77:77:77", macD:"FF:FF:FF:FF:FF:FF", ipS:"0.0.0.0",     ipD:"255.255.255.255", pS:68, pD:67, sem:"DHCP Discover",
+      expl:"Laptop-ul n-are IP → broadcast total (MAC FF:… și IP 255.255.255.255) ca să găsească orice server DHCP. IP sursă 0.0.0.0. Îl trimite laptop-ul (68→67)." },
+    { macS:"11:11:11:11:11:11", macD:"77:77:77:77:77:77", ipS:"192.168.0.1", ipD:"255.255.255.255", pS:67, pD:68, sem:"DHCP Offer",
+      expl:"Serverul oferă 192.168.0.7. Știe MAC-ul laptop-ului (din Discover) → unicast la nivel MAC (77:…), dar IP destinație tot broadcast (laptop-ul n-are încă IP configurat). 67→68." },
+    { macS:"77:77:77:77:77:77", macD:"FF:FF:FF:FF:FF:FF", ipS:"0.0.0.0",     ipD:"255.255.255.255", pS:68, pD:67, sem:"DHCP Request",
+      expl:"Laptop-ul cere oficial adresa oferită. Tot broadcast, ca să afle și celelalte servere (a căror ofertă e refuzată). Încă IP sursă 0.0.0.0." },
+    { macS:"11:11:11:11:11:11", macD:"77:77:77:77:77:77", ipS:"192.168.0.1", ipD:"255.255.255.255", pS:67, pD:68, sem:"DHCP Ack",
+      expl:"Serverul confirmă atribuirea. Din acest moment laptop-ul folosește 192.168.0.7." }
+  ];
+  function render(el, n){
+    if(!el) return;
+    var h = '<tr><th rowspan="2">Nr</th><th colspan="2">Antet Ethernet</th><th colspan="2">Antet IP</th><th colspan="2">Antet UDP</th><th rowspan="2">Semnificație</th></tr>'
+          + '<tr><th>MAC Src</th><th>MAC Dst</th><th>IP Src</th><th>IP Dst</th><th>Port Src</th><th>Port Dst</th></tr>';
+    for(var i=0;i<n;i++){
+      var p=DHCP[i], cls=(i%2===0)?"cs":"sc";
+      if(i===n-1 && n<DHCP.length) cls += " nou";
+      h += '<tr class="'+cls+'"><td>'+(i+1)+'</td><td class="mono">'+p.macS+'</td><td class="mono">'+p.macD
+         + '</td><td class="mono">'+p.ipS+'</td><td class="mono">'+p.ipD+'</td><td class="mono">'+p.pS
+         + '</td><td class="mono">'+p.pD+'</td><td>'+p.sem+'</td></tr>';
+    }
+    el.innerHTML = h;
+  }
+  var reveal=0, table=document.getElementById("dhcpTable"), expl=document.getElementById("dhcpExpl");
+  function upd(){
+    render(table, reveal);
+    if(expl) expl.textContent = reveal===0 ? 'Apasă „Pasul următor" ca să pornești obținerea adresei.'
+                                           : (reveal + ". " + DHCP[reveal-1].expl);
+  }
+  var bN=document.getElementById("dhcpNext"), bA=document.getElementById("dhcpAll"), bR=document.getElementById("dhcpReset");
+  if(bN) bN.onclick=function(){ if(reveal<DHCP.length){ reveal++; upd(); } };
+  if(bA) bA.onclick=function(){ reveal=DHCP.length; upd(); if(expl) expl.textContent="Schimb DORA complet: Discover → Offer → Request → Ack. Laptop-ul are acum 192.168.0.7."; };
+  if(bR) bR.onclick=function(){ reveal=0; upd(); };
+  upd();
 })();
 </script>
 </body>
