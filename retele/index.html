@@ -671,6 +671,7 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
       <button data-tab="porturi">🔌 Porturi &amp; servicii</button>
       <button data-tab="anatomy">🧬 Anatomie pe biți</button>
       <button data-tab="journey">🎬 Călătoria pachetului</button>
+      <button data-tab="tcpseq">🤝 Transmisia TCP</button>
       <button data-tab="ipclase">🏷️ Clase &amp; adrese IP</button>
       <button data-tab="subnet">🧮 Subnetizare</button>
       <button data-tab="drag">🧲 Trage câmpul</button>
@@ -3736,6 +3737,103 @@ C0 A8 01 0A  C0 A8 01 01</pre>
 
     <div class="note" style="margin-top:14px">📌 <b>De reținut la examen:</b> clasa se citește din primul octet; <code>127.x.x.x</code> e loopback (nu clasă A utilă); privatele (10 / 172.16–31 / 192.168) nu se rutează; <code>169.254</code> = DHCP eșuat; <code>224–239</code> = multicast; <code>255.255.255.255</code> = broadcast limitat; clasele A/B/C au 7/14/21 biți de rețea și 24/16/8 de host.</div>
   </section>
+
+  <!-- ============ TRANSMISIA TCP (SEQ / ACK) ============ -->
+  <section class="page" id="page-tcpseq">
+    <style>
+    .tcp-flags{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+    .tcp-flag{font-family:"JetBrains Mono",monospace;font-size:.8rem;border:1px solid var(--border);border-radius:8px;padding:6px 10px;background:var(--bg3)}
+    .tcp-flag b{color:var(--accent)}
+    .tcp-table{width:100%;border-collapse:collapse;font-size:.9rem;margin:8px 0}
+    .tcp-table th,.tcp-table td{border:1px solid var(--border);padding:6px 10px;text-align:center}
+    .tcp-table th{background:var(--bg3);color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.3px}
+    .tcp-table td.dir{font-family:"JetBrains Mono",monospace;font-weight:700;white-space:nowrap}
+    .tcp-table td.seq,.tcp-table td.ack,.tcp-table td.len{font-family:"JetBrains Mono",monospace;font-weight:700}
+    .tcp-table td.ack{color:var(--accent)}
+    .tcp-table tr.cs td{background:color-mix(in srgb,var(--blue) 9%,transparent)}
+    .tcp-table tr.sc td{background:color-mix(in srgb,var(--green,var(--good)) 9%,transparent)}
+    .tcp-table tr.nou td{outline:2px solid var(--accent);outline-offset:-2px}
+    .tcp-table tr.faza td{background:var(--bg3);color:var(--accent);font-weight:800;text-align:left;text-transform:none;letter-spacing:0}
+    .tcp-fl{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:.72rem;font-weight:700;
+      border-radius:5px;padding:1px 5px;margin:0 2px;background:color-mix(in srgb,var(--accent) 16%,transparent);border:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+    .tcp-expl{min-height:1.4em;margin:8px 0;color:var(--ink-soft,var(--txt));font-size:.9rem;line-height:1.5;
+      background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:9px 13px}
+    .tcp-quiz{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;margin:10px 0}
+    .tcp-quiz .seg{font-family:"JetBrains Mono",monospace;font-size:.95rem;margin:0 0 10px}
+    .tcp-qin{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .tcp-qin input{font-family:"JetBrains Mono",monospace;font-size:1rem;font-weight:700;padding:8px 12px;width:150px;
+      background:var(--bg3);color:var(--ink,var(--txt));border:2px solid var(--border);border-radius:9px}
+    .tcp-qin input:focus{outline:none;border-color:var(--accent)}
+    .tcp-qfb{margin-top:10px;font-size:.9rem;min-height:1.2em}
+    .tcp-qfb.ok{color:var(--green,var(--good))}
+    .tcp-qfb.no{color:var(--red,var(--bad))}
+    .tcp-details{margin-top:10px;border:1px solid var(--border);border-radius:11px;background:var(--panel);overflow:hidden}
+    .tcp-details>summary{cursor:pointer;padding:11px 15px;font-weight:600;color:var(--accent);list-style:none}
+    .tcp-details>summary::-webkit-details-marker{display:none}
+    .tcp-details>summary::before{content:"▸  "}
+    .tcp-details[open]>summary::before{content:"▾  "}
+    .tcp-details .in{padding:0 15px 14px}
+    </style>
+
+    <h1>Transmisia TCP — numerele SEQ și ACK</h1>
+    <p class="lead">TCP e orientat pe <b>conexiune</b> și pe <b>flux de octeți</b>: fiecare octet are un număr. La examen apare des cerința „urmărește cum evoluează <b>SEQ</b> și <b>ACK</b>" de-a lungul unei conexiuni — handshake, transfer de date și închidere. Mai jos ai regulile, un exemplu <b>pas cu pas</b> și antrenament.</p>
+
+    <h2>Regulile de aur</h2>
+    <ul>
+      <li><b>SEQ</b> (Sequence Number) = numărul <b>primului octet</b> de date din segmentul trimis.</li>
+      <li><b>ACK</b> (Acknowledgment Number) = <b>următorul octet așteptat</b> de la partener (confirmare <b>cumulativă</b>: „am primit tot până aici").</li>
+      <li><b>SYN și FIN consumă fiecare 1 număr de secvență</b> (deși nu duc date) — de aceea ACK-ul care le confirmă crește cu <b>+1</b>.</li>
+      <li>Un segment <b>doar-ACK</b> (fără date, fără SYN/FIN) <b>nu</b> consumă număr de secvență — SEQ-ul expeditorului rămâne același.</li>
+      <li>Regula de calcul: <b>ACK pe care-l trimit = SEQ primit + Len primit</b> (sau <b>+1</b> dacă a fost SYN sau FIN).</li>
+    </ul>
+
+    <div class="card">
+      <b>Flagurile TCP</b> (coloana <span class="kbd">U A P R S F</span> din antet):
+      <div class="tcp-flags">
+        <span class="tcp-flag"><b>URG</b> — urgent</span>
+        <span class="tcp-flag"><b>ACK</b> — câmpul ACK e valid</span>
+        <span class="tcp-flag"><b>PSH</b> — livrează imediat aplicației</span>
+        <span class="tcp-flag"><b>RST</b> — resetează brusc conexiunea</span>
+        <span class="tcp-flag"><b>SYN</b> — deschide conexiunea (sincronizare)</span>
+        <span class="tcp-flag"><b>FIN</b> — închide ordonat conexiunea</span>
+      </div>
+    </div>
+
+    <h2>Exemplu complet — pas cu pas</h2>
+    <p>ISN client = <b>1000</b>, ISN server = <b>5000</b>. Clientul trimite <b>100 B</b>, serverul <b>200 B</b>. Apasă <b>„Pasul următor"</b> și încearcă să prezici SEQ/ACK <i>înainte</i> de a-l dezvălui.</p>
+    <div class="tcp-trainer">
+      <div style="overflow-x:auto"><table class="tcp-table" id="tcpTable"></table></div>
+      <div class="tcp-expl" id="tcpExpl">Apasă „Pasul următor" ca să pornești conexiunea.</div>
+      <div class="btn-row">
+        <button class="btn primary" id="tcpNext">▶ Pasul următor</button>
+        <button class="btn" id="tcpAll">Arată tot</button>
+        <button class="btn ghost" id="tcpReset">↺ De la capăt</button>
+      </div>
+    </div>
+    <p class="note">🔵 rândurile <b>C→S</b> (clientul trimite) · 🟢 rândurile <b>S→C</b> (serverul trimite). Observă cum <b>ACK-ul</b> uneia dintre părți = <b>SEQ + Len</b> al segmentului primit de la cealaltă.</p>
+
+    <h2>De ce cresc SYN și FIN cu 1?</h2>
+    <p>SYN și FIN sunt „octeți fantomă": ocupă fiecare câte un număr de secvență în flux, ca să poată fi confirmate sigur (altfel n-ai ști dacă handshake-ul / închiderea a ajuns). De asta, după un SYN sau un FIN cu SEQ = <code>x</code>, partenerul răspunde cu <b>ACK = x + 1</b>, chiar dacă nu s-au transferat date. E cea mai frecventă capcană: mulți uită <b>+1</b>-ul la închidere.</p>
+
+    <h2>Antrenament — calculează ACK-ul</h2>
+    <p class="hint">Tocmai a sosit un segment. Ce număr <b>ACK</b> trimiți înapoi?</p>
+    <div class="tcp-quiz" id="tcpQuiz">
+      <div class="seg" id="tcpQSeg"></div>
+      <div class="tcp-qin">
+        <input id="tcpQIn" inputmode="numeric" placeholder="ACK = ?" autocomplete="off">
+        <button class="btn primary" id="tcpQCheck">Verifică</button>
+        <button class="btn ghost" id="tcpQNew">Altă întrebare</button>
+      </div>
+      <div class="tcp-qfb" id="tcpQFb"></div>
+    </div>
+
+    <h2>Al doilea exemplu — încearcă singur</h2>
+    <p>ISN client = <b>200</b>, ISN server = <b>8000</b>. Clientul trimite <b>50 B</b>, serverul <b>300 B</b>. Fă tabelul pe ciornă, apoi verifică.</p>
+    <details class="tcp-details">
+      <summary>Arată rezolvarea completă</summary>
+      <div class="in" style="overflow-x:auto"><table class="tcp-table" id="tcpTable2"></table></div>
+    </details>
+  </section>
 </main>
 
 <div class="tooltip" id="tip"></div>
@@ -6584,6 +6682,94 @@ window.addEventListener('message', function(e){
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+})();
+</script>
+
+<!-- Transmisia TCP (SEQ/ACK): trainer pas-cu-pas + quiz -->
+<script>
+(function(){
+  // generează cele 11 segmente ale unei conexiuni TCP (handshake, transfer, close)
+  function tcpSteps(isnC, isnS, lenC, lenS){
+    var c = isnC, s = isnS, st = [];
+    st.push({faza:"1. Stabilire (handshake)", dir:"C→S", flags:"SYN", seq:c, ack:"—", len:0,
+      expl:"SYN, ISN client = "+isnC+". SYN consumă 1 număr de secvență."}); c += 1;
+    st.push({faza:"1. Stabilire (handshake)", dir:"S→C", flags:"SYN, ACK", seq:s, ack:c, len:0,
+      expl:"SYN-ACK, ISN server = "+isnS+". ACK = "+isnC+"+1 (confirmă SYN-ul clientului)."}); s += 1;
+    st.push({faza:"1. Stabilire (handshake)", dir:"C→S", flags:"ACK", seq:c, ack:s, len:0,
+      expl:"ACK = "+isnS+"+1 (confirmă SYN-ul serverului). Handshake gata."});
+    st.push({faza:"2. Transfer de date", dir:"C→S", flags:"PSH, ACK", seq:c, ack:s, len:lenC,
+      expl:"Clientul trimite "+lenC+" B (octeții "+c+"–"+(c+lenC-1)+")."}); c += lenC;
+    st.push({faza:"2. Transfer de date", dir:"S→C", flags:"ACK", seq:s, ack:c, len:0,
+      expl:"ACK = SEQ+Len = "+(c-lenC)+"+"+lenC+". Doar-ACK → SEQ-ul serverului rămâne "+s+"."});
+    st.push({faza:"2. Transfer de date", dir:"S→C", flags:"PSH, ACK", seq:s, ack:c, len:lenS,
+      expl:"Serverul trimite "+lenS+" B (octeții "+s+"–"+(s+lenS-1)+")."}); s += lenS;
+    st.push({faza:"2. Transfer de date", dir:"C→S", flags:"ACK", seq:c, ack:s, len:0,
+      expl:"ACK = "+(s-lenS)+"+"+lenS+"."});
+    st.push({faza:"3. Închidere", dir:"C→S", flags:"FIN, ACK", seq:c, ack:s, len:0,
+      expl:"Clientul cere închiderea. FIN consumă 1 număr de secvență."}); c += 1;
+    st.push({faza:"3. Închidere", dir:"S→C", flags:"ACK", seq:s, ack:c, len:0,
+      expl:"ACK = "+(c-1)+"+1 (confirmă FIN-ul clientului)."});
+    st.push({faza:"3. Închidere", dir:"S→C", flags:"FIN, ACK", seq:s, ack:c, len:0,
+      expl:"Și serverul închide. FIN consumă 1."}); s += 1;
+    st.push({faza:"3. Închidere", dir:"C→S", flags:"ACK", seq:c, ack:s, len:0,
+      expl:"ACK = "+(s-1)+"+1. Conexiune închisă."});
+    return st;
+  }
+  function flagsHtml(f){ return f.split(", ").map(function(x){ return '<span class="tcp-fl">'+x+'</span>'; }).join(" "); }
+  function renderTable(el, steps, n){
+    if(!el) return;
+    var h = '<tr><th>#</th><th>Direcție</th><th>Flaguri</th><th>SEQ</th><th>ACK</th><th>Len</th></tr>';
+    var faza = "";
+    for(var i=0;i<n;i++){
+      var s = steps[i];
+      if(s.faza !== faza){ faza = s.faza; h += '<tr class="faza"><td colspan="6">'+faza+'</td></tr>'; }
+      var cls = (s.dir.charAt(0)==="C") ? "cs" : "sc";
+      if(i===n-1 && n<steps.length) cls += " nou";
+      h += '<tr class="'+cls+'"><td>'+(i+1)+'</td><td class="dir">'+s.dir+'</td><td>'+flagsHtml(s.flags)
+         + '</td><td class="seq">'+s.seq+'</td><td class="ack">'+s.ack+'</td><td class="len">'+s.len+'</td></tr>';
+    }
+    el.innerHTML = h;
+  }
+
+  var MAIN = tcpSteps(1000, 5000, 100, 200), reveal = 0;
+  var table = document.getElementById("tcpTable"), expl = document.getElementById("tcpExpl");
+  function upd(){
+    renderTable(table, MAIN, reveal);
+    if(expl) expl.textContent = reveal===0 ? 'Apasă „Pasul următor" ca să pornești conexiunea.'
+                                           : (reveal + ". " + MAIN[reveal-1].expl);
+  }
+  var bN=document.getElementById("tcpNext"), bA=document.getElementById("tcpAll"), bR=document.getElementById("tcpReset");
+  if(bN) bN.onclick=function(){ if(reveal<MAIN.length){ reveal++; upd(); } };
+  if(bA) bA.onclick=function(){ reveal=MAIN.length; upd(); if(expl) expl.textContent="Conexiune completă: handshake (3 pași) → transfer (4) → închidere (4)."; };
+  if(bR) bR.onclick=function(){ reveal=0; upd(); };
+  upd();
+  renderTable(document.getElementById("tcpTable2"), tcpSteps(200,8000,50,300), 11);
+
+  // ----- quiz: calculează ACK-ul -----
+  function rnd(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
+  var qAns = 0;
+  function newQ(){
+    var seq = rnd(100,900)*10 + rnd(0,9), tip = rnd(0,3), seg, ans;
+    if(tip===2){ ans=seq+1; seg='Ai primit: <b>SYN</b>, SEQ='+seq+', Len=0'; }
+    else if(tip===3){ ans=seq+1; seg='Ai primit: <b>FIN, ACK</b>, SEQ='+seq+', Len=0'; }
+    else { var len=rnd(1,40)*10; ans=seq+len; seg='Ai primit: <b>PSH, ACK</b>, SEQ='+seq+', Len='+len; }
+    qAns = ans;
+    var q=document.getElementById("tcpQSeg"); if(q) q.innerHTML=seg;
+    var i=document.getElementById("tcpQIn"); if(i) i.value="";
+    var f=document.getElementById("tcpQFb"); if(f){ f.textContent=""; f.className="tcp-qfb"; }
+  }
+  function check(){
+    var i=document.getElementById("tcpQIn"), f=document.getElementById("tcpQFb"); if(!i||!f) return;
+    var v=parseInt(i.value,10);
+    if(isNaN(v)){ f.textContent="Scrie un număr."; f.className="tcp-qfb no"; return; }
+    if(v===qAns){ f.textContent="✅ Corect! ACK = "+qAns+"."; f.className="tcp-qfb ok"; }
+    else { f.textContent="❌ Nu. ACK = SEQ + Len (sau +1 la SYN/FIN) = "+qAns+"."; f.className="tcp-qfb no"; }
+  }
+  var qc=document.getElementById("tcpQCheck"), qn=document.getElementById("tcpQNew"), qi=document.getElementById("tcpQIn");
+  if(qc) qc.onclick=check;
+  if(qn) qn.onclick=newQ;
+  if(qi) qi.addEventListener("keydown", function(e){ if(e.key==="Enter") check(); });
+  newQ();
 })();
 </script>
 </body>
