@@ -304,6 +304,11 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
 .ex-sol pre{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:.76rem;line-height:1.45;color:var(--txt)}
 .ex-sol ol,.ex-sol ul{margin:6px 0;padding-left:22px}
 .ex-sol li{margin:4px 0}
+/* diagramă „paper" (fundal deschis constant, ca săgețile gri să fie lizibile pe tema dark) */
+.dns-paper{background:#fbf7ef;border:1px solid var(--border);border-radius:12px;padding:16px 16px 10px;margin:14px 0;overflow-x:auto}
+.dns-paper svg{display:block;max-width:620px;width:100%;height:auto;margin:0 auto}
+.dns-cap{font-size:.72rem;color:#6b6b6b;text-align:center;margin-top:10px;line-height:1.5}
+.dns-tip{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:9px 12px;font-size:.82rem;margin-top:10px}
 .badge{font-size:11px;color:var(--muted)}
 .ex-info{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin:0 0 14px;font-size:.82rem;color:var(--muted)}
 .ex-info b{color:var(--txt)}
@@ -318,6 +323,45 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
 .ex-score{font-size:12.5px;font-weight:700}
 .ex-score.good{color:var(--good)}
 .ex-score.bad{color:var(--bad)}
+
+/* ===== Probleme salvate (buton + tab local) ===== */
+.ex-save{flex-shrink:0;margin-left:auto;background:var(--bg3);color:var(--txt);border:1px solid var(--border);padding:9px 15px;border-radius:9px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:.12s}
+.ex-save:hover{border-color:var(--accent);transform:translateY(-1px)}
+.ex-save.on{background:color-mix(in srgb,var(--accent) 16%,transparent);border-color:var(--accent);color:var(--accent)}
+.tab-count{display:inline-block;min-width:18px;padding:0 6px;margin-left:5px;font-size:11px;font-weight:800;line-height:18px;text-align:center;border-radius:20px;background:var(--accent);color:#1a1714;vertical-align:middle}
+.sv-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 4px}
+.sv-actions{margin-left:auto;display:flex;gap:8px}
+.sv-clear{appearance:none;cursor:pointer;font-family:inherit;font-size:12px;color:var(--muted);background:transparent;border:1px solid var(--border);border-radius:8px;padding:6px 12px}
+.sv-clear:hover{color:var(--bad);border-color:var(--bad)}
+.sv-card{border:1px solid var(--border);border-radius:14px;margin:14px 0;background:var(--panel);box-shadow:var(--shadow);overflow:hidden}
+.sv-card:hover{border-color:var(--accent)}
+.sv-card-head{display:flex;gap:13px;align-items:flex-start;padding:16px 18px 10px}
+.sv-num{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1714;font-weight:800;font-size:12.5px;display:flex;align-items:center;justify-content:center}
+.sv-q{font-weight:600;padding-top:2px;flex:1;min-width:0}
+.sv-q .src{display:inline-block;font-size:11px;font-weight:700;color:#1a1714;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;background:var(--accent);padding:3px 10px;border-radius:20px}
+.sv-rm{flex-shrink:0;appearance:none;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);width:28px;height:28px;border-radius:8px;font-size:13px}
+.sv-rm:hover{color:var(--bad);border-color:var(--bad)}
+.sv-body{padding:0 18px 16px}
+.sv-det{border:1px solid var(--border);border-radius:11px;background:var(--bg);margin:10px 0 0;overflow:hidden}
+.sv-det>summary{cursor:pointer;padding:11px 15px;font-weight:800;font-size:12.5px;color:var(--accent);text-transform:uppercase;letter-spacing:.3px;list-style:none;user-select:none}
+.sv-det>summary::-webkit-details-marker{display:none}
+.sv-det>summary::before{content:"▸  ";font-size:10px}
+.sv-det[open]>summary::before{content:"▾  "}
+.sv-det[open]>summary{border-bottom:1px dashed var(--border)}
+.sv-det-body{padding:8px 16px 14px}
+.sv-det-body h4{margin:14px 0 6px;color:var(--accent);font-size:14px}
+.sv-det-body p{margin:6px 0}
+.sv-det-body pre{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:.76rem;line-height:1.45;color:var(--txt)}
+.sv-det-body ol,.sv-det-body ul{margin:6px 0;padding-left:22px}
+.sv-det-body li{margin:4px 0}
+.sv-det-body code{background:var(--bg2);padding:1px 5px;border-radius:4px}
+.sv-ans{white-space:pre-wrap;font-family:inherit;font-size:.86rem;line-height:1.55;color:var(--txt)}
+.sv-empty{text-align:center;max-width:560px;margin:6vh auto 0;padding:20px}
+.sv-empty .ico{font-size:46px}
+.sv-empty h2{font-size:20px;margin:12px 0 6px}
+.sv-empty p{color:var(--muted);margin:6px 0;line-height:1.7}
+.sv-empty .how{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-align:left;margin-top:16px}
+.sv-empty .how b{color:var(--txt)}
 
 /* ===== Schema topologie (EX 7) ===== */
 .topo-wrap{overflow-x:auto;margin:4px 0 18px}
@@ -636,6 +680,7 @@ table.fillt td .sw{display:inline-block;width:12px;height:12px;border-radius:4px
       <button data-tab="quiz">❓ Quiz</button>
       <button data-tab="hex">🔬 Analiză pachete</button>
       <button data-tab="exercitii">📝 Exerciții examen</button>
+      <button data-tab="salvate">🔖 Probleme salvate<span class="tab-count" id="svCount" style="display:none">0</span></button>
     </nav>
     <button class="theme-btn" id="themeBtn" title="Comută tema">🌙</button>
   </div>
@@ -2053,14 +2098,98 @@ Total client → server = 21+3+3+3 = <b>30 octeți</b></pre>
       </div>
       <div class="ex-sol">
         <div class="ex-sol-title">📖 Rezolvare model</div>
-        <p>Stația utilizatorului nu vorbește direct cu serverele autoritare — ea trimite o singură interogare <b>recursivă</b> către serverul de nume local (resolver-ul configurat, ex. al ISP-ului), care face apoi, în locul ei, un lanț de interogări <b>iterative</b> către alte servere:</p>
-        <ol>
-          <li><b>Resolver-ul</b> de pe stația utilizatorului contactează <b>serverul de nume local</b> și cere adresa IP corespunzătoare numelui <code>www.mta.ro</code>.</li>
-          <li>Serverul de nume local contactează <b>serverul rădăcină (root)</b>, pentru a afla care este serverul de nume autoritar pentru domeniul <code>.ro</code>.</li>
-          <li>Serverul de nume local contactează <b>serverul autoritar pentru <code>.ro</code></b>, pentru a afla care este serverul de nume autoritar pentru domeniul <code>mta.ro</code>.</li>
-          <li>Serverul de nume local contactează <b>serverul autoritar pentru <code>mta.ro</code></b>, pentru a afla adresa IP corespunzătoare numelui <code>www.mta.ro</code>.</li>
-        </ol>
-        <p>După ce primește în final răspunsul, serverul de nume local <b>comunică adresa IP înapoi resolver-ului</b> de pe stația utilizatorului — acesta a făcut o singură cerere (recursivă) și a primit direct rezultatul final, fără să „vadă" pașii intermediari.</p>
+        <p><b>Ideea de bază.</b> DNS (Domain Name System) traduce nume ușor de reținut (<code>www.mta.ro</code>) în adrese IP (ex. <code>193.226.6.10</code>), pentru că routerele și calculatoarele comunică între ele prin adrese IP, nu prin nume. La o interogare <b>recursivă</b>, stația ta pune <b>o singură întrebare</b> și primește direct răspunsul final: ea nu aleargă singură prin toată ierarhia DNS, ci deleagă toată munca <b>resolver-ului recursiv local</b> (de obicei al furnizorului tău de internet). Acel resolver face, în locul tău, un lanț de interogări <b>iterative</b> către serverele din ierarhie. Deci în același flux coexistă două tipuri de interogări:</p>
+        <ul>
+          <li><b>recursivă</b> — între stația ta și resolver-ul local („rezolvă-mi tu tot și dă-mi IP-ul gata").</li>
+          <li><b>iterative</b> — între resolver și serverele autoritare („spune-mi ce știi; dacă nu știi, spune-mi pe cine să întreb mai departe").</li>
+        </ul>
+
+        <h4>Fluxul complet pentru www.mta.ro</h4>
+        <div class="dns-paper">
+          <svg width="100%" viewBox="0 0 680 620" role="img" style="" xmlns="http://www.w3.org/2000/svg">
+          <title style="fill:rgb(0, 0, 0);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">Rezoluția recursivă a numelui www.mta.ro</title>
+          <desc style="fill:rgb(0, 0, 0);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">Stația trimite o interogare recursivă către resolverul local, care face interogări iterative către serverul root, serverul .ro și serverul autoritar mta.ro, apoi returnează adresa IP.</desc>
+          <defs>
+          <marker id="dns-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+          <mask id="dns-text-gaps" maskUnits="userSpaceOnUse"><rect x="0" y="0" width="680" height="620" fill="white"/><rect x="64.2249984741211" y="50.41666793823242" width="131.5500030517578" height="23.16666603088379" fill="black" rx="2"/><rect x="88.92500305175781" y="70.5" width="82.48332977294922" height="19" fill="black" rx="2"/><rect x="67.00833129882812" y="190.4166717529297" width="125.98332977294922" height="23.16666603088379" fill="black" rx="2"/><rect x="63.599998474121094" y="210.5" width="132.8000030517578" height="19" fill="black" rx="2"/><rect x="499.35833740234375" y="50.41666793823242" width="81.28333282470703" height="23.16666603088379" fill="black" rx="2"/><rect x="495.2416687011719" y="70.5" width="89.81666564941406" height="19" fill="black" rx="2"/><rect x="473.375" y="190.4166717529297" width="133.25" height="23.16666603088379" fill="black" rx="2"/><rect x="484.308349609375" y="210.5" width="111.68333435058594" height="19" fill="black" rx="2"/><rect x="460.3833312988281" y="330.4166564941406" width="159.23333740234375" height="23.16666603088379" fill="black" rx="2"/><rect x="480.2416687011719" y="350.5" width="119.51667022705078" height="19" fill="black" rx="2"/><rect x="48.68333435058594" y="126.33332824707031" width="67.54999923706055" height="19" fill="black" rx="2"/><rect x="146" y="126.33332824707031" width="60.18333435058594" height="19" fill="black" rx="2"/><rect x="297.875" y="98.33333587646484" width="64.48333358764648" height="19" fill="black" rx="2"/><rect x="287.14166259765625" y="154.3333282470703" width="85.94999694824219" height="19" fill="black" rx="2"/><rect x="297.6833190917969" y="184.3333282470703" width="64.86666488647461" height="19" fill="black" rx="2"/><rect x="276.17498779296875" y="226.3333282470703" width="107.88333129882812" height="19" fill="black" rx="2"/><rect x="297.95001220703125" y="286.3333435058594" width="64.33333206176758" height="19" fill="black" rx="2"/><rect x="284.25" y="346.3333435058594" width="91.83333587646484" height="19" fill="black" rx="2"/><rect x="56" y="454.4166564941406" width="64.86666488647461" height="23.16666603088379" fill="black" rx="2"/><rect x="116" y="482.5" width="407.79998779296875" height="19" fill="black" rx="2"/><rect x="116" y="512.5" width="320.48333740234375" height="19" fill="black" rx="2"/><rect x="56" y="542.5" width="430.45001220703125" height="19" fill="black" rx="2"/></mask></defs>
+
+          <g style="fill:rgb(0, 0, 0);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+          <rect x="40" y="40" width="180" height="56" rx="8" stroke-width="0.5" style="fill:rgb(241, 239, 232);stroke:rgb(95, 94, 90);color:rgb(11, 11, 11);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="130" y="62" text-anchor="middle" dominant-baseline="central" style="fill:rgb(68, 68, 65);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:14px;font-weight:500;text-anchor:middle;dominant-baseline:central">Stația utilizatorului</text>
+          <text x="130" y="80" text-anchor="middle" dominant-baseline="central" style="fill:rgb(95, 94, 90);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:middle;dominant-baseline:central">stub resolver</text>
+          </g>
+
+          <g style="fill:rgb(0, 0, 0);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+          <rect x="40" y="180" width="180" height="56" rx="8" stroke-width="0.5" style="fill:rgb(238, 237, 254);stroke:rgb(83, 74, 183);color:rgb(11, 11, 11);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="130" y="202" text-anchor="middle" dominant-baseline="central" style="fill:rgb(60, 52, 137);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:14px;font-weight:500;text-anchor:middle;dominant-baseline:central">Server nume local</text>
+          <text x="130" y="220" text-anchor="middle" dominant-baseline="central" style="fill:rgb(83, 74, 183);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:middle;dominant-baseline:central">resolver recursiv (ISP)</text>
+          </g>
+
+          <g style="fill:rgb(0, 0, 0);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+          <rect x="440" y="40" width="200" height="56" rx="8" stroke-width="0.5" style="fill:rgb(225, 245, 238);stroke:rgb(15, 110, 86);color:rgb(11, 11, 11);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="540" y="62" text-anchor="middle" dominant-baseline="central" style="fill:rgb(8, 80, 65);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:14px;font-weight:500;text-anchor:middle;dominant-baseline:central">Server root</text>
+          <text x="540" y="80" text-anchor="middle" dominant-baseline="central" style="fill:rgb(15, 110, 86);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:middle;dominant-baseline:central">cine ține „.ro"?</text>
+          </g>
+
+          <g style="fill:rgb(0, 0, 0);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+          <rect x="440" y="180" width="200" height="56" rx="8" stroke-width="0.5" style="fill:rgb(225, 245, 238);stroke:rgb(15, 110, 86);color:rgb(11, 11, 11);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="540" y="202" text-anchor="middle" dominant-baseline="central" style="fill:rgb(8, 80, 65);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:14px;font-weight:500;text-anchor:middle;dominant-baseline:central">Server autoritar .ro</text>
+          <text x="540" y="220" text-anchor="middle" dominant-baseline="central" style="fill:rgb(15, 110, 86);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:middle;dominant-baseline:central">cine ține „mta.ro"?</text>
+          </g>
+
+          <g style="fill:rgb(0, 0, 0);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+          <rect x="440" y="320" width="200" height="56" rx="8" stroke-width="0.5" style="fill:rgb(225, 245, 238);stroke:rgb(15, 110, 86);color:rgb(11, 11, 11);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="540" y="342" text-anchor="middle" dominant-baseline="central" style="fill:rgb(8, 80, 65);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:14px;font-weight:500;text-anchor:middle;dominant-baseline:central">Server autoritar mta.ro</text>
+          <text x="540" y="360" text-anchor="middle" dominant-baseline="central" style="fill:rgb(15, 110, 86);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:middle;dominant-baseline:central">IP-ul lui www.mta.ro</text>
+          </g>
+
+          <line x1="120" y1="96" x2="120" y2="178" marker-end="url(#dns-arrow)" style="fill:none;stroke:rgb(137, 135, 129);color:rgb(11, 11, 11);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="112" y="140" text-anchor="end" style="fill:rgb(82, 81, 78);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:end;dominant-baseline:auto">1 recursivă</text>
+
+          <line x1="140" y1="178" x2="140" y2="98" marker-end="url(#dns-arrow)" style="fill:none;stroke:rgb(137, 135, 129);color:rgb(11, 11, 11);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="150" y="140" text-anchor="start" style="fill:rgb(82, 81, 78);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:auto">10 IP final</text>
+
+          <line x1="222" y1="185" x2="438" y2="62" marker-end="url(#dns-arrow)" mask="url(#dns-text-gaps)" style="fill:none;stroke:rgb(137, 135, 129);color:rgb(11, 11, 11);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="330" y="112" text-anchor="middle" style="fill:rgb(82, 81, 78);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:middle;dominant-baseline:auto">2 iterativă</text>
+          <line x1="438" y1="80" x2="224" y2="200" marker-end="url(#dns-arrow)" mask="url(#dns-text-gaps)" style="fill:none;stroke:rgb(137, 135, 129);color:rgb(11, 11, 11);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="330" y="168" text-anchor="middle" style="fill:rgb(82, 81, 78);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:middle;dominant-baseline:auto">3 referral „.ro"</text>
+
+          <line x1="222" y1="205" x2="438" y2="205" marker-end="url(#dns-arrow)" style="fill:none;stroke:rgb(137, 135, 129);color:rgb(11, 11, 11);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="330" y="198" text-anchor="middle" style="fill:rgb(82, 81, 78);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:middle;dominant-baseline:auto">4 iterativă</text>
+          <line x1="438" y1="222" x2="224" y2="222" marker-end="url(#dns-arrow)" style="fill:none;stroke:rgb(137, 135, 129);color:rgb(11, 11, 11);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="330" y="240" text-anchor="middle" style="fill:rgb(82, 81, 78);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:middle;dominant-baseline:auto">5 referral „mta.ro"</text>
+
+          <line x1="222" y1="215" x2="438" y2="340" marker-end="url(#dns-arrow)" mask="url(#dns-text-gaps)" style="fill:none;stroke:rgb(137, 135, 129);color:rgb(11, 11, 11);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="330" y="300" text-anchor="middle" style="fill:rgb(82, 81, 78);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:middle;dominant-baseline:auto">6 iterativă</text>
+          <line x1="438" y1="358" x2="224" y2="228" marker-end="url(#dns-arrow)" mask="url(#dns-text-gaps)" style="fill:none;stroke:rgb(137, 135, 129);color:rgb(11, 11, 11);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="330" y="360" text-anchor="middle" style="fill:rgb(82, 81, 78);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:middle;dominant-baseline:auto">7 răspuns cu IP</text>
+
+          <rect x="40" y="440" width="600" height="140" rx="12" fill="var(--surface-1)" stroke="var(--border)" stroke-width="0.5" style="fill:rgb(252, 252, 251);stroke:color(srgb 0.0431373 0.0431373 0.0431373 / 0.1);color:rgb(11, 11, 11);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="60" y="466" dominant-baseline="central" style="fill:rgb(11, 11, 11);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:14px;font-weight:500;text-anchor:start;dominant-baseline:central">Legendă</text>
+          <line x1="60" y1="492" x2="110" y2="492" marker-end="url(#dns-arrow)" style="fill:none;stroke:rgb(137, 135, 129);color:rgb(11, 11, 11);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="120" y="492" dominant-baseline="central" style="fill:rgb(82, 81, 78);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:central">1, 10 = interogare recursivă (stație ↔ resolver): o cerere, un răspuns final</text>
+          <line x1="60" y1="522" x2="110" y2="522" marker-end="url(#dns-arrow)" style="fill:none;stroke:rgb(137, 135, 129);color:rgb(11, 11, 11);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+          <text x="120" y="522" dominant-baseline="central" style="fill:rgb(82, 81, 78);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:central">2–7 = interogări iterative (resolver ↔ servere autoritare)</text>
+          <text x="60" y="552" dominant-baseline="central" style="fill:rgb(82, 81, 78);stroke:none;color:rgb(11, 11, 11);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:central">Pașii impari trimiși de resolver = întrebări; pașii pari = răspunsuri/referral-uri</text>
+          </svg>
+          <div class="dns-cap">Cererea <b>1</b> și răspunsul <b>10</b> = interogarea recursivă (stație ↔ resolver): o cerere, un răspuns final. Pașii <b>2–7</b> = interogări iterative (resolver ↔ servere autoritare); pașii impari sunt întrebări, pașii pari sunt răspunsuri / referral-uri.</div>
+        </div>
+
+        <h4>Fiecare pas explicat în detaliu</h4>
+        <p><b>Pasul 0 — de unde pornește totul.</b> Deschizi browserul și scrii <code>www.mta.ro</code>. Sistemul de operare are un mic client DNS numit <i>stub resolver</i>: el nu știe să caute prin ierarhie, știe doar un singur lucru — adresa serverului de nume local, primită de obicei automat prin DHCP de la furnizor (ex. <code>192.168.1.1</code> sau un DNS public precum <code>8.8.8.8</code>).</p>
+        <p><b>Pasul 1 — interogarea recursivă (stație → resolver).</b> Stub resolver-ul trimite o singură întrebare — „Care este adresa IP pentru <code>www.mta.ro</code>?" — și setează flag-ul <b>RD (Recursion Desired)</b>: „te rog rezolvă tu tot lanțul și dă-mi direct rezultatul". Din acest moment stația nu mai face nimic; așteaptă un singur răspuns. Aceasta este singura interogare recursivă din tot procesul.</p>
+        <p><b>Pasul 2 — resolver-ul întreabă serverul root (iterativ).</b> Resolver-ul citește numele de la dreapta la stânga, ca o adresă poștală citită de la țară spre stradă. Primul lucru necunoscut e cine gestionează TLD-ul <code>.ro</code>, așa că întreabă unul dintre cele 13 seturi de servere root (<code>a.root-servers.net … m.root-servers.net</code>): „Cine este autoritatea pentru <code>.ro</code>?" Aici recursivitatea nu mai e cerută — resolver-ul acceptă un răspuns parțial.</p>
+        <p><b>Pasul 3 — root răspunde cu un referral.</b> Serverul root <b>nu</b> cunoaște IP-ul lui <code>www.mta.ro</code> și nici nu-l caută. Îți spune doar: „eu nu știu, dar pentru <code>.ro</code> întreabă serverele registrului <code>.ro</code>" și îți dă numele și adresele lor (înregistrări NS + „glue" A). Registrul <code>.ro</code> e administrat de ICI/RoTLD. Acest tip de răspuns „nu știu, dar întreabă-l pe X" se numește <i>referral</i>.</p>
+        <p><b>Pasul 4 — resolver-ul întreabă serverul <code>.ro</code> (iterativ).</b> Resolver-ul merge la un server autoritar pentru <code>.ro</code> și întreabă: „Cine este autoritatea pentru <code>mta.ro</code>?"</p>
+        <p><b>Pasul 5 — serverul <code>.ro</code> răspunde cu un referral.</b> Nici acesta nu știe IP-ul paginii web; îți spune doar cine gestionează domeniul <code>mta.ro</code> — serverele de nume autoritare ale Academiei Tehnice Militare (ceva de forma <code>ns.mta.ro</code>), din nou prin înregistrări NS.</p>
+        <p><b>Pasul 6 — resolver-ul întreabă serverul autoritar <code>mta.ro</code> (iterativ).</b> Acesta e ultimul salt: resolver-ul întreabă direct serverul care deține zona <code>mta.ro</code>: „Care este IP-ul pentru <code>www.mta.ro</code>?"</p>
+        <p><b>Pasul 7 — răspunsul autoritar.</b> Serverul <code>mta.ro</code> chiar deține înregistrarea căutată și returnează un răspuns <i>autoritar</i> cu înregistrarea A: <code>www.mta.ro → 193.226.6.10</code> (IP ilustrativ). „Autoritar" înseamnă că răspunsul vine chiar de la sursa oficială a zonei, nu dintr-o copie temporară.</p>
+        <p><b>Pasul final (10 în diagramă) — răspunsul se întoarce la stație.</b> Resolver-ul local a strâns rezultatul și îl trimite înapoi stub resolver-ului stației tale, ca răspuns la unica cerere recursivă de la pasul 1. Din perspectiva stației, a pus <b>o</b> întrebare și a primit <b>un</b> IP gata de folosit — nu a „văzut" niciodată pașii 2–7. Browserul deschide apoi o conexiune TCP către <code>193.226.6.10</code> și cere pagina.</p>
+
+        <h4>Două idei care fac totul mai clar</h4>
+        <p><b>De ce „recursiv" vs „iterativ" contează.</b> Diferența nu e despre <i>ce</i> se caută, ci despre <i>cine cară munca</i>. La cererea recursivă, stația spune „adu-mi rezultatul complet, oricât ar dura". La cererile iterative, fiecare server răspunde doar cu ce știe și te trimite mai departe. Serverele root și TLD funcționează <b>exclusiv iterativ</b> tocmai ca să nu fie copleșite — dacă ar rezolva recursiv pentru toată lumea, ar ceda instant sub trafic.</p>
+        <p><b>Caching-ul scurtează drastic procesul.</b> Resolver-ul local reține fiecare răspuns pentru o durată numită <b>TTL (Time To Live)</b>. Dacă altcineva cere <code>www.mta.ro</code> la scurt timp, resolver-ul răspunde direct din cache, sărind peste pașii 2–7. Chiar și parțial ajută: dacă știe deja serverele <code>.ro</code> dintr-o căutare anterioară, pornește direct de la pasul 4. De asta prima accesare a unui site pare puțin mai lentă decât următoarele.</p>
+        <p class="dns-tip">📝 <b>La examen:</b> fluxul de mai sus presupune un „cache miss" complet (nimic memorat). În realitate, un resolver ocupat are aproape mereu serverele root și <code>.ro</code> deja în cache, așa că de multe ori face efectiv doar pașii 6–7.</p>
       </div>
     </div>
 
@@ -3473,6 +3602,13 @@ C0 A8 01 0A  C0 A8 01 01</pre>
         <p>Statică: configurare manuală, zero overhead, potrivită pentru rețele mici/rute default. Dinamică: protocoale (RIP/OSPF/EIGRP/BGP), trafic de control, se adaptează automat la căderi — potrivită pentru rețele mari.</p>
       </div>
     </div>
+  </section>
+
+  <!-- ============ PROBLEME SALVATE ============ -->
+  <section class="page" id="page-salvate">
+    <h1>🔖 Probleme salvate</h1>
+    <p class="lead">Exercițiile pe care le-ai marcat din <b>📝 Exerciții examen</b>. Se salvează local, în acest browser. Deschide rezolvarea (sau răspunsul tău) din dropdown când vrei să le reexersezi.</p>
+    <div id="svContent"></div>
   </section>
 
   <!-- ============ ANATOMIE PE BIȚI ============ -->
@@ -6186,6 +6322,167 @@ window.addEventListener('message', function(e){
   if(d.type==='theme' && d.theme){ setTheme(d.theme); applyThemeVars(d.vars); }
   else if(d.type==='tab' && d.tab) activateTab(d.tab);
 });
+</script>
+
+<!-- ============================================================
+     PROBLEME SALVATE — magazie locală pentru „Exerciții examen"
+     (izolată de magazia globală 'probleme-salvate-v1')
+     ============================================================ -->
+<script>
+(function(){
+  "use strict";
+  var SAVE_KEY = "retele-probleme-salvate-v1";
+
+  function getAll(){ try{ return JSON.parse(localStorage.getItem(SAVE_KEY)||"[]"); }catch(e){ return []; } }
+  function setAll(a){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(a)); }catch(e){} }
+  function isSaved(key){ return getAll().some(function(x){ return x.key===key; }); }
+  function removeKey(key){ setAll(getAll().filter(function(x){ return x.key!==key; })); }
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  /* cheie stabilă din textul întrebării -> independentă de poziția exercițiului */
+  function hashKey(str){
+    var h=5381, i=str.length;
+    while(i) h=(h*33)^str.charCodeAt(--i);
+    return "net-" + (h>>>0).toString(36);
+  }
+
+  /* extrage întrebarea, sursa, rezolvarea și răspunsul dintr-un card .ex */
+  function readEx(ex){
+    var qEl = ex.querySelector(".ex-q");
+    var srcEl = qEl ? qEl.querySelector(".src") : null;
+    var src = srcEl ? srcEl.textContent.trim() : "Examen";
+    var numEl = ex.querySelector(".ex-num");
+    var num = numEl ? numEl.textContent.trim() : "";
+    var qText = qEl ? qEl.textContent.replace(src,"").trim() : "";
+    /* HTML-ul întrebării fără eticheta sursă și fără <br> inițial */
+    var qClone = qEl ? qEl.cloneNode(true) : document.createElement("div");
+    var sEl = qClone.querySelector(".src"); if(sEl) sEl.remove();
+    var brEl = qClone.querySelector("br"); if(brEl) brEl.remove();
+    var intrebareHtml = qClone.innerHTML.trim();
+    /* rezolvarea fără titlul .ex-sol-title (punem titlul nostru pe dropdown) */
+    var solEl = ex.querySelector(".ex-sol");
+    var solutieHtml = "";
+    if(solEl){ var sc = solEl.cloneNode(true); var t=sc.querySelector(".ex-sol-title"); if(t) t.remove(); solutieHtml = sc.innerHTML.trim(); }
+    /* răspunsul scris de utilizator (doar la exercițiile deschise) */
+    var ta = ex.querySelector(".ex-ta");
+    var raspuns = ta ? ta.value.trim() : "";
+    return { key: hashKey(qText||intrebareHtml), num:num, src:src,
+             intrebareHtml:intrebareHtml, solutieHtml:solutieHtml, raspunsUtilizator:raspuns };
+  }
+
+  function updateCount(){
+    var n = getAll().length, badge = document.getElementById("svCount");
+    if(badge){ badge.textContent = n; badge.style.display = n ? "" : "none"; }
+  }
+
+  function refreshBtn(btn, key){
+    var on = isSaved(key);
+    btn.classList.toggle("on", on);
+    btn.textContent = on ? "🔖 Salvat ✓ — scoate" : "🔖 Salvează problema";
+  }
+
+  /* injectează butonul de salvare în fiecare exercițiu din tab-ul „Exerciții examen" */
+  function initButtons(){
+    document.querySelectorAll("#page-exercitii .ex").forEach(function(ex){
+      var actions = ex.querySelector(".ex-actions");
+      if(!actions || actions.querySelector(".ex-save")) return;
+      var key = readEx(ex).key;
+      var btn = document.createElement("button");
+      btn.className = "ex-save"; btn.type = "button";
+      refreshBtn(btn, key);
+      btn.addEventListener("click", function(){
+        if(isSaved(key)){
+          removeKey(key);
+        } else {
+          var item = readEx(ex);           /* recitim ca să prindem răspunsul curent din textarea */
+          item.savedAt = Date.now();
+          var a = getAll(); a.push(item); setAll(a);
+        }
+        refreshBtn(btn, key);
+        updateCount();
+        renderSaved();
+      });
+      actions.appendChild(btn);
+    });
+  }
+
+  /* re-sincronizează starea butoanelor după ștergeri din tab-ul de salvate */
+  function syncButtons(){
+    document.querySelectorAll("#page-exercitii .ex .ex-save").forEach(function(btn){
+      refreshBtn(btn, readEx(btn.closest(".ex")).key);
+    });
+    updateCount();
+  }
+
+  function renderEmpty(host){
+    host.innerHTML =
+      '<div class="sv-empty">'
+      + '<div class="ico">🔖</div>'
+      + '<h2>Nicio problemă salvată încă</h2>'
+      + '<p>Aici ajung exercițiile pe care le marchezi din secțiunea <b>📝 Exerciții examen</b>, ca să le poți reexersa oricând.</p>'
+      + '<div class="how">'
+      +   '<p><b>Cum salvezi o problemă:</b></p>'
+      +   '<p>1. Mergi la tab-ul <b>📝 Exerciții examen</b>.</p>'
+      +   '<p>2. La exercițiul dorit apasă <b>🔖 Salvează problema</b>.</p>'
+      +   '<p>3. Revino aici — toate problemele salvate stau într-un singur loc.</p>'
+      + '</div></div>';
+  }
+
+  function renderSaved(){
+    var host = document.getElementById("svContent");
+    if(!host) return;
+    updateCount();
+    var lista = getAll();
+    if(!lista.length){ renderEmpty(host); return; }
+    var html =
+      '<div class="sv-head">'
+      + '<span class="badge">'+lista.length+' '+(lista.length===1?"problemă salvată":"probleme salvate")+'</span>'
+      + '<div class="sv-actions"><button class="sv-clear" id="svClear">Golește tot</button></div>'
+      + '</div>';
+    lista.forEach(function(x){
+      html += '<div class="sv-card" data-k="'+esc(x.key)+'">'
+        + '<div class="sv-card-head">'
+        +   '<span class="sv-num">'+esc(x.num||"?")+'</span>'
+        +   '<div class="sv-q"><span class="src">'+esc(x.src||"Examen")+'</span><br>'+(x.intrebareHtml||"")+'</div>'
+        +   '<button class="sv-rm" data-rm="'+esc(x.key)+'" title="Scoate din salvate">✕</button>'
+        + '</div>'
+        + '<div class="sv-body">';
+      if(x.raspunsUtilizator){
+        html += '<details class="sv-det"><summary>✍️ Răspunsul tău</summary>'
+          + '<div class="sv-det-body"><div class="sv-ans">'+esc(x.raspunsUtilizator)+'</div></div></details>';
+      }
+      html += '<details class="sv-det"><summary>📖 Rezolvare model</summary>'
+        + '<div class="sv-det-body">'+(x.solutieHtml||'<p class="badge">(fără rezolvare)</p>')+'</div></details>'
+        + '</div></div>';
+    });
+    host.innerHTML = html;
+    var clr = document.getElementById("svClear");
+    if(clr) clr.onclick = function(){
+      if(confirm("Ștergi toate problemele salvate din Rețele de pe acest browser?")){ setAll([]); syncButtons(); renderSaved(); }
+    };
+    host.querySelectorAll(".sv-rm").forEach(function(b){
+      b.onclick = function(){ removeKey(b.dataset.rm); syncButtons(); renderSaved(); };
+    });
+  }
+
+  function init(){
+    initButtons();
+    updateCount();
+    var tabBtn = document.querySelector('#tabs button[data-tab="salvate"]');
+    if(tabBtn) tabBtn.addEventListener("click", renderSaved);
+    /* gazda poate deschide tab-ul prin postMessage */
+    window.addEventListener("message", function(e){
+      var d=e.data||{}; if(d.type==="tab" && d.tab==="salvate") renderSaved();
+    });
+    /* sincronizare între file ale aceleiași origini */
+    window.addEventListener("storage", function(e){ if(e.key===SAVE_KEY){ syncButtons(); renderSaved(); } });
+    /* deep-link direct pe #salvate */
+    if(location.hash.replace('#','')==='salvate') renderSaved();
+  }
+
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
 </script>
 <!-- Rețelistan: conținutul de teorie (date) + motorul jocului — vezi harta/README.md -->
 <script src="harta/theory.js"></script>

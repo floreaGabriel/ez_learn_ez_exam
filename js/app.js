@@ -781,6 +781,8 @@ function examNav(id){
 // Editează AICI la fiecare modificare notabilă (cea mai NOUĂ prima). Apare în
 // banda care se derulează sus, ca toți utilizatorii să vadă ce s-a adăugat.
 const UPDATES = [
+  { d:"08.07.2026", t:"Rețele → „📝 Exerciții examen”: buton „🔖 Salvează problema” pe fiecare exercițiu + tab nou „🔖 Probleme salvate” unde le reexersezi (salvate local, în browser)" },
+  { d:"08.07.2026", t:"Rețele → Ex. 30 (DNS): rezoluția recursivă a lui www.mta.ro explicată pas cu pas, cu diagramă a fluxului recursiv ↔ iterativ (root → .ro → mta.ro)" },
   { d:"08.07.2026", t:"Rețele → „🏷️ Clase & adrese IP”: calculator de clasă (A–E) + privat / public / multicast / broadcast / loopback / link-local" },
   { d:"07.07.2026", t:"SDA → „🔐 Subiecte examen”: 10 variante noi în stil licență, cu rezolvări și barem" },
   { d:"06.07.2026", t:"Nou: „⭐ Probleme salvate” — pinuiește problemele mai tricky din PSO / OOP / SDA și reexersează-le" },
