@@ -36,6 +36,8 @@ IF DB_ID('universitate') IS NULL CREATE DATABASE universitate;
 GO
 IF DB_ID('biblioteca_carti') IS NULL CREATE DATABASE biblioteca_carti;
 GO
+IF DB_ID('gsm') IS NULL CREATE DATABASE gsm;
+GO
 
 -- ===================== 2. Login read-only (la nivel de server) =====================
 IF SUSER_ID('readonly') IS NULL
@@ -581,6 +583,58 @@ INSERT INTO Imprumuturi VALUES
  (16,3,2,'2022-06-01','2022-06-15','2022-06-10'),   -- la timp
  (17,4,4,'2023-01-05','2023-01-19',NULL);           -- activ nereturnat -> b), d) (nu h: expira in 2023)
 -- carte 1 are 4 imprumuturi (10,11,13,15) = cea mai imprumutata -> c) da 4
+CREATE USER readonly FOR LOGIN readonly;
+ALTER ROLE db_datareader ADD MEMBER readonly;
+GO
+
+-- ============================================================
+--  OPERATOR GSM (Abonati / Solicitari / Cartele) — Subiectul III
+-- ============================================================
+USE gsm;
+CREATE TABLE Abonati (
+    Identificator INT PRIMARY KEY,
+    Nume          VARCHAR(50) NOT NULL,
+    Prenume       VARCHAR(50) NOT NULL,
+    Localitate    VARCHAR(50) NOT NULL
+);
+CREATE TABLE Solicitari (
+    Identificator INT PRIMARY KEY,
+    ID_Abonat     INT NOT NULL,
+    Data          DATETIME NOT NULL,
+    Stare         CHAR(1) NULL,               -- NULL / 'R' / 'X'
+    FOREIGN KEY (ID_Abonat) REFERENCES Abonati(Identificator)
+);
+CREATE TABLE Cartele (
+    Identificator    INT PRIMARY KEY,
+    ID_Solicitare    INT NOT NULL,
+    Numar_Telefon    VARCHAR(10) NOT NULL,
+    Valabila_De_La   DATETIME NOT NULL,
+    Valabila_Pana_La DATETIME NOT NULL,
+    Blocata          DATETIME NULL,           -- NULL = se poate folosi
+    FOREIGN KEY (ID_Solicitare) REFERENCES Solicitari(Identificator)
+);
+INSERT INTO Abonati VALUES
+ (1,'Popescu','Andrei','Bucuresti'),
+ (2,'Ionescu','Maria','Bucuresti'),
+ (3,'Pop','Vlad','Cluj-Napoca'),
+ (4,'Popa','Elena','Bucuresti'),
+ (5,'Georgescu','Radu','Iasi');
+INSERT INTO Solicitari VALUES
+ (10,1,'2021-01-05','R'),
+ (11,1,'2021-01-19','R'),
+ (12,1,'2021-06-28','R'),     -- Popescu: 3 solicitari in 2021 -> cerinta g
+ (13,2,'2021-01-10','R'),
+ (14,2,'2021-03-15',NULL),    -- in procesare; Ionescu -> 2 in 2021 (g)
+ (15,3,'2021-01-20','R'),
+ (16,4,'2021-02-02','X'),     -- anulata
+ (17,5,'2021-01-08','R');
+INSERT INTO Cartele VALUES
+ (100,10,'0721000001','2021-01-05','2021-12-01',NULL),           -- a 4-a cifra 1; expira <31.12, nebloc -> h
+ (101,11,'0720500002','2021-01-19','2022-06-19','2021-08-01'),   -- a 4-a cifra 0 -> exclus la f; BLOCATA -> b
+ (102,12,'0745000003','2021-06-28','2022-06-28',NULL),           -- solicitare in iunie -> exclus la f
+ (103,13,'0733000004','2021-01-10','2021-11-30',NULL),           -- a 4-a cifra 3; expira <31.12, nebloc -> h
+ (104,15,'0722000005','2021-01-20','2022-01-20','2021-09-15'),   -- a 4-a cifra 2 (f) dar BLOCATA -> b
+ (105,17,'0728000006','2021-01-08','2022-01-08',NULL);           -- a 4-a cifra 8; expira in 2022 -> nu h
 CREATE USER readonly FOR LOGIN readonly;
 ALTER ROLE db_datareader ADD MEMBER readonly;
 GO

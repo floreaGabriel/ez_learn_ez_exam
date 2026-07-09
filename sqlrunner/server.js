@@ -51,7 +51,9 @@ const SCENARIOS = {
   universitate:{ nume:"Universitate", icon:"🎓", db:"universitate",
                 tables:["Studenti","Inscrieri","Note"] },
   biblioteca_carti:{ nume:"Bibliotecă (împrumut cărți)", icon:"📖", db:"biblioteca_carti",
-                tables:["Abonati","Carti","Imprumuturi"] }
+                tables:["Abonati","Carti","Imprumuturi"] },
+  gsm:        { nume:"Operator telefonie mobilă (GSM)", icon:"📱", db:"gsm",
+                tables:["Abonati","Solicitari","Cartele"] }
 };
 
 function baseCfg(extra){
@@ -108,8 +110,8 @@ async function ensureInitialized(saPool){
   // Sentinel = cel mai NOU obiect asteptat. Cand adaugi un scenariu, actualizeaza-l
   // la un obiect din noua baza, ca init.sql sa se re-ruleze si sa-l creeze.
   const check = await saPool.request().query(
-    "SELECT CASE WHEN DB_ID('biblioteca_carti') IS NOT NULL " +
-    "AND OBJECT_ID('biblioteca_carti.dbo.Abonati') IS NOT NULL THEN 1 ELSE 0 END AS ok");
+    "SELECT CASE WHEN DB_ID('gsm') IS NOT NULL " +
+    "AND OBJECT_ID('gsm.dbo.Cartele') IS NOT NULL THEN 1 ELSE 0 END AS ok");
   if(check.recordset[0].ok === 1){
     console.log("bazele exista deja (inclusiv scenariile noi) — sar peste init");
     return;
