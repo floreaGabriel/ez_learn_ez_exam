@@ -3862,7 +3862,7 @@ C0 A8 01 0A  C0 A8 01 01</pre>
     <ul>
       <li><b>Broadcast la Discover și Request:</b> clientul n-are încă IP, deci trimite către toți — MAC destinație <code>FF:FF:FF:FF:FF:FF</code>, IP destinație <code>255.255.255.255</code>, IP sursă <code>0.0.0.0</code>.</li>
       <li><b>Porturi:</b> mereu <code>68 → 67</code> când trimite clientul, <code>67 → 68</code> când răspunde serverul.</li>
-      <li><b>Offer și Ack:</b> serverul știe deja MAC-ul clientului (din Discover) → poate trimite <b>unicast la nivel MAC</b> (către MAC-ul laptop-ului), dar <b>IP destinație tot broadcast</b> (255.255.255.255), fiindcă laptop-ul încă n-are IP configurat.</li>
+      <li><b>Offer și Ack:</b> serverul știe deja MAC-ul clientului (din Discover) → răspunde <b>unicast</b>: MAC destinație = MAC-ul laptop-ului <b>și</b> IP destinație = adresa oferită (<code>192.168.0.7</code>). Serverul trimite direct către laptop, fără să mai deranjeze toată rețeaua.</li>
     </ul>
 
     <h2>Exemplu — pas cu pas</h2>
@@ -3878,12 +3878,12 @@ C0 A8 01 0A  C0 A8 01 01</pre>
       </div>
     </div>
     <p class="note">🔵 pachetele <b>trimise de laptop</b> (Discover, Request) · 🟢 pachetele <b>primite de la server</b> (Offer, Ack).</p>
-    <p class="note">ℹ️ <b>Variantă acceptată:</b> dacă în Discover clientul cere răspuns în broadcast (bitul <i>broadcast</i>), atunci și la <b>Offer/Ack</b> MAC destinație e <code>FF:FF:FF:FF:FF:FF</code>, nu MAC-ul laptop-ului. Restul (IP-uri, porturi) rămâne identic. Aici am folosit varianta cu <b>unicast la MAC</b> (serverul știe deja MAC-ul laptop-ului).</p>
+    <p class="note">ℹ️ <b>Variantă acceptată:</b> aici Offer și Ack sunt <b>unicast</b> (MAC dst = 77:… și IP dst = 192.168.0.7). Dacă însă clientul cere în Discover răspuns în broadcast (bitul <i>broadcast</i> = 1), atunci Offer/Ack devin complet broadcast: MAC dst = <code>FF:FF:FF:FF:FF:FF</code> și IP dst = <code>255.255.255.255</code>. Porturile (67/68) rămân la fel în ambele variante.</p>
 
     <h2>Capcanele de examen</h2>
     <ul>
       <li>IP sursă la Discover/Request e <code>0.0.0.0</code> — <b>nu</b> adresa oferită (laptop-ul n-o are încă oficial).</li>
-      <li>IP destinație la Offer/Ack rămâne <code>255.255.255.255</code> (broadcast), <b>nu</b> 192.168.0.7 — laptop-ul nu poate fi încă adresat prin IP-ul lui.</li>
+      <li>La Offer/Ack, IP destinație = <code>192.168.0.7</code> (adresa oferită): serverul răspunde <b>unicast</b>, fiindcă știe deja MAC-ul laptop-ului. Doar Discover și Request rămân broadcast (<code>255.255.255.255</code>).</li>
       <li>Nu confunda porturile: <b>server = 67</b>, <b>client = 68</b> (invers față de cum pare intuitiv).</li>
       <li>Abia <b>după Ack</b> laptop-ul folosește 192.168.0.7 (și de-abia atunci ar comunica unicast normal).</li>
     </ul>
@@ -6833,12 +6833,12 @@ window.addEventListener('message', function(e){
   var DHCP = [
     { macS:"77:77:77:77:77:77", macD:"FF:FF:FF:FF:FF:FF", ipS:"0.0.0.0",     ipD:"255.255.255.255", pS:68, pD:67, sem:"DHCP Discover",
       expl:"Laptop-ul n-are IP → broadcast total (MAC FF:… și IP 255.255.255.255) ca să găsească orice server DHCP. IP sursă 0.0.0.0. Îl trimite laptop-ul (68→67)." },
-    { macS:"11:11:11:11:11:11", macD:"77:77:77:77:77:77", ipS:"192.168.0.1", ipD:"255.255.255.255", pS:67, pD:68, sem:"DHCP Offer",
-      expl:"Serverul oferă 192.168.0.7. Știe MAC-ul laptop-ului (din Discover) → unicast la nivel MAC (77:…), dar IP destinație tot broadcast (laptop-ul n-are încă IP configurat). 67→68." },
+    { macS:"11:11:11:11:11:11", macD:"77:77:77:77:77:77", ipS:"192.168.0.1", ipD:"192.168.0.7", pS:67, pD:68, sem:"DHCP Offer",
+      expl:"Serverul oferă 192.168.0.7. Știe MAC-ul laptop-ului (din Discover) → răspunde UNICAST: MAC dst = 77:… și IP dst = 192.168.0.7 (adresa oferită). 67→68." },
     { macS:"77:77:77:77:77:77", macD:"FF:FF:FF:FF:FF:FF", ipS:"0.0.0.0",     ipD:"255.255.255.255", pS:68, pD:67, sem:"DHCP Request",
       expl:"Laptop-ul cere oficial adresa oferită. Tot broadcast, ca să afle și celelalte servere (a căror ofertă e refuzată). Încă IP sursă 0.0.0.0." },
-    { macS:"11:11:11:11:11:11", macD:"77:77:77:77:77:77", ipS:"192.168.0.1", ipD:"255.255.255.255", pS:67, pD:68, sem:"DHCP Ack",
-      expl:"Serverul confirmă atribuirea. Din acest moment laptop-ul folosește 192.168.0.7." }
+    { macS:"11:11:11:11:11:11", macD:"77:77:77:77:77:77", ipS:"192.168.0.1", ipD:"192.168.0.7", pS:67, pD:68, sem:"DHCP Ack",
+      expl:"Serverul confirmă atribuirea, tot UNICAST către 192.168.0.7. Din acest moment laptop-ul folosește 192.168.0.7." }
   ];
   function render(el, n){
     if(!el) return;
@@ -6856,9 +6856,9 @@ window.addEventListener('message', function(e){
   // diagramă de secvență (Laptop ↔ Server) — săgeata pasului curent se aprinde
   var MSG = [
     { n:"① Discover", dir:1,  sub:"broadcast",       c:"var(--blue, #6a9fb5)" },
-    { n:"② Offer",    dir:-1, sub:"→ 192.168.0.7",   c:"var(--good, #7fae3a)" },
+    { n:"② Offer",    dir:-1, sub:"unicast → .0.7",   c:"var(--good, #7fae3a)" },
     { n:"③ Request",  dir:1,  sub:"broadcast",       c:"var(--blue, #6a9fb5)" },
-    { n:"④ Ack",      dir:-1, sub:"confirmă",         c:"var(--good, #7fae3a)" }
+    { n:"④ Ack",      dir:-1, sub:"unicast → .0.7",   c:"var(--good, #7fae3a)" }
   ];
   function actor(cx, ico, nume, sub){
     return '<g>'

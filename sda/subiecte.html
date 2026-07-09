@@ -186,7 +186,7 @@ function highlightC(text){
     if(paren) return '<span class="tok-fn">'+ident+'</span>'+paren;
     return ident;
   });
-  s=s.replace(/[-]/g, function(ch){ return store[ch.charCodeAt(0)-0xE000]; });
+  s=s.replace(/[-]/g, function(ch){ return store[ch.charCodeAt(0)-0xE000]; });
   return s;
 }
 function applyHighlight(root){
