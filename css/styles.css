@@ -179,6 +179,22 @@ body{
 .tile p{font-size:13px; color:var(--muted)}
 .tile .cat-tag{display:inline-block; margin-top:10px; font-size:11px; color:var(--accent); background:#2e2515; padding:2px 9px; border-radius:6px; font-weight:500}
 
+/* ---------- Card „Last Minute" de pe dashboard ---------- */
+.recap-cta{
+  display:flex; align-items:center; gap:16px; cursor:pointer; margin-bottom:18px;
+  background:linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, var(--panel)), var(--panel));
+  border:1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius:14px; padding:16px 20px; transition:.16s;
+}
+.recap-cta:hover{transform:translateY(-2px); border-color:var(--accent); box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.recap-cta .rc-ico{font-size:32px; flex:none}
+.recap-cta .rc-txt{display:flex; flex-direction:column; gap:3px; min-width:0}
+.recap-cta .rc-txt b{color:var(--ink); font-size:16px}
+.recap-cta .rc-txt span{color:var(--muted); font-size:13px; line-height:1.5}
+.recap-cta .rc-go{margin-left:auto; flex:none; font-size:12px; font-weight:700; color:var(--accent);
+  border:1px solid color-mix(in srgb, var(--accent) 50%, transparent); border-radius:8px; padding:6px 12px; white-space:nowrap}
+@media(max-width:680px){ .recap-cta{flex-wrap:wrap} .recap-cta .rc-go{margin-left:0} }
+
 /* ---------- Articol concept ---------- */
 .article h2{font-size:22px; margin:30px 0 14px; padding-bottom:8px; border-bottom:2px solid var(--line); color:var(--accent); font-weight:700}
 .article h2:first-child{margin-top:0}

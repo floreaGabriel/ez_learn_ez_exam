@@ -272,6 +272,7 @@ function buildNav(){
     + '<div class="nav-item" data-view="amongus"><span class="ico">🛸</span> Among Us CS</div>'
     + '<div class="nav-item" data-view="salvate"><span class="ico">⭐</span> Probleme salvate'
     +   '<span id="salvateBadge" style="display:none; margin-left:auto; font-size:11px; font-weight:700; color:var(--accent,#e9b143); background:color-mix(in srgb,var(--accent,#e9b143) 16%,transparent); border-radius:20px; padding:1px 8px"></span></div>'
+    + '<div class="nav-item" data-view="recap"><span class="ico">⏰</span> Last Minute 🔐</div>'
     + '</div>';
   MATERII.forEach(function(m){
     html += '<div class="nav-subject" data-subject="'+m.id+'">';
@@ -350,6 +351,7 @@ function wireNav(){
       else if(v==="oopsub") showOopSub();
       else if(v==="sdasub") showSdaSub();
       else if(v==="salvate") showSalvate();
+      else if(v==="recap") showRecap();
       else if(v==="concept") showConcept(it.dataset.id);
       else if(v==="exam") showExam(it.dataset.id);
       else if(v==="examindex") showExamIndex();
@@ -414,6 +416,8 @@ function setActive(view,id,sec){
     const el = document.querySelector('.nav-item[data-view="amongus"]'); if(el) el.classList.add("active");
   } else if(view==="salvate"){
     const el = document.querySelector('.nav-item[data-view="salvate"]'); if(el) el.classList.add("active");
+  } else if(view==="recap"){
+    const el = document.querySelector('.nav-item[data-view="recap"]'); if(el) el.classList.add("active");
   } else if(view==="home"){
     const el = document.querySelector('.nav-subhead[data-subject="pso"]'); if(el) el.classList.add("active");
   } else if(view==="quiz"){
@@ -439,7 +443,7 @@ function setActive(view,id,sec){
   if(view!=="quiz"){ const bar=document.getElementById("scorebar"); if(bar) bar.remove(); }
   window.scrollTo(0,0);
   const cnt = document.querySelector(".content");
-  if(cnt){ cnt.classList.toggle("embed", view==="embed" || view==="simlab" || view==="psosub" || view==="oopsub" || view==="sdasub" || view==="salvate" || view==="amongus"); cnt.classList.toggle("videos", view==="videos"); cnt.scrollTop = 0;
+  if(cnt){ cnt.classList.toggle("embed", view==="embed" || view==="simlab" || view==="psosub" || view==="oopsub" || view==="sdasub" || view==="salvate" || view==="recap" || view==="amongus"); cnt.classList.toggle("videos", view==="videos"); cnt.scrollTop = 0;
     if(view!=="conquistador") delete cnt.dataset.view;   // ca mesajele WS întârziate să nu rescrie altă vedere
   }
 }
@@ -463,6 +467,12 @@ function showDashboard(){
     + '<div class="hero">'
     + '<h2>Pregătire pentru examenul de licență 🎓</h2>'
     + '<p>Alege o materie pentru a începe. Fiecare materie are propriile lecții și exerciții. Din bara din stânga poți <b>extinde</b> materia care te interesează.</p>'
+    + '</div>'
+    + '<div class="recap-cta" onclick="showRecap()" role="button" tabindex="0">'
+    +   '<span class="rc-ico">⏰</span>'
+    +   '<span class="rc-txt"><b>Recapitulare LAST MINUTE 🔐</b>'
+    +   '<span>Mai e puțin până la examen: esențialul din toate materiile — concepte explicate, capcanele care pică lumea și checklist-uri cu progres. Se deblochează cu parola subiectelor.</span></span>'
+    +   '<span class="rc-go">Deschide →</span>'
     + '</div>'
     + '<div class="grid">'
     + MATERII.map(function(m){
@@ -659,6 +669,30 @@ function showSalvate(){
   }
 }
 
+// Recapitulare finală „⏰ Last Minute" — pagină embed (recap.html), protejată cu
+// parolă (aceeași cu subiectele PSO/OOP/SDA). Conținutul e criptat AES în
+// recap-secret.enc.js; deblocarea are loc în pagină (încearcă automat parola
+// ținută minte de oricare dintre paginile de subiecte).
+function showRecap(sec){
+  sec = sec || "acasa";
+  setActive("recap");
+  document.getElementById("crumb").textContent = "Pregătire licență";
+  document.getElementById("title").textContent = "⏰ Last Minute — Recapitulare finală 🔐";
+  const c = document.getElementById("content");
+  let frame = document.getElementById("embed-frame");
+  if(frame && frame.dataset.subject==="recap"){
+    try{ frame.contentWindow.postMessage({ type:"tab", tab:sec }, "*"); }
+    catch(err){ frame.src = "recap.html#"+sec; }
+  } else {
+    c.innerHTML = '<div class="embed-wrap"><iframe id="embed-frame" class="embed-frame" '
+      + 'data-subject="recap" src="'+embSrc('recap.html#'+sec)+'" title="Recapitulare finală"></iframe></div>';
+    const f = document.getElementById("embed-frame");
+    f.addEventListener("load", function(){
+      try{ f.contentWindow.postMessage(frameThemeMsg(), "*"); }catch(e){}
+    });
+  }
+}
+
 // contorul de pe elementul „⭐ Probleme salvate" din bara laterală
 function updateSalvateBadge(){
   var el = document.getElementById("salvateBadge");
@@ -784,6 +818,7 @@ function examNav(id){
 // Editează AICI la fiecare modificare notabilă (cea mai NOUĂ prima). Apare în
 // banda care se derulează sus, ca toți utilizatorii să vadă ce s-a adăugat.
 const UPDATES = [
+  { d:"09.07.2026", t:"Nou: „⏰ Last Minute” — recapitulare finală pentru examen: esențialul în 10 minute, concepte explicate, capcane și checklist-uri cu progres, pentru toate materiile (🔐 aceeași parolă ca subiectele)" },
   { d:"09.07.2026", t:"SQL → scenariu nou „📱 Operator telefonie mobilă (GSM)”: Abonați/Solicitări/Cartele cu 9 cerințe rezolvate, rulabile în SQL Workbench" },
   { d:"08.07.2026", t:"Rețele → „🆔 DHCP (DORA)”: cum obține un dispozitiv IP-ul automat — Discover/Offer/Request/Ack cu anteturile Ethernet/IP/UDP completate pas cu pas" },
   { d:"08.07.2026", t:"Rețele → „🤝 Transmisia TCP”: SEQ/ACK pas cu pas (handshake, transfer, închidere) + antrenament de calcul al ACK-ului" },
