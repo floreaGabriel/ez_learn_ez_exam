@@ -818,15 +818,12 @@ function examNav(id){
 // Editează AICI la fiecare modificare notabilă (cea mai NOUĂ prima). Apare în
 // banda care se derulează sus, ca toți utilizatorii să vadă ce s-a adăugat.
 const UPDATES = [
+  { d:"10.07.2026", t:"OOP → „🔐 Subiecte examen”: varianta nouă C++ · V7 — virtual apelat în constructor, apel calificat A::show() și slicing la transmiterea prin valoare, cu rezolvări verificate prin compilator" },
   { d:"09.07.2026", t:"Nou: „⏰ Last Minute” — recapitulare finală pentru examen: esențialul în 10 minute, concepte explicate, capcane și checklist-uri cu progres, pentru toate materiile (🔐 aceeași parolă ca subiectele)" },
   { d:"09.07.2026", t:"SQL → scenariu nou „📱 Operator telefonie mobilă (GSM)”: Abonați/Solicitări/Cartele cu 9 cerințe rezolvate, rulabile în SQL Workbench" },
   { d:"08.07.2026", t:"Rețele → „🆔 DHCP (DORA)”: cum obține un dispozitiv IP-ul automat — Discover/Offer/Request/Ack cu anteturile Ethernet/IP/UDP completate pas cu pas" },
   { d:"08.07.2026", t:"Rețele → „🤝 Transmisia TCP”: SEQ/ACK pas cu pas (handshake, transfer, închidere) + antrenament de calcul al ACK-ului" },
-  { d:"08.07.2026", t:"Rețele → „📝 Exerciții examen”: buton „🔖 Salvează problema” pe fiecare exercițiu + tab nou „🔖 Probleme salvate” unde le reexersezi (salvate local, în browser)" },
   { d:"08.07.2026", t:"Rețele → Ex. 30 (DNS): rezoluția recursivă a lui www.mta.ro explicată pas cu pas, cu diagramă a fluxului recursiv ↔ iterativ (root → .ro → mta.ro)" },
-  { d:"08.07.2026", t:"Rețele → „🏷️ Clase & adrese IP”: calculator de clasă (A–E) + privat / public / multicast / broadcast / loopback / link-local" },
-  { d:"07.07.2026", t:"SDA → „🔐 Subiecte examen”: 10 variante noi în stil licență, cu rezolvări și barem" },
-  { d:"06.07.2026", t:"Nou: „⭐ Probleme salvate” — pinuiește problemele mai tricky din PSO / OOP / SDA și reexersează-le" },
 ];
 
 // Versiunea aplicației = data celui mai nou update (fără separatori). Se schimbă
