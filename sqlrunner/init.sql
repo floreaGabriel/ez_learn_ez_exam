@@ -38,6 +38,10 @@ IF DB_ID('biblioteca_carti') IS NULL CREATE DATABASE biblioteca_carti;
 GO
 IF DB_ID('gsm') IS NULL CREATE DATABASE gsm;
 GO
+IF DB_ID('transferuri') IS NULL CREATE DATABASE transferuri;
+GO
+IF DB_ID('bilete') IS NULL CREATE DATABASE bilete;
+GO
 
 -- ===================== 2. Login read-only (la nivel de server) =====================
 IF SUSER_ID('readonly') IS NULL
@@ -637,4 +641,232 @@ INSERT INTO Cartele VALUES
  (105,17,'0728000006','2021-01-08','2022-01-08',NULL);           -- a 4-a cifra 8; expira in 2022 -> nu h
 CREATE USER readonly FOR LOGIN readonly;
 ALTER ROLE db_datareader ADD MEMBER readonly;
+GO
+
+-- ============================================================
+--  TRANSFERURI (tranzactii & proceduri stocate — Lab 8 + Lab 9)
+--  Rutinele sunt CREATE-uite si EXECUTATE aici, la init; userii vad
+--  efectele in date si sursa rutinelor prin OBJECT_DEFINITION
+--  (GRANT VIEW DEFINITION). Workbench-ul ramane read-only.
+-- ============================================================
+USE transferuri;
+CREATE TABLE Conturi (
+    Id_Cont INT PRIMARY KEY,
+    Titular VARCHAR(50) NOT NULL,
+    IBAN    VARCHAR(24) NOT NULL,
+    Sold    DECIMAL(10,2) NOT NULL
+);
+CREATE TABLE Transferuri (
+    Id_Transfer   INT IDENTITY(1,1) PRIMARY KEY,
+    Id_Cont_Sursa INT NOT NULL,               -- fara FK: log-ul pastreaza si
+    Id_Cont_Dest  INT NOT NULL,               -- tentativele catre conturi inexistente
+    Suma          DECIMAL(10,2) NOT NULL,
+    Data          DATETIME NOT NULL,
+    Stare         CHAR(1) NOT NULL,           -- 'F' = finalizat / 'E' = esuat
+    Motiv         VARCHAR(200) NULL           -- NULL = reusit; altfel ERROR_MESSAGE()
+);
+CREATE TABLE AuditSolduri (
+    Id_Audit   INT IDENTITY(1,1) PRIMARY KEY,
+    Id_Cont    INT NOT NULL,
+    Sold_Vechi DECIMAL(10,2) NOT NULL,
+    Sold_Nou   DECIMAL(10,2) NOT NULL,
+    Data       DATETIME NOT NULL,
+    FOREIGN KEY (Id_Cont) REFERENCES Conturi(Id_Cont)
+);
+INSERT INTO Conturi VALUES
+ (1,'Popescu Andrei','RO49TRNF0000000000000001',1000.00),
+ (2,'Ionescu Maria', 'RO49TRNF0000000000000002', 500.00),
+ (3,'Pop Vlad',      'RO49TRNF0000000000000003', 750.00);
+CREATE USER readonly FOR LOGIN readonly;
+ALTER ROLE db_datareader ADD MEMBER readonly;
+GRANT VIEW DEFINITION TO readonly;            -- ca OBJECT_DEFINITION() sa mearga din workbench
+GO
+
+-- Triggerul de audit: la ORICE UPDATE pe Conturi, pastreaza sold vechi/nou
+-- (tiparul din Lab 8: Inserted/Deleted, @@ROWCOUNT, SET NOCOUNT ON).
+CREATE TRIGGER tr_Conturi_Audit
+ON Conturi
+AFTER UPDATE
+AS
+BEGIN
+    IF @@ROWCOUNT = 0 RETURN;
+    SET NOCOUNT ON;
+    INSERT INTO AuditSolduri(Id_Cont, Sold_Vechi, Sold_Nou, Data)
+    SELECT D.Id_Cont, D.Sold, I.Sold, GETDATE()
+    FROM Deleted AS D
+         JOIN Inserted AS I ON D.Id_Cont = I.Id_Cont
+    WHERE D.Sold <> I.Sold;
+END
+GO
+
+-- Procedura de transfer: tranzactie + validari cu THROW + TRY/CATCH
+-- (tiparul din Lab 9: IF @@TRANCOUNT > 0 ROLLBACK in CATCH, apoi logare).
+CREATE PROC pr_Transfera
+    @IdSursa AS INT,
+    @IdDest  AS INT,
+    @Suma    AS DECIMAL(10,2)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        BEGIN TRAN;
+            IF NOT EXISTS (SELECT * FROM Conturi WHERE Id_Cont = @IdSursa)
+               OR NOT EXISTS (SELECT * FROM Conturi WHERE Id_Cont = @IdDest)
+                THROW 50001, 'Cont inexistent.', 0;
+            DECLARE @Sold AS DECIMAL(10,2);
+            SET @Sold = (SELECT Sold FROM Conturi WHERE Id_Cont = @IdSursa);
+            IF @Sold < @Suma
+                THROW 50002, 'Fonduri insuficiente in contul sursa.', 0;
+            UPDATE Conturi SET Sold = Sold - @Suma WHERE Id_Cont = @IdSursa;
+            UPDATE Conturi SET Sold = Sold + @Suma WHERE Id_Cont = @IdDest;
+            INSERT INTO Transferuri(Id_Cont_Sursa, Id_Cont_Dest, Suma, Data, Stare, Motiv)
+            VALUES(@IdSursa, @IdDest, @Suma, GETDATE(), 'F', NULL);
+        COMMIT TRAN;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRAN;
+        INSERT INTO Transferuri(Id_Cont_Sursa, Id_Cont_Dest, Suma, Data, Stare, Motiv)
+        VALUES(@IdSursa, @IdDest, @Suma, GETDATE(), 'E', ERROR_MESSAGE());
+    END CATCH
+END
+GO
+
+-- Procedura cu parametru OUTPUT (tiparul GetCustomerOrders din Lab 8).
+CREATE PROC pr_SoldCont
+    @IdCont AS INT,
+    @Sold   AS DECIMAL(10,2) = 0 OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @Sold = (SELECT Sold FROM Conturi WHERE Id_Cont = @IdCont);
+    RETURN;
+END
+GO
+
+-- Demo (idempotent — ruleaza o singura data): povestea datelor din workbench.
+IF NOT EXISTS (SELECT * FROM dbo.Transferuri)
+BEGIN
+    EXEC dbo.pr_Transfera @IdSursa = 1, @IdDest = 2, @Suma = 300;   -- reusit
+    EXEC dbo.pr_Transfera @IdSursa = 3, @IdDest = 1, @Suma = 150;   -- reusit
+    EXEC dbo.pr_Transfera @IdSursa = 2, @IdDest = 3, @Suma = 2000;  -- esueaza: fonduri insuficiente
+    EXEC dbo.pr_Transfera @IdSursa = 1, @IdDest = 9, @Suma = 50;    -- esueaza: cont inexistent
+END
+GO
+
+-- ============================================================
+--  BILETE (triggere AFTER pe INSERT/UPDATE — Lab 8; proc cu TRY/CATCH — Lab 9)
+-- ============================================================
+USE bilete;
+CREATE TABLE Spectacole (
+    Id_Spectacol       INT PRIMARY KEY,
+    Titlu              VARCHAR(50) NOT NULL,
+    Data               DATETIME NOT NULL,
+    Capacitate         INT NOT NULL,
+    Locuri_Disponibile INT NOT NULL,
+    Pret               DECIMAL(10,2) NOT NULL
+);
+CREATE TABLE Vanzari (
+    Id_Vanzare   INT IDENTITY(1,1) PRIMARY KEY,
+    Id_Spectacol INT NOT NULL,
+    Cumparator   VARCHAR(50) NOT NULL,
+    Nr_Bilete    INT NOT NULL,
+    Data         DATETIME NOT NULL,
+    Anulata      DATETIME NULL,               -- NULL = valida; altfel data anularii
+    FOREIGN KEY (Id_Spectacol) REFERENCES Spectacole(Id_Spectacol)
+);
+CREATE TABLE JurnalStoc (
+    Id_Jurnal    INT IDENTITY(1,1) PRIMARY KEY,
+    Id_Spectacol INT NOT NULL,
+    Modificare   INT NOT NULL,                -- -N vanzare / +N anulare / 0 refuz
+    Explicatie   VARCHAR(200) NOT NULL,
+    Data         DATETIME NOT NULL,
+    FOREIGN KEY (Id_Spectacol) REFERENCES Spectacole(Id_Spectacol)
+);
+INSERT INTO Spectacole VALUES
+ (1,'Hamlet',        '2026-08-20',50,50, 60.00),
+ (2,'Rigoletto',     '2026-09-05',30,30,120.00),
+ (3,'Stand-up Night','2026-07-25', 2, 2, 80.00);
+CREATE USER readonly FOR LOGIN readonly;
+ALTER ROLE db_datareader ADD MEMBER readonly;
+GRANT VIEW DEFINITION TO readonly;
+GO
+
+-- La vanzare (INSERT in Vanzari): scade stocul, scrie in jurnal, iar daca
+-- stocul devine negativ -> THROW (anuleaza TOT: si vanzarea, si scaderea).
+CREATE TRIGGER tr_Vanzari_Stoc
+ON Vanzari
+AFTER INSERT
+AS
+BEGIN
+    IF @@ROWCOUNT = 0 RETURN;
+    SET NOCOUNT ON;
+    UPDATE S SET Locuri_Disponibile = S.Locuri_Disponibile - X.Total
+    FROM Spectacole AS S
+         JOIN (SELECT Id_Spectacol, SUM(Nr_Bilete) AS Total
+               FROM Inserted GROUP BY Id_Spectacol) AS X
+           ON S.Id_Spectacol = X.Id_Spectacol;
+    INSERT INTO JurnalStoc(Id_Spectacol, Modificare, Explicatie, Data)
+    SELECT Id_Spectacol, -Nr_Bilete, 'Vanzare: ' + Cumparator, GETDATE()
+    FROM Inserted;
+    IF EXISTS (SELECT * FROM Spectacole AS S
+               JOIN Inserted AS I ON S.Id_Spectacol = I.Id_Spectacol
+               WHERE S.Locuri_Disponibile < 0)
+        THROW 50003, 'Locuri insuficiente pentru spectacol.', 0;
+END
+GO
+
+-- La anulare (UPDATE care trece Anulata din NULL in data): da locurile inapoi.
+CREATE TRIGGER tr_Vanzari_Anulare
+ON Vanzari
+AFTER UPDATE
+AS
+BEGIN
+    IF @@ROWCOUNT = 0 RETURN;
+    SET NOCOUNT ON;
+    UPDATE S SET Locuri_Disponibile = S.Locuri_Disponibile + I.Nr_Bilete
+    FROM Spectacole AS S
+         JOIN Inserted AS I ON S.Id_Spectacol = I.Id_Spectacol
+         JOIN Deleted  AS D ON D.Id_Vanzare   = I.Id_Vanzare
+    WHERE D.Anulata IS NULL AND I.Anulata IS NOT NULL;
+    INSERT INTO JurnalStoc(Id_Spectacol, Modificare, Explicatie, Data)
+    SELECT I.Id_Spectacol, I.Nr_Bilete, 'Anulare vanzare: ' + I.Cumparator, GETDATE()
+    FROM Inserted AS I
+         JOIN Deleted AS D ON D.Id_Vanzare = I.Id_Vanzare
+    WHERE D.Anulata IS NULL AND I.Anulata IS NOT NULL;
+END
+GO
+
+-- Vanzarea printr-o procedura: daca triggerul da THROW, CATCH face ROLLBACK
+-- si abia APOI logheaza refuzul (in tranzactia anulata s-ar pierde si log-ul).
+CREATE PROC pr_VindeBilete
+    @IdSpectacol AS INT,
+    @Cumparator  AS VARCHAR(50),
+    @NrBilete    AS INT = 1
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        BEGIN TRAN;
+            INSERT INTO Vanzari(Id_Spectacol, Cumparator, Nr_Bilete, Data, Anulata)
+            VALUES(@IdSpectacol, @Cumparator, @NrBilete, GETDATE(), NULL);
+        COMMIT TRAN;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRAN;
+        INSERT INTO JurnalStoc(Id_Spectacol, Modificare, Explicatie, Data)
+        VALUES(@IdSpectacol, 0, 'REFUZAT (' + @Cumparator + '): ' + ERROR_MESSAGE(), GETDATE());
+    END CATCH
+END
+GO
+
+-- Demo (idempotent): 4 vanzari reusite, un refuz logat, o anulare.
+IF NOT EXISTS (SELECT * FROM dbo.Vanzari)
+BEGIN
+    EXEC dbo.pr_VindeBilete @IdSpectacol = 1, @Cumparator = 'Popescu Andrei', @NrBilete = 2;
+    EXEC dbo.pr_VindeBilete @IdSpectacol = 1, @Cumparator = 'Ionescu Maria',  @NrBilete = 3;
+    EXEC dbo.pr_VindeBilete @IdSpectacol = 2, @Cumparator = 'Pop Vlad',       @NrBilete = 1;
+    EXEC dbo.pr_VindeBilete @IdSpectacol = 3, @Cumparator = 'Popa Elena',     @NrBilete = 2;
+    EXEC dbo.pr_VindeBilete @IdSpectacol = 3, @Cumparator = 'Georgescu Radu', @NrBilete = 1;  -- refuzat (0 locuri)
+    UPDATE dbo.Vanzari SET Anulata = GETDATE() WHERE Id_Vanzare = 2;                          -- Ionescu anuleaza
+END
 GO

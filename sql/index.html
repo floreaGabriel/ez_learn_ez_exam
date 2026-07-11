@@ -330,7 +330,7 @@ WHERE NOT EXISTS (SELECT 1 FROM Rezervari R
     <tr><td><b>i</b></td><td>integritate referențială: orfani (<code>NOT IN</code> / <code>NOT EXISTS</code> / <code>LEFT JOIN</code>)</td></tr>
   </table>
 
-  <h2>Progresia celor 5 scenarii</h2>
+  <h2>Progresia scenariilor</h2>
   <table>
     <tr><th>#</th><th>Scenariu</th><th>Ce adaugă</th></tr>
     <tr><td>1</td><td>📚 Bibliotecă universitară</td><td>calibrare 1:1 pe examen (prefix <code>LIKE</code>, grupare pe lună)</td></tr>
@@ -338,6 +338,8 @@ WHERE NOT EXISTS (SELECT 1 FROM Rezervari R
     <tr><td>3</td><td>🛒 Magazin online</td><td>agregare numerică <code>SUM</code>/<code>AVG</code> cu expresii, <code>BETWEEN</code> numeric, <code>OR</code> de <code>LIKE</code></td></tr>
     <tr><td>4</td><td>✈️ Companie aeriană</td><td><code>COUNT</code> filtrat, egalități la maxim, subinterogări corelate</td></tr>
     <tr><td>5</td><td>🔧 Service auto (capstone)</td><td><code>EXISTS</code>/<code>NOT EXISTS</code>, dublă negație („doar / niciodată”), comparații între coloane</td></tr>
+    <tr><td>6–12</td><td>🏨 🏦 🚗 📦 🎓 📖 📱</td><td>variații pe același tipar (hotel, bancă, asigurări, curierat, universitate, bibliotecă-cărți, GSM) — pentru reexersare</td></tr>
+    <tr><td>13–14</td><td>💸 Transferuri bancare · 🎟️ Casă de bilete</td><td><b>tranzacții</b> (<code>BEGIN TRAN/COMMIT/ROLLBACK</code>, <code>TRY/CATCH</code>), <b>proceduri stocate</b> (<code>OUTPUT</code>, <code>THROW</code>) și <b>triggere</b> (<code>Inserted/Deleted</code>) — Laboratoarele 8+9</td></tr>
   </table>
   <div class="tip"><b>Antrenament:</b> citește scenariul + „Observații”, acoperă rezolvarea și scrie singur cele 9 interogări, apoi compară cu modelul și citește „capcanele”. La final, rulează interogările pe datele din <b>Anexă</b> și confruntă rezultatul cu cel așteptat.</div>
 </section>
@@ -345,7 +347,7 @@ WHERE NOT EXISTS (SELECT 1 FROM Rezervari R
 <!-- ============================ SCENARII REZOLVATE ============================ -->
 <section class="page" id="page-scenarii">
   <h1>📚 Scenarii rezolvate</h1>
-  <p class="lead">Cinci subiecte complete în stilul Subiectului III (ATM 2021). Fiecare are scenariul, cele 3 tabele, „Observațiile” despre câmpurile <code>NULL</code>, cele 9 cerințe (a–i) cu rezolvarea pliabilă (soluție SQL Server / T-SQL + capcane) și o anexă rulabilă. Alege un scenariu:</p>
+  <p class="lead">Paisprezece scenarii: 1–12 sunt subiecte complete de interogări în stilul Subiectului III (ATM 2021), iar 13–14 exersează <b>tranzacțiile, procedurile stocate și triggerele</b> (Laboratoarele 8+9). Fiecare are scenariul, cele 3 tabele, „Observațiile” despre câmpurile <code>NULL</code>, cele 9 cerințe (a–i) cu rezolvarea pliabilă (soluție SQL Server / T-SQL + capcane) și o anexă rulabilă. Alege un scenariu:</p>
   <div class="row"><label>Scenariu: <select id="scenPick"></select></label></div>
   <div id="ideHost"></div>
   <div id="scenBody"></div>
@@ -354,7 +356,7 @@ WHERE NOT EXISTS (SELECT 1 FROM Rezervari R
 <!-- ============================ EXERCIȚII ============================ -->
 <section class="page" id="page-exercitii">
   <h1>📝 Exerciții — antrenament</h1>
-  <p class="lead">Cele ~47 de cerințe din toate cele 5 scenarii, <b>amestecate</b>. Citește enunțul, încearcă singur interogarea, apoi apasă „Arată rezolvarea”. Reamestecă pentru o nouă rundă.</p>
+  <p class="lead">Toate cerințele, din toate scenariile, <b>amestecate</b> (inclusiv cele de tranzacții/proceduri/triggere). Citește enunțul, încearcă singur rezolvarea, apoi apasă „Arată rezolvarea”. Reamestecă pentru o nouă rundă.</p>
   <div class="row"><button class="btn primary" id="exShuffle">↺ Reamestecă</button> <span id="exCount" class="muted"></span></div>
   <div id="exBody"></div>
 </section>
