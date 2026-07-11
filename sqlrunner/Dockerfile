@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install --omit=dev
 
-COPY server.js init.sql ./
+COPY server.js init.sql sandbox-transferuri.sql sandbox-bilete.sql ./
 
 ENV PORT=3001
 EXPOSE 3001

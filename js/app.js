@@ -818,7 +818,7 @@ function examNav(id){
 // Editează AICI la fiecare modificare notabilă (cea mai NOUĂ prima). Apare în
 // banda care se derulează sus, ca toți utilizatorii să vadă ce s-a adăugat.
 const UPDATES = [
-  { d:"11.07.2026", t:"SQL → 2 scenarii noi cu TRANZACȚII, PROCEDURI și TRIGGERE (Lab 8+9): „💸 Transferuri bancare” și „🎟️ Casă de bilete” — rutinele sunt instalate în baza live, efectele lor se explorează din SQL Workbench" },
+  { d:"11.07.2026", t:"SQL → 2 scenarii noi cu TRANZACȚII, PROCEDURI și TRIGGERE (Lab 8+9): „💸 Transferuri bancare” și „🎟️ Casă de bilete” + 🧪 mod Exersare în SQL Workbench: copia TA de bază (izolată de colegi), în care rulezi efectiv BEGIN TRAN, CREATE TRIGGER, EXEC — cu buton de Reset" },
   { d:"10.07.2026", t:"OOP → „🔐 Subiecte examen”: varianta nouă C++ · V7 — virtual apelat în constructor, apel calificat A::show() și slicing la transmiterea prin valoare, cu rezolvări verificate prin compilator" },
   { d:"09.07.2026", t:"Nou: „⏰ Last Minute” — recapitulare finală pentru examen: esențialul în 10 minute, concepte explicate, capcane și checklist-uri cu progres, pentru toate materiile (🔐 aceeași parolă ca subiectele)" },
   { d:"09.07.2026", t:"SQL → scenariu nou „📱 Operator telefonie mobilă (GSM)”: Abonați/Solicitări/Cartele cu 9 cerințe rezolvate, rulabile în SQL Workbench" },

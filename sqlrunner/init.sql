@@ -48,6 +48,11 @@ IF SUSER_ID('readonly') IS NULL
     CREATE LOGIN readonly WITH PASSWORD = '{{READONLY_PASSWORD}}', CHECK_POLICY = OFF;
 GO
 
+-- ===================== 2b. Login sandbox (doar bazele *_sbx, mod exersare) =====================
+IF SUSER_ID('sandbox') IS NULL
+    CREATE LOGIN sandbox WITH PASSWORD = '{{SANDBOX_PASSWORD}}', CHECK_POLICY = OFF;
+GO
+
 -- ============================================================
 --  BIBLIOTECA
 -- ============================================================

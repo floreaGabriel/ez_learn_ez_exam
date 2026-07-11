@@ -216,7 +216,7 @@ pre.cmd{background:var(--code-bg);border:1px solid var(--line2);border-radius:9p
 </head>
 <body>
 <header class="top">
-  <div class="brand"><span class="n">SQL Workbench</span><span class="s">Motor SQL Server · T-SQL · doar citire</span></div>
+  <div class="brand"><span class="n">SQL Workbench</span><span class="s">Motor SQL Server · T-SQL</span></div>
   <div class="field"><span class="lab">Bază de date</span><select class="sel" id="scnSel"></select></div>
   <div class="grow"></div>
   <div class="status" id="eng"><span class="dot"></span><span id="engT">inițializare…</span></div>
@@ -236,8 +236,10 @@ pre.cmd{background:var(--code-bg);border:1px solid var(--line2);border-radius:9p
       <select class="sel" id="exSel"><option value="">Exemple de interogări</option></select>
       <button class="btn" id="resetBtn">↻ Reîncarcă</button>
       <button class="btn" id="clearBtn">Golește</button>
+      <button class="btn" id="sbxBtn" style="display:none" title="Copia TA de exersare: rulezi INSERT/UPDATE, CREATE PROCEDURE/TRIGGER, EXEC, tranzacții — izolat de colegi">🧪 Exersare: OFF</button>
+      <button class="btn" id="sbxResetBtn" style="display:none" title="Șterge copia ta și o recreează cu datele inițiale">↺ Reset sandbox</button>
       <span class="grow"></span>
-      <span class="dialect">Dialect SQL Server (T-SQL) — dată: <code>YEAR(col)</code>/<code>MONTH(col)</code> · limită: <code>TOP (n)</code> · autocompletare: <code>Ctrl+Space</code></span>
+      <span class="dialect" id="dialectTxt">Dialect SQL Server (T-SQL) — dată: <code>YEAR(col)</code>/<code>MONTH(col)</code> · limită: <code>TOP (n)</code> · autocompletare: <code>Ctrl+Space</code></span>
     </div>
     <div class="editor-pane"><textarea id="editor"></textarea></div>
     <div class="bottom">
@@ -268,6 +270,21 @@ function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 var SQLAPI='/sqlapi';
 var cur=null, cm=null, schemaObj={}, liveTables=[];
+/* Mod exersare (sandbox): fiecare browser are propria copie a bazei, identificată
+   printr-un id de sesiune persistat local — 30 de colegi pot scrie simultan fără
+   să se calce pe triggere/date. Copia se recreează cu datele inițiale la Reset. */
+var sbx=false;
+var SID=(function(){
+  try{
+    var s=localStorage.getItem('sql-sbx-sid');
+    if(!s||!/^[a-z0-9]{6,16}$/.test(s)){
+      s=''; var abc='abcdefghijklmnopqrstuvwxyz0123456789';
+      for(var i=0;i<10;i++) s+=abc[Math.floor(Math.random()*abc.length)];
+      localStorage.setItem('sql-sbx-sid',s);
+    }
+    return s;
+  }catch(e){ return 'anon'+String(Math.floor(Math.random()*100000)); }
+})();
 
 /* tema (selectorul de teme + dark/light) e gestionată de js/theme.js */
 
@@ -342,15 +359,46 @@ function resultGrid(cols, rows, label){
 }
 function errorPanel(m){
   return '<div class="err"><div class="err-h">Eroare SQL Server</div><div class="err-msg"><span class="err-lbl">T-SQL</span> '+esc(m)+'</div>'
-    +'<div class="err-tip"><b>Sugestie:</b> verifică numele tabelelor/coloanelor (exploratorul din stânga), ghilimelele simple <code>\'...\'</code>, și folosește autocompletarea (Ctrl+Space). Permise doar interogări <code>SELECT</code>.</div></div>';
+    +'<div class="err-tip"><b>Sugestie:</b> verifică numele tabelelor/coloanelor (exploratorul din stânga), ghilimelele simple <code>\'...\'</code>, și folosește autocompletarea (Ctrl+Space). '
+    +(sbx?'Ești în <b>🧪 modul exersare</b> — poți rula și DML/DDL/EXEC/tranzacții, cu batch-uri separate prin <code>GO</code>.':'Permise doar interogări <code>SELECT</code> — pentru scriere pornește <b>🧪 Exersare</b> (la scenariile 💸/🎟️).')
+    +'</div></div>';
 }
 function showPane(bt){ document.querySelectorAll('.bpane').forEach(function(p){ p.classList.toggle('active',p.id==='pane-'+bt); }); document.querySelectorAll('.btab').forEach(function(b){ b.classList.toggle('active',b.dataset.bt===bt); }); }
+
+function renderRunBatches(d){
+  var h='<div class="res-meta">Executat în '+d.elapsedMs+' ms · 🧪 copia ta de exersare'
+    +(d.fresh?' <b>(copie nouă, cu datele inițiale)</b>':'')+'</div>';
+  d.batches.forEach(function(b,i){
+    if(d.batches.length>1) h+='<div class="res-meta">— batch '+(i+1)+' —</div>';
+    (b.messages||[]).forEach(function(m){ h+='<div class="note">💬 '+esc(m)+'</div>'; });
+    (b.results||[]).forEach(function(rs){
+      h+=resultGrid(rs.columns, rs.rows, null);
+      if(rs.truncated) h+='<div class="note">Set trunchiat la 500 de rânduri.</div>';
+    });
+    if(b.ok && (b.rowsAffected||[]).length && !(b.results||[]).length)
+      h+='<div class="note">('+b.rowsAffected.join(' + ')+' rânduri afectate)</div>';
+    if(!b.ok) h+=errorPanel(b.error);
+  });
+  if(!d.batches.length) h+='<div class="note">Nimic de executat.</div>';
+  return h;
+}
 
 function run(){
   if(!cur) return; showPane('res');
   var sql=cm.getValue().trim(), out=$('pane-res');
   if(!sql){ out.innerHTML='<div class="note">Editor gol.</div>'; return; }
-  out.innerHTML='<div class="res-meta">Se execută…</div>';
+  out.innerHTML='<div class="res-meta">Se execută…'+(sbx?' (🧪 prima rulare îți pregătește copia — poate dura câteva secunde)':'')+'</div>';
+  if(sbx){
+    fetch(SQLAPI+'/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:cur.id,sid:SID,sql:sql})})
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d.error){ out.innerHTML=errorPanel(d.error); return; }
+        out.innerHTML=renderRunBatches(d);
+        loadTables();          // starea copiei s-a putut schimba -> reîmprospătăm exploratorul
+      })
+      .catch(function(){ out.innerHTML=errorPanel('Backend indisponibil (sqlrunner).'); });
+    return;
+  }
   fetch(SQLAPI+'/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:cur.id,sql:sql})})
     .then(function(r){ return r.json(); })
     .then(function(d){
@@ -367,12 +415,13 @@ function populateExamples(){ var sel=$('exSel'); sel.innerHTML='<option value=""
 
 function loadTables(cb){
   setEng('', 'încarc tabelele…');
-  fetch(SQLAPI+'/tables?scenario='+encodeURIComponent(cur.id))
+  var qs='/tables?scenario='+encodeURIComponent(cur.id)+(sbx?('&sandbox=1&sid='+encodeURIComponent(SID)):'');
+  fetch(SQLAPI+qs)
     .then(function(r){ return r.json(); })
     .then(function(d){
       if(d.error){ setEng('bad','eroare: '+d.error); return; }
       liveTables=d.tables||[];
-      setEng('ok','SQL Server · pregătit (doar citire)');
+      setEng('ok', sbx?'SQL Server · 🧪 copia ta (scriere permisă)':'SQL Server · pregătit (doar citire)');
       buildSchemaObj(); renderSchema(); renderER();
       if(cb) cb();
     })
@@ -382,14 +431,50 @@ function loadTables(cb){
     });
 }
 
+function setSbx(on){
+  sbx=!!on && !!(cur&&cur.sandbox);
+  $('sbxBtn').textContent='🧪 Exersare: '+(sbx?'ON':'OFF');
+  $('sbxBtn').classList.toggle('primary', sbx);
+  $('sbxResetBtn').style.display=sbx?'':'none';
+  $('dialectTxt').innerHTML=sbx
+    ?'🧪 <b>Copia ta personală</b> — merg <code>INSERT/UPDATE/DELETE</code>, <code>CREATE PROC/TRIGGER</code>, <code>EXEC</code>, <code>BEGIN TRAN</code>… · separă batch-urile cu <code>GO</code> pe linie separată'
+    :'Dialect SQL Server (T-SQL) — dată: <code>YEAR(col)</code>/<code>MONTH(col)</code> · limită: <code>TOP (n)</code> · autocompletare: <code>Ctrl+Space</code>';
+}
+function toggleSbx(){
+  setSbx(!sbx);
+  loadTables(function(){
+    $('pane-res').innerHTML=sbx
+      ?'<div class="welcome">🧪 <b>Mod exersare</b> — lucrezi în <b>copia ta</b> a bazei „'+esc(cur.nume)+'” (izolată de colegi; se șterge după ~60 min de pauză sau la Reset). Rulează liniștit cerințele 📝: tranzacții, <code>CREATE PROCEDURE</code>/<code>TRIGGER</code>, <code>EXEC</code>. Pune definiția și testul în același script, cu <code>GO</code> între ele.</div>'
+      :'<div class="welcome">Înapoi în modul <b>doar citire</b> (baza comună).</div>';
+    showPane('res');
+  });
+}
+function resetSbx(){
+  var out=$('pane-res'); showPane('res');
+  out.innerHTML='<div class="res-meta">Resetez copia ta…</div>';
+  fetch(SQLAPI+'/sandbox-reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:cur.id,sid:SID})})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.error){ out.innerHTML=errorPanel(d.error); return; }
+      loadTables(function(){
+        out.innerHTML='<div class="welcome">↺ Copia ta a fost recreată cu <b>datele inițiale</b> (rutinele originale incluse).</div>';
+      });
+    })
+    .catch(function(){ out.innerHTML=errorPanel('Backend indisponibil (sqlrunner).'); });
+}
+
 function selectScenario(id){
   cur=SQL_SCENARII.filter(function(s){return s.id===id;})[0]||SQL_SCENARII[0];
   $('scnSel').value=cur.id;
+  $('sbxBtn').style.display=cur.sandbox?'':'none';
+  setSbx(false);
   renderReq(); populateExamples();
   loadTables(function(){
     var t0=(liveTables[0]&&liveTables[0].name)||'';
     cm.setValue('SELECT *\nFROM '+t0+';');
-    $('pane-res').innerHTML='<div class="welcome">Bază: <b>'+esc(cur.nume)+'</b> · motor SQL Server (T-SQL), doar citire. Alege o cerință din fila <b>Cerințe</b>, un exemplu, sau scrie o interogare. Execuție: <b>Ctrl+Enter</b>.</div>';
+    $('pane-res').innerHTML='<div class="welcome">Bază: <b>'+esc(cur.nume)+'</b> · motor SQL Server (T-SQL), doar citire.'
+      +(cur.sandbox?' Pentru tranzacții/proceduri/triggere apasă <b>🧪 Exersare</b> — primești propria copie a bazei, în care poți scrie orice.':'')
+      +' Alege o cerință din fila <b>Cerințe</b>, un exemplu, sau scrie o interogare. Execuție: <b>Ctrl+Enter</b>.</div>';
     showPane('res');
   });
 }
@@ -399,6 +484,7 @@ function init(){
   $('scnSel').onchange=function(){ selectScenario(this.value); };
   document.querySelectorAll('.btab').forEach(function(b){ b.onclick=function(){ showPane(b.dataset.bt); }; });
   $('runBtn').onclick=run; $('resetBtn').onclick=function(){ loadTables(); }; $('clearBtn').onclick=function(){ cm.setValue(''); cm.focus(); };
+  $('sbxBtn').onclick=toggleSbx; $('sbxResetBtn').onclick=resetSbx;
   $('exSel').onchange=function(){ var v=this.value; if(v===''){return;} cm.setValue(v); this.selectedIndex=0; run(); };
   $('themeBtn').onclick=function(){ if(window.toggleTheme){ toggleTheme(); } if(cm) setTimeout(function(){ cm.refresh(); },30); };
   $('themePickBtn').onclick=function(){ if(window.openThemePicker){ openThemePicker(); } };
@@ -409,7 +495,7 @@ function init(){
     function _clone(o){ var r={}; for(var k in o) r[k]=o[k]; return r; }
     var _kw=_clone(_mssql.keywords||{});
     delete _kw.limit; delete _kw.offset; delete _kw.fetch;   // LIMIT/OFFSET/FETCH — non-T-SQL la nivel de trainer
-    delete _kw.go;                                           // GO = separator de batch (SSMS), inutil aici (un singur SELECT)
+    _kw.go=true;                                             // GO = separator de batch — folosit în 🧪 modul exersare
     _kw.top=true;
     // adaugam keyword-urile de JOIN lipsa (build-ul are doar "join" simplu)
     ['inner','left','right','outer','full','cross'].forEach(function(k){ _kw[k]=true; });
